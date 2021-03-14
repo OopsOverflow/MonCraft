@@ -36,8 +36,8 @@ public:
 
 protected:
   float fovY;
-  float near1;
-  float far1;
+  float near_;
+  float far_;
   unsigned int screenWidth;
   unsigned int screenHeight;
   Projection projType;
