@@ -1,2 +1,3 @@
-/OpenGL/Debug/*
-/OpenGL/Release/*
+OpenGL/Debug
+OpenGL/Release
+.vs
