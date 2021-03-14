@@ -54,20 +54,29 @@ int main(int argc, char* argv[]) {
     glClearColor(0.0, 0.0, 0.0, 1.0); //Full Black
 
     // Postion of Vertices
-    float positions[]{
-    -0.5f, -0.5f,
-     0.0f,  0.5f,
-     0.5f, -0.5f
+    float Positions[]{
+    -1.0, -1.0, 0.0,
+     1.0, -1.0, 0.0,
+     0.0, 1.0, 0.0
+    };
+
+    float Color[] =
+    { -1.0, -1.0, 1.0,
+     1.0, -1.0, 1.0,
+     1.0, 1.0, -1.0
     };
 
     // Genrate Buffer to draw the Triangle
     unsigned int buffer;
     glGenBuffers(1, &buffer);
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
-    glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(float), positions, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, 18 * sizeof(float), NULL, GL_DYNAMIC_DRAW);
 
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, (const void*)0);
-    glEnableVertexAttribArray(0);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, 9 * sizeof(float), Positions);
+    glBufferSubData(GL_ARRAY_BUFFER, 9 * sizeof(float), 9 * sizeof(float), Color);
+
+
+    // Close Buffer
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     Shader shader("src/shader/simple.vert", "src/shader/simple.frag");
@@ -107,15 +116,30 @@ int main(int argc, char* argv[]) {
         // Clear Screen
         glClear(GL_COLOR_BUFFER_BIT);
 
-
         shader.activate();
-        camera.rotate({1, 0, 0});
+        camera.rotate({0, 1, 0});
         camera.activate();
 
-        // Draw the Holy Triangle
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glUseProgram(shader.program);
+        { 
+            glBindBuffer(GL_ARRAY_BUFFER, buffer);
+            //Work with vPosition
+            GLint vPosition = shader.getLocation(ShaderLocation::VERTEX_POSITION);
+            glVertexAttribPointer(vPosition, 3, GL_FLOAT, 0, 0, 0);
+            glEnableVertexAttribArray(vPosition);
 
-        glUseProgram(0); //Close the program. This is heavy for the GPU. In reality we do this
+            GLint vColor = shader.getLocation(ShaderLocation::VERTEX_COLOR);
+ 
+            glVertexAttribPointer(vColor, 3, GL_FLOAT, 0, 0, (const void *)(9 * sizeof(float)));
+
+            glEnableVertexAttribArray(vColor); 
+
+            glDrawArrays(GL_TRIANGLES, 0, 3); 
+
+            glBindBuffer(GL_ARRAY_BUFFER, 0); //Close the VBO 
+        }
+        glUseProgram(0); //Close the program
+
 
         //Display on screen (swap the buffer on screen and the buffer you are drawing on)
         SDL_GL_SwapWindow(window);
