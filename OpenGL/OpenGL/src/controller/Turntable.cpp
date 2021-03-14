@@ -81,7 +81,8 @@ void ControllerTurntable::zoom(bool direction) {
 }
 
 glm::vec3 ControllerTurntable::screenToCameraPlane(const Camera &camera, int x, int y) {
-  uint width, height;
+  unsigned int width;
+  unsigned int height;
   camera.getSize(width, height);
 
   glm::vec4 centerProj = camera.projection * camera.view * glm::vec4(camera.center, 1.0);
