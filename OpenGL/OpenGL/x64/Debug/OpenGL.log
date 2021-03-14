@@ -1,0 +1,13 @@
+﻿Application.obj : error LNK2019: unresolved external symbol "public: __cdecl Camera::Camera(unsigned int,unsigned int,struct glm::vec<3,float,0> const &,struct glm::vec<3,float,0> const &,enum Projection)" (??0Camera@@QEAA@IIAEBU?$vec@$02M$0A@@glm@@0W4Projection@@@Z) referenced in function SDL_main
+Application.obj : error LNK2019: unresolved external symbol "public: void __cdecl Camera::activate(void)" (?activate@Camera@@QEAAXXZ) referenced in function SDL_main
+Application.obj : error LNK2019: unresolved external symbol "public: void __cdecl Camera::rotate(struct glm::vec<3,float,0> const &,bool)" (?rotate@Camera@@QEAAXAEBU?$vec@$02M$0A@@glm@@_N@Z) referenced in function SDL_main
+Application.obj : error LNK2019: unresolved external symbol __imp_glewInit referenced in function SDL_main
+Application.obj : error LNK2019: unresolved external symbol "public: __cdecl Shader::Shader(char const *,char const *)" (??0Shader@@QEAA@PEBD0@Z) referenced in function SDL_main
+Application.obj : error LNK2019: unresolved external symbol "public: void __cdecl Shader::activate(void)" (?activate@Shader@@QEAAXXZ) referenced in function SDL_main
+Application.obj : error LNK2019: unresolved external symbol __imp___glewBindBuffer referenced in function SDL_main
+Application.obj : error LNK2019: unresolved external symbol __imp___glewBufferData referenced in function SDL_main
+Application.obj : error LNK2019: unresolved external symbol __imp___glewGenBuffers referenced in function SDL_main
+Application.obj : error LNK2019: unresolved external symbol __imp___glewEnableVertexAttribArray referenced in function SDL_main
+Application.obj : error LNK2019: unresolved external symbol __imp___glewUseProgram referenced in function SDL_main
+Application.obj : error LNK2019: unresolved external symbol __imp___glewVertexAttribPointer referenced in function SDL_main
+C:\Users\houss\source\repos\OopsOverflow\MonCraft\OpenGL\x64\Debug\OpenGL.exe : fatal error LNK1120: 12 unresolved externals

@@ -7,12 +7,12 @@ enum Projection { PROJECTION_ORTHOGRAPHIC,
 
 class Camera {
 public:
-  Camera(uint width, uint height, const glm::vec3 &position,
+  Camera(unsigned int width, unsigned int height, const glm::vec3 &position,
          const glm::vec3 &center, Projection proj = PROJECTION_PERSPECTIVE);
 
   void activate();
 
-  void setSize(uint width, uint height);
+  void setSize(unsigned int width, unsigned int height);
   void setProjectionType(Projection projType);
   void setPosition(const glm::vec3 &position);
   void setLookAt(const glm::vec3 &lookAt);
@@ -25,7 +25,7 @@ public:
   void rotate(const glm::vec3 &rotation, bool localSpace = false);
   void rotatePixels(int x, int y);
 
-  void getSize(uint &width, uint &height) const;
+  void getSize(unsigned int &width, unsigned int &height) const;
   Projection getProjectionType() const;
 
 public:
@@ -36,10 +36,10 @@ public:
 
 protected:
   float fovY;
-  float near;
-  float far;
-  uint screenWidth;
-  uint screenHeight;
+  float near_;
+  float far_;
+  unsigned int screenWidth;
+  unsigned int screenHeight;
   Projection projType;
 
 private:
