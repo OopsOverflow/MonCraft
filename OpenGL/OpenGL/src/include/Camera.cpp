@@ -7,7 +7,7 @@
 
 Camera::Camera(unsigned int width, unsigned int height, const glm::vec3 &position,
                const glm::vec3 &center, Projection projType):
- position(position), center(center), fovY(45.f), near1(0.1f), far1(100.f),
+ position(position), center(center), fovY(45.f), near_(0.1f), far_(100.f),
  screenWidth(width), screenHeight(height), projType(projType)
 {
   glViewport(0, 0, width, height);
@@ -167,6 +167,6 @@ void Camera::computeProjection() {
     // whole scene fits. One can argue that the projection looses precision but
     // I have never seen any artefacts so far. Anyway I haven't understood the
     // precision issues with matrices.
-    projection = glm::infinitePerspective(glm::radians(fovY), aspect, near1);
+    projection = glm::infinitePerspective(glm::radians(fovY), aspect, near_);
   }
 }
