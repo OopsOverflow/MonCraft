@@ -1,9 +1,14 @@
 //SDL Libraries
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_syswm.h>
+#include "Camera.hpp"
+#include "Shader.hpp"
 
+//SDL Libraries
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_syswm.h>
 
-// GLEW Libraries 
+// GLEW Libraries
 #include <GL/glew.h>
 
 #include <iostream>
@@ -21,7 +26,7 @@ int main(int argc, char* argv[]) {
     //Initialize SDL2
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) < 0)
     {
-        ERROR("The initialization of the SDL failed : %s\n", SDL_GetError());
+        // ERROR("The initialization of the SDL failed : %s\n", SDL_GetError());
         return 0;
     }
 
@@ -57,7 +62,7 @@ int main(int argc, char* argv[]) {
      0.0f,  0.5f,
      0.5f, -0.5f
     };
-    
+
     // Genrate Buffer to draw the Triangle
     unsigned int buffer;
     glGenBuffers(1, &buffer);
@@ -68,11 +73,14 @@ int main(int argc, char* argv[]) {
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    // GPU Driver Version 
+    Shader shader("shader/simple.vert", "shader/simple.frag");
+    Camera camera(WIDTH, HEIGHT, {0, 0, 10}, {0, 0, 0});
+
+    // GPU Driver Version
     std::cout << glGetString(GL_VERSION) << std::endl;
 
 
-    // Loop until the user closes the window 
+    // Loop until the user closes the window
     bool isOpened = true;
     while (isOpened)
     {
@@ -101,12 +109,15 @@ int main(int argc, char* argv[]) {
 
         // Clear Screen
         glClear(GL_COLOR_BUFFER_BIT);
-        
+
+        shader.activate();
+        camera.rotate({0, 1, 0});
+        camera.activate();
+
         // Draw the Holy Triangle
         glDrawArrays(GL_TRIANGLES, 0, 3);
-        
-        glUseProgram(0); //Close the program. This is heavy for the GPU. In reality we do this
 
+        glUseProgram(0); //Close the program. This is heavy for the GPU. In reality we do this
 
         //Display on screen (swap the buffer on screen and the buffer you are drawing on)
         SDL_GL_SwapWindow(window);

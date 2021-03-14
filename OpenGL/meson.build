@@ -17,6 +17,8 @@ deps = [
   dependency('glm'),
 ]
 
+install_subdir('OpenGL/src/shader', install_dir : 'shader')
+
 exe = executable(
   'MonCraft', srcs,
   dependencies : deps
