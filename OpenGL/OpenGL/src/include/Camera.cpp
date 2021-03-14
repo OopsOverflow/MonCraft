@@ -5,10 +5,11 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 
-Camera::Camera(uint width, uint height, const glm::vec3 &position,
-               const glm::vec3 &center, Projection projType)
-    : position(position), center(center), fovY(45.f), near(0.1f), far(100.f),
-      screenWidth(width), screenHeight(height), projType(projType) {
+Camera::Camera(unsigned int width, unsigned int height, const glm::vec3 &position,
+               const glm::vec3 &center, Projection projType):
+ position(position), center(center), fovY(45.f), near1(0.1f), far1(100.f),
+ screenWidth(width), screenHeight(height), projType(projType)
+{
   glViewport(0, 0, width, height);
   computeView();
   computeProjection();
@@ -70,7 +71,7 @@ void Camera::rotate(const glm::vec3 &rotation, bool localSpace) {
   computeView();
 }
 
-void Camera::setSize(uint width, uint height) {
+void Camera::setSize(unsigned int width, unsigned int height) {
   screenWidth = width;
   screenHeight = height;
   glViewport(0, 0, width, height);
@@ -133,7 +134,7 @@ void Camera::rotatePixels(int x, int y) {
 
 // ----------- getters -----------
 
-void Camera::getSize(uint &width, uint &height) const {
+void Camera::getSize(unsigned int &width, unsigned int &height) const {
   width = screenWidth;
   height = screenHeight;
 }
@@ -166,6 +167,6 @@ void Camera::computeProjection() {
     // whole scene fits. One can argue that the projection looses precision but
     // I have never seen any artefacts so far. Anyway I haven't understood the
     // precision issues with matrices.
-    projection = glm::infinitePerspective(glm::radians(fovY), aspect, near);
+    projection = glm::infinitePerspective(glm::radians(fovY), aspect, near1);
   }
 }

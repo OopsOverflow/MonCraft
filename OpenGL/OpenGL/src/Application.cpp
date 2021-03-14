@@ -4,9 +4,6 @@
 #include "Camera.hpp"
 #include "Shader.hpp"
 
-//SDL Libraries
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_syswm.h>
 
 // GLEW Libraries
 #include <GL/glew.h>
