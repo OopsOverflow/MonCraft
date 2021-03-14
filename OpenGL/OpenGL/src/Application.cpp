@@ -70,7 +70,7 @@ int main(int argc, char* argv[]) {
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    Shader shader("shader/simple.vert", "shader/simple.frag");
+    Shader shader("src/shader/simple.vert", "src/shader/simple.frag");
     Camera camera(WIDTH, HEIGHT, {0, 0, 10}, {0, 0, 0});
 
     // GPU Driver Version
@@ -107,8 +107,9 @@ int main(int argc, char* argv[]) {
         // Clear Screen
         glClear(GL_COLOR_BUFFER_BIT);
 
+
         shader.activate();
-        camera.rotate({0, 1, 0});
+        camera.rotate({1, 0, 0});
         camera.activate();
 
         // Draw the Holy Triangle
