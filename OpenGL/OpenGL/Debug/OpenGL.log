@@ -1,2 +1,4 @@
 ﻿  Application.cpp
+W:\Dev\Graphics\OpenGL\OpenGL\src\Application.cpp(24,9): warning C4353: nonstandard extension used: constant 0 as function expression.  Use '__noop' function intrinsic instead
+W:\Dev\Graphics\OpenGL\OpenGL\src\Application.cpp(119,41): warning C4244: 'argument': conversion from 'double' to 'Uint32', possible loss of data
   OpenGL.vcxproj -> W:\Dev\Graphics\OpenGL\Debug\OpenGL.exe
