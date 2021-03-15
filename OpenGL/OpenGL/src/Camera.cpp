@@ -99,7 +99,7 @@ void Camera::translatePixels(int x, int y) {
 
 void Camera::zoom(float factor) {
   glm::vec3 translation = center - position;
-  float coef = 1.f - 1.f / pow(2, factor);
+  float coef = 1.f - 1.f / (float)pow(2, factor);
   translation *= coef;
 
   glm::mat4 trans(1.f);
@@ -108,7 +108,7 @@ void Camera::zoom(float factor) {
   position += translation;
   view = view * trans;
 
-  if (projType == PROJECTION_ORTHOGRAPHIC) {
+  if (projType == Projection::PROJECTION_ORTHOGRAPHIC) {
     computeProjection();
   }
 }
@@ -155,14 +155,14 @@ void Camera::computeView() {
 void Camera::computeProjection() {
   float aspect = (float)screenWidth / (float)screenHeight;
 
-  if (projType == PROJECTION_ORTHOGRAPHIC) {
+  if (projType == Projection::PROJECTION_ORTHOGRAPHIC) {
     // kind of perspective division... To switch between persp & ortho.
     float y = glm::length(center - position) * tan(glm::radians(fovY / 2.f));
     float x = y * aspect;
     projection = glm::ortho(-x, x, -y, y, -1000.f, 1000.f);
   }
 
-  else if (projType == PROJECTION_PERSPECTIVE) {
+  else if (projType == Projection::PROJECTION_PERSPECTIVE) {
     // COMBAK: Here I am using a far plane at infinity to make sure the
     // whole scene fits. One can argue that the projection looses precision but
     // I have never seen any artefacts so far. Anyway I haven't understood the

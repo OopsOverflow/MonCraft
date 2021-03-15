@@ -2,13 +2,13 @@
 
 #include <glm/glm.hpp>
 
-enum Projection { PROJECTION_ORTHOGRAPHIC,
+enum class Projection { PROJECTION_ORTHOGRAPHIC,
                   PROJECTION_PERSPECTIVE };
 
 class Camera {
 public:
-  Camera(unsigned int width, unsigned int height, const glm::vec3 &position,
-         const glm::vec3 &center, Projection proj = PROJECTION_PERSPECTIVE);
+    Camera(unsigned int width, unsigned int height, const glm::vec3& position,
+        const glm::vec3& center, Projection proj = Projection::PROJECTION_PERSPECTIVE);
 
   void activate();
 

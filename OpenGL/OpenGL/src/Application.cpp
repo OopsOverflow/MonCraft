@@ -8,7 +8,7 @@
 #define WIDTH     800
 #define HEIGHT    600
 #define FRAMERATE 60
-#define TIME_PER_FRAME_MS  (1.0f/FRAMERATE * 1e3)
+#define TIME_PER_FRAME_MS  (unsigned int)(1.0f/FRAMERATE * 1e3)
 #define INDICE_TO_PTR(x) ((void*)(x))
 
 GLuint initHolyTriangle(Shader& shader) {
