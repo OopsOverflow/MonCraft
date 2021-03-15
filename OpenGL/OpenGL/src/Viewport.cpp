@@ -60,28 +60,28 @@ Viewport::~Viewport() {
         SDL_DestroyWindow(window);
 }
 
-void Viewport::on_event(SDL_Event *e) {
-  switch (e->type) {
+void Viewport::on_event(SDL_Event const& e) {
+  switch (e.type) {
   case SDL_WINDOWEVENT:
-    on_window_event(&e->window);
+    on_window_event(e.window);
     break;
   case SDL_KEYDOWN:
-    on_keydown(e->key.keysym.sym);
+    on_keydown(e.key.keysym.sym);
     break;
   case SDL_KEYUP:
-    on_keyup(e->key.keysym.sym);
+    on_keyup(e.key.keysym.sym);
     break;
   case SDL_MOUSEMOTION:
-    turntable.motion(e->motion.x, e->motion.y);
+    turntable.motion(e.motion.x, e.motion.y);
     break;
   case SDL_MOUSEBUTTONDOWN:
-    on_mousedown(&e->button);
+    on_mousedown(e.button);
     break;
   case SDL_MOUSEBUTTONUP:
-    on_mouseup(&e->button);
+    on_mouseup(e.button);
     break;
   case SDL_MOUSEWHEEL:
-    turntable.zoom(e->wheel.y > 0 ? true : false);
+    turntable.zoom(e.wheel.y > 0 ? true : false);
     break;
   }
 }
@@ -92,7 +92,7 @@ bool Viewport::beginFrame() {
     if(event.type == SDL_WINDOWEVENT)
       if(event.window.event == SDL_WINDOWEVENT_CLOSE)
         return false;
-    on_event(&event);
+    on_event(event);
   }
 
   fps.apply(camera);
@@ -106,11 +106,11 @@ void Viewport::endFrame() {
   SDL_GL_SwapWindow(window);
 }
 
-void Viewport::on_window_event(SDL_WindowEvent *e) {
-  switch (e->event) {
+void Viewport::on_window_event(SDL_WindowEvent const& e) {
+  switch (e.event) {
   case SDL_WINDOWEVENT_SIZE_CHANGED:
-    width = e->data1;
-    height = e->data2;
+    width = e.data1;
+    height = e.data2;
     camera.setSize(width, height);
     break;
   }
@@ -162,26 +162,26 @@ void Viewport::on_keyup(SDL_Keycode k) {
   }
 }
 
-void Viewport::on_mousedown(SDL_MouseButtonEvent *e) {
-  switch (e->button) {
+void Viewport::on_mousedown(SDL_MouseButtonEvent const& e) {
+  switch (e.button) {
   case SDL_BUTTON_LEFT:
-    turntable.rotateStart(e->x, e->y);
+    turntable.rotateStart(e.x, e.y);
     break;
   case SDL_BUTTON_RIGHT:
-    turntable.translateStart(e->x, e->y);
+    turntable.translateStart(e.x, e.y);
     break;
   default:
     break;
   }
 }
 
-void Viewport::on_mouseup(SDL_MouseButtonEvent *e) {
-  switch (e->button) {
+void Viewport::on_mouseup(SDL_MouseButtonEvent const& e) {
+  switch (e.button) {
   case SDL_BUTTON_LEFT:
-    turntable.rotateEnd(e->x, e->y);
+    turntable.rotateEnd(e.x, e.y);
     break;
   case SDL_BUTTON_RIGHT:
-    turntable.translateEnd(e->x, e->y);
+    turntable.translateEnd(e.x, e.y);
     break;
   default:
     break;

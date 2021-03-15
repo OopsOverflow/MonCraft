@@ -25,12 +25,12 @@ public:
   size_t height;
 
 private:
-  void on_event(SDL_Event *e);
-  void on_window_event(SDL_WindowEvent *e);
+  void on_event(SDL_Event const& e);
+  void on_window_event(SDL_WindowEvent const& e);
   void on_keydown(SDL_Keycode k);
   void on_keyup(SDL_Keycode k);
-  void on_mousedown(SDL_MouseButtonEvent* e);
-  void on_mouseup(SDL_MouseButtonEvent* e);
+  void on_mousedown(SDL_MouseButtonEvent const& e);
+  void on_mouseup(SDL_MouseButtonEvent const& e);
 
   SDL_Window* window;
   SDL_GLContext context;
