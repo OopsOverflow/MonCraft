@@ -4,6 +4,7 @@ srcs = files(
   'OpenGL/src/Application.cpp',
   'OpenGL/src/Shader.cpp',
   'OpenGL/src/Camera.cpp',
+  'OpenGL/src/Viewport.cpp',
   'OpenGL/src/controller/FPS.cpp',
   'OpenGL/src/controller/Turntable.cpp',
 )
@@ -17,9 +18,12 @@ deps = [
   dependency('glm'),
 ]
 
-install_subdir('OpenGL/src/shader', install_dir : 'shader')
+incs = include_directories('OpenGL/src/include')
+
+# install_subdir('OpenGL/src/shader', install_dir : 'shader')
 
 exe = executable(
   'MonCraft', srcs,
-  dependencies : deps
+  dependencies: deps,
+  include_directories: incs
 )

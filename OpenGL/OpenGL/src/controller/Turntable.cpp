@@ -1,10 +1,11 @@
-#include "Turntable.hpp"
+#include "controller/Turntable.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 
 ControllerTurntable::ControllerTurntable() {
-  lastX = lastY = 0;
+  lastX = lastY = deltaX = deltaY = 0;
+  speed = 0.f;
   translation = false;
   rotation = false;
   zoomFactor = 0;
@@ -74,14 +75,15 @@ void ControllerTurntable::apply(Camera &camera) {
 
 void ControllerTurntable::zoom(bool direction) {
   if (!translation && !rotation) {
-    float zoomDelta = .1;
+    float zoomDelta = .1f;
 
     zoomFactor += zoomDelta * (direction ? 1 : -1);
   }
 }
 
 glm::vec3 ControllerTurntable::screenToCameraPlane(const Camera &camera, int x, int y) {
-  uint width, height;
+  unsigned int width;
+  unsigned int height;
   camera.getSize(width, height);
 
   glm::vec4 centerProj = camera.projection * camera.view * glm::vec4(camera.center, 1.0);

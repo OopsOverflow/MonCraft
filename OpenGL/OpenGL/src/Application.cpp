@@ -1,148 +1,73 @@
-//SDL Libraries
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_syswm.h>
-#include "Camera.hpp"
-#include "Shader.hpp"
-
-
-// GLEW Libraries
-#include <GL/glew.h>
-
 #include <iostream>
+#include <memory>
+
+#include "Shader.hpp"
+#include "Viewport.hpp"
 
 // WINDOW DIMENSIONS
 #define WIDTH     800
 #define HEIGHT    600
 #define FRAMERATE 60
-#define TIME_PER_FRAME_MS  (1.0f/FRAMERATE * 1e3)
+#define TIME_PER_FRAME_MS  (unsigned int)(1.0f/FRAMERATE * 1e3)
 #define INDICE_TO_PTR(x) ((void*)(x))
 
-int main(int argc, char* argv[]) {
+GLuint initHolyTriangle(Shader& shader) {
 
-
-    //Initialize SDL2
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) < 0)
-    {
-        // ERROR("The initialization of the SDL failed : %s\n", SDL_GetError());
-        return 0;
-    }
-
-    //Create a Window
-    SDL_Window* window = SDL_CreateWindow("MonCraft",                           //Titre
-        SDL_WINDOWPOS_UNDEFINED,               //X Position
-        SDL_WINDOWPOS_UNDEFINED,               //Y Position
-        WIDTH, HEIGHT,                         //Resolution
-        SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN); //Flags (OpenGL + Show)
-
-
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
-
-    //Initialize the OpenGL Context
-    SDL_GLContext context = SDL_GL_CreateContext(window);
-
-    //Check GLEW Intitialisation
-    if (glewInit() != GLEW_OK) {
-        std::cout << "GLEW Error" << std::endl;
-    }
-
-
-    //Start using OpenGL to draw something on screen
-    glViewport(0, 0, WIDTH, HEIGHT); //Draw on ALL the screen
-
-    //The OpenGL background color (RGBA, each component between 0.0f and 1.0f)
-    glClearColor(0.0, 0.0, 0.0, 1.0); //Full Black
-
-    // Postion of Vertices
-    float Positions[]{
-    -1.0, -1.0, 0.0,
-     1.0, -1.0, 0.0,
-     0.0, 1.0, 0.0
+    float Positions[] = { // Postion of Vertices
+      -1.0, -1.0, 0.0,
+       1.0, -1.0, 0.0,
+       0.0, 1.0, 0.0
     };
 
-    float Color[] =
-    { -1.0, -1.0, 1.0,
-     1.0, -1.0, 1.0,
-     1.0, 1.0, -1.0
+    float Color[] = {
+      -1.0, -1.0, 1.0,
+       1.0, -1.0, 1.0,
+       1.0, 1.0, -1.0
     };
 
     // Genrate Buffer to draw the Triangle
     unsigned int buffer;
     glGenBuffers(1, &buffer);
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
-    glBufferData(GL_ARRAY_BUFFER, 18 * sizeof(float), NULL, GL_DYNAMIC_DRAW);
+    {
+        glBufferData(GL_ARRAY_BUFFER, 18 * sizeof(float), NULL, GL_DYNAMIC_DRAW);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, 9 * sizeof(float), Positions);
+        glBufferSubData(GL_ARRAY_BUFFER, 9 * sizeof(float), 9 * sizeof(float), Color);
 
-    glBufferSubData(GL_ARRAY_BUFFER, 0, 9 * sizeof(float), Positions);
-    glBufferSubData(GL_ARRAY_BUFFER, 9 * sizeof(float), 9 * sizeof(float), Color);
+        GLint vPosition = shader.getLocation(ShaderLocation::VERTEX_POSITION);
+        glVertexAttribPointer(vPosition, 3, GL_FLOAT, 0, 0, 0);
+        glEnableVertexAttribArray(vPosition);
 
-
-    // Close Buffer
+        GLint vColor = shader.getLocation(ShaderLocation::VERTEX_COLOR);
+        glVertexAttribPointer(vColor, 3, GL_FLOAT, 0, 0, (const void *)(9 * sizeof(float)));
+        glEnableVertexAttribArray(vColor);
+    }
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+    return buffer;
+}
+
+int main(int argc, char* argv[]) {
+
+    Viewport window(WIDTH, HEIGHT);
     Shader shader("src/shader/simple.vert", "src/shader/simple.frag");
-    Camera camera(WIDTH, HEIGHT, {0, 0, 10}, {0, 0, 0});
+    GLuint buffer = initHolyTriangle(shader); // TODO: delete vao / vbo in the end
 
-    // GPU Driver Version
-    std::cout << glGetString(GL_VERSION) << std::endl;
-
-
-    // Loop until the user closes the window
-    bool isOpened = true;
-    while (isOpened)
-    {
+    while (window.beginFrame()) {
         //Time in ms telling us when this frame started. Useful for keeping a fix framerate
         uint32_t timeBegin = SDL_GetTicks();
 
-        //Fetch the SDL events
-        SDL_Event event;
-        while (SDL_PollEvent(&event))
-        {
-            switch (event.type)
-            {
-            case SDL_WINDOWEVENT:
-                switch (event.window.event)
-                {
-                case SDL_WINDOWEVENT_CLOSE:
-                    isOpened = false;
-                    break;
-                default:
-                    break;
-                }
-                break;
-                //We can add more event, like listening for the keyboard or the mouse. See SDL_Event documentation for more details
-            }
-        }
-
-        // Clear Screen
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT); // Clear Screen
 
         shader.activate();
-        camera.rotate({0, 1, 0});
-        camera.activate();
+        window.camera.activate();
 
-        glUseProgram(shader.program);
-        { 
-            glBindBuffer(GL_ARRAY_BUFFER, buffer);
-            //Work with vPosition
-            GLint vPosition = shader.getLocation(ShaderLocation::VERTEX_POSITION);
-            glVertexAttribPointer(vPosition, 3, GL_FLOAT, 0, 0, 0);
-            glEnableVertexAttribArray(vPosition);
+        // actually draw the Holy Triangle
+        glBindBuffer(GL_ARRAY_BUFFER, buffer);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-            GLint vColor = shader.getLocation(ShaderLocation::VERTEX_COLOR);
- 
-            glVertexAttribPointer(vColor, 3, GL_FLOAT, 0, 0, (const void *)(9 * sizeof(float)));
-
-            glEnableVertexAttribArray(vColor); 
-
-            glDrawArrays(GL_TRIANGLES, 0, 3); 
-
-            glBindBuffer(GL_ARRAY_BUFFER, 0); //Close the VBO 
-        }
-        glUseProgram(0); //Close the program
-
-
-        //Display on screen (swap the buffer on screen and the buffer you are drawing on)
-        SDL_GL_SwapWindow(window);
+        window.endFrame();
 
         //Time in ms telling us when this frame ended. Useful for keeping a fix framerate
         uint32_t timeEnd = SDL_GetTicks();
@@ -152,12 +77,5 @@ int main(int argc, char* argv[]) {
             SDL_Delay(TIME_PER_FRAME_MS - (timeEnd - timeBegin));
     }
 
-    //Free everything
-    if (context != NULL)
-        SDL_GL_DeleteContext(context);
-    if (window != NULL)
-        SDL_DestroyWindow(window);
-
     return 0;
-
 }

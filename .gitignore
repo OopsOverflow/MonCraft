@@ -3,3 +3,5 @@ OpenGL/Release
 .clang-format
 .vs
 makefile
+compile_commands.json
+.cache
