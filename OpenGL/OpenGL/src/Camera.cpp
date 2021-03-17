@@ -50,6 +50,8 @@ void Camera::translate(const glm::vec3 &translation, bool localSpace) {
     position += translation;
     center += translation;
   }
+
+  std::cout << "Camera Pos " << position.x << ", " << position.y << ", " << position.z << std::endl;
 }
 
 void Camera::rotate(const glm::vec3 &rotation, bool localSpace) {

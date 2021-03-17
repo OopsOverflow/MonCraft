@@ -3,7 +3,7 @@
 using namespace std::chrono;
 
 ControllerFPS::ControllerFPS() {
-  speed = 10.f;
+  speed = 2.f;
   timer = steady_clock::now();
   direction = glm::vec3(0.f);
 }
