@@ -73,8 +73,9 @@ void ControllerFPS::apply(Camera &camera) {
   auto elapsed = duration_cast<milliseconds>(cur_timer - timer).count();
   timer = cur_timer;
 
-  float translate_amount = -speed * elapsed * 1e-3f;
+  float translate_amount = speed * elapsed * 1e-3f;
   translate_amount *= 1 + glm::length(camera.position - camera.center);
 
-  camera.translate(normalizeOrZero(direction) * glm::vec3(translate_amount), true);
+  camera.translate(normalizeOrZero({0, direction.y, 0}) * glm::vec3(translate_amount), false);
+  camera.translate(normalizeOrZero({direction.x, 0, direction.z}) * glm::vec3(translate_amount), true);
 }
