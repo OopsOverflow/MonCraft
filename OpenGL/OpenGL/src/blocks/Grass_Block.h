@@ -8,9 +8,9 @@ class Grass_Block : public Block
 public:
     Grass_Block();
 
-    std::vector<GLfloat> getSideTxrCoords();
-    std::vector<GLfloat> getTopTxrCoords();
-    std::vector<GLfloat> getBottomTxrCoords();
+    std::vector<GLfloat> getSideTexCoords() const override;
+    std::vector<GLfloat> getTopTexCoords() const override;
+    std::vector<GLfloat> getBottomTexCoords() const override;
 
 };
 
