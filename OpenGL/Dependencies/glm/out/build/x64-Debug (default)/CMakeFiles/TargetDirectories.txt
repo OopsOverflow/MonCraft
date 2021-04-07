@@ -1,0 +1,4 @@
+C:/Users/houss/source/repos/OopsOverflow/MonCraft/OpenGL/Dependencies/glm/out/build/x64-Debug (default)/CMakeFiles/edit_cache.dir
+C:/Users/houss/source/repos/OopsOverflow/MonCraft/OpenGL/Dependencies/glm/out/build/x64-Debug (default)/CMakeFiles/glm_static.dir
+C:/Users/houss/source/repos/OopsOverflow/MonCraft/OpenGL/Dependencies/glm/out/build/x64-Debug (default)/CMakeFiles/glm_shared.dir
+C:/Users/houss/source/repos/OopsOverflow/MonCraft/OpenGL/Dependencies/glm/out/build/x64-Debug (default)/CMakeFiles/rebuild_cache.dir
