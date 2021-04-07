@@ -5,7 +5,7 @@ Dirt_Block::Dirt_Block()
 {}
 
 //Texture
-std::vector<GLfloat> Dirt_Block::getSideTextureCoords()
+std::vector<GLfloat> Dirt_Block::getSideTxrCoords()
 {
     static const std::vector<GLfloat> sideTextures =
     {
@@ -14,7 +14,7 @@ std::vector<GLfloat> Dirt_Block::getSideTextureCoords()
 
     return sideTextures;
 }
-std::vector<GLfloat> Dirt_Block::getTopTextureCoords()
+std::vector<GLfloat> Dirt_Block::getTopTxrCoords()
 {
     static const std::vector<GLfloat> topTextures =
     {
@@ -23,7 +23,7 @@ std::vector<GLfloat> Dirt_Block::getTopTextureCoords()
     return topTextures;
 }
 
-std::vector<GLfloat> Dirt_Block::getBottomTextureCoords()
+std::vector<GLfloat> Dirt_Block::getBottomTxrCoords()
 {
     static const std::vector<GLfloat> bottomTextures =
     {
