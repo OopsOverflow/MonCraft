@@ -1,6 +1,6 @@
 #include "Grass_Block.h"
 
-std::vector<GLfloat> Grass_Block::getSideTxrCoords()
+std::vector<GLfloat> Grass_Block::getSideTexCoords() const
 {
     static const std::vector<GLfloat> sideTextures =
     {
@@ -9,7 +9,7 @@ std::vector<GLfloat> Grass_Block::getSideTxrCoords()
 
     return sideTextures;
 }
-std::vector<GLfloat> Grass_Block::getTopTxrCoords()
+std::vector<GLfloat> Grass_Block::getTopTexCoords() const
 {
     static const std::vector<GLfloat> topTextures =
     {
@@ -19,7 +19,7 @@ std::vector<GLfloat> Grass_Block::getTopTxrCoords()
     return topTextures;
 }
 
-std::vector<GLfloat> Grass_Block::getBottomTxrCoords()
+std::vector<GLfloat> Grass_Block::getBottomTexCoords() const
 {
     static const std::vector<GLfloat> bottomTextures =
     {

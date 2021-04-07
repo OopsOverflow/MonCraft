@@ -21,9 +21,9 @@ public:
 
     const Block_Type type;
 
-    virtual std::vector<GLfloat> getSideTxrCoords() const { return { 0 }; }
-    virtual std::vector<GLfloat> getTopTxrCoords() const { return { 0 }; }
-    virtual std::vector<GLfloat> getBottomTxrCoords() const { return { 0 }; }
+    virtual std::vector<GLfloat> getSideTexCoords() const = 0;
+    virtual std::vector<GLfloat> getTopTexCoords() const = 0;
+    virtual std::vector<GLfloat> getBottomTexCoords() const = 0;
 
 };
 

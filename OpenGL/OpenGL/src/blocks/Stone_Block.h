@@ -8,9 +8,9 @@ class Stone_Block : public Block
 public:
     Stone_Block();
 
-    std::vector<GLfloat> getSideTxrCoords();
-    std::vector<GLfloat> getTopTxrCoords();
-    std::vector<GLfloat> getBottomTxrCoords();
+    std::vector<GLfloat> getSideTexCoords() const override;
+    std::vector<GLfloat> getTopTexCoords() const override;
+    std::vector<GLfloat> getBottomTexCoords() const override;
 
 };
 

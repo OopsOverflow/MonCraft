@@ -5,7 +5,7 @@ Stone_Block::Stone_Block()
 {}
 
 
-std::vector<GLfloat> Stone_Block::getSideTxrCoords()
+std::vector<GLfloat> Stone_Block::getSideTexCoords() const
 {
     static const std::vector<GLfloat> sideTextures =
     {
@@ -14,7 +14,7 @@ std::vector<GLfloat> Stone_Block::getSideTxrCoords()
 
     return sideTextures;
 }
-std::vector<GLfloat> Stone_Block::getTopTxrCoords()
+std::vector<GLfloat> Stone_Block::getTopTexCoords() const
 {
     static const std::vector<GLfloat> sideTextures =
     {
@@ -24,7 +24,7 @@ std::vector<GLfloat> Stone_Block::getTopTxrCoords()
     return sideTextures;
 }
 
-std::vector<GLfloat> Stone_Block::getBottomTxrCoords()
+std::vector<GLfloat> Stone_Block::getBottomTexCoords() const
 {
     static const std::vector<GLfloat> sideTextures =
     {
