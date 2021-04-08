@@ -117,7 +117,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\SDL2\lib\x86;$(SolutionDir)Dependencies\GLEW\lib\Release\Win32</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;User32.lib;Gdi32.lib;Shell32.lib;glew32s.lib;SDL2.lib;SDL2main.lib;SDL2test.lib</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;User32.lib;Gdi32.lib;Shell32.lib;glew32s.lib;SDL2.lib;SDL2main.lib;SDL2test.lib;SDL2_image.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -155,10 +155,12 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\SDL2\lib\x86;$(SolutionDir)Dependencies\GLEW\lib\Release\Win32</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;User32.lib;Gdi32.lib;Shell32.lib;glew32s.lib;SDL2.lib;SDL2main.lib;SDL2test.lib</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;User32.lib;Gdi32.lib;Shell32.lib;glew32s.lib;SDL2.lib;SDL2main.lib;SDL2test.lib;SDL2_image.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\util\mesh.cpp" />
+    <ClCompile Include="src\util\loader.cpp" />
     <ClCompile Include="src\blocks\Dirt_Block.cpp" />
     <ClCompile Include="src\blocks\Grass_Block.cpp" />
     <ClCompile Include="src\blocks\Block.cpp" />
@@ -171,6 +173,8 @@
     <ClCompile Include="src\blocks\Stone_Block.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\util\mesh.hpp" />
+    <ClInclude Include="src\util\loader.hpp" />
     <ClInclude Include="src\blocks\Block.h" />
     <ClInclude Include="src\blocks\Dirt_Block.h" />
     <ClInclude Include="src\blocks\Grass_Block.h" />

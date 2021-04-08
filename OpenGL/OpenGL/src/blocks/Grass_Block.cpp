@@ -4,7 +4,12 @@ std::vector<GLfloat> Grass_Block::getSideTexCoords() const
 {
     static const std::vector<GLfloat> sideTextures =
     {
-        // TODO
+        0.25, 0,
+        0.50, 0,
+        0.50, 1,
+        0.50, 1,
+        0.25, 1,
+        0.25, 0
     };
 
     return sideTextures;
@@ -13,7 +18,12 @@ std::vector<GLfloat> Grass_Block::getTopTexCoords() const
 {
     static const std::vector<GLfloat> topTextures =
     {
-        // TODO
+        0.00, 0,
+        0.25, 0,
+        0.25, 1,
+        0.25, 1,
+        0.00, 1,
+        0.00, 0
     };
 
     return topTextures;
@@ -23,7 +33,12 @@ std::vector<GLfloat> Grass_Block::getBottomTexCoords() const
 {
     static const std::vector<GLfloat> bottomTextures =
     {
-        // TODO
+        0.50, 0,
+        0.75, 0,
+        0.75, 1,
+        0.75, 1,
+        0.50, 1,
+        0.50, 0
     };
 
     return bottomTextures;
