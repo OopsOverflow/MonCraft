@@ -50,7 +50,10 @@ const int p[] = {
     115, 121, 50, 45, 127, 4, 150, 254, 138, 236, 205, 93, 222, 114, 67, 29,
     24, 72, 243, 141, 128, 195, 78, 66, 215, 61, 156, 180};
 
-SimplexNoise::SimplexNoise() {}
+SimplexNoise::SimplexNoise()
+    : gradP(),
+      perm()
+{}
 
 void SimplexNoise::seed(int seed)
 {
@@ -89,8 +92,8 @@ float lerp(float a, float b, float t)
 float SimplexNoise::perlin2(float x, float y)
 {
   // Find unit grid cell containing point
-  int X = floor(x);
-  int Y = floor(y);
+  int X = (int)floor(x);
+  int Y = (int)floor(y);
   // Get relative xy coordinates of point within that cell
   x = x - X;
   y = y - Y;
@@ -117,9 +120,9 @@ float SimplexNoise::perlin2(float x, float y)
 float SimplexNoise::perlin3(float x, float y, float z)
 {
   // Find unit grid cell containing point
-  int X = floor(x);
-  int Y = floor(y);
-  int Z = floor(z);
+  int X = (int)floor(x);
+  int Y = (int)floor(y);
+  int Z = (int)floor(z);
   // Get relative xyz coordinates of point within that cell
   x = x - X;
   y = y - Y;
@@ -160,8 +163,8 @@ float SimplexNoise::simplex2(float xin, float yin)
   float n0, n1, n2; // Noise contributions from the three corners
   // Skew the input space to determine which simplex cell we're in
   float s = (xin + yin) * F2; // Hairy factor for 2D
-  int i = floor(xin + s);
-  int j = floor(yin + s);
+  int i = (int)floor(xin + s);
+  int j = (int)floor(yin + s);
   float t = (i + j) * G2;
   float x0 = xin - i + t; // The x,y distances from the cell origin, unskewed.
   float y0 = yin - j + t;
@@ -192,7 +195,7 @@ float SimplexNoise::simplex2(float xin, float yin)
   Grad gi1 = gradP[i + i1 + perm[j + j1]];
   Grad gi2 = gradP[i + 1 + perm[j + 1]];
   // Calculate the contribution from the three corners
-  float t0 = 0.5 - x0 * x0 - y0 * y0;
+  float t0 = 0.5f - x0 * x0 - y0 * y0;
   if (t0 < 0)
   {
     n0 = 0;
@@ -202,7 +205,7 @@ float SimplexNoise::simplex2(float xin, float yin)
     t0 *= t0;
     n0 = t0 * t0 * gi0.dot2(x0, y0); // (x,y) of grad3 used for 2D gradient
   }
-  float t1 = 0.5 - x1 * x1 - y1 * y1;
+  float t1 = 0.5f - x1 * x1 - y1 * y1;
   if (t1 < 0)
   {
     n1 = 0;
@@ -212,7 +215,7 @@ float SimplexNoise::simplex2(float xin, float yin)
     t1 *= t1;
     n1 = t1 * t1 * gi1.dot2(x1, y1);
   }
-  float t2 = 0.5 - x2 * x2 - y2 * y2;
+  float t2 = 0.5f - x2 * x2 - y2 * y2;
   if (t2 < 0)
   {
     n2 = 0;
@@ -233,9 +236,9 @@ float SimplexNoise::simplex3(float xin, float yin, float zin)
 
   // Skew the input space to determine which simplex cell we're in
   float s = (xin + yin + zin) * F3; // Hairy factor for 2D
-  int i = floor(xin + s);
-  int j = floor(yin + s);
-  int k = floor(zin + s);
+  int i = (int)floor(xin + s);
+  int j = (int)floor(yin + s);
+  int k = (int)floor(zin + s);
 
   float t = (i + j + k) * G3;
   float x0 = xin - i + t; // The x,y distances from the cell origin, unskewed.
@@ -332,7 +335,7 @@ float SimplexNoise::simplex3(float xin, float yin, float zin)
   Grad gi3 = gradP[i + 1 + perm[j + 1 + perm[k + 1]]];
 
   // Calculate the contribution from the four corners
-  float t0 = 0.6 - x0 * x0 - y0 * y0 - z0 * z0;
+  float t0 = 0.6f - x0 * x0 - y0 * y0 - z0 * z0;
   if (t0 < 0)
   {
     n0 = 0;
@@ -342,7 +345,7 @@ float SimplexNoise::simplex3(float xin, float yin, float zin)
     t0 *= t0;
     n0 = t0 * t0 * gi0.dot3(x0, y0, z0); // (x,y) of grad3 used for 2D gradient
   }
-  float t1 = 0.6 - x1 * x1 - y1 * y1 - z1 * z1;
+  float t1 = 0.6f - x1 * x1 - y1 * y1 - z1 * z1;
   if (t1 < 0)
   {
     n1 = 0;
@@ -352,7 +355,7 @@ float SimplexNoise::simplex3(float xin, float yin, float zin)
     t1 *= t1;
     n1 = t1 * t1 * gi1.dot3(x1, y1, z1);
   }
-  float t2 = 0.6 - x2 * x2 - y2 * y2 - z2 * z2;
+  float t2 = 0.6f - x2 * x2 - y2 * y2 - z2 * z2;
   if (t2 < 0)
   {
     n2 = 0;
@@ -362,7 +365,7 @@ float SimplexNoise::simplex3(float xin, float yin, float zin)
     t2 *= t2;
     n2 = t2 * t2 * gi2.dot3(x2, y2, z2);
   }
-  float t3 = 0.6 - x3 * x3 - y3 * y3 - z3 * z3;
+  float t3 = 0.6f - x3 * x3 - y3 * y3 - z3 * z3;
   if (t3 < 0)
   {
     n3 = 0;

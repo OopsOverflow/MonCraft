@@ -159,6 +159,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\noise\bitmapTex.cpp" />
+    <ClCompile Include="src\noise\simplex.cpp" />
+    <ClCompile Include="src\noise\value.cpp" />
+    <ClCompile Include="src\noise\voronoi.cpp" />
     <ClCompile Include="src\util\mesh.cpp" />
     <ClCompile Include="src\util\loader.cpp" />
     <ClCompile Include="src\blocks\Dirt_Block.cpp" />
@@ -173,6 +177,12 @@
     <ClCompile Include="src\blocks\Stone_Block.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\noise\bitmap.hpp" />
+    <ClInclude Include="src\noise\bitmapTex.hpp" />
+    <ClInclude Include="src\noise\pipeline.hpp" />
+    <ClInclude Include="src\noise\simplex.hpp" />
+    <ClInclude Include="src\noise\value.hpp" />
+    <ClInclude Include="src\noise\voronoi.hpp" />
     <ClInclude Include="src\util\mesh.hpp" />
     <ClInclude Include="src\util\loader.hpp" />
     <ClInclude Include="src\blocks\Block.h" />
@@ -186,6 +196,8 @@
     <ClInclude Include="src\blocks\Stone_Block.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="src\shader\2dtex.frag" />
+    <None Include="src\shader\2dtex.vert" />
     <None Include="src\shader\simple.frag" />
     <None Include="src\shader\simple.vert" />
   </ItemGroup>

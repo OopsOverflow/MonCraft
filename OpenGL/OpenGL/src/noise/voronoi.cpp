@@ -1,6 +1,5 @@
 #include "voronoi.hpp"
 #include <memory>
-#include "../debug.hpp"
 
 using glm::ivec2;
 using glm::vec2;

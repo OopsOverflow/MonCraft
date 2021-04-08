@@ -1,5 +1,4 @@
 #include "value.hpp"
-#include "../debug.hpp"
 
 using glm::ivec2;
 
@@ -11,7 +10,7 @@ int ValueNoise::rand (unsigned long prn) const
   return (unsigned int)(prn/65536) % INT_MAX;
 }
 
-ValueNoise::ValueNoise(int seed) : seed(seed) {
+ValueNoise::ValueNoise(int seed) : seed(seed) {     
 }
 
 int ValueNoise::sample1D(const ivec2 &pos) const {
