@@ -38,15 +38,16 @@ void Camera::setPosition(const glm::vec3 &newPos) {
 }
 
 void Camera::translate(const glm::vec3 &translation, bool localSpace) {
-  glm::mat4 trans(1.f);
-  trans = glm::translate(trans, -translation);
+  glm::mat4 trans = glm::translate(glm::mat4(1.f), translation);
+  glm::mat4 invTrans = glm::translate(glm::mat4(1.f), -translation);
 
   if (localSpace) {
     position = glm::inverse(view) * trans * view * glm::vec4(position, 1.f);
     center = glm::inverse(view) * trans * view * glm::vec4(center, 1.f);
-    view = glm::inverse(trans) * view;
-  } else {
-    view = view * trans;
+    view = invTrans * view;
+  }
+  else {
+    view = view * invTrans;
     position += translation;
     center += translation;
   }

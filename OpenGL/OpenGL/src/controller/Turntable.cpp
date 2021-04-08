@@ -55,7 +55,7 @@ void ControllerTurntable::motion(int x, int y) {
 
 void ControllerTurntable::apply(Camera &camera) {
   if (translation) {
-    camera.translatePixels(deltaX, deltaY);
+    camera.translatePixels(-deltaX, -deltaY);
   }
 
   else if (rotation) {
