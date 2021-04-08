@@ -20,9 +20,9 @@ GLuint initHolyTriangle(Shader& shader) {
     };
 
     float Color[] = {
-       0.0, 0.0, 1.0,
-       1.0, 0.0, 1.0,
-       1.0, 1.0, 0.0
+      -1.0, -1.0, 1.0,
+       1.0, -1.0, 1.0,
+       1.0, 1.0, -1.0
     };
 
     // Genrate Buffer to draw the Triangle
