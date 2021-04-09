@@ -10,12 +10,12 @@ Camera::Camera(unsigned int width, unsigned int height, const glm::vec3 &positio
  position(position), center(center), fovY(45.f), near_(0.1f), far_(100.f),
  screenWidth(width), screenHeight(height), projType(projType)
 {
-  glViewport(0, 0, width, height);
   computeView();
   computeProjection();
 }
 
 void Camera::activate() {
+  glViewport(0, 0, screenWidth, screenHeight);
   glm::mat4 normal = glm::transpose(glm::inverse(view));
   Shader *shader = Shader::getActive();
   if (shader) {
@@ -77,7 +77,6 @@ void Camera::rotate(const glm::vec3 &rotation, bool localSpace) {
 void Camera::setSize(unsigned int width, unsigned int height) {
   screenWidth = width;
   screenHeight = height;
-  glViewport(0, 0, width, height);
   computeProjection();
 }
 
