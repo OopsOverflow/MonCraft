@@ -91,4 +91,9 @@
     <None Include="src\shader\simple.frag" />
     <None Include="src\shader\simple.vert" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="src\blocks\Textures\Testxture.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
 </Project>

@@ -189,6 +189,9 @@
     <None Include="src\shader\simple.frag" />
     <None Include="src\shader\simple.vert" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="src\blocks\Textures\Testxture.png" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
