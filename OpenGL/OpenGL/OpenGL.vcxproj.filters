@@ -129,4 +129,9 @@
     <None Include="src\shader\2dtex.frag" />
     <None Include="src\shader\2dtex.vert" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="src\blocks\Textures\Testxture.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
 </Project>

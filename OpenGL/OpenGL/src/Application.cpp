@@ -1,6 +1,8 @@
 #include <iostream>
 #include <memory>
 
+#include "SDL2/SDL_image.h"
+
 #include "Shader.hpp"
 #include "Viewport.hpp"
 
@@ -14,82 +16,166 @@
 GLuint initHolyCube(Shader& shader) {
 
     GLfloat Positions[] = {
-        -0.5f,-0.5f,-0.5f, // triangle 1 : begin
-        -0.5f,-0.5f, 0.5f,
-        -0.5f, 0.5f, 0.5f, // triangle 1 : end
-        0.5f, 0.5f,-0.5f, // triangle 2 : begin
-        -0.5f,-0.5f,-0.5f,
-        -0.5f, 0.5f,-0.5f, // triangle 2 : end
-        0.5f,-0.5f, 0.5f,
-        -0.5f,-0.5f,-0.5f,
-        0.5f,-0.5f,-0.5f,
-        0.5f, 0.5f,-0.5f,
-        0.5f,-0.5f,-0.5f,
-        -0.5f,-0.5f,-0.5f,
-        -0.5f,-0.5f,-0.5f,
-        -0.5f, 0.5f, 0.5f,
-        -0.5f, 0.5f,-0.5f,
-        0.5f,-0.5f, 0.5f,
-        -0.5f,-0.5f, 0.5f,
-        -0.5f,-0.5f,-0.5f,
-        -0.5f, 0.5f, 0.5f,
-        -0.5f,-0.5f, 0.5f,
-        0.5f,-0.5f, 0.5f,
-        0.5f, 0.5f, 0.5f,
-        0.5f,-0.5f,-0.5f,
-        0.5f, 0.5f,-0.5f,
-        0.5f,-0.5f,-0.5f,
-        0.5f, 0.5f, 0.5f,
-        0.5f,-0.5f, 0.5f,
-        0.5f, 0.5f, 0.5f,
-        0.5f, 0.5f,-0.5f,
-        -0.5f, 0.5f,-0.5f,
-        0.5f, 0.5f, 0.5f,
-        -0.5f, 0.5f,-0.5f,
-        -0.5f, 0.5f, 0.5f,
-        0.5f, 0.5f, 0.5f,
-        -0.5f, 0.5f, 0.5f,
-        0.5f,-0.5f, 0.5f
+    //Top
+        0.5f,  0.5f, -0.5f,
+       -0.5f,  0.5f, -0.5f,
+       -0.5f,  0.5f,  0.5f,
+        0.5f,  0.5f, -0.5f,
+       -0.5f,  0.5f,  0.5f,
+        0.5f,  0.5f,  0.5f,
+
+    //Bottom
+        0.5f, -0.5f, -0.5f,
+       -0.5f, -0.5f,  0.5f,
+       -0.5f, -0.5f, -0.5f,
+        0.5f, -0.5f, -0.5f,
+        0.5f, -0.5f,  0.5f,
+       -0.5f, -0.5f,  0.5f,
+
+    //Front
+       -0.5f, -0.5f,  0.5f,
+        0.5f,  0.5f,  0.5f,
+        0.5f, -0.5f,  0.5f,
+       -0.5f, -0.5f,  0.5f,
+       -0.5f,  0.5f,  0.5f,
+        0.5f,  0.5f,  0.5f,
+
+    //Right
+        0.5f, -0.5f,  0.5f,
+        0.5f,  0.5f, -0.5f,
+        0.5f, -0.5f, -0.5f,
+        0.5f, -0.5f,  0.5f,
+        0.5f,  0.5f,  0.5f,
+        0.5f,  0.5f, -0.5f,
+
+    //Back
+       -0.5f, -0.5f, -0.5f,
+        0.5f, -0.5f, -0.5f,
+        0.5f,  0.5f, -0.5f,
+       -0.5f, -0.5f, -0.5f,
+        0.5f,  0.5f, -0.5f,
+       -0.5f,  0.5f, -0.5f,
+
+    //Left
+       -0.5f, -0.5f,  0.5f,
+       -0.5f, -0.5f, -0.5f,
+       -0.5f,  0.5f, -0.5f,
+       -0.5f, -0.5f,  0.5f,
+       -0.5f,  0.5f, -0.5f,
+       -0.5f,  0.5f,  0.5f
     };
 
 
-    GLfloat Color[] = {
-    0.583f,  0.771f,  0.014f,
-    0.609f,  0.115f,  0.436f,
-    0.327f,  0.483f,  0.844f,
-    0.822f,  0.569f,  0.201f,
-    0.435f,  0.602f,  0.223f,
-    0.310f,  0.747f,  0.185f,
-    0.597f,  0.770f,  0.761f,
-    0.559f,  0.436f,  0.730f,
-    0.359f,  0.583f,  0.152f,
-    0.483f,  0.596f,  0.789f,
-    0.559f,  0.861f,  0.639f,
-    0.195f,  0.548f,  0.859f,
-    0.014f,  0.184f,  0.576f,
-    0.771f,  0.328f,  0.970f,
-    0.406f,  0.615f,  0.116f,
-    0.676f,  0.977f,  0.133f,
-    0.971f,  0.572f,  0.833f,
-    0.140f,  0.616f,  0.489f,
-    0.997f,  0.513f,  0.064f,
-    0.945f,  0.719f,  0.592f,
-    0.543f,  0.021f,  0.978f,
-    0.279f,  0.317f,  0.505f,
-    0.167f,  0.620f,  0.077f,
-    0.347f,  0.857f,  0.137f,
-    0.055f,  0.953f,  0.042f,
-    0.714f,  0.505f,  0.345f,
-    0.783f,  0.290f,  0.734f,
-    0.722f,  0.645f,  0.174f,
-    0.302f,  0.455f,  0.848f,
-    0.225f,  0.587f,  0.040f,
-    0.517f,  0.713f,  0.338f,
-    0.053f,  0.959f,  0.120f,
-    0.393f,  0.621f,  0.362f,
-    0.673f,  0.211f,  0.457f,
-    0.820f,  0.883f,  0.371f,
-    0.982f,  0.099f,  0.879f
+    //Isn't checked, may have problems
+    GLfloat Normals[] = {
+    //Top
+        0.0f, 1.0f, 0.0f,
+        0.0f, 1.0f, 0.0f,
+        0.0f, 1.0f, 0.0f,
+        0.0f, 1.0f, 0.0f,
+        0.0f, 1.0f, 0.0f,
+        0.0f, 1.0f, 0.0f,
+
+    //Bottom
+        0.0f, -1.0f, 0.0f,
+        0.0f, -1.0f, 0.0f,
+        0.0f, -1.0f, 0.0f,
+        0.0f, -1.0f, 0.0f,
+        0.0f, -1.0f, 0.0f,
+        0.0f, -1.0f, 0.0f,
+
+    //Front
+        0.0f, 0.0f, -1.0f,
+        0.0f, 0.0f, -1.0f,
+        0.0f, 0.0f, -1.0f,
+        0.0f, 0.0f, -1.0f,
+        0.0f, 0.0f, -1.0f,
+        0.0f, 0.0f, -1.0f,
+
+    //Right
+        1.0f, 0.0f, 0.0f,
+        1.0f, 0.0f, 0.0f,
+        1.0f, 0.0f, 0.0f,
+        1.0f, 0.0f, 0.0f,
+        1.0f, 0.0f, 0.0f,
+        1.0f, 0.0f, 0.0f,
+
+    //Back
+        0.0f, 0.0f, 1.0f,
+        0.0f, 0.0f, 1.0f,
+        0.0f, 0.0f, 1.0f,
+        0.0f, 0.0f, 1.0f,
+        0.0f, 0.0f, 1.0f,
+        0.0f, 0.0f, 1.0f,
+
+    //Left
+       -1.0f, 0.0f, 0.0f,
+       -1.0f, 0.0f, 0.0f,
+       -1.0f, 0.0f, 0.0f,
+       -1.0f, 0.0f, 0.0f,
+       -1.0f, 0.0f, 0.0f,
+       -1.0f, 0.0f, 0.0f
+    };
+
+    static const int TEXTURE_SIZE = 32;//Dynamic texture size
+    static const int STACKED_TEXTURE = 2;//Can stack texture on a single image to load less images
+
+    int textureNumber = 0;//texture Id for future implementation
+
+    //calculate the value of the top and the bottom of the texture
+    float botTexture = textureNumber * 1.0f / STACKED_TEXTURE;
+    std::cout << "botTexture :" << botTexture << std::endl;
+    float topTexture = (textureNumber + 1) * 1.0f / STACKED_TEXTURE;
+    std::cout << "topTexture :" << topTexture << std::endl;
+
+    GLfloat UVs[] = {
+    //Top
+        0.0  , topTexture,
+        1.0/6, topTexture,
+        1.0/6, botTexture,
+        0.0  , topTexture,
+        1.0/6, botTexture,
+        0.0  , botTexture,
+
+    //Bottom
+        2*1.0/6, topTexture,
+        1.0/6  , botTexture,
+        1.0/6  , topTexture,
+        2*1.0/6, topTexture,
+        2*1.0/6, botTexture,
+        1.0/6  , botTexture,
+
+    //Front
+        2*1.0/6, topTexture,
+        3*1.0/6, botTexture,
+        3*1.0/6, topTexture,
+        2*1.0/6, topTexture,
+        2*1.0/6, botTexture,
+        3*1.0/6, botTexture, 
+
+    //Right
+        3*1.0/6, topTexture,
+        4*1.0/6, botTexture,
+        4*1.0/6, topTexture,
+        3*1.0/6, topTexture,
+        3*1.0/6, botTexture,
+        4*1.0/6, botTexture,
+
+    //Back
+        5*1.0/6, topTexture,
+        4*1.0/6, topTexture,
+        4*1.0/6, botTexture, 
+        5*1.0/6, topTexture,
+        4*1.0/6, botTexture,
+        5*1.0/6, botTexture,  
+
+    //Left
+        1.0    , topTexture,
+        5*1.0/6, topTexture,
+        5*1.0/6, botTexture,
+        1.0    , topTexture,
+        5*1.0/6, botTexture,
+        1.0    , botTexture
     };
 
     // Genrate Buffer to draw the Cube
@@ -97,31 +183,63 @@ GLuint initHolyCube(Shader& shader) {
     glGenBuffers(1, &buffer);
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
     {
-        glBufferData(GL_ARRAY_BUFFER, sizeof(Positions) + sizeof(Color), NULL, GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(Positions) +  sizeof(UVs), NULL, GL_DYNAMIC_DRAW);
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Positions), Positions);
-        glBufferSubData(GL_ARRAY_BUFFER, sizeof(Positions), sizeof(Color), Color);
+        glBufferSubData(GL_ARRAY_BUFFER, sizeof(Positions), sizeof(UVs), UVs);
 
         GLint vPosition = shader.getLocation(ShaderLocation::VERTEX_POSITION);
         glVertexAttribPointer(0, 3, GL_FLOAT, 0, 0, 0);
         glEnableVertexAttribArray(vPosition);
 
-        GLint vColor = shader.getLocation(ShaderLocation::VERTEX_COLOR);
-        glVertexAttribPointer(1, 3, GL_FLOAT, 0, 0, (const void *)(sizeof(Positions)));
-        glEnableVertexAttribArray(vColor);
+        GLint vUVs = 2;//To change
+        glVertexAttribPointer(vUVs, 2, GL_FLOAT, 0, 0, (const void *)(sizeof(Positions)));
+        glEnableVertexAttribArray(vUVs);
+
+
     }
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+
 
     return buffer;
 }
 
-#include "DisplayNoise.hpp"
+#include "DisplayNoise.hpp" // temporary file, to display the biome map
 
 int main(int argc, char* argv[]) {
-
+    std::cout << "----Main------\n";
     Viewport window(WIDTH, HEIGHT);
     Shader shader("src/shader/simple.vert", "src/shader/simple.frag");
     GLuint buffer = initHolyCube(shader); // TODO: delete vao / vbo in the end
+    
     DisplayNoise biomeMap;
+
+    if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)) {
+        std::cout << "Could not load SDL2 image with PNG files\n";
+        return EXIT_FAILURE;
+    }
+
+    SDL_Surface* img = IMG_Load("src/blocks/Textures/Testxture.png");
+    SDL_Surface* rgbImg = SDL_ConvertSurfaceFormat(img, SDL_PIXELFORMAT_RGBA32, 0);
+    SDL_FreeSurface(img);
+
+
+    GLuint textureID;
+    glGenTextures(1, &textureID);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+    {
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, rgbImg->w, rgbImg->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid*)rgbImg->pixels);
+
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    SDL_FreeSurface(rgbImg);
+
+
 
     while (window.beginFrame()) {
         //Time in ms telling us when this frame started. Useful for keeping a fix framerate
@@ -130,21 +248,27 @@ int main(int argc, char* argv[]) {
         glEnable(GL_DEPTH_TEST);
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear Screen
+      
+        // draw the biome map on top left corner
+        int size = window.height * .5;
+        glViewport(window.width - size, window.height - size, size, size);
+        biomeMap.draw(); // comment this line to disable
 
         shader.activate();
+        window.camera.rotate({ 0.5f,1.f,0.f }, false);
         window.camera.activate();
+
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, textureID);
 
         // actually draw the Holy Triangle
         glBindBuffer(GL_ARRAY_BUFFER, buffer);
         glDrawArrays(GL_TRIANGLES, 0, 3*12);
-        window.camera.rotate({ 0.5f,1.f,0.f }, false);
+      
         glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-        // draw the biome map on top left corner
-        int size = window.height * .5;
-        glViewport(window.width - size, window.height - size, size, size);
-        biomeMap.draw();
-
+        glBindTexture(GL_TEXTURE_2D, 0);
+      
         window.endFrame();
 
         //Time in ms telling us when this frame ended. Useful for keeping a fix framerate

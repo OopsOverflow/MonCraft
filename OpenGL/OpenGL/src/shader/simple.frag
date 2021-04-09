@@ -16,6 +16,6 @@ void main() {
   vec3 colorized = vertexColor.xyz;
   outputColor = vec4(colorized, vertexColor.a);
   // Textures
-  //outputColor = texture ( textureSampler, txrCoords );
+  outputColor = texture ( textureSampler, txrCoords );
 
 }

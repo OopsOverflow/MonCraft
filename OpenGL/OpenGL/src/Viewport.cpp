@@ -20,16 +20,14 @@ Viewport::Viewport(size_t width, size_t height)
 
   //Initialize SDL2
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) < 0) {
-      // ERROR("The initialization of the SDL failed : %s\n", SDL_GetError());
-      throw std::runtime_error("SDL init failed");
+      throw std::runtime_error(std::string("SDL init failed: ") + SDL_GetError());
   }
 
   //Create a Window
-  window = SDL_CreateWindow("MonCraft",             //Title
-      SDL_WINDOWPOS_UNDEFINED,                      //X Position
-      SDL_WINDOWPOS_UNDEFINED,                      //Y Position
-      width, height,                                //Resolution
-      SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);        //Flags (OpenGL + Show)
+  window = SDL_CreateWindow("MonCraft",
+      SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+      width, height,
+      SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
 
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
