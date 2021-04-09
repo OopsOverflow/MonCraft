@@ -97,6 +97,7 @@
       <PreprocessorDefinitions>GLEW_STATIC;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)Dependencies;$(SolutionDir)Dependencies\SDL2\include;$(ProjectDir)src\include;$(ProjectDir)src\include\controller;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -112,6 +113,7 @@
       <PreprocessorDefinitions>GLEW_STATIC;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)src\blocks;$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)Dependencies;$(SolutionDir)Dependencies\SDL2\include;$(ProjectDir)src\include;$(ProjectDir)src\include\controller;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -129,6 +131,7 @@
       <PreprocessorDefinitions>GLEW_STATIC;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)Dependencies;$(SolutionDir)Dependencies\SDL2\include;$(ProjectDir)src\include;$(ProjectDir)src\include\controller;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -148,6 +151,7 @@
       <PreprocessorDefinitions>GLEW_STATIC;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)src\blocks;$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)Dependencies;$(SolutionDir)Dependencies\SDL2\include;$(ProjectDir)src\include;$(ProjectDir)src\include\controller;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -177,6 +181,8 @@
     <ClCompile Include="src\blocks\Stone_Block.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\DisplayNoise.hpp" />
+    <ClInclude Include="src\Noise.hpp" />
     <ClInclude Include="src\noise\bitmap.hpp" />
     <ClInclude Include="src\noise\bitmapTex.hpp" />
     <ClInclude Include="src\noise\pipeline.hpp" />
