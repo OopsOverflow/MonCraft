@@ -1,5 +1,8 @@
 #pragma once
 
+#include <vector>
+#include "bitmap.hpp"
+
 /**
  * A procedural noise sampler for perlin and simplex noise.
  *
@@ -9,16 +12,23 @@
  * translated from javascript.
  */
 
+struct octave_t {
+  float magnitude;
+  float frequency;
+};
+using octaves_t = std::vector<octave_t>;
+
 class SimplexNoise
 {
 public:
   SimplexNoise();
 
   void seed(int s);
-  float simplex2(float x, float y);
-  float simplex3(float x, float y, float z);
-  float perlin2(float x, float y);
-  float perlin3(float x, float y, float z);
+  float simplex2(glm::vec2 pos);
+  float simplex3(glm::vec3 pos);
+  float perlin2(glm::vec2 pos);
+  float perlin3(glm::vec3 pos);
+  float fractal2(glm::vec2 pos, octaves_t const& octaves);
 
 private:
   struct Grad

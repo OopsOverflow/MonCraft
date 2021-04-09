@@ -20,6 +20,9 @@
 #include "simplex.hpp"
 #include <cmath>
 
+using glm::vec2;
+using glm::vec3;
+
 const float F2 = 0.5f * (sqrt(3.f) - 1.f);
 const float G2 = (3.f - sqrt(3.f)) / 6.f;
 
@@ -51,8 +54,8 @@ const int p[] = {
     24, 72, 243, 141, 128, 195, 78, 66, 215, 61, 156, 180};
 
 SimplexNoise::SimplexNoise()
-    : gradP(),
-      perm()
+    : perm(),
+      gradP()
 {}
 
 void SimplexNoise::seed(int seed)
@@ -89,63 +92,63 @@ float lerp(float a, float b, float t)
   return (1 - t) * a + t * b;
 }
 
-float SimplexNoise::perlin2(float x, float y)
+float SimplexNoise::perlin2(vec2 pos)
 {
   // Find unit grid cell containing point
-  int X = (int)floor(x);
-  int Y = (int)floor(y);
+  int X = (int)floor(pos.x);
+  int Y = (int)floor(pos.y);
   // Get relative xy coordinates of point within that cell
-  x = x - X;
-  y = y - Y;
+  pos.x = pos.x - X;
+  pos.y = pos.y - Y;
   // Wrap the integer cells at 255 (smaller integer period can be introduced here)
   X = X & 255;
   Y = Y & 255;
 
   // Calculate noise contributions from each of the four corners
-  float n00 = gradP[X + perm[Y]].dot2(x, y);
-  float n01 = gradP[X + perm[Y + 1]].dot2(x, y - 1);
-  float n10 = gradP[X + 1 + perm[Y]].dot2(x - 1, y);
-  float n11 = gradP[X + 1 + perm[Y + 1]].dot2(x - 1, y - 1);
+  float n00 = gradP[X + perm[Y]].dot2(pos.x, pos.y);
+  float n01 = gradP[X + perm[Y + 1]].dot2(pos.x, pos.y - 1);
+  float n10 = gradP[X + 1 + perm[Y]].dot2(pos.x - 1, pos.y);
+  float n11 = gradP[X + 1 + perm[Y + 1]].dot2(pos.x - 1, pos.y - 1);
 
   // Compute the fade curve value for x
-  float u = fade(x);
+  float u = fade(pos.x);
 
   // Interpolate the four results
   return lerp(
       lerp(n00, n10, u),
       lerp(n01, n11, u),
-      fade(y));
+      fade(pos.y));
 }
 
-float SimplexNoise::perlin3(float x, float y, float z)
+float SimplexNoise::perlin3(vec3 pos)
 {
   // Find unit grid cell containing point
-  int X = (int)floor(x);
-  int Y = (int)floor(y);
-  int Z = (int)floor(z);
+  int X = (int)floor(pos.x);
+  int Y = (int)floor(pos.y);
+  int Z = (int)floor(pos.z);
   // Get relative xyz coordinates of point within that cell
-  x = x - X;
-  y = y - Y;
-  z = z - Z;
+  pos.x = pos.x - X;
+  pos.y = pos.y - Y;
+  pos.z = pos.z - Z;
   // Wrap the integer cells at 255 (smaller integer period can be introduced here)
   X = X & 255;
   Y = Y & 255;
   Z = Z & 255;
 
   // Calculate noise contributions from each of the eight corners
-  float n000 = gradP[X + perm[Y + perm[Z]]].dot3(x, y, z);
-  float n001 = gradP[X + perm[Y + perm[Z + 1]]].dot3(x, y, z - 1);
-  float n010 = gradP[X + perm[Y + 1 + perm[Z]]].dot3(x, y - 1, z);
-  float n011 = gradP[X + perm[Y + 1 + perm[Z + 1]]].dot3(x, y - 1, z - 1);
-  float n100 = gradP[X + 1 + perm[Y + perm[Z]]].dot3(x - 1, y, z);
-  float n101 = gradP[X + 1 + perm[Y + perm[Z + 1]]].dot3(x - 1, y, z - 1);
-  float n110 = gradP[X + 1 + perm[Y + 1 + perm[Z]]].dot3(x - 1, y - 1, z);
-  float n111 = gradP[X + 1 + perm[Y + 1 + perm[Z + 1]]].dot3(x - 1, y - 1, z - 1);
+  float n000 = gradP[X + perm[Y + perm[Z]]].dot3(pos.x, pos.y, pos.z);
+  float n001 = gradP[X + perm[Y + perm[Z + 1]]].dot3(pos.x, pos.y, pos.z - 1);
+  float n010 = gradP[X + perm[Y + 1 + perm[Z]]].dot3(pos.x, pos.y - 1, pos.z);
+  float n011 = gradP[X + perm[Y + 1 + perm[Z + 1]]].dot3(pos.x, pos.y - 1, pos.z - 1);
+  float n100 = gradP[X + 1 + perm[Y + perm[Z]]].dot3(pos.x - 1, pos.y, pos.z);
+  float n101 = gradP[X + 1 + perm[Y + perm[Z + 1]]].dot3(pos.x - 1, pos.y, pos.z - 1);
+  float n110 = gradP[X + 1 + perm[Y + 1 + perm[Z]]].dot3(pos.x - 1, pos.y - 1, pos.z);
+  float n111 = gradP[X + 1 + perm[Y + 1 + perm[Z + 1]]].dot3(pos.x - 1, pos.y - 1, pos.z - 1);
 
   // Compute the fade curve value for x, y, z
-  float u = fade(x);
-  float v = fade(y);
-  float w = fade(z);
+  float u = fade(pos.x);
+  float v = fade(pos.y);
+  float w = fade(pos.z);
 
   // Interpolate
   return lerp(
@@ -158,16 +161,16 @@ float SimplexNoise::perlin3(float x, float y, float z)
       v);
 }
 
-float SimplexNoise::simplex2(float xin, float yin)
+float SimplexNoise::simplex2(vec2 pos)
 {
   float n0, n1, n2; // Noise contributions from the three corners
   // Skew the input space to determine which simplex cell we're in
-  float s = (xin + yin) * F2; // Hairy factor for 2D
-  int i = (int)floor(xin + s);
-  int j = (int)floor(yin + s);
+  float s = (pos.x + pos.y) * F2; // Hairy factor for 2D
+  int i = (int)floor(pos.x + s);
+  int j = (int)floor(pos.y + s);
   float t = (i + j) * G2;
-  float x0 = xin - i + t; // The x,y distances from the cell origin, unskewed.
-  float y0 = yin - j + t;
+  float x0 = pos.x - i + t; // The x,y distances from the cell origin, unskewed.
+  float y0 = pos.y - j + t;
   // For the 2D case, the simplex shape is an equilateral triangle.
   // Determine which simplex we are in.
   int i1, j1; // Offsets for second (middle) corner of simplex in (i,j) coords
@@ -230,20 +233,20 @@ float SimplexNoise::simplex2(float xin, float yin)
   return 70 * (n0 + n1 + n2);
 }
 
-float SimplexNoise::simplex3(float xin, float yin, float zin)
+float SimplexNoise::simplex3(vec3 pos)
 {
   float n0, n1, n2, n3; // Noise contributions from the four corners
 
   // Skew the input space to determine which simplex cell we're in
-  float s = (xin + yin + zin) * F3; // Hairy factor for 2D
-  int i = (int)floor(xin + s);
-  int j = (int)floor(yin + s);
-  int k = (int)floor(zin + s);
+  float s = (pos.x + pos.y + pos.z) * F3; // Hairy factor for 2D
+  int i = (int)floor(pos.x + s);
+  int j = (int)floor(pos.y + s);
+  int k = (int)floor(pos.z + s);
 
   float t = (i + j + k) * G3;
-  float x0 = xin - i + t; // The x,y distances from the cell origin, unskewed.
-  float y0 = yin - j + t;
-  float z0 = zin - k + t;
+  float x0 = pos.x - i + t; // The x,y distances from the cell origin, unskewed.
+  float y0 = pos.y - j + t;
+  float z0 = pos.z - k + t;
 
   // For the 3D case, the simplex shape is a slightly irregular tetrahedron.
   // Determine which simplex we are in.
@@ -378,4 +381,13 @@ float SimplexNoise::simplex3(float xin, float yin, float zin)
   // Add contributions from each corner to get the final noise value.
   // The result is scaled to return values in the interval [-1,1].
   return 32 * (n0 + n1 + n2 + n3);
+}
+
+float SimplexNoise::fractal2(vec2 pos, octaves_t const& octaves)
+{
+  float val = 0;
+  for (auto octave : octaves) {
+    val += simplex2(pos * octave.frequency) * octave.magnitude;
+  }
+  return val;
 }
