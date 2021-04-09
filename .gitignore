@@ -1,7 +1,7 @@
 OpenGL/Debug
 OpenGL/Release
+OpenGL/Dependencies/glm/out
 .clang-format
 .vs
-makefile
 compile_commands.json
 .cache

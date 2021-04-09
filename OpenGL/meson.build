@@ -13,6 +13,7 @@ deps = [
   dependency('glew'),
   dependency('gl'),
   dependency('sdl2'),
+  dependency('SDL2_image'),
   dependency('OpenGL'),
   dependency('glfw3'),
   dependency('glm'),
