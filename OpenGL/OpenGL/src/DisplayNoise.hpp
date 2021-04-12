@@ -137,8 +137,8 @@ private:
 public:
   DisplayNoise()
       : voronoi(20, gridSize), value(10),
-        grid(size + 2 * displacement, size + 2 * displacement),
-        map(size, size) {
+        grid(size + 2 * displacement),
+        map(size) {
     simplexX.seed(10);
     simplexY.seed(20);
     simplexBiome.seed(30);
