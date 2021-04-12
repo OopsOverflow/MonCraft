@@ -1,5 +1,5 @@
-#ifndef Loader_H
-#define Loader_H
+#ifndef LOADER_H
+#define LOADER_H
 
 #include <vector>
 #include <memory>
@@ -37,7 +37,7 @@ private:
     GLuint storeDataInAttributeList(int attributeID, int coordCount, const std::vector<T>& data)
     {
         GLuint vbo = createVBO(GL_ARRAY_BUFFER);
-        glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(data.at(0)), data.data(), GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(T), data.data(), GL_STATIC_DRAW);
 
         glVertexAttribPointer(attributeID, coordCount, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
         glEnableVertexAttribArray(attributeID);
@@ -48,9 +48,7 @@ private:
 
     }
 
-    std::vector<GLuint> vaoList;
-    std::vector<GLuint> vboList;
     std::vector<GLuint> textureList;
 };
 
-#endif // Loader_H
+#endif // LOADER_H

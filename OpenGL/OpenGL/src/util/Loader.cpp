@@ -5,12 +5,6 @@
 
 Loader::~Loader()
 {
-    for (auto& i : this->vaoList)
-        glDeleteVertexArrays(1, &i);
-
-    for (auto& i : this->vboList)
-        glDeleteBuffers(1, &i);
-
     for (auto& i : this->textureList)
         glDeleteTextures(1, &i);
 }
@@ -48,7 +42,7 @@ GLuint Loader::loadTexture(const std::string& fileName)
 {
     if(!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG))
     {
-        std::cout << "Could␣not␣load␣SDL2_image␣with␣PNG␣files\n";
+        std::cout << "Could not load SDL2_image with PNG files\n";
         return EXIT_FAILURE;
     }
 
@@ -94,8 +88,6 @@ GLuint Loader::createVAO()
     GLuint id;
     glGenVertexArrays(1, &id);
     glBindVertexArray(id);
-
-    vaoList.push_back(id);
     return id;
 }
 
@@ -105,11 +97,8 @@ GLuint Loader::createVBO(GLenum type)
     GLuint vbo;
     glGenBuffers(1, &vbo);
     glBindBuffer(type, vbo);
-
-    vboList.push_back(vbo);
     return vbo;
 }
-
 
 void Loader::unbindVAO()
 {
