@@ -27,6 +27,7 @@ public:
 
   void getSize(unsigned int &width, unsigned int &height) const;
   Projection getProjectionType() const;
+  glm::mat4 getView() const;
 
 public:
   glm::mat4 view;

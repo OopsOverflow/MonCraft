@@ -51,8 +51,6 @@ void Camera::translate(const glm::vec3 &translation, bool localSpace) {
     position += translation;
     center += translation;
   }
-
-  std::cout << "Camera Pos " << position.x << ", " << position.y << ", " << position.z << std::endl;
 }
 
 void Camera::rotate(const glm::vec3 &rotation, bool localSpace) {
@@ -142,6 +140,8 @@ void Camera::getSize(unsigned int &width, unsigned int &height) const {
 }
 
 Projection Camera::getProjectionType() const { return projType; }
+
+glm::mat4 Camera::getView() const { return view; }
 
 // ----------- private -----------
 
