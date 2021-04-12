@@ -1,7 +1,7 @@
 #include "Block.h"
 
 
-Block::Block(Block_Type type)
+Block::Block(BlockType type)
 	: type(type)
 {
 
