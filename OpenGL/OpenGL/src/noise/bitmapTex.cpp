@@ -11,7 +11,7 @@ BitmapTex::BitmapTex() {
   if (!shader) {
     shader = new Shader("src/shader/2dtex.vert", "src/shader/2dtex.frag");
   }
-  
+
   // GLint u_mvp = glGetUniformLocation(shader->program, "uMvp");
   // GLint v_position = glGetAttribLocation(shader->program, "vPosition");
   // std::cout << "---- SHADER ---- " << std::endl;
@@ -42,7 +42,7 @@ void BitmapTex::generate(Bitmap const& map) {
     glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(verts), verts, GL_STATIC_DRAW);
 
     glBindTexture(GL_TEXTURE_2D, tex);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, map.width, map.height, 0, GL_RGB, GL_UNSIGNED_BYTE, map.c_ptr());
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, map.size.x, map.size.y, 0, GL_RGB, GL_UNSIGNED_BYTE, map.c_ptr());
     glActiveTexture(GL_TEXTURE0);
     glGenerateMipmap(GL_TEXTURE_2D);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -58,7 +58,9 @@ void BitmapTex::generate(Bitmap const& map) {
 void BitmapTex::draw() {
   shader->activate();
   glBindVertexArray(vao);
+  glBindTexture(GL_TEXTURE_2D, tex);
   glDrawArrays(GL_TRIANGLES, 0, 6);
+  glBindTexture(GL_TEXTURE_2D, 0);
   glBindVertexArray(0);
 }
 
