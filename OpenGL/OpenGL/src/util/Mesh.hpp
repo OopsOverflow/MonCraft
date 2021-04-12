@@ -1,17 +1,15 @@
-#pragma once
-#ifndef mesh_H
-#define mesh_H
+#ifndef Mesh_H
+#define Mesh_H
 
 #include "GL/glew.h"
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 
 class Mesh
 {
 public:
-    Mesh() = default;
     Mesh(GLuint vao, GLuint count, GLuint vert, GLuint tex);
+    Mesh(GLuint vao, GLuint vbo, GLuint vertCount);
+    ~Mesh();
 
     GLuint getVAO() const;
     GLuint getVertexCount() const;
@@ -20,15 +18,11 @@ public:
     glm::vec3 rot;
     glm::vec3 sca = { 1, 1, 1 };
 
-    ~Mesh();
-
-    GLuint myCount;
-
 private:
     GLuint myVAO;
-
-    GLuint myVert;
-    GLuint myTex;
+    GLuint myVBO;
+    GLuint myEBO;
+    GLuint myVertCount;
 };
 
-#endif // mesh_H
+#endif // Mesh_H

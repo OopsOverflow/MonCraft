@@ -2,27 +2,23 @@
 
 #include <iostream>
 
-Mesh::Mesh(GLuint VAO, GLuint count, GLuint vert, GLuint tex)
-    : myVAO(VAO)
-    , myCount(count)
-    , myVert(vert)
-    , myTex(tex)
+Mesh::Mesh(GLuint vao, GLuint vbo, GLuint vertCount)
+    : myVAO(vao), myVBO(vbo), myVertCount(vertCount)
 { }
 
-GLuint Mesh::getVAO() const
 {
-    return myVAO;
 }
 
-GLuint Mesh::getVertexCount() const
-{
-    return myCount;
+GLuint Mesh::getVAO() const {
+  return myVAO;
 }
 
+GLuint Mesh::getVertexCount() const {
+  return myVertCount;
+}
 
-Mesh::~Mesh()
-{
-    glDeleteBuffers(1, &myVert);
-    glDeleteBuffers(1, &myTex);
-    glDeleteVertexArrays(1, &myVAO);
+Mesh::~Mesh() {
+  glDeleteVertexArrays(1, &myVAO);
+  glDeleteBuffers(1, &myVBO);
+  glDeleteBuffers(1, &myEBO);
 }
