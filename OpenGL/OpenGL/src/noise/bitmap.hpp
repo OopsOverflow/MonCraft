@@ -1,10 +1,6 @@
 #pragma once
 
-#include <stddef.h>
-#include <glm/glm.hpp>
-#include <stdexcept>
-
-#include <iostream>
+#include "../util/DataStore.hpp"
 
 /**
  * A 2D data store.
@@ -15,29 +11,17 @@
  */
 
 template <typename T>
-class Grid {
+class Grid : public DataStore<T, 2> {
 public:
   /**
    * An unitialized 2D data store.
    */
-  Grid(size_t width, size_t height)
-      : width(width), height(height), map(new T[width * height]) {}
-
-  ~Grid() {
-    delete[] map;
-  }
-
-  /**
-   * Gets the data stored at pos.
-   * @throws std::out_of_range
-   */
-  T &at(glm::ivec2 pos) {
-    if (pos.x > (int)width || pos.y > (int)height) {
-      throw std::out_of_range("bitmap coordinates are out of range");
-    }
-
-    return map[pos.x + pos.y * width];
-  }
+  Grid(glm::ivec2 size)
+      : DataStore<T, 2>(size)
+  {}
+  Grid(int size)
+      : DataStore<T, 2>(size)
+  {}
 
   /**
    * Calls Fn for each data point stored.
@@ -45,10 +29,10 @@ public:
    */
   template <class Fn>
   Fn for_each(Fn f) {
-    for (size_t i = 0; i < width; i++) {
-      for (size_t j = 0; j < height; j++) {
+    for (int i = 0; i < this->size.x; i++) {
+      for (int j = 0; j < this->size.y; j++) {
       	glm::ivec2 pos(i, j);
-      	f(pos, at(pos));
+      	f(pos, this->at(pos));
       }
     }
 
@@ -61,35 +45,14 @@ public:
    */
   template <class Fn>
   void for_each_parallel(Fn f) {
-    int end = width * height;
+    int end = this->size.x * this->size.y;
 
     #pragma omp parallel for
     for(int start = 0; start < end; start++) {
-      glm::ivec2 pos(start % width, start / width);
-      f(pos, at(pos));
+      glm::ivec2 pos(start % this->size.x, start / this->size.y);
+      f(pos, this->at(pos));
     }
   }
-
-  /**
-   * Gets the raw pointer data
-   */
-  const T* c_ptr() const {
-    return map;
-  }
-
-  T* mut_c_ptr() {
-    return map;
-  }
-
-  glm::ivec2 size() {
-    return glm::ivec2(width, height);
-  }
-
-  const size_t width;
-  const size_t height;
-
-private:
-  T *map;
 };
 
 typedef glm::vec<3, uint8_t> pixel_t;
