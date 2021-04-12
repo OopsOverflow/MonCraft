@@ -1,20 +1,20 @@
-#ifndef LOADER_H
-#define LOADER_H
+#ifndef Loader_H
+#define Loader_H
 
 #include <vector>
 #include <memory>
 #include <string>
 
 #include "GL/glew.h"
-#include "mesh.hpp"
+#include "Mesh.hpp"
 
-typedef std::unique_ptr<mesh> ptr2mesh;
+typedef std::unique_ptr<Mesh> ptr2mesh;
 
 
-class loader
+class Loader
 {
 public:
-    ~loader();
+    ~Loader();
 
     ptr2mesh loadToVAO(const std::vector<GLfloat>& positions,
         const std::vector<GLuint>& indices,
@@ -53,4 +53,4 @@ private:
     std::vector<GLuint> textureList;
 };
 
-#endif // LOADER_H
+#endif // Loader_H

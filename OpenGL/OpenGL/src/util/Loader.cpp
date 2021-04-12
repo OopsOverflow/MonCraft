@@ -1,9 +1,9 @@
-﻿#include "loader.hpp"
+﻿#include "Loader.hpp"
 
 #include <SDL2/SDL_image.h>
 #include <iostream>
 
-loader :: ~loader()
+Loader::~Loader()
 {
     for (auto& i : this->vaoList)
         glDeleteVertexArrays(1, &i);
@@ -18,7 +18,7 @@ loader :: ~loader()
 
 //The meshes have to be pointers, or else if I return a copy, the destructor is called on the local copy and thus OpenGL
 //deletes the vertex arrays (from the destructor)
-ptr2mesh loader::loadToVAO(const std::vector<GLfloat>& positions,
+ptr2mesh Loader::loadToVAO(const std::vector<GLfloat>& positions,
     const std::vector<GLuint>& indices,
     const std::vector<GLfloat>& texture)
 {
@@ -29,10 +29,10 @@ ptr2mesh loader::loadToVAO(const std::vector<GLfloat>& positions,
     GLuint txr = storeDataInAttributeList(1, 2, texture);
     unbindVAO();
 
-    return std::make_unique<mesh>(id, indices.size(), vert, txr);
+    return std::make_unique<Mesh>(id, indices.size(), vert, txr);
 }
 
-ptr2mesh loader::loadToVAO(const std::vector<GLfloat>& positions,
+ptr2mesh Loader::loadToVAO(const std::vector<GLfloat>& positions,
     const std::vector<GLfloat>& texture)
 {
     GLuint id = createVAO();
@@ -41,10 +41,10 @@ ptr2mesh loader::loadToVAO(const std::vector<GLfloat>& positions,
     GLuint txr = storeDataInAttributeList(1, 2, texture);
     unbindVAO();
 
-    return std::make_unique<mesh>(id, positions.size() / 3, vert, txr);
+    return std::make_unique<Mesh>(id, positions.size() / 3, vert, txr);
 }
 
-GLuint loader::loadTexture(const std::string& fileName)
+GLuint Loader::loadTexture(const std::string& fileName)
 {
     if(!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG))
     {
@@ -81,7 +81,7 @@ GLuint loader::loadTexture(const std::string& fileName)
 
 
 
-void loader::bindIndexBuffer(const std::vector<GLuint>& indices)
+void Loader::bindIndexBuffer(const std::vector<GLuint>& indices)
 {
     createVBO(GL_ELEMENT_ARRAY_BUFFER);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(indices.at(0)), indices.data(), GL_STATIC_DRAW);
@@ -89,7 +89,7 @@ void loader::bindIndexBuffer(const std::vector<GLuint>& indices)
 
 
 //Vertex ARRAY object
-GLuint loader::createVAO()
+GLuint Loader::createVAO()
 {
     GLuint id;
     glGenVertexArrays(1, &id);
@@ -100,7 +100,7 @@ GLuint loader::createVAO()
 }
 
 //Vertex BUFFER object
-GLuint loader::createVBO(GLenum type)
+GLuint Loader::createVBO(GLenum type)
 {
     GLuint vbo;
     glGenBuffers(1, &vbo);
@@ -111,7 +111,7 @@ GLuint loader::createVBO(GLenum type)
 }
 
 
-void loader::unbindVAO()
+void Loader::unbindVAO()
 {
     glBindVertexArray(0);
 }

@@ -1,26 +1,26 @@
-#include "mesh.hpp"
+#include "Mesh.hpp"
 
 #include <iostream>
 
-mesh::mesh(GLuint VAO, GLuint count, GLuint vert, GLuint tex)
+Mesh::Mesh(GLuint VAO, GLuint count, GLuint vert, GLuint tex)
     : myVAO(VAO)
     , myCount(count)
     , myVert(vert)
     , myTex(tex)
 { }
 
-GLuint mesh::getVAO() const
+GLuint Mesh::getVAO() const
 {
     return myVAO;
 }
 
-GLuint mesh::getVertexCount() const
+GLuint Mesh::getVertexCount() const
 {
     return myCount;
 }
 
 
-mesh :: ~mesh()
+Mesh::~Mesh()
 {
     glDeleteBuffers(1, &myVert);
     glDeleteBuffers(1, &myTex);

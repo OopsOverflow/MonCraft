@@ -7,11 +7,11 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-class mesh
+class Mesh
 {
 public:
-    mesh() = default;
-    mesh(GLuint vao, GLuint count, GLuint vert, GLuint tex);
+    Mesh() = default;
+    Mesh(GLuint vao, GLuint count, GLuint vert, GLuint tex);
 
     GLuint getVAO() const;
     GLuint getVertexCount() const;
@@ -20,7 +20,7 @@ public:
     glm::vec3 rot;
     glm::vec3 sca = { 1, 1, 1 };
 
-    ~mesh();
+    ~Mesh();
 
     GLuint myCount;
 
