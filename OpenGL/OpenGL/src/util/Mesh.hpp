@@ -3,11 +3,16 @@
 
 #include "GL/glew.h"
 #include <glm/glm.hpp>
+#include <vector>
 
 class Mesh
 {
 public:
-    Mesh(GLuint vao, GLuint count, GLuint vert, GLuint tex);
+    Mesh(std::vector<GLfloat> const& positions,
+         std::vector<GLfloat> const& normals,
+         std::vector<GLfloat> const& textureCoords,
+         std::vector<GLuint>  const& indices);
+
     Mesh(GLuint vao, GLuint vbo, GLuint vertCount);
     ~Mesh();
 
