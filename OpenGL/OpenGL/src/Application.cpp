@@ -51,9 +51,6 @@ int main(int argc, char* argv[]) {
         //Time in ms telling us when this frame started. Useful for keeping a fix framerate
         uint32_t timeBegin = SDL_GetTicks();
 
-        glEnable(GL_DEPTH_TEST);
-        glEnable(GL_CULL_FACE);
-
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear Screen
 
         // draw the biome map on top left corner
@@ -69,7 +66,7 @@ int main(int argc, char* argv[]) {
         glBindTexture(GL_TEXTURE_2D, textureID);
 
         glBindTexture(GL_TEXTURE_2D, 0);
-      
+
         window.endFrame();
 
         //Time in ms telling us when this frame ended. Useful for keeping a fix framerate
