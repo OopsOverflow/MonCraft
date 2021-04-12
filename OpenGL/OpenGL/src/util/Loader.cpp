@@ -9,34 +9,33 @@ Loader::~Loader()
         glDeleteTextures(1, &i);
 }
 
-
 //The meshes have to be pointers, or else if I return a copy, the destructor is called on the local copy and thus OpenGL
 //deletes the vertex arrays (from the destructor)
-ptr2mesh Loader::loadToVAO(const std::vector<GLfloat>& positions,
-    const std::vector<GLuint>& indices,
-    const std::vector<GLfloat>& texture)
-{
-    GLuint id = createVAO();
-    bindIndexBuffer(indices);
-
-    GLuint vert = storeDataInAttributeList(0, 3, positions);
-    GLuint txr = storeDataInAttributeList(1, 2, texture);
-    unbindVAO();
-
-    return std::make_unique<Mesh>(id, indices.size(), vert, txr);
-}
-
-ptr2mesh Loader::loadToVAO(const std::vector<GLfloat>& positions,
-    const std::vector<GLfloat>& texture)
-{
-    GLuint id = createVAO();
-
-    GLuint vert = storeDataInAttributeList(0, 3, positions);
-    GLuint txr = storeDataInAttributeList(1, 2, texture);
-    unbindVAO();
-
-    return std::make_unique<Mesh>(id, positions.size() / 3, vert, txr);
-}
+// ptr2mesh Loader::loadToVAO(const std::vector<GLfloat>& positions,
+//     const std::vector<GLuint>& indices,
+//     const std::vector<GLfloat>& texture)
+// {
+//     GLuint id = createVAO();
+//     bindIndexBuffer(indices);
+//
+//     GLuint vert = storeDataInAttributeList(0, 3, positions);
+//     GLuint txr = storeDataInAttributeList(1, 2, texture);
+//     unbindVAO();
+//
+//     return std::make_unique<Mesh>(id, indices.size(), vert, txr);
+// }
+//
+// ptr2mesh Loader::loadToVAO(const std::vector<GLfloat>& positions,
+//     const std::vector<GLfloat>& texture)
+// {
+//     GLuint id = createVAO();
+//
+//     GLuint vert = storeDataInAttributeList(0, 3, positions);
+//     GLuint txr = storeDataInAttributeList(1, 2, texture);
+//     unbindVAO();
+//
+//     return std::make_unique<Mesh>(id, positions.size() / 3, vert, txr);
+// }
 
 GLuint Loader::loadTexture(const std::string& fileName)
 {
