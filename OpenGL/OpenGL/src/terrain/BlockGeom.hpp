@@ -2,7 +2,7 @@
 
 #include <vector>
 #include <array>
-#include <GL/gl.h>
+#include <GL/glew.h>
 #include <glm/glm.hpp>
 
 enum class BlockFace { TOP, BOTTOM, FRONT, RIGHT, BACK, LEFT };

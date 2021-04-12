@@ -14,6 +14,7 @@
 #define INDICE_TO_PTR(x) ((void*)(x))
 
 #include "DisplayNoise.hpp" // temporary file, to display the biome map
+#include "terrain/Terrain.hpp"
 
 int main(int argc, char* argv[]) {
     std::cout << "----Main------\n";
@@ -21,6 +22,7 @@ int main(int argc, char* argv[]) {
     Shader shader("src/shader/simple.vert", "src/shader/simple.frag");
 
     // DisplayNoise biomeMap;
+    Terrain terrain;
 
     if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)) {
         std::cout << "Could not load SDL2 image with PNG files\n";
@@ -65,6 +67,9 @@ int main(int argc, char* argv[]) {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, textureID);
 
+        // update the terrain
+        terrain.render(window.camera);
+
         glBindTexture(GL_TEXTURE_2D, 0);
 
         window.endFrame();
@@ -75,6 +80,9 @@ int main(int argc, char* argv[]) {
         //We want FRAMERATE FPS
         if (timeEnd - timeBegin < TIME_PER_FRAME_MS)
             SDL_Delay(TIME_PER_FRAME_MS - (timeEnd - timeBegin));
+        else if(timeEnd - timeBegin > 2 * TIME_PER_FRAME_MS) {
+          std::cout << "can't keep up ! " << timeEnd - timeBegin - TIME_PER_FRAME_MS << "ms behind" << std::endl;
+        }
     }
 
     return 0;

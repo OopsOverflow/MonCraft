@@ -36,6 +36,24 @@ public:
     delete[] map;
   }
 
+  DataStore(DataStore const&) = delete;
+  DataStore& operator=(DataStore const&) = delete;
+
+  DataStore(DataStore&& other)
+    : size(std::move(other.size)), map(std::move(other.map))
+  {
+    other.map = nullptr;
+  }
+
+  DataStore& operator=(DataStore&& other) {
+    if (this != &other) {
+      delete[] map;
+      map = other.map;
+      size = other.size;
+    }
+    return *this;
+  }
+
   /**
    * Gets the data stored at pos.
    * @throws std::out_of_range

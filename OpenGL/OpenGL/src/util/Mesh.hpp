@@ -16,12 +16,13 @@ public:
     Mesh(GLuint vao, GLuint vbo, GLuint vertCount);
     ~Mesh();
 
+    Mesh(Mesh const&) = delete;
+    Mesh& operator=(Mesh const&) = delete;
+
     GLuint getVAO() const;
     GLuint getVertexCount() const;
 
-    glm::vec3 pos;
-    glm::vec3 rot;
-    glm::vec3 sca = { 1, 1, 1 };
+    glm::mat4 model = glm::mat4(1.f);
 
 private:
     GLuint myVAO;
