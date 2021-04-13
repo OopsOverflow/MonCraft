@@ -83,9 +83,11 @@ void Terrain::worker(std::future<void> stopSignal) {
   while(1) {
     if(getNextPos(pos)) {
       {
-        std::lock_guard<std::mutex> lock(dataMutex);
         Chunk* c = generator.generate(pos);
-        data.push_back({pos, c});
+        {
+          std::lock_guard<std::mutex> lock(dataMutex);
+          data.push_back({pos, c});
+        }
       }
       stop = stopSignal.wait_for(sleep);
     }
