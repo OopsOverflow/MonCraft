@@ -13,6 +13,7 @@
 #define TIME_PER_FRAME_MS  (unsigned int)(1.0f/FRAMERATE * 1e3)
 #define INDICE_TO_PTR(x) ((void*)(x))
 
+
 #include "DisplayNoise.hpp" // temporary file, to display the biome map
 #include "terrain/Terrain.hpp"
 
@@ -54,6 +55,11 @@ int main(int argc, char* argv[]) {
         uint32_t timeBegin = SDL_GetTicks();
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear Screen
+      
+        // draw the biome map on top left corner
+        int size = window.height * .5;
+        glViewport(window.width - size, window.height - size, size, size);
+        biomeMap.draw(); // comment this line to disable
 
         // draw the biome map on top left corner
         // int size = window.height * .5;
