@@ -63,7 +63,6 @@ GLuint initHolyCube(Shader& shader) {
        -0.5f, -0.5f,  0.5f,
        -0.5f,  0.5f, -0.5f,
        -0.5f,  0.5f,  0.5f
-
     };
 
 
@@ -116,7 +115,6 @@ GLuint initHolyCube(Shader& shader) {
        -1.0f, 0.0f, 0.0f,
        -1.0f, 0.0f, 0.0f,
        -1.0f, 0.0f, 0.0f
-
     };
 
     static const int TEXTURE_SIZE = 32;//Dynamic texture size
@@ -178,7 +176,6 @@ GLuint initHolyCube(Shader& shader) {
         1.0    , topTexture,
         5*1.0/6, botTexture,
         1.0    , botTexture
-    
     };
 
     // Genrate Buffer to draw the Cube
@@ -206,13 +203,15 @@ GLuint initHolyCube(Shader& shader) {
     return buffer;
 }
 
+#include "DisplayNoise.hpp" // temporary file, to display the biome map
 
 int main(int argc, char* argv[]) {
-
     std::cout << "----Main------\n";
     Viewport window(WIDTH, HEIGHT);
     Shader shader("src/shader/simple.vert", "src/shader/simple.frag");
     GLuint buffer = initHolyCube(shader); // TODO: delete vao / vbo in the end
+    
+    DisplayNoise biomeMap;
 
     if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)) {
         std::cout << "Could not load SDL2 image with PNG files\n";
@@ -249,8 +248,14 @@ int main(int argc, char* argv[]) {
         glEnable(GL_DEPTH_TEST);
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear Screen
+      
+        // draw the biome map on top left corner
+        int size = window.height * .5;
+        glViewport(window.width - size, window.height - size, size, size);
+        biomeMap.draw(); // comment this line to disable
 
         shader.activate();
+        window.camera.rotate({ 0.5f,1.f,0.f }, false);
         window.camera.activate();
 
         glBindTexture(GL_TEXTURE_2D, 0);
@@ -260,9 +265,10 @@ int main(int argc, char* argv[]) {
         // actually draw the Holy Triangle
         glBindBuffer(GL_ARRAY_BUFFER, buffer);
         glDrawArrays(GL_TRIANGLES, 0, 3*12);
-        window.camera.rotate({ 0.5f,1.f,0.f }, false);
+      
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindTexture(GL_TEXTURE_2D, 0);
+      
         window.endFrame();
 
         //Time in ms telling us when this frame ended. Useful for keeping a fix framerate

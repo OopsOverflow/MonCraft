@@ -70,7 +70,7 @@ std::string Shader::readFile(const std::string &path) {
     stream << file.rdbuf();
     file.close();
     contents = stream.str();
-  } catch (std::ifstream::failure &e) {
+  } catch (std::ifstream::failure & /* e */) {
     std::cout << "Failed to read file: " << path << std::endl;
   }
 

@@ -5,8 +5,15 @@ srcs = files(
   'OpenGL/src/Shader.cpp',
   'OpenGL/src/Camera.cpp',
   'OpenGL/src/Viewport.cpp',
+
   'OpenGL/src/controller/FPS.cpp',
   'OpenGL/src/controller/Turntable.cpp',
+
+  'OpenGL/src/noise/bitmapTex.cpp',
+  'OpenGL/src/noise/value.cpp',
+  'OpenGL/src/noise/voronoi.cpp',
+  'OpenGL/src/noise/simplex.cpp',
+  'OpenGL/src/debug.cpp',
 )
 
 deps = [
@@ -17,6 +24,8 @@ deps = [
   dependency('OpenGL'),
   dependency('glfw3'),
   dependency('glm'),
+  dependency('threads'),
+  dependency('openmp'),
 ]
 
 incs = include_directories('OpenGL/src/include')
