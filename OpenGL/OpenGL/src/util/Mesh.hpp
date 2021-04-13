@@ -13,7 +13,7 @@ public:
          std::vector<GLfloat> const& textureCoords,
          std::vector<GLuint>  const& indices);
 
-    Mesh(GLuint vao, GLuint vbo, GLuint vertCount);
+    Mesh(GLuint vao, GLuint vbo, GLuint ebo, GLuint vertCount);
     ~Mesh();
 
     Mesh(Mesh const&) = delete;

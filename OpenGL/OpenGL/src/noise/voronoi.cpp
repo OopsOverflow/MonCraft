@@ -49,7 +49,7 @@ void VoronoiNoise::generate(ivec2 pos, Grid<glm::vec2>& map) const {
     pos += offset;
     ivec2 ipos = floor(pos / fGridSize);
     ivec2 res = ipos;
-    float min_dist = 10 * gridSize; // bigger than possible
+    float min_dist = 10.f * gridSize; // bigger than possible
 
     for (int di = -1; di <= 1; di++) {
       for (int dj = -1; dj <= 1; dj++) {

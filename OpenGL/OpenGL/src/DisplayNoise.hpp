@@ -46,10 +46,10 @@ private:
 
   // spatial distortion octaves
   const octaves_t octaves = {
-    {.65, 0.004}, // {magnitude, frequency}
-    {.20, 0.008},
-    {.10, 0.050},
-    {.05, 0.100},
+    {.65f, 0.004f}, // {magnitude, frequency}
+    {.20f, 0.008f},
+    {.10f, 0.050f},
+    {.05f, 0.100f},
   };
 
   // temperature / dryness octaves
@@ -92,7 +92,7 @@ private:
 
   // pipeline step 2: voronoi splitting
   std::function<ivec2(ivec2)> offsetVoronoi = [&](ivec2 pos) {
-    pos -= ivec2(i);
+    pos -= ivec2((int)i);
     return grid.at(pos) + floor(vec2(i) / (float)gridSize);
   };
 

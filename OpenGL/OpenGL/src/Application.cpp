@@ -57,9 +57,8 @@ int main(int argc, char* argv[]) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear Screen
       
         // draw the biome map on top left corner
-        int size = window.height * .5;
-        glViewport(window.width - size, window.height - size, size, size);
-        biomeMap.draw(); // comment this line to disable
+        GLsizei size = (GLsizei)(window.height * .5);
+        glViewport((GLint)(window.width - size), (GLint)(window.height - size), size, size);
 
         // draw the biome map on top left corner
         // int size = window.height * .5;

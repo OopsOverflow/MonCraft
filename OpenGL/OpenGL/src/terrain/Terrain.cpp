@@ -26,7 +26,7 @@ Terrain::~Terrain() {
   workerThread.join();
   std::cout << "terrain thread terminated" << std::endl;
 
-  for(auto chunkPair : data)
+  for(auto& chunkPair : data)
     delete chunkPair.second;
 }
 
@@ -103,7 +103,7 @@ void Terrain::update() {
   {
     std::lock_guard<std::mutex> lck1(dataMutex);
     std::lock_guard<std::mutex> lck2(chunksMutex);
-    for(auto chunkData : data) {
+    for(auto& chunkData : data) {
       chunks.insert(chunkData);
     }
     data.clear();
@@ -112,7 +112,7 @@ void Terrain::update() {
   // clear old chunks
   {
     std::lock_guard<std::mutex> lock(chunksMutex);
-    int count = chunks.size();
+    int count = (int)chunks.size();
     if(count > chunksMaxCount) {
       for (auto it = chunks.begin(); it != chunks.end() && count > chunksMaxCount;) {
         int dist = distance(it->first, chunkPos);

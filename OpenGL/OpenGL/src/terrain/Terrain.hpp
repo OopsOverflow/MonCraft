@@ -24,7 +24,7 @@ public:
 
   const int chunkSize = 16;
   const int renderDistance = 8;
-  const int chunksMaxCount = pow(renderDistance * 2 + 1, 2);
+  const int chunksMaxCount = (int)pow(renderDistance * 2 + 1, 2);
 
 private:
   // dirty hash function for the chunks hashmap

@@ -13,7 +13,7 @@
 
 class Blocks : public DataStore<BlockType, 3> {
 public:
-  Blocks(size_t size)
+  Blocks(int size)
       : DataStore<BlockType, 3>(glm::ivec3(size))
   { }
 };

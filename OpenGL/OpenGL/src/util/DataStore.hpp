@@ -39,7 +39,7 @@ public:
   DataStore(DataStore const&) = delete;
   DataStore& operator=(DataStore const&) = delete;
 
-  DataStore(DataStore&& other)
+  DataStore(DataStore&& other) noexcept
     : size(std::move(other.size)), map(std::move(other.map))
   {
     other.map = nullptr;

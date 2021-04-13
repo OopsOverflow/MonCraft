@@ -12,17 +12,17 @@ Generator::Generator(int chunkSize)
 Chunk* Generator::generate(ivec2 pos) {
 
   static const octaves_t octaves = {
-    {.65, 0.004}, // {magnitude, frequency}
-    {.20, 0.008},
-    {.10, 0.050},
-    {.05, 0.100},
+    {.65f, 0.004f}, // {magnitude, frequency}
+    {.20f, 0.008f},
+    {.10f, 0.050f},
+    {.05f, 0.100f},
   };
 
   Blocks blocks(chunkSize + 2);
 
   const ivec3 one(1);
 
-  ivec2 dpos;
+  ivec2 dpos(0);
   for(dpos.x = -1; dpos.x <= chunkSize; dpos.x++) {
     for(dpos.y = -1; dpos.y <= chunkSize; dpos.y++) {
       ivec2 pos2D = pos * ivec2(chunkSize) + dpos;

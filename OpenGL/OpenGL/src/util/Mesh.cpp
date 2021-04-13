@@ -2,8 +2,8 @@
 
 #include <iostream>
 
-Mesh::Mesh(GLuint vao, GLuint vbo, GLuint vertCount)
-    : myVAO(vao), myVBO(vbo), myVertCount(vertCount)
+Mesh::Mesh(GLuint vao, GLuint vbo, GLuint ebo, GLuint vertCount)
+    : myVAO(vao), myVBO(vbo), myEBO(ebo), myVertCount(vertCount)
 { }
 
 Mesh::Mesh(std::vector<GLfloat> const& positions,
@@ -11,7 +11,7 @@ Mesh::Mesh(std::vector<GLfloat> const& positions,
      std::vector<GLfloat> const& textureCoords,
      std::vector<GLuint>  const& indices)
 {
-  myVertCount = indices.size();
+  myVertCount = (GLuint)indices.size();
 
   glGenVertexArrays(1, &myVAO);
   glGenBuffers(1, &myVBO);
