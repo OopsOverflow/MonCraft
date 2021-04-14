@@ -25,23 +25,16 @@ Terrain::~Terrain() {
   stopTrigger.set_value();
   workerThread.join();
   std::cout << "terrain thread terminated" << std::endl;
-
-  for(auto& chunkPair : data)
-    delete chunkPair.second;
 }
 
 // COMBAK: this function is weird and could be improved.
 bool Terrain::getNextPos(ivec2 &pos) {
-  std::lock_guard<std::mutex> lck1(dataMutex);
   std::lock_guard<std::mutex> lck2(chunksMutex);
 
   int i = 0, j = -1;
 
   auto tryPos = [&](int k, int l) {
     pos = chunkPos + ivec2(k, l);
-    if(std::any_of(data.begin(), data.end(), [&](auto const& c) { return c.first == pos; })) {
-      return false;
-    }
     if (chunks.find(pos) == chunks.end()) {
       last_i = i;
       last_j = j;
@@ -85,8 +78,8 @@ void Terrain::worker(std::future<void> stopSignal) {
       {
         Chunk* c = generator.generate(pos);
         {
-          std::lock_guard<std::mutex> lock(dataMutex);
-          data.push_back({pos, c});
+          std::lock_guard<std::mutex> lock(chunksMutex);
+          chunks.emplace(pos, c);
         }
       }
       stop = stopSignal.wait_for(sleep);
@@ -100,46 +93,32 @@ void Terrain::worker(std::future<void> stopSignal) {
 }
 
 void Terrain::update() {
-
-  // add new chunks
-  {
-    std::lock_guard<std::mutex> lck1(dataMutex);
-    std::lock_guard<std::mutex> lck2(chunksMutex);
-    for(auto& chunkData : data) {
-      chunks.insert(chunkData);
-    }
-    data.clear();
-  }
-
   // clear old chunks
-  {
-    std::lock_guard<std::mutex> lock(chunksMutex);
-    int count = (int)chunks.size();
-    if(count > chunksMaxCount) {
-      for (auto it = chunks.begin(); it != chunks.end() && count > chunksMaxCount;) {
-        int dist = distance(it->first, chunkPos);
-        if (dist > renderDistance) {
-          it = chunks.erase(it);
-          count --;
-        }
-        else
-        ++it;
+  int count = (int)chunks.size();
+  if(count > chunksMaxCount) {
+    for (auto it = chunks.begin(); it != chunks.end() && count > chunksMaxCount;) {
+      int dist = distance(it->first, chunkPos);
+      if (dist > renderDistance) {
+        it = chunks.erase(it);
+        count --;
       }
+      else
+      ++it;
     }
   }
 }
 
 void Terrain::render(Camera const& cam) {
+  std::lock_guard<std::mutex> lck2(chunksMutex);
+
   chunkPos = floor(vec2(cam.center.x, cam.center.z) / float(chunkSize));
   update();
-  {
-    std::lock_guard<std::mutex> lck2(chunksMutex);
-    for(auto& chunk : chunks) {
-      Mesh const& mesh = chunk.second->getMesh();
-      glBindVertexArray(mesh.getVAO());
-      glm::mat4 mv = cam.getView() * mesh.model;
-      glUniformMatrix4fv(Shader::getActive()->getLocation(MATRIX_MODEL_VIEW), 1, GL_FALSE, glm::value_ptr(mv));
-      glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_INT, nullptr);
-    }
+
+  for(auto& chunk : chunks) {
+    Mesh const& mesh = chunk.second->getMesh();
+    glBindVertexArray(mesh.getVAO());
+    glm::mat4 mv = cam.getView() * mesh.model;
+    glUniformMatrix4fv(Shader::getActive()->getLocation(MATRIX_MODEL_VIEW), 1, GL_FALSE, glm::value_ptr(mv));
+    glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_INT, nullptr);
   }
 }

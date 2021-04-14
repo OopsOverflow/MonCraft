@@ -48,11 +48,6 @@ private:
   std::mutex chunksMutex;
   ChunkMap chunks;
 
-   // this is where the worker puts the generated chunks that are later
-   // moved to the hashmap by the main thread.
-  std::mutex dataMutex;
-  std::vector<std::pair<glm::ivec2, Chunk*>> data;
-
   void worker(std::future<void> stopSignal);
   void update();
 
