@@ -25,6 +25,15 @@ bool Chunk::isSolid(ivec3 pos) {
   return blocks.at(pos)->type != BlockType::Air;
 }
 
+face_t<2> getFaceUV(glm::ivec2 index) {
+  return face_t<2> {
+    (index.x + 1) / 6.f, (index.y + 0) / 2.f,
+    (index.x + 0) / 6.f, (index.y + 0) / 2.f,
+    (index.x + 0) / 6.f, (index.y + 1) / 2.f,
+    (index.x + 1) / 6.f, (index.y + 1) / 2.f,
+  };
+}
+
 void Chunk::generateMesh() {
   // indices scheme
   std::vector<int> scheme = { 0, 1, 2, 0, 2, 3 };
@@ -47,8 +56,9 @@ void Chunk::generateMesh() {
     auto normFace = blockNormals[static_cast<size_t>(face)];
     std::copy(normFace.begin(), normFace.end(), std::back_inserter(normals));
 
-    // textureCoords // TODO: use
-    auto uvFace = blockUVs[static_cast<size_t>(face)];
+    // textureCoords
+    auto indexUV = getBlock(pos)->getFaceUVs(face);
+    auto uvFace = getFaceUV(indexUV);
     std::copy(uvFace.begin(), uvFace.end(), std::back_inserter(textureCoords));
   };
 

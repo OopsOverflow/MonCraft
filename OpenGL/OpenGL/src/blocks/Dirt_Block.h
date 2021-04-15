@@ -9,9 +9,7 @@ class Dirt_Block : public Block
 public:
     Dirt_Block();
 
-    std::vector<GLfloat> getSideTexCoords() const override;
-    std::vector<GLfloat> getTopTexCoords() const override;
-    std::vector<GLfloat> getBottomTexCoords() const override;
+    glm::ivec2 getFaceUVs(BlockFace face) const override;
 
 private:
 };

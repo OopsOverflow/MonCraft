@@ -2,6 +2,7 @@
 #define BLOCK_H
 
 #include "GL/glew.h"
+#include <glm/glm.hpp>
 #include <vector>
 
 enum class BlockType
@@ -12,6 +13,8 @@ enum class BlockType
     Stone
 };
 
+enum class BlockFace { TOP, BOTTOM, FRONT, RIGHT, BACK, LEFT };
+
 class Block
 {
 public:
@@ -21,9 +24,7 @@ public:
 
     const BlockType type;
 
-    virtual std::vector<GLfloat> getSideTexCoords() const = 0;
-    virtual std::vector<GLfloat> getTopTexCoords() const = 0;
-    virtual std::vector<GLfloat> getBottomTexCoords() const = 0;
+    virtual glm::ivec2 getFaceUVs(BlockFace face) const = 0;
 
 };
 

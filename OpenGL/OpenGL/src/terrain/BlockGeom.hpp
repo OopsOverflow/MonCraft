@@ -4,8 +4,7 @@
 #include <array>
 #include <GL/glew.h>
 #include <glm/glm.hpp>
-
-enum class BlockFace { TOP, BOTTOM, FRONT, RIGHT, BACK, LEFT };
+#include "../blocks/Block.h"
 
 template<size_t N>
 using face_t = std::array<GLfloat, 4 * N>;
@@ -87,6 +86,7 @@ static const BlockData<3> blockNormals {
   }
 };
 
+// TODO: remove (dead code)
 static const BlockData<2> blockUVs {
   face_t<2>{ // TOP
     1.f/6, topTexture,

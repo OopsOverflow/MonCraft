@@ -8,10 +8,7 @@ class Stone_Block : public Block
 public:
     Stone_Block();
 
-    std::vector<GLfloat> getSideTexCoords() const override;
-    std::vector<GLfloat> getTopTexCoords() const override;
-    std::vector<GLfloat> getBottomTexCoords() const override;
-
+    glm::ivec2 getFaceUVs(BlockFace face) const override;
 };
 
 #endif // STONE_BLOCK_H
