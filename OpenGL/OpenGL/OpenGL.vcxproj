@@ -159,6 +159,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\entity\Character.cpp" />
+    <ClCompile Include="src\entity\Hitbox.cpp" />
     <ClCompile Include="src\util\mesh.cpp" />
     <ClCompile Include="src\util\loader.cpp" />
     <ClCompile Include="src\blocks\Dirt_Block.cpp" />
@@ -173,6 +175,8 @@
     <ClCompile Include="src\blocks\Stone_Block.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\entity\Character.hpp" />
+    <ClInclude Include="src\entity\Hitbox.hpp" />
     <ClInclude Include="src\util\mesh.hpp" />
     <ClInclude Include="src\util\loader.hpp" />
     <ClInclude Include="src\blocks\Block.h" />
