@@ -5,7 +5,8 @@ layout (location = 1) in vec3 v_normal;
 layout (location = 2) in vec2 v_texture;
 layout (location = 3) in float v_occlusion;
 
-uniform mat4 m_modelView;
+uniform mat4 m_model;
+uniform mat4 m_view;
 uniform mat4 m_projection;
 uniform mat4 m_normal;
 
@@ -17,7 +18,7 @@ smooth out float vertexOcclusion;
 
 void main() {
   // Pos
-  vec4 vertPos4 = m_modelView * vec4(v_position, 1.0);
+  vec4 vertPos4 = m_view * m_model * vec4(v_position, 1.0);
   gl_Position = m_projection * vertPos4;
   vertexPosition = vec3(vertPos4) / vertPos4.w;
   // Normals
