@@ -118,7 +118,7 @@ void Terrain::render(Camera const& cam) {
     Mesh const& mesh = chunk.second->getMesh();
     glBindVertexArray(mesh.getVAO());
     glm::mat4 mv = cam.getView() * mesh.model;
-    glUniformMatrix4fv(Shader::getActive()->getLocation(MATRIX_MODEL_VIEW), 1, GL_FALSE, glm::value_ptr(mv));
+    glUniformMatrix4fv(MATRIX_MODEL_VIEW, 1, GL_FALSE, glm::value_ptr(mv));
     glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_INT, nullptr);
   }
 }
