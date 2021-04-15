@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <memory>
 
 #include "BlockGeom.hpp"
 #include "../util/Mesh.hpp"
@@ -11,10 +12,10 @@
  * Describes a subdivision of the terrain.
  */
 
-class Blocks : public DataStore<BlockType, 3> {
+class Blocks : public DataStore<std::unique_ptr<Block>, 3> {
 public:
   Blocks(int size)
-      : DataStore<BlockType, 3>(glm::ivec3(size))
+      : DataStore<std::unique_ptr<Block>, 3>(glm::ivec3(size))
   { }
 };
 
@@ -33,6 +34,7 @@ public:
 
   Mesh const& getMesh();
   glm::ivec2 getPosition() const;
+  Block* getBlock(glm::ivec3 pos);
 
 private:
   void generateMesh();

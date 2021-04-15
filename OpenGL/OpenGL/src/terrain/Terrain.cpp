@@ -109,7 +109,7 @@ void Terrain::update() {
 }
 
 void Terrain::render(Camera const& cam) {
-  std::lock_guard<std::mutex> lck2(chunksMutex);
+  std::lock_guard<std::mutex> lck(chunksMutex);
 
   chunkPos = floor(vec2(cam.center.x, cam.center.z) / float(chunkSize));
   update();
@@ -121,4 +121,13 @@ void Terrain::render(Camera const& cam) {
     glUniformMatrix4fv(Shader::getActive()->getLocation(MATRIX_MODEL_VIEW), 1, GL_FALSE, glm::value_ptr(mv));
     glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_INT, nullptr);
   }
+}
+
+
+Block* Terrain::getBlock(glm::ivec3 pos) {
+  std::lock_guard<std::mutex> lck(chunksMutex);
+  glm::ivec2 cpos = floor(vec2(pos.x, pos.z) / float(chunkSize));
+  if(chunks.find(cpos) == chunks.end())
+    return nullptr;
+  return chunks.at(cpos)->getBlock(pos);
 }

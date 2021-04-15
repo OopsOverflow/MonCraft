@@ -1,4 +1,7 @@
 #include "Generator.hpp"
+#include "../blocks/Grass_Block.h"
+#include "../blocks/Dirt_Block.h"
+#include "../blocks/Air_Block.h"
 
 using glm::ivec2;
 using glm::ivec3;
@@ -31,20 +34,19 @@ Chunk* Generator::generate(ivec2 pos) {
 
       // 1) air column
       for(int i = chunkSize; i > blockHeight; i--) {
-        blocks.at(ivec3(dpos.x, i, dpos.y) + one) = BlockType::Air;
+        blocks.at(ivec3(dpos.x, i, dpos.y) + one) = std::make_unique<Air_Block>();
       }
 
       // 1) single grass block
-      blocks.at(ivec3(dpos.x, blockHeight, dpos.y) + one) = BlockType::Grass;
+      blocks.at(ivec3(dpos.x, blockHeight, dpos.y) + one) = std::make_unique<Grass_Block>();
 
       // 3) dirt column
       for(int i = blockHeight-1; i >= 0; i--) {
-        blocks.at(ivec3(dpos.x, i, dpos.y) + one) = BlockType::Dirt;
+        blocks.at(ivec3(dpos.x, i, dpos.y) + one) = std::make_unique<Dirt_Block>();
       }
 
       // 3) below chunk = void
-      blocks.at(ivec3(dpos.x, 0, dpos.y) + one) = BlockType::Air;
-
+      blocks.at(ivec3(dpos.x, 0, dpos.y) + one) = std::make_unique<Air_Block>();
     }
   }
   return new Chunk(pos * ivec2(chunkSize), std::move(blocks)); // TODO

@@ -22,7 +22,7 @@ Chunk::~Chunk() {
 }
 
 bool Chunk::isSolid(ivec3 pos) {
-  return blocks.at(pos) != BlockType::Air;
+  return blocks.at(pos)->type != BlockType::Air;
 }
 
 void Chunk::generateMesh() {
@@ -78,4 +78,9 @@ Mesh const& Chunk::getMesh() {
 
 ivec2 Chunk::getPosition() const {
   return chunkPos;
+}
+
+
+Block* Chunk::getBlock(ivec3 pos) {
+  return blocks.at(pos).get();
 }

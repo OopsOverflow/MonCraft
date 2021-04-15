@@ -22,6 +22,8 @@ public:
 
   void render(Camera const& cam);
 
+  Block* getBlock(glm::ivec3 pos);
+
   const int chunkSize = 16;
   const int renderDistance = 8;
   const int chunksMaxCount = (int)pow(renderDistance * 2 + 1, 2);
