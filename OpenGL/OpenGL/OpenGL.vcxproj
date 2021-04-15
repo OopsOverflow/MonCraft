@@ -163,10 +163,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Debug.cpp" />
     <ClCompile Include="src\noise\bitmapTex.cpp" />
     <ClCompile Include="src\noise\simplex.cpp" />
     <ClCompile Include="src\noise\value.cpp" />
     <ClCompile Include="src\noise\voronoi.cpp" />
+    <ClCompile Include="src\terrain\Chunk.cpp" />
+    <ClCompile Include="src\terrain\Generator.cpp" />
+    <ClCompile Include="src\terrain\Terrain.cpp" />
     <ClCompile Include="src\util\mesh.cpp" />
     <ClCompile Include="src\util\loader.cpp" />
     <ClCompile Include="src\blocks\Dirt_Block.cpp" />
@@ -189,6 +193,11 @@
     <ClInclude Include="src\noise\simplex.hpp" />
     <ClInclude Include="src\noise\value.hpp" />
     <ClInclude Include="src\noise\voronoi.hpp" />
+    <ClInclude Include="src\terrain\BlockGeom.hpp" />
+    <ClInclude Include="src\terrain\Chunk.hpp" />
+    <ClInclude Include="src\terrain\Generator.hpp" />
+    <ClInclude Include="src\terrain\Terrain.hpp" />
+    <ClInclude Include="src\util\DataStore.hpp" />
     <ClInclude Include="src\util\mesh.hpp" />
     <ClInclude Include="src\util\loader.hpp" />
     <ClInclude Include="src\blocks\Block.h" />

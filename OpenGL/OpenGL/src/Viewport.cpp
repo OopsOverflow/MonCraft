@@ -46,8 +46,9 @@ Viewport::Viewport(size_t width, size_t height)
   std::cout << "Renderer:" << glGetString(GL_RENDERER) << std::endl;
   std::cout << "---------" << std::endl;
 
-  glClearColor(0.0, 0.0, 0.0, 1.0);
-  // glEnable(GL_DEPTH_TEST);
+  glClearColor(54/255.f, 199/255.f, 242/255.f, 1.0);
+  glEnable(GL_DEPTH_TEST);
+  glEnable(GL_CULL_FACE);
 }
 
 Viewport::~Viewport() {

@@ -13,7 +13,15 @@ srcs = files(
   'OpenGL/src/noise/value.cpp',
   'OpenGL/src/noise/voronoi.cpp',
   'OpenGL/src/noise/simplex.cpp',
-  'OpenGL/src/debug.cpp',
+  
+  'OpenGL/src/util/Mesh.cpp',
+  'OpenGL/src/util/Loader.cpp',
+
+  'OpenGL/src/terrain/Terrain.cpp',
+  'OpenGL/src/terrain/Chunk.cpp',
+  'OpenGL/src/terrain/Generator.cpp',
+
+  'OpenGL/src/Debug.cpp',
 )
 
 deps = [

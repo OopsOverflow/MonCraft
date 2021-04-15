@@ -4,7 +4,7 @@
 #include "GL/glew.h"
 #include <vector>
 
-enum class Block_Type
+enum class BlockType
 {
     Air,
     Grass,
@@ -15,11 +15,11 @@ enum class Block_Type
 class Block
 {
 public:
-    Block(Block_Type type);
+    Block(BlockType type);
 
     virtual ~Block() { }
 
-    const Block_Type type;
+    const BlockType type;
 
     virtual std::vector<GLfloat> getSideTexCoords() const = 0;
     virtual std::vector<GLfloat> getTopTexCoords() const = 0;

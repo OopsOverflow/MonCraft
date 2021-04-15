@@ -1,4 +1,5 @@
 OpenGL/Debug
+OpenGL/DebugOptimized
 OpenGL/Release
 OpenGL/Dependencies/glm/out
 .clang-format

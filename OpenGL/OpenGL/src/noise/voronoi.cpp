@@ -35,12 +35,12 @@ void VoronoiNoise::generate(ivec2 pos, Grid<glm::vec2>& map) const {
   float fGridSize = (float)gridSize;
   ivec2 istart = floor(vec2(pos) / fGridSize);
   istart -= 1;
-  ivec2 iend = ceil(vec2(pos + map.size()) / fGridSize);
+  ivec2 iend = ceil(vec2(pos + map.size) / fGridSize);
   iend += 1;
   ivec2 isize = iend - istart;
   ivec2 offset = pos % gridSize;
 
-  Grid<glm::vec2> grid(isize.x, isize.y);
+  Grid<glm::vec2> grid(isize);
   grid.for_each([&](ivec2 ipos, vec2& val) {
     val = vec2(noise.sample2D(istart + ipos)) / vec2(UINT16_MAX);
   });
@@ -49,7 +49,7 @@ void VoronoiNoise::generate(ivec2 pos, Grid<glm::vec2>& map) const {
     pos += offset;
     ivec2 ipos = floor(pos / fGridSize);
     ivec2 res = ipos;
-    float min_dist = 10 * gridSize; // bigger than possible
+    float min_dist = 10.f * gridSize; // bigger than possible
 
     for (int di = -1; di <= 1; di++) {
       for (int dj = -1; dj <= 1; dj++) {

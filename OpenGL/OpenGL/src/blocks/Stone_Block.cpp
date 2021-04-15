@@ -1,7 +1,7 @@
 #include "Stone_Block.h"
 
 Stone_Block::Stone_Block()
-    : Block(Block_Type::Stone)
+    : Block(BlockType::Stone)
 {}
 
 

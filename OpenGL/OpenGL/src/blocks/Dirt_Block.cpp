@@ -1,7 +1,7 @@
 #include "Dirt_Block.h"
 
 Dirt_Block::Dirt_Block()
-    : Block(Block_Type::Dirt)
+    : Block(BlockType::Dirt)
 {}
 
 //Texture
