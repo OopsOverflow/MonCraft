@@ -38,6 +38,7 @@ public:
 
 private:
   void generateMesh();
+  std::array<GLfloat, 4> genOcclusion(glm::ivec3 pos, BlockFace face);
   bool isSolid(glm::ivec3 pos);
 
   glm::ivec2 chunkPos;
@@ -46,5 +47,5 @@ private:
   // the gl mesh and corresponding data.
   Mesh* mesh;
   std::vector<GLuint> indices;
-  std::vector<GLfloat> positions, normals, textureCoords;
+  std::vector<GLfloat> positions, normals, textureCoords, occlusion;
 };

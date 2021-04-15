@@ -16,8 +16,9 @@ enum ShaderLocation {
   MATRIX_MODEL_VIEW = 0,
   MATRIX_PROJECTION = 1,
   MATRIX_NORMAL = 2,
-  
+
   CAMERA_CENTER = -1,
+  VERTEX_OCCLUSION = 3,
 };
 
 class Shader {
