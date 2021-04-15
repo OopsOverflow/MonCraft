@@ -69,7 +69,8 @@ int main(int argc, char* argv[]) {
         glBindTexture(GL_TEXTURE_2D, textureID);
 
         // update the terrain
-        terrain.render(window.camera);
+        terrain.update(window.camera.center);
+        terrain.render();
 
         glBindTexture(GL_TEXTURE_2D, 0);
 

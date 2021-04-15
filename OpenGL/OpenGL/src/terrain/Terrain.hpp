@@ -9,7 +9,6 @@
 
 #include "Chunk.hpp"
 #include "Generator.hpp"
-#include "Camera.hpp"
 
 class Terrain
 {
@@ -20,7 +19,8 @@ public:
   Terrain(Terrain const&) = delete;
   Terrain& operator=(Terrain const&) = delete;
 
-  void render(Camera const& cam);
+  void update(glm::vec3 pos);
+  void render();
 
   Block* getBlock(glm::ivec3 pos);
 
@@ -51,7 +51,6 @@ private:
   ChunkMap chunks;
 
   void worker(std::future<void> stopSignal);
-  void update();
 
   // this is kinda dirty, see cpp file.
   glm::ivec2 lastPos = glm::ivec2(0);

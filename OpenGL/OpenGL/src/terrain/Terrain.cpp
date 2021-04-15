@@ -92,7 +92,10 @@ void Terrain::worker(std::future<void> stopSignal) {
   }
 }
 
-void Terrain::update() {
+void Terrain::update(glm::vec3 pos) {
+  std::lock_guard<std::mutex> lck2(chunksMutex);
+  chunkPos = floor(vec2(pos.x, pos.z) / float(chunkSize));
+
   // clear old chunks
   int count = (int)chunks.size();
   if(count > chunksMaxCount) {
@@ -108,11 +111,8 @@ void Terrain::update() {
   }
 }
 
-void Terrain::render(Camera const& cam) {
-  std::lock_guard<std::mutex> lck(chunksMutex);
-
-  chunkPos = floor(vec2(cam.center.x, cam.center.z) / float(chunkSize));
-  update();
+void Terrain::render() {
+  std::lock_guard<std::mutex> lck2(chunksMutex);
 
   for(auto& chunk : chunks) {
     Mesh const& mesh = chunk.second->getMesh();
