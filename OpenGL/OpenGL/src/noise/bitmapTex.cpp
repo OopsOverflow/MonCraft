@@ -11,16 +11,10 @@ BitmapTex::BitmapTex() {
   if (!shader) {
     shader = new Shader("src/shader/2dtex.vert", "src/shader/2dtex.frag");
   }
-
-  // GLint u_mvp = glGetUniformLocation(shader->program, "uMvp");
-  // GLint v_position = glGetAttribLocation(shader->program, "vPosition");
-  // std::cout << "---- SHADER ---- " << std::endl;
-  // std::cout << "u_mvp " << u_mvp << std::endl;
-  // std::cout << "v_position " << v_position << std::endl;
 }
 
 void BitmapTex::generate(Bitmap const& map) {
-  glm::vec2 verts[] = {
+  static const glm::vec2 verts[] = {
       glm::vec2{-1, -1},
       glm::vec2{1, -1},
       glm::vec2{1, 1},

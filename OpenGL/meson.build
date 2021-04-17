@@ -5,6 +5,7 @@ srcs = files(
   'OpenGL/src/Shader.cpp',
   'OpenGL/src/Camera.cpp',
   'OpenGL/src/Viewport.cpp',
+  'OpenGL/src/ShadowMap.cpp',
 
   'OpenGL/src/controller/FPS.cpp',
   'OpenGL/src/controller/Turntable.cpp',

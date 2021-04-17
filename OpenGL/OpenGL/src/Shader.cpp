@@ -43,6 +43,7 @@ void Shader::initLocations() {
             << "m_view: " << UNILOC("m_view") << std::endl
             << "m_projection: " << UNILOC("m_projection") << std::endl
             << "m_normal: " << UNILOC("m_normal") << std::endl
+            << "m_shadows: " << UNILOC("m_shadows") << std::endl
             << "c_center: " << UNILOC("c_center") << std::endl;
   #undef ATTRLOC
   #undef UNILOC

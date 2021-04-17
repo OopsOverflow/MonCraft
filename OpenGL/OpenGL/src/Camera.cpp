@@ -34,6 +34,13 @@ void Camera::setPosition(const glm::vec3 &newPos) {
   position = newPos;
 }
 
+void Camera::setLookAt(const glm::vec3 &position, const glm::vec3 &center) {
+  this->position = position;
+  this->center = center;
+  computeView();
+  computeProjection();
+}
+
 void Camera::translate(const glm::vec3 &translation, bool localSpace) {
   glm::mat4 trans = glm::translate(glm::mat4(1.f), translation);
   glm::mat4 invTrans = glm::translate(glm::mat4(1.f), -translation);
@@ -142,8 +149,6 @@ void Camera::getSize(unsigned int &width, unsigned int &height) const {
 
 Projection Camera::getProjectionType() const { return projType; }
 
-glm::mat4 Camera::getView() const { return view; }
-
 // ----------- private -----------
 
 void Camera::computeView() {
@@ -162,7 +167,7 @@ void Camera::computeProjection() {
     // kind of perspective division... To switch between persp & ortho.
     float y = glm::length(center - position) * tan(glm::radians(fovY / 2.f));
     float x = y * aspect;
-    projection = glm::ortho(-x, x, -y, y, -1000.f, 1000.f);
+    projection = glm::ortho(-x, x, -y, y, 0.f, 1000.f);
   }
 
   else if (projType == Projection::PROJECTION_PERSPECTIVE) {
