@@ -26,6 +26,7 @@ srcs = files(
   'OpenGL/src/blocks/Dirt_Block.cpp',
   'OpenGL/src/blocks/Stone_Block.cpp',
   'OpenGL/src/blocks/Grass_Block.cpp',
+  'OpenGL/src/blocks/Debug_Block.cpp',
 
   'OpenGL/src/Debug.cpp',
 )

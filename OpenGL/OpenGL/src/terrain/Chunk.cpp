@@ -26,11 +26,12 @@ bool Chunk::isSolid(ivec3 pos) {
 }
 
 face_t<2> getFaceUV(glm::ivec2 index) {
+  static const float atlasSize = 6.f;
   return face_t<2> {
-    (index.x + 1) / 6.f, (index.y + 0) / 2.f,
-    (index.x + 0) / 6.f, (index.y + 0) / 2.f,
-    (index.x + 0) / 6.f, (index.y + 1) / 2.f,
-    (index.x + 1) / 6.f, (index.y + 1) / 2.f,
+    (index.x + 1) / atlasSize, (index.y + 0) / atlasSize,
+    (index.x + 0) / atlasSize, (index.y + 0) / atlasSize,
+    (index.x + 0) / atlasSize, (index.y + 1) / atlasSize,
+    (index.x + 1) / atlasSize, (index.y + 1) / atlasSize,
   };
 }
 
