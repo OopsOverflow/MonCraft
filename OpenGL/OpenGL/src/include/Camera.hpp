@@ -23,7 +23,7 @@ public:
   void translatePixels(int x, int y);
 
   void rotate(const glm::vec3 &rotation, bool localSpace = false);
-  void rotatePixels(int x, int y);
+  void rotatePixels(int x, int y, bool localSpace = false);
 
   void getSize(unsigned int &width, unsigned int &height) const;
   Projection getProjectionType() const;

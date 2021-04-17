@@ -110,7 +110,7 @@ void Camera::zoom(float factor) {
   }
 }
 
-void Camera::rotatePixels(int x, int y) {
+void Camera::rotatePixels(int x, int y, bool localSpace) {
   // in the turnTable rotation style we rotate around y axis in global space
   // and around x axis in local space.
 
@@ -123,10 +123,14 @@ void Camera::rotatePixels(int x, int y) {
   rotY = x * maxRotation / (float)screenWidth;
   rotX = y * maxRotation / (float)screenHeight;
 
-  rotate({0.f, rotY, 0.f});
-  // rotAxis should be normalized already (translations and rotations)
-  glm::vec3 rotAxis = glm::inverse(view) * glm::vec4(1.f, 0.f, 0.f, 0.f);
-  rotate(rotX * rotAxis);
+  if(localSpace) {
+    rotate({rotX, rotY, 0.f}, localSpace);
+  } else {
+    rotate({0.f, rotY, 0.f});
+    // rotAxis should be normalized already (translations and rotations)
+    glm::vec3 rotAxis = glm::inverse(view) * glm::vec4(1.f, 0.f, 0.f, 0.f);
+    rotate(rotX * rotAxis);
+  }
 }
 
 // ----------- getters -----------

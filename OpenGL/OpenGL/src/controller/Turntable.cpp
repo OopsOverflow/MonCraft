@@ -59,7 +59,7 @@ void ControllerTurntable::apply(Camera &camera) {
   }
 
   else if (rotation) {
-    camera.rotatePixels(-deltaX, -deltaY);
+    camera.rotatePixels(-deltaX, -deltaY, true);
   }
 
   lastX += deltaX;
