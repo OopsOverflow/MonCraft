@@ -51,6 +51,17 @@ Mesh::Mesh(std::vector<GLfloat> const& positions,
   glBindVertexArray(0);
 }
 
+Mesh::Mesh(Mesh&& other) {
+  myVAO = other.myVAO;
+  myVBO = other.myVBO;
+  myEBO = other.myEBO;
+  myVertCount = other.myVertCount;
+  other.myVAO = 0;
+  other.myVBO = 0;
+  other.myEBO = 0;
+  other.myVertCount = 0;
+}
+
 GLuint Mesh::getVAO() const {
   return myVAO;
 }

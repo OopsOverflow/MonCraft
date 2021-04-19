@@ -20,6 +20,8 @@ public:
     Mesh(Mesh const&) = delete;
     Mesh& operator=(Mesh const&) = delete;
 
+    Mesh(Mesh&&);
+
     GLuint getVAO() const;
     GLuint getVertexCount() const;
 

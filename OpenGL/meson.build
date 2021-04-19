@@ -17,6 +17,7 @@ srcs = files(
 
   'OpenGL/src/util/Mesh.cpp',
   'OpenGL/src/util/Loader.cpp',
+  'OpenGL/src/util/Raycast.cpp',
 
   'OpenGL/src/terrain/Terrain.cpp',
   'OpenGL/src/terrain/Chunk.cpp',

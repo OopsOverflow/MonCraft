@@ -122,11 +122,14 @@ void Terrain::render() {
   }
 }
 
-
-Block* Terrain::getBlock(glm::ivec3 pos) {
+Block* Terrain::getBlock(ivec3 pos) {
   std::lock_guard<std::mutex> lck(chunksMutex);
-  glm::ivec2 cpos = floor(vec2(pos.x, pos.z) / float(chunkSize));
+  ivec2 cpos = floor(vec2(pos.x, pos.z) / float(chunkSize));
+  if(pos.y < 0 || pos.y >= chunkSize) // TODO: change this once the terrain height is established
+    return nullptr;
   if(chunks.find(cpos) == chunks.end())
     return nullptr;
-  return chunks.at(cpos)->getBlock(pos);
+
+  ivec3 dpos = pos - ivec3(cpos.x, 0, cpos.y) * chunkSize;
+  return chunks.at(cpos)->getBlock(dpos + ivec3(1));
 }
