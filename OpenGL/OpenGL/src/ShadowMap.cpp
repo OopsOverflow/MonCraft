@@ -30,6 +30,8 @@ ShadowMap::ShadowMap(int size)
   glBindFramebuffer(GL_TEXTURE_2D, 0);
 }
 
+// TODO: temporary until I finish the skewed shadow matrix
+#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/vector_angle.hpp>
 #include <glm/gtx/transform2.hpp>
 

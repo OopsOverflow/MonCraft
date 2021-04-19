@@ -22,9 +22,15 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <algorithm>
 
+// TODO: temporary until I finish the skewed shadow matrix
+#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/vector_angle.hpp>
 #include <glm/gtx/transform2.hpp>
 
+std::unique_ptr<Mesh> makeTargetBlock() {
+  std::vector<GLfloat> positions;
+  std::vector<GLfloat> normals;
+  std::vector<GLfloat> textureCoords;
   std::vector<GLfloat> occlusion(4 * 6, 0);
   std::vector<GLuint> indices;
   std::vector<GLuint> scheme = { 0, 1, 2, 0, 2, 3 };
