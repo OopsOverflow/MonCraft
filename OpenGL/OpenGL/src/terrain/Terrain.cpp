@@ -15,7 +15,9 @@ int distance(ivec2 a, ivec2 b) {
 
 Terrain::Terrain()
   : generator(chunkSize),
-    chunkPos(0)
+    chunkPos(0),
+    loader(),
+    texture(loader.loadTexture("Testxture"))
 {
   workerThread = std::thread(&Terrain::worker, this, stopTrigger.get_future());
 }
@@ -113,7 +115,8 @@ void Terrain::render(Camera const& cam) {
 
   chunkPos = floor(vec2(cam.center.x, cam.center.z) / float(chunkSize));
   update();
-
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, texture);
   for(auto& chunk : chunks) {
     Mesh const& mesh = chunk.second->getMesh();
     glBindVertexArray(mesh.getVAO());
@@ -121,6 +124,7 @@ void Terrain::render(Camera const& cam) {
     glUniformMatrix4fv(Shader::getActive()->getLocation(MATRIX_MODEL_VIEW), 1, GL_FALSE, glm::value_ptr(mv));
     glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_INT, nullptr);
   }
+  glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 
