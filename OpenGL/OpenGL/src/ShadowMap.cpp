@@ -30,8 +30,38 @@ ShadowMap::ShadowMap(int size)
   glBindFramebuffer(GL_TEXTURE_2D, 0);
 }
 
+#include <glm/gtx/vector_angle.hpp>
+#include <glm/gtx/transform2.hpp>
+
 void ShadowMap::update(glm::vec3 sunPos, glm::vec3 center) {
   camera.setLookAt(sunPos, center);
+  auto proj = camera.projection;
+  auto view = camera.view;
+
+  auto vecX4 = proj * view * glm::vec4(1, 0, 0, 0);
+  auto vecY4 = proj * view * glm::vec4(0, 1, 0, 0);
+  auto vecZ4 = proj * view * glm::vec4(0, 0,-1, 0);
+  auto vecX = glm::normalize(glm::vec2(vecX4.x, vecX4.y));
+  auto vecY = glm::normalize(glm::vec2(vecY4.x, vecY4.y));
+  auto vecZ = glm::normalize(glm::vec2(vecZ4.x, vecZ4.y));
+
+  auto angleA = glm::orientedAngle(vecX, vecY);
+
+  auto shear1 = glm::shearX3D(glm::mat4(1.f), -(float)tan(glm::half_pi<float>() - angleA), 0.f);
+  proj = shear1 * proj;
+
+  vecX4 = proj * view * glm::vec4(1, 0, 0, 0);
+  vecY4 = proj * view * glm::vec4(0, 1, 0, 0);
+  vecZ4 = proj * view * glm::vec4(0, 0,-1, 0);
+  vecX = glm::normalize(glm::vec2(vecX4.x, vecX4.y));
+  vecY = glm::normalize(glm::vec2(vecY4.x, vecY4.y));
+  vecZ = glm::normalize(glm::vec2(vecZ4.x, vecZ4.y));
+  auto angleB = glm::orientedAngle(vecZ, vecY);
+
+  auto shear2 = glm::shearY3D(glm::mat4(1.f), -(float)tan(angleB), 0.f);
+  proj = shear2 * proj;
+
+  camera.projection = proj;
 }
 
 void ShadowMap::beginFrame() {
