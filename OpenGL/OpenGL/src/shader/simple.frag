@@ -1,4 +1,4 @@
-#version 330 core
+#version 430 core
 
 precision mediump float;
 
@@ -8,8 +8,9 @@ smooth in float vertexOcclusion;
 smooth in vec2 txrCoords;
 smooth in vec3 shadowCoords;
 
-uniform vec3 lightDirection;
-uniform float lightIntensity;
+// COMBAK: for some reason on windows these require an explicit location once at least 1 uniform in the program is explicit
+layout(location = 10) uniform vec3 lightDirection;
+layout(location = 11) uniform float lightIntensity;
 
 uniform sampler2D textureSampler;
 uniform sampler2D shadowSampler;
@@ -48,9 +49,8 @@ void main() {
   // Textures
   outputColor = texture(textureSampler, txrCoords);
   float shadow = 1 - computeShadow();
-  outputColor = outputColor * .5 + outputColor * lambertian * shadow * lightIntensity * .5;
+  outputColor = outputColor * .5 + outputColor * lambertian * lightIntensity * shadow * .5;
 
   float occl = .7;
   outputColor *= 1.0 - (vertexOcclusion * vertexOcclusion / 9.0) * occl;
-
 }

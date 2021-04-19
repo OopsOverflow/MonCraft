@@ -5,10 +5,10 @@ layout (location = 1) in vec3 v_normal;
 layout (location = 2) in vec2 v_texture;
 layout (location = 3) in float v_occlusion;
 
-uniform mat4 m_model;
-uniform mat4 m_view;
-uniform mat4 m_projection;
-uniform mat4 m_normal;
+layout (location = 0) uniform mat4 m_model;
+layout (location = 1) uniform mat4 m_view;
+layout (location = 2) uniform mat4 m_projection;
+layout (location = 3) uniform mat4 m_normal;
 layout (location = 4) uniform mat4 m_shadows;
 
 smooth out vec3 vertexPosition;
