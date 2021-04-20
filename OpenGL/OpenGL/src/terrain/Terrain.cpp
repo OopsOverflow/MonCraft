@@ -94,33 +94,43 @@ void Terrain::worker(std::future<void> stopSignal) {
   }
 }
 
-void Terrain::update(glm::vec3 pos) {
+void Terrain::update(glm::vec3 pos, glm::vec3 dir, float fovX) {
   std::lock_guard<std::mutex> lck(chunksMutex);
+  playerPos = pos;
+  viewDir = glm::normalize(dir);
   chunkPos = floor(vec2(pos.x, pos.z) / float(chunkSize));
+  this->fovX = fovX;
 
   // clear old chunks
   int count = (int)chunks.size();
-  if(count > chunksMaxCount) {
-    for (auto it = chunks.begin(); it != chunks.end() && count > chunksMaxCount;) {
-      int dist = distance(it->first, chunkPos);
-      if (dist > renderDistance) {
-        it = chunks.erase(it);
-        count --;
-      }
-      else
-      ++it;
+  for (auto it = chunks.begin(); it != chunks.end() && count > chunksMaxCount;) {
+    int dist = distance(it->first, chunkPos);
+    if (dist > renderDistance) {
+      it = chunks.erase(it);
+      count --;
     }
+    else
+    ++it;
   }
 }
 
 void Terrain::render() {
   std::lock_guard<std::mutex> lck(chunksMutex);
 
+  vec2 viewDir2D = glm::normalize(vec2(viewDir.x, viewDir.z));
+  ivec2 startChunk = chunkPos - ivec2(glm::sign(vec2(viewDir.x, viewDir.z)));
+
   for(auto& chunk : chunks) {
     Mesh const& mesh = chunk.second->getMesh();
-    glBindVertexArray(mesh.getVAO());
-    glUniformMatrix4fv(MATRIX_MODEL, 1, GL_FALSE, glm::value_ptr(mesh.model));
-    glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_INT, nullptr);
+    vec2 chunkDir = glm::normalize(vec2(chunk.first - startChunk));
+
+    float minDot = cos(glm::radians(fovX));
+
+    if(distance(chunk.first, chunkPos) < 2 || glm::dot(chunkDir, viewDir2D) > minDot) {
+      glBindVertexArray(mesh.getVAO());
+      glUniformMatrix4fv(MATRIX_MODEL, 1, GL_FALSE, glm::value_ptr(mesh.model));
+      glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_INT, nullptr);
+    }
   }
 }
 

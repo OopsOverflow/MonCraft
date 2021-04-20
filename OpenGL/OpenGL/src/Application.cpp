@@ -78,7 +78,7 @@ int main(int argc, char* argv[]) {
     character.cameraToHead(window.camera);
 
     Music MusicPlayer;
-   
+
 
     while (window.beginFrame()) {
         window.keyboardController.apply(character);
@@ -90,7 +90,12 @@ int main(int argc, char* argv[]) {
 
         // updates
         MusicPlayer.update();
-        terrain.update(window.camera.position);
+
+        auto playerPos = window.camera.position;
+        auto viewDir = window.camera.center - window.camera.position;
+        auto fovX = glm::degrees(2 * atan(tan(glm::radians(45.f) / 2) * window.width / window.height)); // see https://en.wikipedia.org/wiki/Field_of_view_in_video_games#Field_of_view_calculations
+        terrain.update(playerPos, viewDir, fovX);
+        
         auto castPos = window.camera.position;
         auto castDir = window.camera.center - window.camera.position;
         glm::vec3 castTarget = caster.cast(castPos, castDir, terrain);

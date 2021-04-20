@@ -21,7 +21,7 @@ public:
   Terrain(Terrain const&) = delete;
   Terrain& operator=(Terrain const&) = delete;
 
-  void update(glm::vec3 pos);
+  void update(glm::vec3 pos, glm::vec3 dir, float fovX);
   void render();
 
   Block* getBlock(glm::ivec3 pos);
@@ -44,7 +44,11 @@ private:
   using ChunkMap = std::unordered_map<glm::ivec2, std::unique_ptr<Chunk>, ivec2_hash, ivec2_hash>;
 
   Generator generator; // the chunk generator
+
+  glm::vec3 viewDir; // player position
+  glm::vec3 playerPos; // player view direction
   glm::ivec2 chunkPos; // in which chunk the player is
+  float fovX;
 
   std::thread workerThread; // the worker creates new chunks when it can
   std::promise<void> stopTrigger; // asks the thread to terminate
