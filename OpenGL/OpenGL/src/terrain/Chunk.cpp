@@ -13,11 +13,11 @@ Chunk::Chunk(ivec2 chunkPos, Blocks blocks)
   : chunkPos(chunkPos), blocks(move(blocks)), mesh(nullptr)
 {
   generateMesh();
-    std::cout << "created chunk (" << chunkPos.x << ", " << chunkPos.y << ")" << std::endl;
+    // std::cout << "created chunk (" << chunkPos.x << ", " << chunkPos.y << ")" << std::endl;
 }
 
 Chunk::~Chunk() {
-  std::cout << "deleted chunk (" << chunkPos.x << ", " << chunkPos.y << ")" << std::endl;
+  // std::cout << "deleted chunk (" << chunkPos.x << ", " << chunkPos.y << ")" << std::endl;
   delete mesh;
 }
 

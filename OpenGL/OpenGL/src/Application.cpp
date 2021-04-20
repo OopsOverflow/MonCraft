@@ -6,6 +6,7 @@
 #include "Camera.hpp"
 #include "Shader.hpp"
 #include "Viewport.hpp"
+#include <glm/gtc/type_ptr.hpp>
 
 // WINDOW DIMENSIONS
 #define WIDTH     800
@@ -20,7 +21,7 @@
 
 GLuint initsky(Shader& shader) {
     float skyboxVertices[] = {
-        // positions          
+        // positions
         -1.0f,  1.0f, -1.0f,
         -1.0f, -1.0f, -1.0f,
          1.0f, -1.0f, -1.0f,
@@ -64,21 +65,24 @@ GLuint initsky(Shader& shader) {
          1.0f, -1.0f,  1.0f
     };
 
-    unsigned int buffer;
-    glGenBuffers(1, &buffer);
-    glBindBuffer(GL_ARRAY_BUFFER, buffer);
+    GLuint vao;
+    GLuint vbo;
+    glGenVertexArrays(1, &vao);
+    glGenBuffers(1, &vbo);
+    glBindVertexArray(vao);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
     {
-        glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), NULL, GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), NULL, GL_STATIC_DRAW);
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(skyboxVertices), skyboxVertices);
 
         GLint vPosition = shader.getLocation(ShaderLocation::VERTEX_POSITION);
-        glVertexAttribPointer(0, 3, GL_FLOAT, 0, 0, 0);
+        std::cout << vPosition << std::endl;
+        glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, 0, NULL);
         glEnableVertexAttribArray(vPosition);
-
     }
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
 
-    return buffer;
+    return vao;
 }
 
 int main(int argc, char* argv[]) {
@@ -127,17 +131,22 @@ int main(int argc, char* argv[]) {
 
         glBindTexture(GL_TEXTURE_2D, 0);
 
-        window.endFrame();
 
         // draw skybox at last
+        glDisable(GL_CULL_FACE);
         glDepthFunc(GL_LEQUAL);
         skyBoxShader.activate();
         glBindVertexArray(buffer);
+        glUniformMatrix4fv(skyBoxShader.getLocation(MATRIX_MODEL_VIEW), 1, GL_FALSE, glm::value_ptr(window.camera.view));
+        glUniformMatrix4fv(skyBoxShader.getLocation(MATRIX_PROJECTION), 1, GL_FALSE, glm::value_ptr(window.camera.projection));
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
         glDrawArrays(GL_TRIANGLES, 0, 36);
         glBindVertexArray(0);
         glDepthFunc(GL_LESS);
+        glEnable(GL_CULL_FACE);
+
+        window.endFrame();
 
         //Time in ms telling us when this frame ended. Useful for keeping a fix framerate
         uint32_t timeEnd = SDL_GetTicks();
