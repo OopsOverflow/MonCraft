@@ -15,18 +15,18 @@ public:
 	bool setWalking();
 	bool setFlying();
 	bool setSpectator();
-	void solveMovement();
-	void solveFrame(uint32_t time);
+	void move(glm::vec3 amount);
 	void drawCharacter();
+	Character character;
 
 
 private:
+	
 	glm::vec3 size;
 	glm::vec3 pos;
 	glm::vec3 speed;
 	glm::vec3 acceleration;
 
-	Character character;
 
 	Mode mode;
 };

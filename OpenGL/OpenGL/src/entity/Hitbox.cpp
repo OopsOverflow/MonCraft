@@ -49,14 +49,12 @@ bool Hitbox::setSpectator()
 	return 1;
 }
 
-void Hitbox::solveMovement() {
+void Hitbox::move(glm::vec3 amount) {
+	pos.x += amount.x;
+	pos.y += amount.x;
+	pos.z += amount.x;
 }
 
-
-void Hitbox::solveFrame(uint32_t time)
-{
-	solveMovement();
-}
 
 void Hitbox::drawCharacter() {
 	character.draw(glm::translate(glm::mat4(1.f), pos));

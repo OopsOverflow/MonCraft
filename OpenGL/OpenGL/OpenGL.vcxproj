@@ -183,8 +183,8 @@
     <ClCompile Include="src\blocks\Block.cpp" />
     <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\Camera.cpp" />
-    <ClCompile Include="src\controller\FPS.cpp" />
-    <ClCompile Include="src\controller\Turntable.cpp" />
+    <ClCompile Include="src\controller\KeyboardController.cpp" />
+    <ClCompile Include="src\controller\MouseController.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\util\Raycast.cpp" />
     <ClCompile Include="src\Viewport.cpp" />
@@ -218,8 +218,8 @@
     <ClInclude Include="src\blocks\Dirt_Block.h" />
     <ClInclude Include="src\blocks\Grass_Block.h" />
     <ClInclude Include="src\include\Camera.hpp" />
-    <ClInclude Include="src\include\controller\FPS.hpp" />
-    <ClInclude Include="src\include\controller\Turntable.hpp" />
+    <ClInclude Include="src\include\controller\KeyboardController.hpp" />
+    <ClInclude Include="src\include\controller\MouseController.hpp" />
     <ClInclude Include="src\include\Shader.hpp" />
     <ClInclude Include="src\include\Viewport.hpp" />
     <ClInclude Include="src\blocks\Stone_Block.h" />

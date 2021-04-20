@@ -3,8 +3,9 @@
 #include <string>
 
 #include "Camera.hpp"
-#include "controller/Turntable.hpp"
-#include "controller/FPS.hpp"
+#include "controller/MouseController.hpp"
+#include "controller/KeyboardController.hpp"
+#include "../entity/Hitbox.hpp"
 
 #include <SDL2/SDL.h>
 
@@ -18,8 +19,8 @@ public:
   void endFrame();
 
   Camera camera;
-  ControllerTurntable turntable;
-  ControllerFPS fps;
+  MouseController mouseController;
+  KeyboardController keyboardController;
 
   size_t width;
   size_t height;

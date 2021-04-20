@@ -75,9 +75,17 @@ int main(int argc, char* argv[]) {
 
     GLuint textureID = loader.loadTexture("Texture_atlas");
 
-    window.camera.setLookAt({100, 100, 100}, {0, 0, 0});
+    
+    glm::vec3 headPos = glm::vec3({ 0.0f,64.0f,0.0f });
+
+    window.camera.setLookAt(headPos - glm::vec3({ 0.0f,0.0f,10.0f }), headPos);
+
 
     while (window.beginFrame()) {
+
+        window.keyboardController.apply(character);
+        window.mouseController.apply(character, window.camera);
+
         //Time in ms telling us when this frame started. Useful for keeping a fix framerate
         uint32_t timeBegin = SDL_GetTicks();
 

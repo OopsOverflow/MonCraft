@@ -3,7 +3,7 @@
 #include "Cube.hpp"
 
 Character::Character(const glm::vec3 headRotation, const glm::vec2 bobyRotation)
-    : view({ 0.0f,0.0f,0.0f }), bodyOrientation(0.0f), loader(), texture(loader.loadTexture("Character"))
+    : view({ 0.0f,0.0f,0.0f }), bodyRotation({ 0.0f,0.0f,0.0f }), loader(), texture(loader.loadTexture("Character"))
 {
     Cube cube;
     Mesh* chestMesh = new Mesh(cube.vertices, cube.normals, cube.chestUVs, cube.occlusions, cube.indices);
@@ -17,7 +17,8 @@ Character::Character(const glm::vec3 headRotation, const glm::vec2 bobyRotation)
     head.vertexCount = headMesh->getVertexCount();
     head.vao = headMesh->getVAO();
     head.localMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(8 * 0.069375f, 8 * 0.069375f, 8 * 0.069375f));
-    head.propagatedMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, (12/2 + 8/2) * 0.069375f, 0.0f));
+    head.localPosition = glm::vec3(0.0f, (12 / 2 + 8 / 2) * 0.069375f, 0.0f);
+    head.propagatedMatrix = glm::translate(glm::mat4(1.0f), head.localPosition);
     chest.children.push_back(head);
 
     Mesh* leftArmMesh = new Mesh(cube.vertices, cube.normals, cube.leftArmUVs, cube.occlusions, cube.indices);
@@ -25,7 +26,8 @@ Character::Character(const glm::vec3 headRotation, const glm::vec2 bobyRotation)
     leftArm.vertexCount = leftArmMesh->getVertexCount();
     leftArm.vao = leftArmMesh->getVAO();
     leftArm.localMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(4 * 0.069375f, 12 * 0.069375f, 4 * 0.069375f));
-    leftArm.propagatedMatrix = glm::translate(glm::mat4(1.0f), glm::vec3((8 / 2 + 4 / 2) * 0.069375f, 0.0f, 0.0f));
+    leftArm.localPosition = glm::vec3((8 / 2 + 4 / 2) * 0.069375f, 0.0f, 0.0f);
+    leftArm.propagatedMatrix = glm::translate(glm::mat4(1.0f), leftArm.localPosition);
     chest.children.push_back(leftArm);
 
     Mesh* rightArmMesh = new Mesh(cube.vertices, cube.normals, cube.rightArmUVs, cube.occlusions, cube.indices);
@@ -33,7 +35,8 @@ Character::Character(const glm::vec3 headRotation, const glm::vec2 bobyRotation)
     rightArm.vertexCount = rightArmMesh->getVertexCount();
     rightArm.vao = rightArmMesh->getVAO();
     rightArm.localMatrix = leftArm.localMatrix;
-    rightArm.propagatedMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-(8 / 2 + 4 / 2) * 0.069375f, 0.0f, 0.0f));
+    rightArm.localPosition = glm::vec3(-(8 / 2 + 4 / 2) * 0.069375f, 0.0f, 0.0f);
+    rightArm.propagatedMatrix = glm::translate(glm::mat4(1.0f), rightArm.localPosition);
     chest.children.push_back(rightArm);
 
     Mesh* leftLegMesh = new Mesh(cube.vertices, cube.normals, cube.leftLegUVs, cube.occlusions, cube.indices);
@@ -41,7 +44,8 @@ Character::Character(const glm::vec3 headRotation, const glm::vec2 bobyRotation)
     leftLeg.vertexCount = leftLegMesh->getVertexCount();
     leftLeg.vao = leftLegMesh->getVAO();
     leftLeg.localMatrix = leftArm.localMatrix;
-    leftLeg.propagatedMatrix = glm::translate(glm::mat4(1.0f), glm::vec3((4 / 2) * (88 / 91.0f) * 0.069375f, -(12 / 2 + 12 / 2) * 0.069375f, -(2 / 91.0f) * 0.069375f));  //slightly shift legs to prevent Z-fighting
+    leftLeg.localPosition = glm::vec3((4 / 2) * (88 / 91.0f) * 0.069375f, -(12 / 2 + 12 / 2) * 0.069375f, -(2 / 91.0f) * 0.069375f);//slightly shift legs to prevent Z-fighting
+    leftLeg.propagatedMatrix = glm::translate(glm::mat4(1.0f), leftLeg.localPosition);
     chest.children.push_back(leftLeg);
 
     Mesh* rightLegMesh= new Mesh(cube.vertices, cube.normals, cube.rightLegUVs, cube.occlusions, cube.indices);
@@ -49,14 +53,14 @@ Character::Character(const glm::vec3 headRotation, const glm::vec2 bobyRotation)
     rightLeg.vertexCount = rightLegMesh->getVertexCount();
     rightLeg.vao = rightLegMesh->getVAO();
     rightLeg.localMatrix = leftArm.localMatrix;
-    rightLeg.propagatedMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-(4 / 2) * (88 / 91.0f) * 0.069375f, -(12 / 2 + 12 / 2) * 0.069375f, -(2 / 91.0f) * 0.069375f));
+    rightLeg.localPosition = glm::vec3(-(4 / 2) * (88 / 91.0f) * 0.069375f, -(12 / 2 + 12 / 2) * 0.069375f, -(2 / 91.0f) * 0.069375f);
+    rightLeg.propagatedMatrix = glm::translate(glm::mat4(1.0f), rightLeg.localPosition);
     chest.children.push_back(rightLeg);
 
-    rotateHead({ 30.0f,45.0f });
-    rotateMember({ 105.0f,-30.0f }, Member::LEFT_ARM);
-    rotateMember({ 90.0f,90.0f }, Member::RIGHT_ARM);
-    rotateMember({ 0.0f,0.0f }, Member::LEFT_LEG);
-    rotateMember({ 0.0f,0.0f }, Member::RIGHT_LEG);
+}
+
+BodyPart const& Character::getHeadProperties() {
+    return chest.children.at(0);
 }
 
 void setView(const glm::vec3& lookAt) {
@@ -92,33 +96,37 @@ void Character::movement(const float distance) {
 }
 
 void Character::rotateBody(float rotation) {
-    bodyOrientation = rotation;
+    bodyRotation.y += rotation;
     BodyPart* model = &chest;
-    glm::vec3 pivotLocation;
     model->propagatedMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(rotation), glm::vec3({ 0.0f,1.0f,0.0f })) * model->propagatedMatrix;
 }
 
 void Character::rotateHead(glm::vec2 rotation) {
 
-    if (fabs(rotation.y) > 45) {
-        rotateBody(bodyOrientation + rotation.y + (rotation.y > 0 ? -45 : 45));
-        rotation.y = (rotation.y > 0 ? 45 : -45);
-    }
-    if(fabs(rotation.x) > 90) rotation.x = (rotation.x > 0 ? 90 : -90);
     BodyPart* model = &chest.children.at(0);
+
+   if (fabs(model->localRotation.y + rotation.y) > 45) {
+        rotateBody(model->localRotation.y + rotation.y - (rotation.y > 0 ? 45 : -45));
+       rotation.y = (model->localRotation.y + rotation.y > 0 ? 45 : -45) - model->localRotation.y;
+    }
+    if(fabs(model->localRotation.x + rotation.x) > 90) rotation.x = (model->localRotation.x + rotation.x > 0 ? 90 : -90) - model->localRotation.x;
+
+    model->localRotation += rotation;
+
+
     glm::vec3 pivotLocation;
     pivotLocation = glm::vec3(0.0f, -4 * 0.069375f, 0.0f);
 
     model->localMatrix = glm::translate(glm::mat4(1.0f), -pivotLocation) * model->localMatrix;
     model->localMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f)) * model->localMatrix;
-    model->localMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(rotation.y), glm::vec3(0.0f ,1.0f,0.0f)) * model->localMatrix;
+    model->localMatrix *= glm::rotate(glm::mat4(1.0f), glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f ));
     model->localMatrix = glm::translate(glm::mat4(1.0f), pivotLocation) * model->localMatrix;
 }
 
 void Character::rotateChest(float rotation) {
     BodyPart* model = &chest;
     glm::vec3 pivotLocation;
-    model->propagatedMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(rotation), glm::vec3(cos(glm::radians(bodyOrientation)), 0.0f, -sin(glm::radians(bodyOrientation)))) * model->propagatedMatrix;
+    model->propagatedMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(rotation), glm::vec3(cos(glm::radians(bodyRotation.y)), 0.0f, -sin(glm::radians(bodyRotation.y)))) * model->propagatedMatrix;
 }
 
 void Character::rotateMember(glm::vec2 rotation, Member member) {

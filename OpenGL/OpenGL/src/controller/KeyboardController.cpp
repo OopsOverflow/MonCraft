@@ -1,63 +1,63 @@
-#include "controller/FPS.hpp"
+#include "controller/KeyboardController.hpp"
 
 using namespace std::chrono;
 
-ControllerFPS::ControllerFPS() {
-  speed = 2.f;
+KeyboardController::KeyboardController() {
+  speed = 1.f;
   timer = steady_clock::now();
   direction = glm::vec3(0.f);
 }
 
-void ControllerFPS::pressedForward() {
+void KeyboardController::pressedForward() {
   direction.z = -1;
 }
 
-void ControllerFPS::releasedForward() {
+void KeyboardController::releasedForward() {
   if (direction.z == -1)
     direction.z = 0;
 }
 
-void ControllerFPS::pressedBackward() {
+void KeyboardController::pressedBackward() {
   direction.z = 1;
 }
 
-void ControllerFPS::releasedBackward() {
+void KeyboardController::releasedBackward() {
   if (direction.z == 1)
     direction.z = 0;
 }
 
-void ControllerFPS::pressedLeft() {
+void KeyboardController::pressedLeft() {
   direction.x = -1;
 }
 
-void ControllerFPS::releasedLeft() {
+void KeyboardController::releasedLeft() {
   if (direction.x == -1)
     direction.x = 0;
 }
 
-void ControllerFPS::pressedRight() {
+void KeyboardController::pressedRight() {
   direction.x = 1;
 }
 
-void ControllerFPS::releasedRight() {
+void KeyboardController::releasedRight() {
   if (direction.x == 1)
     direction.x = 0;
 }
 
-void ControllerFPS::pressedUp() {
+void KeyboardController::pressedUp() {
   direction.y = 1;
 }
 
-void ControllerFPS::releasedUp() {
+void KeyboardController::releasedUp() {
   if (direction.y == 1)
     direction.y = 0;
 }
 
-void ControllerFPS::pressedDown() {
+void KeyboardController::pressedDown() {
   direction.y = -1;
 }
 
-void ControllerFPS::releasedDown() {
+void KeyboardController::releasedDown() {
   if (direction.y == -1)
     direction.y = 0;
 }
@@ -68,7 +68,7 @@ glm::vec3 normalizeOrZero(glm::vec3 vec) {
   return glm::normalize(vec);
 }
 
-void ControllerFPS::apply(Camera &camera) {
+void KeyboardController::apply(Hitbox& character) {
   auto cur_timer = steady_clock::now();
   auto elapsed = duration_cast<milliseconds>(cur_timer - timer).count();
   timer = cur_timer;
@@ -77,8 +77,6 @@ void ControllerFPS::apply(Camera &camera) {
     return;
 
   float translate_amount = speed * elapsed * 1e-3f;
-  translate_amount *= 1 + glm::length(camera.position - camera.center);
 
-  camera.translate(normalizeOrZero({0, direction.y, 0}) * glm::vec3(translate_amount), false);
-  camera.translate(normalizeOrZero({direction.x, 0, direction.z}) * glm::vec3(translate_amount), true);
+  character.move(normalizeOrZero(glm::vec3(translate_amount,1.0f,1.0f)));
 }
