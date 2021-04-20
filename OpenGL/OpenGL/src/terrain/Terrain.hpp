@@ -10,6 +10,7 @@
 #include "Chunk.hpp"
 #include "Generator.hpp"
 #include "Camera.hpp"
+#include "../util/Loader.hpp"
 
 class Terrain
 {
@@ -24,9 +25,9 @@ public:
 
   Block* getBlock(glm::ivec3 pos);
 
-  const int chunkSize = 16;
-  const int renderDistance = 8;
-  const int chunksMaxCount = (int)pow(renderDistance * 2 + 1, 2);
+  const int chunkSize = 64;
+  const int renderDistance = 3;
+  const int chunksMaxCount = (int)pow(renderDistance * 2, 2);
 
 private:
   // dirty hash function for the chunks hashmap
@@ -52,6 +53,9 @@ private:
 
   void worker(std::future<void> stopSignal);
   void update();
+
+  Loader loader;
+  GLuint texture;
 
   // this is kinda dirty, see cpp file.
   glm::ivec2 lastPos = glm::ivec2(0);

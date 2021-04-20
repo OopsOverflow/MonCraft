@@ -75,6 +75,15 @@
     <ClCompile Include="src\terrain\Terrain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\blocks\Air_Block.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\entity\Character.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\entity\Hitbox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\include\Camera.hpp">
@@ -149,6 +158,18 @@
     <ClInclude Include="src\terrain\Terrain.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\blocks\Air_Block.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entity\Character.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entity\Hitbox.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entity\Cube.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\shader\simple.frag" />
@@ -158,6 +179,18 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="src\blocks\Textures\Testxture.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="src\blocks\Textures\Character.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\img\Character.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\img\starting_atlas.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\img\Testxture.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

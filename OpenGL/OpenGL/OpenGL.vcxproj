@@ -163,7 +163,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\blocks\Air_Block.cpp" />
     <ClCompile Include="src\Debug.cpp" />
+    <ClCompile Include="src\entity\Character.cpp" />
+    <ClCompile Include="src\entity\Hitbox.cpp" />
     <ClCompile Include="src\noise\bitmapTex.cpp" />
     <ClCompile Include="src\noise\simplex.cpp" />
     <ClCompile Include="src\noise\value.cpp" />
@@ -185,7 +188,11 @@
     <ClCompile Include="src\blocks\Stone_Block.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\blocks\Air_Block.h" />
     <ClInclude Include="src\DisplayNoise.hpp" />
+    <ClInclude Include="src\entity\Character.hpp" />
+    <ClInclude Include="src\entity\Cube.hpp" />
+    <ClInclude Include="src\entity\Hitbox.hpp" />
     <ClInclude Include="src\Noise.hpp" />
     <ClInclude Include="src\noise\bitmap.hpp" />
     <ClInclude Include="src\noise\bitmapTex.hpp" />
@@ -217,6 +224,10 @@
     <None Include="src\shader\simple.vert" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="data\img\Character.png" />
+    <Image Include="data\img\starting_atlas.png" />
+    <Image Include="data\img\Testxture.png" />
+    <Image Include="src\blocks\Textures\Character.png" />
     <Image Include="src\blocks\Textures\Testxture.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
