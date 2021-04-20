@@ -49,7 +49,7 @@ void main() {
   // Textures
   outputColor = texture(textureSampler, txrCoords);
   float shadow = 1 - computeShadow();
-  outputColor = outputColor * .5 + outputColor * lambertian * lightIntensity * shadow * .5;
+  outputColor = outputColor * .5 + outputColor * lightIntensity * shadow * .5;
 
   float occl = .7;
   outputColor *= 1.0 - (vertexOcclusion * vertexOcclusion / 9.0) * occl;

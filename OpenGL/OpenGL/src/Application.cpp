@@ -79,6 +79,8 @@ int main(int argc, char* argv[]) {
 
     Music MusicPlayer;
 
+    int skyCamSize = 300;
+    Camera skyCam(skyCamSize, skyCamSize, {1, 500, 1}, {0, 0, 0});
 
     while (window.beginFrame()) {
         window.keyboardController.apply(character);
@@ -95,14 +97,15 @@ int main(int argc, char* argv[]) {
         auto viewDir = window.camera.center - window.camera.position;
         auto fovX = glm::degrees(2 * atan(tan(glm::radians(45.f) / 2) * window.width / window.height)); // see https://en.wikipedia.org/wiki/Field_of_view_in_video_games#Field_of_view_calculations
         terrain.update(playerPos, viewDir, fovX);
-        
+
         auto castPos = window.camera.position;
         auto castDir = window.camera.center - window.camera.position;
         glm::vec3 castTarget = caster.cast(castPos, castDir, terrain);
         targetBlock->model = glm::translate(glm::mat4(1.f), castTarget);
 
         // draw the shadow map
-        float t = timeBegin / 10000.f;
+        // float t = timeBegin / 10000.f;
+        float t = glm::half_pi<float>();
         float distance = 100.f;
         float a = cos(t);
         float b = sin(t);
@@ -144,13 +147,26 @@ int main(int argc, char* argv[]) {
         // draw the terrain
         shadows.activate();
 
+        // terrain sky view
+        glm::vec3 skyPos(window.camera.position.x, 500, window.camera.position.z);
+        glm::vec3 skyCenter(window.camera.position.x, 0, window.camera.position.z - 1);
+        skyCam.setLookAt(skyPos, skyCenter);
+        skyCam.activate();
+        glEnable(GL_SCISSOR_TEST);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glScissor(0, 0, skyCamSize + 5, skyCamSize + 5);
+        glClearColor(0, 0, 0, 0);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         terrain.render();
-        glBindTexture(GL_TEXTURE_2D, 0);
+        glScissor(skyCamSize/2-1, skyCamSize/2-1, 2, 2);
+        glClearColor(1, 1, 1, 1);
+        glClear(GL_COLOR_BUFFER_BIT);
+        glDisable(GL_SCISSOR_TEST);
+
         // draw the character
         character.drawCharacter();
 
         // finish render
-
         window.endFrame();
 
         //Time in ms telling us when this frame ended. Useful for keeping a fix framerate
