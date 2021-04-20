@@ -26,6 +26,8 @@ public:
 
     GLuint loadTexture(const std::string& fileName);
 
+    GLuint loadCubeMap(std::vector<std::string> faces);
+
 
 private:
     void bindIndexBuffer(const std::vector<GLuint>& indices);
@@ -50,6 +52,7 @@ private:
     }
 
     std::vector<GLuint> textureList;
+    std::vector<std::string> faces;
 };
 
 #endif // LOADER_H

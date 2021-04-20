@@ -75,6 +75,9 @@
     <ClCompile Include="src\terrain\Terrain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\blocks\Air_Block.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\include\Camera.hpp">
@@ -149,15 +152,20 @@
     <ClInclude Include="src\terrain\Terrain.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\blocks\Air_Block.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\shader\simple.frag" />
     <None Include="src\shader\simple.vert" />
     <None Include="src\shader\2dtex.frag" />
     <None Include="src\shader\2dtex.vert" />
+    <None Include="src\shader\skyBox.vert" />
+    <None Include="src\shader\skyBox.frag" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="src\blocks\Textures\Testxture.png">
+    <Image Include="data\img\Testxture.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
