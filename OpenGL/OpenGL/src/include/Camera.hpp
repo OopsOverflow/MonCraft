@@ -15,7 +15,7 @@ public:
   void setSize(unsigned int width, unsigned int height);
   void setProjectionType(Projection projType);
   void setPosition(const glm::vec3 &position);
-  void setLookAt(const glm::vec3 &lookAt);
+  void setLookAt(const glm::vec3 &pos, const glm::vec3 &center);
 
   void zoom(float factor);
 
@@ -23,12 +23,11 @@ public:
   void translatePixels(int x, int y);
 
   void rotate(const glm::vec3 &rotation, bool localSpace = false);
-  void rotatePixels(int x, int y);
+  void rotatePixels(int x, int y, bool localSpace = false);
 
   void getSize(unsigned int &width, unsigned int &height) const;
   Projection getProjectionType() const;
-  glm::mat4 getView() const;
-
+  
 public:
   glm::mat4 view;
   glm::mat4 projection;

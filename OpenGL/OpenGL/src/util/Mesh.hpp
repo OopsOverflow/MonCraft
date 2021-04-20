@@ -11,6 +11,7 @@ public:
     Mesh(std::vector<GLfloat> const& positions,
          std::vector<GLfloat> const& normals,
          std::vector<GLfloat> const& textureCoords,
+         std::vector<GLfloat> const& occlusion,
          std::vector<GLuint>  const& indices);
 
     Mesh(GLuint vao, GLuint vbo, GLuint ebo, GLuint vertCount);
@@ -18,6 +19,8 @@ public:
 
     Mesh(Mesh const&) = delete;
     Mesh& operator=(Mesh const&) = delete;
+
+    Mesh(Mesh&&);
 
     GLuint getVAO() const;
     GLuint getVertexCount() const;

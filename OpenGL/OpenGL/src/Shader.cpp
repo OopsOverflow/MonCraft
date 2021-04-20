@@ -22,8 +22,6 @@ void Shader::activate() {
 
 Shader *Shader::getActive() { return activeShader; }
 
-GLuint Shader::getLocation(ShaderLocation loc) const { return locations[loc]; }
-
 GLint Shader::getUniformLocation(const std::string &location) {
   return glGetUniformLocation(program, location.c_str());
 }
@@ -35,26 +33,20 @@ void Shader::initLocations() {
 
 #define ATTRLOC(str) glGetAttribLocation(program, str)
 #define UNILOC(str) glGetUniformLocation(program, str)
-  locations[VERTEX_POSITION] = ATTRLOC("v_position");
-  locations[VERTEX_COLOR] = ATTRLOC("v_color");
-  locations[VERTEX_NORMAL] = ATTRLOC("v_normal");
-  locations[VERTEX_TEXTURE] = UNILOC("v_texture");
-  locations[MATRIX_MODEL_VIEW] = UNILOC("m_modelView");
-  locations[MATRIX_PROJECTION] = UNILOC("m_projection");
-  locations[MATRIX_NORMAL] = UNILOC("m_normal");
-  locations[CAMERA_CENTER] = UNILOC("c_center");
-#undef ATTRLOC
-#undef UNILOC
-
   std::cout << "---- SHADER ----" << std::endl
-            << "v_position: " << locations[VERTEX_POSITION] << std::endl
-            << "v_color: " << locations[VERTEX_COLOR] << std::endl
-            << "v_normal: " << locations[VERTEX_NORMAL] << std::endl
-            << "v_texture: " << locations[VERTEX_TEXTURE] << std::endl
-            << "m_modelView: " << locations[MATRIX_MODEL_VIEW] << std::endl
-            << "m_projection: " << locations[MATRIX_PROJECTION] << std::endl
-            << "m_normal: " << locations[MATRIX_NORMAL] << std::endl
-            << "c_center: " << locations[CAMERA_CENTER] << std::endl;
+            << "v_position: " << ATTRLOC("v_position") << std::endl
+            << "v_color: " << ATTRLOC("v_color") << std::endl
+            << "v_normal: " << ATTRLOC("v_normal") << std::endl
+            << "v_texture: " << ATTRLOC("v_texture") << std::endl
+            << "v_occlusion: " << ATTRLOC("v_occlusion") << std::endl
+            << "m_model: " << UNILOC("m_model") << std::endl
+            << "m_view: " << UNILOC("m_view") << std::endl
+            << "m_projection: " << UNILOC("m_projection") << std::endl
+            << "m_normal: " << UNILOC("m_normal") << std::endl
+            << "m_shadows: " << UNILOC("m_shadows") << std::endl
+            << "c_center: " << UNILOC("c_center") << std::endl;
+  #undef ATTRLOC
+  #undef UNILOC
 }
 
 std::string Shader::readFile(const std::string &path) {

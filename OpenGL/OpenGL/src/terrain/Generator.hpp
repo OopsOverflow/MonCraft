@@ -2,7 +2,7 @@
 
 #include <glm/glm.hpp>
 #include "Chunk.hpp"
-#include "../Noise.hpp"
+#include "Noise.hpp"
 
 class Generator {
 public:

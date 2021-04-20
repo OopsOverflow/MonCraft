@@ -6,7 +6,7 @@ Hitbox::Hitbox()
 	speed({ 0.0f, 0.0f, 0.0f }), acceleration({ 0.0f, 0.0f, 0.0f }),character({0.0f,0.0f,0.0f},{0.0f,0.0f})
 	, mode(Mode::WALKING)
 {
-		
+
 }
 
 bool Hitbox::setSwimming()
@@ -50,20 +50,15 @@ bool Hitbox::setSpectator()
 }
 
 void Hitbox::solveMovement() {
-
-
 }
 
 
 void Hitbox::solveFrame(uint32_t time)
 {
 	solveMovement();
-
-
-
 }
 
-void Hitbox::drawCharacter(Camera const& cam) {
-	character.draw(glm::translate(cam.getView(),pos));
+void Hitbox::drawCharacter() {
+	character.draw(glm::translate(glm::mat4(1.f), pos));
 
 }

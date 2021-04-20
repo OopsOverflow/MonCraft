@@ -164,6 +164,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\blocks\Air_Block.cpp" />
+    <ClCompile Include="src\blocks\Debug_Block.cpp" />
     <ClCompile Include="src\Debug.cpp" />
     <ClCompile Include="src\entity\Character.cpp" />
     <ClCompile Include="src\entity\Hitbox.cpp" />
@@ -171,6 +172,7 @@
     <ClCompile Include="src\noise\simplex.cpp" />
     <ClCompile Include="src\noise\value.cpp" />
     <ClCompile Include="src\noise\voronoi.cpp" />
+    <ClCompile Include="src\ShadowMap.cpp" />
     <ClCompile Include="src\terrain\Chunk.cpp" />
     <ClCompile Include="src\terrain\Generator.cpp" />
     <ClCompile Include="src\terrain\Terrain.cpp" />
@@ -184,15 +186,17 @@
     <ClCompile Include="src\controller\FPS.cpp" />
     <ClCompile Include="src\controller\Turntable.cpp" />
     <ClCompile Include="src\Shader.cpp" />
+    <ClCompile Include="src\util\Raycast.cpp" />
     <ClCompile Include="src\Viewport.cpp" />
     <ClCompile Include="src\blocks\Stone_Block.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\blocks\Air_Block.h" />
+    <ClInclude Include="src\blocks\Debug_Block.h" />
     <ClInclude Include="src\DisplayNoise.hpp" />
-    <ClInclude Include="src\entity\Character.hpp" />
-    <ClInclude Include="src\entity\Cube.hpp" />
-    <ClInclude Include="src\entity\Hitbox.hpp" />
+    <ClInclude Include="src\include\Debug.hpp" />
+    <ClInclude Include="src\include\Noise.hpp" />
+    <ClInclude Include="src\include\ShadowMap.hpp" />
     <ClInclude Include="src\Noise.hpp" />
     <ClInclude Include="src\noise\bitmap.hpp" />
     <ClInclude Include="src\noise\bitmapTex.hpp" />
@@ -216,6 +220,7 @@
     <ClInclude Include="src\include\Shader.hpp" />
     <ClInclude Include="src\include\Viewport.hpp" />
     <ClInclude Include="src\blocks\Stone_Block.h" />
+    <ClInclude Include="src\util\Raycast.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\shader\2dtex.frag" />

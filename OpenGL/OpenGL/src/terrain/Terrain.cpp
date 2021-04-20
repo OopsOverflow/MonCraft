@@ -94,7 +94,10 @@ void Terrain::worker(std::future<void> stopSignal) {
   }
 }
 
-void Terrain::update() {
+void Terrain::update(glm::vec3 pos) {
+  std::lock_guard<std::mutex> lck(chunksMutex);
+  chunkPos = floor(vec2(pos.x, pos.z) / float(chunkSize));
+
   // clear old chunks
   int count = (int)chunks.size();
   if(count > chunksMaxCount) {
@@ -110,28 +113,26 @@ void Terrain::update() {
   }
 }
 
-void Terrain::render(Camera const& cam) {
+void Terrain::render() {
   std::lock_guard<std::mutex> lck(chunksMutex);
 
-  chunkPos = floor(vec2(cam.center.x, cam.center.z) / float(chunkSize));
-  update();
-  glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, texture);
   for(auto& chunk : chunks) {
     Mesh const& mesh = chunk.second->getMesh();
     glBindVertexArray(mesh.getVAO());
-    glm::mat4 mv = cam.getView() * mesh.model;
-    glUniformMatrix4fv(Shader::getActive()->getLocation(MATRIX_MODEL_VIEW), 1, GL_FALSE, glm::value_ptr(mv));
+    glUniformMatrix4fv(MATRIX_MODEL, 1, GL_FALSE, glm::value_ptr(mesh.model));
     glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_INT, nullptr);
   }
   glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-
-Block* Terrain::getBlock(glm::ivec3 pos) {
+Block* Terrain::getBlock(ivec3 pos) {
   std::lock_guard<std::mutex> lck(chunksMutex);
-  glm::ivec2 cpos = floor(vec2(pos.x, pos.z) / float(chunkSize));
+  ivec2 cpos = floor(vec2(pos.x, pos.z) / float(chunkSize));
+  if(pos.y < 0 || pos.y >= chunkSize) // TODO: change this once the terrain height is established
+    return nullptr;
   if(chunks.find(cpos) == chunks.end())
     return nullptr;
-  return chunks.at(cpos)->getBlock(pos);
+
+  ivec3 dpos = pos - ivec3(cpos.x, 0, cpos.y) * chunkSize;
+  return chunks.at(cpos)->getBlock(dpos + ivec3(1));
 }

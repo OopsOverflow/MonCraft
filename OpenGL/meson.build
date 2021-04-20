@@ -5,6 +5,7 @@ srcs = files(
   'OpenGL/src/Shader.cpp',
   'OpenGL/src/Camera.cpp',
   'OpenGL/src/Viewport.cpp',
+  'OpenGL/src/ShadowMap.cpp',
 
   'OpenGL/src/controller/FPS.cpp',
   'OpenGL/src/controller/Turntable.cpp',
@@ -16,6 +17,10 @@ srcs = files(
 
   'OpenGL/src/util/Mesh.cpp',
   'OpenGL/src/util/Loader.cpp',
+  'OpenGL/src/util/Raycast.cpp',
+
+  'OpenGL/src/entity/Hitbox.cpp',
+  'OpenGL/src/entity/Character.cpp',
 
   'OpenGL/src/terrain/Terrain.cpp',
   'OpenGL/src/terrain/Chunk.cpp',
@@ -26,6 +31,7 @@ srcs = files(
   'OpenGL/src/blocks/Dirt_Block.cpp',
   'OpenGL/src/blocks/Stone_Block.cpp',
   'OpenGL/src/blocks/Grass_Block.cpp',
+  'OpenGL/src/blocks/Debug_Block.cpp',
 
   'OpenGL/src/Debug.cpp',
 )

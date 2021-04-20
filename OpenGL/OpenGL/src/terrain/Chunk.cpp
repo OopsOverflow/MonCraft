@@ -13,11 +13,11 @@ Chunk::Chunk(ivec2 chunkPos, Blocks blocks)
   : chunkPos(chunkPos), blocks(move(blocks)), mesh(nullptr)
 {
   generateMesh();
-    std::cout << "created chunk (" << chunkPos.x << ", " << chunkPos.y << ")" << std::endl;
+    // std::cout << "created chunk (" << chunkPos.x << ", " << chunkPos.y << ")" << std::endl;
 }
 
 Chunk::~Chunk() {
-  std::cout << "deleted chunk (" << chunkPos.x << ", " << chunkPos.y << ")" << std::endl;
+  // std::cout << "deleted chunk (" << chunkPos.x << ", " << chunkPos.y << ")" << std::endl;
   delete mesh;
 }
 
@@ -26,12 +26,31 @@ bool Chunk::isSolid(ivec3 pos) {
 }
 
 face_t<2> getFaceUV(glm::ivec2 index) {
+  static const float atlasSize = 6.f;
   return face_t<2> {
-    (index.x + 1) / 6.f, (index.y + 0) / 2.f,
-    (index.x + 0) / 6.f, (index.y + 0) / 2.f,
-    (index.x + 0) / 6.f, (index.y + 1) / 2.f,
-    (index.x + 1) / 6.f, (index.y + 1) / 2.f,
+    (index.x + 1) / atlasSize, (index.y + 0) / atlasSize,
+    (index.x + 0) / atlasSize, (index.y + 0) / atlasSize,
+    (index.x + 0) / atlasSize, (index.y + 1) / atlasSize,
+    (index.x + 1) / atlasSize, (index.y + 1) / atlasSize,
   };
+}
+
+std::array<GLfloat, 4> Chunk::genOcclusion(ivec3 pos, BlockFace face) {
+  std::array<GLfloat, 4> occl = { 0.f, 0.f, 0.f, 0.f };
+
+  auto const& offsets = blockOcclusionOffsets[static_cast<size_t>(face)];
+  std::array<bool, 8> b;
+
+  for(int i = 0; i < 8; i++) {
+    b[i] = isSolid(pos + offsets[i]);
+  }
+
+  occl[0] = b[0] + b[1] + b[2];
+  occl[1] = b[2] + b[3] + b[4];
+  occl[2] = b[4] + b[5] + b[6];
+  occl[3] = b[6] + b[7] + b[0];
+
+  return occl;
 }
 
 void Chunk::generateMesh() {
@@ -60,6 +79,10 @@ void Chunk::generateMesh() {
     auto indexUV = getBlock(pos)->getFaceUVs(face);
     auto uvFace = getFaceUV(indexUV);
     std::copy(uvFace.begin(), uvFace.end(), std::back_inserter(textureCoords));
+
+    // occlusion
+    auto occl = genOcclusion(pos, face);
+    std::copy(occl.begin(), occl.end(), std::back_inserter(occlusion));
   };
 
   ivec3 pos;
@@ -80,7 +103,7 @@ void Chunk::generateMesh() {
 
 Mesh const& Chunk::getMesh() {
   if(mesh == nullptr) {
-    mesh = new Mesh(positions, normals, textureCoords, indices);
+    mesh = new Mesh(positions, normals, textureCoords, occlusion, indices);
     mesh->model = glm::translate(mesh->model, vec3(chunkPos.x, 0, chunkPos.y));
   }
   return *mesh;

@@ -2,6 +2,7 @@
 #include "../blocks/Grass_Block.h"
 #include "../blocks/Dirt_Block.h"
 #include "../blocks/Air_Block.h"
+#include "../blocks/Debug_Block.h"
 
 using glm::ivec2;
 using glm::ivec3;

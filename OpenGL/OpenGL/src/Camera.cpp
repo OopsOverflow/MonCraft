@@ -19,14 +19,11 @@ void Camera::activate() {
   glm::mat4 normal = glm::transpose(glm::inverse(view));
   Shader *shader = Shader::getActive();
   if (shader) {
-    glUniformMatrix4fv(shader->getLocation(MATRIX_MODEL_VIEW), 1, GL_FALSE,
-                       glm::value_ptr(view));
-    glUniformMatrix4fv(shader->getLocation(MATRIX_NORMAL), 1, GL_FALSE,
-                       glm::value_ptr(normal));
-    glUniformMatrix4fv(shader->getLocation(MATRIX_PROJECTION), 1, GL_FALSE,
-                       glm::value_ptr(projection));
+    glUniformMatrix4fv(MATRIX_VIEW, 1, GL_FALSE, glm::value_ptr(view));
+    glUniformMatrix4fv(MATRIX_NORMAL, 1, GL_FALSE, glm::value_ptr(normal));
+    glUniformMatrix4fv(MATRIX_PROJECTION, 1, GL_FALSE, glm::value_ptr(projection));
     glm::vec3 c = view * glm::vec4(center, 1.f);
-    glUniform3f(shader->getLocation(CAMERA_CENTER), c.x, c.y, c.z);
+    glUniform3f(CAMERA_CENTER, c.x, c.y, c.z);
   } else {
     std::cout << "error: camera activated but no shader bound" << std::endl;
   }
@@ -35,6 +32,13 @@ void Camera::activate() {
 void Camera::setPosition(const glm::vec3 &newPos) {
   view = glm::translate(view, -(newPos - position));
   position = newPos;
+}
+
+void Camera::setLookAt(const glm::vec3 &position, const glm::vec3 &center) {
+  this->position = position;
+  this->center = center;
+  computeView();
+  computeProjection();
 }
 
 void Camera::translate(const glm::vec3 &translation, bool localSpace) {
@@ -113,7 +117,7 @@ void Camera::zoom(float factor) {
   }
 }
 
-void Camera::rotatePixels(int x, int y) {
+void Camera::rotatePixels(int x, int y, bool localSpace) {
   // in the turnTable rotation style we rotate around y axis in global space
   // and around x axis in local space.
 
@@ -126,10 +130,14 @@ void Camera::rotatePixels(int x, int y) {
   rotY = x * maxRotation / (float)screenWidth;
   rotX = y * maxRotation / (float)screenHeight;
 
-  rotate({0.f, rotY, 0.f});
-  // rotAxis should be normalized already (translations and rotations)
-  glm::vec3 rotAxis = glm::inverse(view) * glm::vec4(1.f, 0.f, 0.f, 0.f);
-  rotate(rotX * rotAxis);
+  if(localSpace) {
+    rotate({rotX, rotY, 0.f}, localSpace);
+  } else {
+    rotate({0.f, rotY, 0.f});
+    // rotAxis should be normalized already (translations and rotations)
+    glm::vec3 rotAxis = glm::inverse(view) * glm::vec4(1.f, 0.f, 0.f, 0.f);
+    rotate(rotX * rotAxis);
+  }
 }
 
 // ----------- getters -----------
@@ -140,8 +148,6 @@ void Camera::getSize(unsigned int &width, unsigned int &height) const {
 }
 
 Projection Camera::getProjectionType() const { return projType; }
-
-glm::mat4 Camera::getView() const { return view; }
 
 // ----------- private -----------
 
@@ -161,7 +167,7 @@ void Camera::computeProjection() {
     // kind of perspective division... To switch between persp & ortho.
     float y = glm::length(center - position) * tan(glm::radians(fovY / 2.f));
     float x = y * aspect;
-    projection = glm::ortho(-x, x, -y, y, -1000.f, 1000.f);
+    projection = glm::ortho(-x, x, -y, y, 0.f, 1000.f);
   }
 
   else if (projType == Projection::PROJECTION_PERSPECTIVE) {

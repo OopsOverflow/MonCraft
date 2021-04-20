@@ -10,14 +10,17 @@
 #include <string>
 
 enum ShaderLocation {
-  VERTEX_POSITION,
-  VERTEX_COLOR,
-  VERTEX_NORMAL,
-  VERTEX_TEXTURE,
-  MATRIX_MODEL_VIEW,
-  MATRIX_PROJECTION,
-  MATRIX_NORMAL,
-  CAMERA_CENTER,
+  VERTEX_POSITION = 0,
+  VERTEX_NORMAL = 1,
+  VERTEX_TEXTURE = 2,
+  MATRIX_MODEL = 0,
+  MATRIX_VIEW = 1,
+  MATRIX_PROJECTION = 2,
+  MATRIX_NORMAL = 3,
+  MATRIX_SHADOWS = 4,
+
+  CAMERA_CENTER = -1,
+  VERTEX_OCCLUSION = 3,
 };
 
 class Shader {
@@ -26,15 +29,12 @@ public:
 
   void activate();
   GLint getUniformLocation(const std::string &location);
-  GLuint getLocation(ShaderLocation location) const;
   static Shader *getActive();
 
   GLuint program;
 
 private:
   static Shader *activeShader;
-
-  GLint locations[8];
 
   void initLocations();
 

@@ -17,7 +17,7 @@ public:
 	bool setSpectator();
 	void solveMovement();
 	void solveFrame(uint32_t time);
-	void drawCharacter(Camera const& cam);
+	void drawCharacter();
 
 
 private:
@@ -30,5 +30,3 @@ private:
 
 	Mode mode;
 };
-
-

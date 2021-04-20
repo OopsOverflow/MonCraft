@@ -21,13 +21,14 @@ public:
   Terrain(Terrain const&) = delete;
   Terrain& operator=(Terrain const&) = delete;
 
-  void render(Camera const& cam);
+  void update(glm::vec3 pos);
+  void render();
 
   Block* getBlock(glm::ivec3 pos);
 
-  const int chunkSize = 64;
-  const int renderDistance = 3;
-  const int chunksMaxCount = (int)pow(renderDistance * 2, 2);
+  const int chunkSize = 32;
+  const int renderDistance = 8;
+  const int chunksMaxCount = (int)pow(renderDistance * 2 + 1, 2);
 
 private:
   // dirty hash function for the chunks hashmap
@@ -52,7 +53,6 @@ private:
   ChunkMap chunks;
 
   void worker(std::future<void> stopSignal);
-  void update();
 
   Loader loader;
   GLuint texture;
