@@ -185,15 +185,6 @@
     <ClInclude Include="src\util\Raycast.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\entity\Character.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\entity\Hitbox.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\entity\Cube.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\shader\simple.frag" />
@@ -205,9 +196,6 @@
     <Image Include="src\blocks\Textures\Testxture.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="src\blocks\Textures\Character.png">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="data\img\Character.png">
       <Filter>Resource Files</Filter>
     </Image>
@@ -215,6 +203,9 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="data\img\Testxture.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\img\Texture_atlas.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
