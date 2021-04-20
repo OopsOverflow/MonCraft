@@ -19,6 +19,9 @@ srcs = files(
   'OpenGL/src/util/Loader.cpp',
   'OpenGL/src/util/Raycast.cpp',
 
+  'OpenGL/src/entity/Hitbox.cpp',
+  'OpenGL/src/entity/Character.cpp',
+
   'OpenGL/src/terrain/Terrain.cpp',
   'OpenGL/src/terrain/Chunk.cpp',
   'OpenGL/src/terrain/Generator.cpp',

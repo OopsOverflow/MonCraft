@@ -15,7 +15,9 @@ int distance(ivec2 a, ivec2 b) {
 
 Terrain::Terrain()
   : generator(chunkSize),
-    chunkPos(0)
+    chunkPos(0),
+    loader(),
+    texture(loader.loadTexture("Testxture"))
 {
   workerThread = std::thread(&Terrain::worker, this, stopTrigger.get_future());
 }
@@ -93,7 +95,7 @@ void Terrain::worker(std::future<void> stopSignal) {
 }
 
 void Terrain::update(glm::vec3 pos) {
-  std::lock_guard<std::mutex> lck2(chunksMutex);
+  std::lock_guard<std::mutex> lck(chunksMutex);
   chunkPos = floor(vec2(pos.x, pos.z) / float(chunkSize));
 
   // clear old chunks
@@ -112,7 +114,7 @@ void Terrain::update(glm::vec3 pos) {
 }
 
 void Terrain::render() {
-  std::lock_guard<std::mutex> lck2(chunksMutex);
+  std::lock_guard<std::mutex> lck(chunksMutex);
 
   for(auto& chunk : chunks) {
     Mesh const& mesh = chunk.second->getMesh();
@@ -120,6 +122,7 @@ void Terrain::render() {
     glUniformMatrix4fv(MATRIX_MODEL, 1, GL_FALSE, glm::value_ptr(mesh.model));
     glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_INT, nullptr);
   }
+  glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 Block* Terrain::getBlock(ivec3 pos) {

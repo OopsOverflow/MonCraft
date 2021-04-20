@@ -9,6 +9,7 @@
 #include "terrain/Terrain.hpp"
 #include "util/Loader.hpp"
 #include "util/Raycast.hpp"
+#include "entity/Hitbox.hpp"
 
 // WINDOW DIMENSIONS
 #define WIDTH     800
@@ -66,6 +67,7 @@ int main(int argc, char* argv[]) {
     Viewport window(WIDTH, HEIGHT);
     Shader shader("src/shader/simple.vert", "src/shader/simple.frag");
     Terrain terrain;
+    Hitbox character;
     ShadowMap shadows(1024);
     Loader loader;
     Raycast caster(500.f);
@@ -128,6 +130,9 @@ int main(int argc, char* argv[]) {
         // draw the terrain
         shadows.activate();
         terrain.render();
+
+        // draw the character
+        character.drawCharacter();
 
         // finish render
         glBindTexture(GL_TEXTURE_2D, 0);

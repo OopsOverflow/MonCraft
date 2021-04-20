@@ -9,6 +9,8 @@
 
 #include "Chunk.hpp"
 #include "Generator.hpp"
+#include "Camera.hpp"
+#include "../util/Loader.hpp"
 
 class Terrain
 {
@@ -51,6 +53,9 @@ private:
   ChunkMap chunks;
 
   void worker(std::future<void> stopSignal);
+
+  Loader loader;
+  GLuint texture;
 
   // this is kinda dirty, see cpp file.
   glm::ivec2 lastPos = glm::ivec2(0);
