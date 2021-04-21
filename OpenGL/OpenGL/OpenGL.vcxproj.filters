@@ -93,6 +93,12 @@
     <ClCompile Include="src\entity\Hitbox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\util\Random.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Music.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\include\Camera.hpp">
@@ -185,6 +191,9 @@
     <ClInclude Include="src\util\Raycast.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\util\Random.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="src\entity\Character.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -192,6 +201,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\entity\Hitbox.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\include\Music.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
