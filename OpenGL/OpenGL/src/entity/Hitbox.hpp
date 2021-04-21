@@ -10,7 +10,7 @@ enum class View { FIRST_PERSON, THIRD_PERSON };
 class Hitbox
 {
 public:
-	Hitbox();
+	Hitbox(glm::vec3 position);
 	bool setSwimming();
 	bool setWalking();
 	bool setFlying();
@@ -18,12 +18,12 @@ public:
 	void move(glm::vec3 amount);
 	void drawCharacter();
 	Character character;
-
+	View view;
+	glm::vec3 pos;
 
 private:
 	
 	glm::vec3 size;
-	glm::vec3 pos;
 	glm::vec3 speed;
 	glm::vec3 acceleration;
 

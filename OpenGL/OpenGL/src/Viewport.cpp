@@ -11,7 +11,7 @@
 #include <iostream>
 
 Viewport::Viewport(size_t width, size_t height)
-    : camera(width, height, {0, 64, 10}, {0, 64, 0}),
+    : camera(width, height, {0, 64, 10}, {0, 64, 20}),
       width(width),
       height(height),
       window(nullptr),
@@ -128,6 +128,9 @@ void Viewport::on_keydown(SDL_Keycode k) {
   case SDLK_LSHIFT:
     keyboardController.pressedDown();
     break;
+  case SDLK_F5:
+      keyboardController.pressedF5();
+      break;
   }
 }
 

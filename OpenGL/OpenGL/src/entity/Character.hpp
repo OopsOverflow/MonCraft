@@ -21,7 +21,7 @@ struct BodyPart {
     GLuint vao;
     glm::mat4 propagatedMatrix = glm::mat4(1.0f);
     glm::mat4 localMatrix = glm::mat4(1.0f);
-    glm::vec2 localRotation = { 0.0f,0.0f };
+    glm::vec3 localRotation = { 0.0f,0.0f,0.0f };
     glm::vec3 localPosition = { 0.0f,0.0f,0.0f };
     std::vector<BodyPart> children;
 };
@@ -33,7 +33,7 @@ public:
     Character(const glm::vec3 headRotation, const glm::vec2 bobyRotation);
 
     void setView(const glm::vec3& view);
-    void draw(glm::mat4 const& characterPos);
+    void draw(glm::mat4 const& characterPos, bool onlyRightHand);
     void renderBody(const BodyPart& body, std::stack<glm::mat4>& mvpStack);
 
     void movement(const float distance);

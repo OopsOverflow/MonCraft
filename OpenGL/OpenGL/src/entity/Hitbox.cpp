@@ -1,10 +1,10 @@
 #include "Hitbox.hpp"
 
 
-Hitbox::Hitbox()
-	:size({ 0.6f, 1.8f, 0.6f }), pos({ 0.0f, 64.0f, 0.0f }),
+Hitbox::Hitbox(glm::vec3 position)
+	:size({ 0.6f, 1.8f, 0.6f }), pos(position),
 	speed({ 0.0f, 0.0f, 0.0f }), acceleration({ 0.0f, 0.0f, 0.0f }),character({0.0f,0.0f,0.0f},{0.0f,0.0f})
-	, mode(Mode::WALKING)
+	, mode(Mode::WALKING),view(View::FIRST_PERSON)
 {
 
 }
@@ -50,13 +50,26 @@ bool Hitbox::setSpectator()
 }
 
 void Hitbox::move(glm::vec3 amount) {
-	pos.x += amount.x;
-	pos.y += amount.x;
-	pos.z += amount.x;
+	glm::vec3 rotation = character.getHeadProperties().localRotation + character.bodyRotation;
+	pos.z += -cos(glm::radians(rotation.y))*amount.z;
+	pos.x += -sin(glm::radians(rotation.y)) * amount.z;
+
+	pos.x += -cos(glm::radians(rotation.y)) * amount.x;
+	pos.z += sin(glm::radians(rotation.y)) * amount.x;
+
+	if (character.getHeadProperties().localRotation.y != 0) {
+		float rotate = 5.0 * amount.z * (character.getHeadProperties().localRotation.y > 0 ? -1 : 1);
+		if (fabs(rotate) > fabs(character.getHeadProperties().localRotation.y)) rotate = character.getHeadProperties().localRotation.y;
+		character.rotateBody(rotate);
+		character.rotateHead({ 0.0f,-rotate });
+	}
+
+	pos.y += amount.y;
+
 }
 
 
 void Hitbox::drawCharacter() {
-	character.draw(glm::translate(glm::mat4(1.f), pos));
+	character.draw(glm::translate(glm::mat4(1.f), pos), view ==View::FIRST_PERSON);
 
 }

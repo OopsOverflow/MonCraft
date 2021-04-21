@@ -20,11 +20,13 @@ public:
   void releasedUp();
   void pressedDown();
   void releasedDown();
+  void pressedF5();
 
   void apply(Hitbox& character);
 
 private:
   float speed;
   glm::vec3 direction;
+  View view;
   std::chrono::time_point<std::chrono::steady_clock> timer;
 };

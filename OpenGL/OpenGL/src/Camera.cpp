@@ -6,10 +6,12 @@
 #include <iostream>
 
 Camera::Camera(unsigned int width, unsigned int height, const glm::vec3 &position,
-               const glm::vec3 &center, Projection projType):
- position(position), center(center), fovY(45.f), near_(0.1f), far_(100.f),
+               const glm::vec3 &rotation, Projection projType):
+ position(position), center(rotation), fovY(45.f), near_(0.1f), far_(100.f),
  screenWidth(width), screenHeight(height), projType(projType)
 {
+  //calculateCenter();
+
   computeView();
   computeProjection();
 }
@@ -34,11 +36,39 @@ void Camera::setPosition(const glm::vec3 &newPos) {
   position = newPos;
 }
 
+void Camera::setRotation(const glm::vec3& rot) {
+     glm::vec4 newCenter(0.0f,0.0f,0.0f,1.0f);
+     newCenter = glm::translate(glm::mat4(1.0f), { 0.0f,0.0f,100.0f }) * newCenter;
+     newCenter = glm::rotate(glm::mat4(1.0f), glm::radians(-rot.x), { 1.0f,0.0f,0.0f }) * newCenter;
+     newCenter = glm::rotate(glm::mat4(1.0f), glm::radians(rot.y), { 0.0f,1.0f,0.0f })* newCenter;
+
+     center = position + glm::vec3(newCenter);
+     computeView();
+     computeProjection();
+
+}
+
 void Camera::setLookAt(const glm::vec3 &position, const glm::vec3 &center) {
   this->position = position;
   this->center = center;
   computeView();
   computeProjection();
+}
+
+void Camera::goToHead(Hitbox& hitbox) {
+
+    glm::vec3 cameraRot = hitbox.character.bodyRotation + hitbox.character.getHeadProperties().localRotation;
+    setRotation(cameraRot);
+    glm::vec3 cameraPos = hitbox.pos + hitbox.character.getHeadProperties().localPosition;
+    if (hitbox.view == View::THIRD_PERSON) {
+        glm::vec4 newPos(0.0f, 0.0f, -8.0f, 1.0f);
+        newPos = glm::rotate(glm::mat4(1.0f), glm::radians(-cameraRot.x), { 1.0f,0.0f,0.0f }) * newPos;
+        newPos = glm::rotate(glm::mat4(1.0f), glm::radians(cameraRot.y), { 0.0f,1.0f,0.0f }) * newPos;
+        cameraPos += glm::vec3(newPos);
+
+    }
+    setPosition(cameraPos);
+
 }
 
 void Camera::translate(const glm::vec3 &translation, bool localSpace) {
@@ -101,6 +131,7 @@ void Camera::translatePixels(int x, int y) {
   translate(translation, true);
 }
 
+/*-----Obsolete
 void Camera::zoom(float factor) {
   glm::vec3 translation = center - position;
   float coef = 1.f - 1.f / (float)pow(2, factor);
@@ -116,6 +147,7 @@ void Camera::zoom(float factor) {
     computeProjection();
   }
 }
+*/
 
 void Camera::rotatePixels(int x, int y, bool localSpace) {
   // in the turnTable rotation style we rotate around y axis in global space
@@ -157,6 +189,7 @@ void Camera::computeView() {
   if (glm::dot(up, cameraUp) < 0) {
     up = -up;
   }
+  //calculateCenter();
   view = glm::lookAt(position, center, up);
 }
 
@@ -165,6 +198,7 @@ void Camera::computeProjection() {
 
   if (projType == Projection::PROJECTION_ORTHOGRAPHIC) {
     // kind of perspective division... To switch between persp & ortho.
+    //calculateCenter();
     float y = glm::length(center - position) * tan(glm::radians(fovY / 2.f));
     float x = y * aspect;
     projection = glm::ortho(-x, x, -y, y, 0.f, 1000.f);

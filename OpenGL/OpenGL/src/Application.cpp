@@ -67,24 +67,20 @@ int main(int argc, char* argv[]) {
     Viewport window(WIDTH, HEIGHT);
     Shader shader("src/shader/simple.vert", "src/shader/simple.frag");
     Terrain terrain;
-    Hitbox character;
+    Hitbox character({ 0.0f,32.0f,0.0f });
     ShadowMap shadows(1024);
     Loader loader;
-    Raycast caster(500.f);
+    Raycast caster(100.f);
     std::unique_ptr<Mesh> targetBlock = makeTargetBlock();
 
     GLuint textureID = loader.loadTexture("Texture_atlas");
 
-    
-    glm::vec3 headPos = glm::vec3({ 0.0f,64.0f,0.0f });
-
-    window.camera.setLookAt(headPos - glm::vec3({ 0.0f,0.0f,10.0f }), headPos);
-
+    window.camera.goToHead(character);
 
     while (window.beginFrame()) {
-
         window.keyboardController.apply(character);
         window.mouseController.apply(character, window.camera);
+        window.camera.goToHead(character);
 
         //Time in ms telling us when this frame started. Useful for keeping a fix framerate
         uint32_t timeBegin = SDL_GetTicks();
