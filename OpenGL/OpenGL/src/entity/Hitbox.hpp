@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 
 #include "Character.hpp"
+#include "Camera.hpp"
 
 enum class Mode { SPECTATOR, FLYING, SWIMMING, WALKING };
 enum class View { FIRST_PERSON, THIRD_PERSON };
@@ -17,6 +18,7 @@ public:
 	bool setSpectator();
 	void move(glm::vec3 amount);
 	void drawCharacter();
+	void cameraToHead(Camera& camera);
 	Character character;
 	View view;
 	glm::vec3 pos;

@@ -71,7 +71,7 @@ void Viewport::on_event(SDL_Event const& e) {
     on_keyup(e.key.keysym.sym);
     break;
   case SDL_MOUSEMOTION:
-      mouseController.motion(e.motion.x, e.motion.y);
+    mouseController.motion(e.motion.x, e.motion.y);
     break;
   case SDL_MOUSEBUTTONDOWN:
     on_mousedown(e.button);

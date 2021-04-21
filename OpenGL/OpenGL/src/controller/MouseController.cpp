@@ -33,11 +33,11 @@ void MouseController::motion(int x, int y) {
 
 void MouseController::apply(Hitbox& character, Camera& camera) {
 
-    unsigned int screenWidth;
-    unsigned int screenHeight;
+  unsigned int screenWidth;
+  unsigned int screenHeight;
 
-    float maxRotation = 360.f;
-    camera.getSize(screenWidth, screenHeight);
+  float maxRotation = 360.f;
+  camera.getSize(screenWidth, screenHeight);
   if (rotation) {
       character.character.rotateHead({ -deltaY * maxRotation/ (float)screenWidth,-deltaX * maxRotation / (float)screenWidth });
   }

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <glm/glm.hpp>
-#include "../entity/Hitbox.hpp"
 
 enum class Projection { PROJECTION_ORTHOGRAPHIC,
                   PROJECTION_PERSPECTIVE };
@@ -19,15 +18,12 @@ public:
   void setLookAt(const glm::vec3 &pos, const glm::vec3 &center);
   void setRotation(const glm::vec3 &rotation);
 
-  //void zoom(float factor);
 
   void translate(const glm::vec3 &direction, bool localSpace = false);
   void translatePixels(int x, int y);
 
   void rotate(const glm::vec3 &rotation, bool localSpace = false);
   void rotatePixels(int x, int y, bool localSpace = false);
-
-  void goToHead(Hitbox& hitbox);
 
   void getSize(unsigned int &width, unsigned int &height) const;
   Projection getProjectionType() const;

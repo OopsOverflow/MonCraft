@@ -75,12 +75,12 @@ int main(int argc, char* argv[]) {
 
     GLuint textureID = loader.loadTexture("Texture_atlas");
 
-    window.camera.goToHead(character);
+    character.cameraToHead(window.camera);
 
     while (window.beginFrame()) {
         window.keyboardController.apply(character);
         window.mouseController.apply(character, window.camera);
-        window.camera.goToHead(character);
+        character.cameraToHead(window.camera);
 
         //Time in ms telling us when this frame started. Useful for keeping a fix framerate
         uint32_t timeBegin = SDL_GetTicks();

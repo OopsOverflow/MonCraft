@@ -49,6 +49,20 @@ bool Hitbox::setSpectator()
 	return 1;
 }
 
+void Hitbox::cameraToHead(Camera& camera) {
+	glm::vec3 cameraRot = character.bodyRotation + character.getHeadProperties().localRotation;
+	camera.setRotation(cameraRot);
+	glm::vec3 cameraPos = pos + character.getHeadProperties().localPosition;
+	if (view == View::THIRD_PERSON) {
+		glm::vec4 newPos(0.0f, 0.0f, -8.0f, 1.0f);
+		newPos = glm::rotate(glm::mat4(1.0f), glm::radians(-cameraRot.x), { 1.0f,0.0f,0.0f }) * newPos;
+		newPos = glm::rotate(glm::mat4(1.0f), glm::radians(cameraRot.y), { 0.0f,1.0f,0.0f }) * newPos;
+		cameraPos += glm::vec3(newPos);
+
+	}
+	camera.setPosition(cameraPos);
+}
+
 void Hitbox::move(glm::vec3 amount) {
 	glm::vec3 rotation = character.getHeadProperties().localRotation + character.bodyRotation;
 	pos.z += -cos(glm::radians(rotation.y))*amount.z;
