@@ -40,7 +40,7 @@ std::unique_ptr<Mesh> makeTargetBlock() {
   auto block = std::unique_ptr<Block>(new Debug_Block());
 
    auto getFaceUV = [](glm::ivec2 index) -> face_t<2>{
-    static const float atlasSize = 6.f;
+    static const float atlasSize = 8.f;
     return face_t<2> {
       (index.x + 1) / atlasSize, (index.y + 0) / atlasSize,
       (index.x + 0) / atlasSize, (index.y + 0) / atlasSize,
@@ -74,7 +74,7 @@ int main(int argc, char* argv[]) {
     Raycast caster(500.f);
     std::unique_ptr<Mesh> targetBlock = makeTargetBlock();
 
-    GLuint textureID = loader.loadTexture("Testxture");
+    GLuint textureID = loader.loadTexture("Texture_atlas");
 
     sf::SoundBuffer sdb;
     sf::Sound sound;
@@ -136,15 +136,17 @@ int main(int argc, char* argv[]) {
         glDrawElements(GL_TRIANGLES, targetBlock->getVertexCount(), GL_UNSIGNED_INT, nullptr);
         glBindVertexArray(0);
 
+
         // draw the terrain
         shadows.activate();
-        terrain.render();
 
+        terrain.render();
+        glBindTexture(GL_TEXTURE_2D, 0);
         // draw the character
         character.drawCharacter();
 
         // finish render
-        glBindTexture(GL_TEXTURE_2D, 0);
+
         window.endFrame();
 
         //Time in ms telling us when this frame ended. Useful for keeping a fix framerate
