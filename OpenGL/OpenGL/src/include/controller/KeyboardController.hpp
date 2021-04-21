@@ -1,12 +1,12 @@
 #pragma once
 
-#include "Camera.hpp"
+#include "../entity/Hitbox.hpp"
 
 #include <chrono>
 
-class ControllerFPS {
+class KeyboardController {
 public:
-  ControllerFPS();
+	KeyboardController();
 
   void pressedForward();
   void releasedForward();
@@ -20,13 +20,13 @@ public:
   void releasedUp();
   void pressedDown();
   void releasedDown();
+  void pressedF5();
 
-  static glm::vec3 screenToCameraPlane(const Camera &camera, int x, int y);
-
-  void apply(Camera &camera);
+  void apply(Hitbox& character);
 
 private:
   float speed;
   glm::vec3 direction;
+  View view;
   std::chrono::time_point<std::chrono::steady_clock> timer;
 };

@@ -11,7 +11,7 @@
 #include <iostream>
 
 Viewport::Viewport(size_t width, size_t height)
-    : camera(width, height, {0, 0, 10}, {0, 0, 0}),
+    : camera(width, height, {0, 64, 10}, {0, 64, 20}),
       width(width),
       height(height),
       window(nullptr),
@@ -71,16 +71,13 @@ void Viewport::on_event(SDL_Event const& e) {
     on_keyup(e.key.keysym.sym);
     break;
   case SDL_MOUSEMOTION:
-    turntable.motion(e.motion.x, e.motion.y);
+    mouseController.motion(e.motion.x, e.motion.y);
     break;
   case SDL_MOUSEBUTTONDOWN:
     on_mousedown(e.button);
     break;
   case SDL_MOUSEBUTTONUP:
     on_mouseup(e.button);
-    break;
-  case SDL_MOUSEWHEEL:
-    turntable.zoom(e.wheel.y > 0 ? true : false);
     break;
   }
 }
@@ -93,10 +90,6 @@ bool Viewport::beginFrame() {
         return false;
     on_event(event);
   }
-
-  fps.apply(camera);
-  turntable.apply(camera);
-
   return true;
 }
 
@@ -118,45 +111,48 @@ void Viewport::on_window_event(SDL_WindowEvent const& e) {
 void Viewport::on_keydown(SDL_Keycode k) {
   switch (k) {
   case SDLK_z:
-    fps.pressedForward();
+    keyboardController.pressedForward();
     break;
   case SDLK_s:
-    fps.pressedBackward();
+    keyboardController.pressedBackward();
     break;
   case SDLK_d:
-    fps.pressedRight();
+    keyboardController.pressedRight();
     break;
   case SDLK_q:
-    fps.pressedLeft();
+    keyboardController.pressedLeft();
     break;
   case SDLK_SPACE:
-    fps.pressedUp();
+    keyboardController.pressedUp();
     break;
   case SDLK_LSHIFT:
-    fps.pressedDown();
+    keyboardController.pressedDown();
     break;
+  case SDLK_F5:
+      keyboardController.pressedF5();
+      break;
   }
 }
 
 void Viewport::on_keyup(SDL_Keycode k) {
   switch (k) {
   case SDLK_z:
-    fps.releasedForward();
+    keyboardController.releasedForward();
     break;
   case SDLK_s:
-    fps.releasedBackward();
+    keyboardController.releasedBackward();
     break;
   case SDLK_d:
-    fps.releasedRight();
+    keyboardController.releasedRight();
     break;
   case SDLK_q:
-    fps.releasedLeft();
+    keyboardController.releasedLeft();
     break;
   case SDLK_SPACE:
-    fps.releasedUp();
+    keyboardController.releasedUp();
     break;
   case SDLK_LSHIFT:
-    fps.releasedDown();
+    keyboardController.releasedDown();
     break;
   }
 }
@@ -164,10 +160,7 @@ void Viewport::on_keyup(SDL_Keycode k) {
 void Viewport::on_mousedown(SDL_MouseButtonEvent const& e) {
   switch (e.button) {
   case SDL_BUTTON_LEFT:
-    turntable.rotateStart(e.x, e.y);
-    break;
-  case SDL_BUTTON_RIGHT:
-    turntable.translateStart(e.x, e.y);
+      mouseController.rotateStart(e.x, e.y);
     break;
   default:
     break;
@@ -177,10 +170,7 @@ void Viewport::on_mousedown(SDL_MouseButtonEvent const& e) {
 void Viewport::on_mouseup(SDL_MouseButtonEvent const& e) {
   switch (e.button) {
   case SDL_BUTTON_LEFT:
-    turntable.rotateEnd(e.x, e.y);
-    break;
-  case SDL_BUTTON_RIGHT:
-    turntable.translateEnd(e.x, e.y);
+      mouseController.rotateEnd(e.x, e.y);
     break;
   default:
     break;

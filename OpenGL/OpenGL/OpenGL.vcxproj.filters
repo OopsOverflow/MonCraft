@@ -24,10 +24,10 @@
     <ClCompile Include="src\Shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\controller\FPS.cpp">
+    <ClCompile Include="src\controller\KeyboardController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\controller\Turntable.cpp">
+    <ClCompile Include="src\controller\MouseController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Viewport.cpp">
@@ -110,10 +110,10 @@
     <ClInclude Include="src\include\Viewport.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\include\controller\FPS.hpp">
+    <ClInclude Include="src\include\controller\KeyboardController.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\include\controller\Turntable.hpp">
+    <ClInclude Include="src\include\controller\MouseController.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\blocks\Block.h">

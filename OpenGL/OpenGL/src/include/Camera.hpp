@@ -16,8 +16,8 @@ public:
   void setProjectionType(Projection projType);
   void setPosition(const glm::vec3 &position);
   void setLookAt(const glm::vec3 &pos, const glm::vec3 &center);
+  void setRotation(const glm::vec3 &rotation);
 
-  void zoom(float factor);
 
   void translate(const glm::vec3 &direction, bool localSpace = false);
   void translatePixels(int x, int y);
