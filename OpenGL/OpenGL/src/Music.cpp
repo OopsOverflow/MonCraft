@@ -10,7 +10,7 @@
 
 /**For now music has to be added manually unforetunetly
 * because of C++ 14, unsing <filesystem> (not supported until C++17)
-* cause crashes
+* causes crashes
 * */
 
 std::vector<std::string> songList =
