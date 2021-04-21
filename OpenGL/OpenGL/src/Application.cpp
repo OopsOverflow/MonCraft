@@ -10,6 +10,7 @@
 #include "util/Loader.hpp"
 #include "util/Raycast.hpp"
 #include "entity/Hitbox.hpp"
+#include "SFML/Audio.hpp"
 
 // WINDOW DIMENSIONS
 #define WIDTH     800
@@ -74,6 +75,14 @@ int main(int argc, char* argv[]) {
     std::unique_ptr<Mesh> targetBlock = makeTargetBlock();
 
     GLuint textureID = loader.loadTexture("Testxture");
+
+    sf::SoundBuffer sdb;
+    sf::Sound sound;
+    if (!sdb.loadFromFile("data/music/dev.ogg"))
+        std::cout << "ERROR : SOUND FILE NOT FOUND" << std::endl;
+
+    sound.setBuffer(sdb);
+    sound.play();
 
     window.camera.setLookAt({100, 100, 100}, {0, 0, 0});
 
