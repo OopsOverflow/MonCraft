@@ -15,6 +15,7 @@ public:
     Music();
 
     void update();
+    void playNext();
 
 private:
     void getNextSong();
