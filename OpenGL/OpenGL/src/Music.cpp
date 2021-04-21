@@ -46,6 +46,15 @@ void Music::update()
     }
 }
 
+// For controller imp.
+void Music::playNext()
+{
+    if (currentSong == playlist.size() - 1)
+        currentSong = 0;
+    else currentSong += 1;
+    getNextSong();
+}
+
 void Music::getNextSong()
 {
     if (playlist.empty()) return;
