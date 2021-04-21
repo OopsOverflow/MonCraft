@@ -15,6 +15,10 @@ debug:
 	ninja -C Debug
 	cd OpenGL && gdb ../Debug/MonCraft
 
+debug_opti:
+	ninja -C Debug
+	cd OpenGL && gdb ../DebugOptimized/MonCraft
+
 opti:
 	ninja -C DebugOptimized
 	cd OpenGL && ../DebugOptimized/MonCraft

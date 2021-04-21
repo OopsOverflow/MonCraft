@@ -63,12 +63,20 @@ public:
       if(pos[i] > size[i])
         throw std::out_of_range("DataStore coordinates are out of range");
 
-    int index = 0;
-    int acc = 1;
-    for(int i = 0; i < N; i++) {
+    return this->operator[](pos);
+  }
+
+  /**
+   * Gets the data stored at pos. (unsafe)
+   */
+  T &operator[](glm::vec<N, int> pos) {
+    auto index = 0;
+    auto acc = 1;
+    for(auto i = 0; i < N - 1; i++) {
       index += pos[i] * acc;
       acc *= size[i];
     }
+    index += pos[N-1] * acc;
     return map[index];
   }
 

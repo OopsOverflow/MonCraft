@@ -271,11 +271,12 @@ struct Cube {
     };
 
     const std::vector<GLfloat> occlusions = {
-      0, 0, 0, 0,
-      0, 0, 0, 0,
-      0, 0, 0, 0,
-      0, 0, 0, 0,
-      0, 0, 0, 0,
+      0.f, 0.f, 0.f, 0.f,
+      0.f, 0.f, 0.f, 0.f,
+      0.f, 0.f, 0.f, 0.f,
+      0.f, 0.f, 0.f, 0.f,
+      0.f, 0.f, 0.f, 0.f,
+      0.f, 0.f, 0.f, 0.f,
     };
 
     const std::vector<GLuint> indices = {

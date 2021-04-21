@@ -24,7 +24,7 @@ Chunk::~Chunk() {
 }
 
 bool Chunk::isSolid(ivec3 pos) {
-  return blocks.at(pos)->type != BlockType::Air;
+  return blocks[pos]->type != BlockType::Air;
 }
 
 face_t<2> getFaceUV(glm::ivec2 index) {
@@ -58,33 +58,31 @@ std::array<GLfloat, 4> Chunk::genOcclusion(ivec3 pos, BlockFace face) {
 void Chunk::generateMesh() {
   // indices scheme
   std::vector<int> scheme = { 0, 1, 2, 0, 2, 3 };
-  auto begin = scheme.begin();
-  auto end = scheme.end();
 
   auto genFace = [&](ivec3 pos, BlockFace face) {
     // indices
-    std::copy(begin, end, std::back_inserter(indices));
-    std::transform(begin, end, begin,[](int x) { return x+4; });
+    indices.insert(indices.end(), scheme.begin(), scheme.end());
+    std::transform(scheme.begin(), scheme.end(), scheme.begin(), [](int x) { return x+4; });
 
     // positions
-    auto posFace = blockPositions[static_cast<size_t>(face)];
-    std::copy(posFace.begin(), posFace.end(), std::back_inserter(positions));
+    auto posFace = blockPositions[(size_t)face];
+    positions.insert(positions.end(), posFace.begin(), posFace.end());
     for(int i = 0, k = 0; i < 12; i++, k = (k+1) % 3) {
-      positions[positions.size()- 12 + i] += pos[k] - 1;
+      positions[positions.size() - 12 + i] += pos[k] - 1;
     }
 
     // normals
-    auto normFace = blockNormals[static_cast<size_t>(face)];
-    std::copy(normFace.begin(), normFace.end(), std::back_inserter(normals));
+    auto normFace = blockNormals[(size_t)face];
+    normals.insert(normals.end(), normFace.begin(), normFace.end());
 
     // textureCoords
     auto indexUV = getBlock(pos)->getFaceUVs(face);
     auto uvFace = getFaceUV(indexUV);
-    std::copy(uvFace.begin(), uvFace.end(), std::back_inserter(textureCoords));
+    textureCoords.insert(textureCoords.end(), uvFace.begin(), uvFace.end());
 
     // occlusion
     auto occl = genOcclusion(pos, face);
-    std::copy(occl.begin(), occl.end(), std::back_inserter(occlusion));
+    occlusion.insert(occlusion.end(), occl.begin(), occl.end());
   };
 
   ivec3 pos;
@@ -106,7 +104,7 @@ void Chunk::generateMesh() {
 Mesh const& Chunk::getMesh() {
   if(mesh == nullptr) {
     mesh = new Mesh(positions, normals, textureCoords, occlusion, indices);
-    mesh->model = glm::translate(mesh->model, vec3(chunkPos.x, 0, chunkPos.y));
+    mesh->model = glm::translate(mesh->model, vec3(chunkPos));
   }
   return *mesh;
 }
