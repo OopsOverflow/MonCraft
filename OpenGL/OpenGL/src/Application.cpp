@@ -10,6 +10,7 @@
 #include "util/Loader.hpp"
 #include "util/Raycast.hpp"
 #include "entity/Hitbox.hpp"
+#include "include/Music.hpp"
 
 // WINDOW DIMENSIONS
 #define WIDTH     800
@@ -75,6 +76,10 @@ int main(int argc, char* argv[]) {
 
     GLuint textureID = loader.loadTexture("Texture_atlas");
 
+
+    Music MusicPlayer;
+    
+
     window.camera.setLookAt({100, 100, 100}, {0, 0, 0});
 
     while (window.beginFrame()) {
@@ -82,6 +87,7 @@ int main(int argc, char* argv[]) {
         uint32_t timeBegin = SDL_GetTicks();
 
         // updates
+        MusicPlayer.update();
         terrain.update(window.camera.position);
         auto castPos = window.camera.position;
         auto castDir = window.camera.center - window.camera.position;
@@ -127,7 +133,7 @@ int main(int argc, char* argv[]) {
         glDrawElements(GL_TRIANGLES, targetBlock->getVertexCount(), GL_UNSIGNED_INT, nullptr);
         glBindVertexArray(0);
 
-
+        //terrain.render();
         // draw the terrain
         shadows.activate();
 
