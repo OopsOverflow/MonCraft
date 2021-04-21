@@ -53,7 +53,7 @@ Character::Character(const glm::vec3 headRotation, const glm::vec2 bobyRotation)
     leftLeg.localPosition *= 0.069375f;
     chest.children.push_back(leftLeg);
 
-    Mesh* rightLegMesh= new Mesh(cube.vertices, cube.normals, cube.rightLegUVs, cube.occlusions, cube.indices);
+    Mesh* rightLegMesh = new Mesh(cube.vertices, cube.normals, cube.rightLegUVs, cube.occlusions, cube.indices);
     BodyPart rightLeg;
     rightLeg.vertexCount = rightLegMesh->getVertexCount();
     rightLeg.vao = rightLegMesh->getVAO();
@@ -63,10 +63,17 @@ Character::Character(const glm::vec3 headRotation, const glm::vec2 bobyRotation)
     rightLeg.localPosition *= 0.069375f;
     chest.children.push_back(rightLeg);
 
+    meshes = { chestMesh, headMesh, leftArmMesh, rightArmMesh, leftLegMesh, rightLegMesh };
 }
 
 BodyPart const& Character::getHeadProperties() {
     return chest.children.at(0);
+}
+
+Character::~Character() {
+  for(Mesh* mesh : meshes) {
+    delete mesh;
+  }
 }
 
 void setView(const glm::vec3& lookAt) {
