@@ -163,6 +163,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\util\Random.cpp" />
     <ClCompile Include="src\blocks\Air_Block.cpp" />
     <ClCompile Include="src\blocks\Debug_Block.cpp" />
     <ClCompile Include="src\Debug.cpp" />
@@ -191,6 +192,7 @@
     <ClCompile Include="src\blocks\Stone_Block.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\util\Random.hpp" />
     <ClInclude Include="src\blocks\Air_Block.h" />
     <ClInclude Include="src\blocks\Debug_Block.h" />
     <ClInclude Include="src\DisplayNoise.hpp" />
