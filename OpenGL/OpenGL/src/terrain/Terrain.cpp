@@ -17,7 +17,7 @@ Terrain::Terrain()
   : generator(chunkSize),
     chunkPos(0),
     loader(),
-    texture(loader.loadTexture("Testxture"))
+    texture(loader.loadTexture("Texture_atlas"))
 {
   workerThread = std::thread(&Terrain::worker, this, stopTrigger.get_future());
 }
@@ -122,7 +122,6 @@ void Terrain::render() {
     glUniformMatrix4fv(MATRIX_MODEL, 1, GL_FALSE, glm::value_ptr(mesh.model));
     glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_INT, nullptr);
   }
-  glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 Block* Terrain::getBlock(ivec3 pos) {

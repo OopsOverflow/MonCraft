@@ -194,6 +194,9 @@
     <ClInclude Include="src\blocks\Air_Block.h" />
     <ClInclude Include="src\blocks\Debug_Block.h" />
     <ClInclude Include="src\DisplayNoise.hpp" />
+    <ClInclude Include="src\entity\Character.hpp" />
+    <ClInclude Include="src\entity\Cube.hpp" />
+    <ClInclude Include="src\entity\Hitbox.hpp" />
     <ClInclude Include="src\include\Debug.hpp" />
     <ClInclude Include="src\include\Noise.hpp" />
     <ClInclude Include="src\include\ShadowMap.hpp" />
@@ -232,7 +235,7 @@
     <Image Include="data\img\Character.png" />
     <Image Include="data\img\starting_atlas.png" />
     <Image Include="data\img\Testxture.png" />
-    <Image Include="src\blocks\Textures\Character.png" />
+    <Image Include="data\img\Texture_atlas.png" />
     <Image Include="src\blocks\Textures\Testxture.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
