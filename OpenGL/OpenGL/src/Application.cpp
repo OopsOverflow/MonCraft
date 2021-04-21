@@ -83,14 +83,14 @@ int main(int argc, char* argv[]) {
     Camera skyCam(skyCamSize, skyCamSize, {1, 500, 1}, {0, 0, 0});
 
     while (window.beginFrame()) {
-        window.keyboardController.apply(character);
-        window.mouseController.apply(character, window.camera);
-        character.cameraToHead(window.camera);
-
         //Time in ms telling us when this frame started. Useful for keeping a fix framerate
         uint32_t timeBegin = SDL_GetTicks();
 
         // updates
+        window.keyboardController.apply(character);
+        window.mouseController.apply(character, window.camera);
+        character.cameraToHead(window.camera);
+
         MusicPlayer.update();
 
         auto playerPos = window.camera.position;
@@ -143,9 +143,9 @@ int main(int argc, char* argv[]) {
         glDrawElements(GL_TRIANGLES, targetBlock->getVertexCount(), GL_UNSIGNED_INT, nullptr);
         glBindVertexArray(0);
 
-        //terrain.render();
         // draw the terrain
         shadows.activate();
+        terrain.render();
 
         // terrain sky view
         glm::vec3 skyPos(window.camera.position.x, 500, window.camera.position.z);
@@ -164,6 +164,7 @@ int main(int argc, char* argv[]) {
         glDisable(GL_SCISSOR_TEST);
 
         // draw the character
+        window.camera.activate();
         character.drawCharacter();
 
         // finish render

@@ -85,5 +85,4 @@ void Hitbox::move(glm::vec3 amount) {
 
 void Hitbox::drawCharacter() {
 	character.draw(glm::translate(glm::mat4(1.f), pos), view ==View::FIRST_PERSON);
-
 }
