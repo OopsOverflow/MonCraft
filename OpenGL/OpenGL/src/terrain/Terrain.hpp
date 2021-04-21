@@ -11,6 +11,7 @@
 #include "Generator.hpp"
 #include "Camera.hpp"
 #include "../util/Loader.hpp"
+#include "../util/PriorityList.hpp"
 
 class Terrain
 {
@@ -26,11 +27,16 @@ public:
 
   Block* getBlock(glm::ivec3 pos);
 
-  const int chunkSize = 32;
-  const int renderDistance = 3;
-  const int chunksMaxCount = (int)pow(renderDistance * 2 + 1, 3);
-
 private:
+  const int chunkSize = 32;
+  const int renderDistance = 5;
+  const int chunksMaxCount;
+
+  const int memoryCap = 512; // max amount of memory (mebibytes)
+  const int chunkMemorySize;  // size of a single chunk in memory (kibibytes)
+  const int chunkCacheSize;   // maximum number of chunks in cache
+
+
   // dirty hash function for the chunks hashmap
   struct ivec3_hash
   {
@@ -41,7 +47,9 @@ private:
       return a == b;
     }
   };
-  using ChunkMap   = std::unordered_map<glm::ivec3, std::shared_ptr<Chunk>, ivec3_hash, ivec3_hash>;
+
+  using ChunkMap = std::unordered_map<glm::ivec3, std::shared_ptr<Chunk>, ivec3_hash, ivec3_hash>;
+  using ChunkPList = PriorityList<std::weak_ptr<Chunk>>;
 
   Generator generator; // the chunk generator
 
@@ -55,6 +63,7 @@ private:
 
   std::mutex chunksMutex;
   ChunkMap chunks;
+  ChunkPList loadedChunks;
 
   void worker(std::future<void> stopSignal);
 

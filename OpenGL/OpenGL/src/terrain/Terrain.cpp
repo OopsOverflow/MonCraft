@@ -18,7 +18,10 @@ int distance(ivec3 a, ivec3 b) {
 }
 
 Terrain::Terrain()
-  : generator(chunkSize),
+  : chunksMaxCount((int)pow(renderDistance * 2 + 1, 3)),
+    chunkMemorySize((sizeof(Block) + sizeof(nullptr)) * pow(chunkSize + 2, 3) / 1024),
+    chunkCacheSize(memoryCap * 1024 / chunkMemorySize),
+    generator(chunkSize),
     chunkPos(0),
     loader(),
     texture(loader.loadTexture("Texture_atlas"))
@@ -85,10 +88,11 @@ void Terrain::worker(std::future<void> stopSignal) {
   while(1) {
     if(getNextPos(pos)) {
       {
-        Chunk* c = generator.generate(pos);
+        std::shared_ptr<Chunk> c(generator.generate(pos));
         {
           std::lock_guard<std::mutex> lock(chunksMutex);
           chunks.emplace(pos, c);
+          loadedChunks.push(c);
         }
       }
       stop = stopSignal.wait_for(sleep);
@@ -110,14 +114,24 @@ void Terrain::update(glm::vec3 pos, glm::vec3 dir, float fovX) {
 
   // clear old chunks
   int count = (int)chunks.size();
-  for (auto it = chunks.begin(); it != chunks.end() && count > chunksMaxCount;) {
+  for(auto it = chunks.begin(); it != chunks.end() && count > chunksMaxCount;) {
     int dist = distance(it->first, chunkPos);
-    if (dist > renderDistance) {
+    if(dist > renderDistance) {
       it = chunks.erase(it);
       count --;
     }
     else
     ++it;
+  }
+
+  // unload low-priority chunks
+  count = (int)loadedChunks.size();
+  for(auto it = loadedChunks.begin(); it != loadedChunks.end() && count > chunkCacheSize;) {
+    if (auto chunk = it->lock()) {
+      chunk->unload();
+    }
+    loadedChunks.pop();
+    it = loadedChunks.begin();
   }
 }
 

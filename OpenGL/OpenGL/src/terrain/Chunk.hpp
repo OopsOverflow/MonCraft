@@ -39,6 +39,7 @@ public:
 
   Mesh const& getMesh();
   Block* getBlock(glm::ivec3 pos);
+  void unload();
 
 private:
   void generateMesh();
@@ -46,7 +47,7 @@ private:
   bool isSolid(glm::ivec3 pos);
 
   glm::ivec3 chunkPos;
-  Blocks blocks;
+  Blocks* blocks;
 
   // the gl mesh and corresponding data.
   Mesh* mesh;

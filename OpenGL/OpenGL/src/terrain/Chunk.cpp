@@ -12,7 +12,7 @@ using std::move;
 #include "Debug.hpp"
 
 Chunk::Chunk(ivec3 chunkPos, Blocks blocks)
-  : chunkPos(chunkPos), blocks(move(blocks)), mesh(nullptr)
+  : chunkPos(chunkPos), blocks(new Blocks(move(blocks))), mesh(nullptr)
 {
   generateMesh();
   // std::cout << "created chunk " << chunkPos << std::endl;
@@ -21,12 +21,17 @@ Chunk::Chunk(ivec3 chunkPos, Blocks blocks)
 Chunk::~Chunk() {
   // std::cout << "deleted chunk " << chunkPos << std::endl;
   delete mesh;
+  delete blocks;
 }
 
+// /!\ extra care must be taken here.
+//  - uses operator[] which is unsafe (no bounds checks)
+//  - assumes chunk is loaded
 bool Chunk::isSolid(ivec3 pos) {
-  return blocks[pos]->type != BlockType::Air;
+  return (*blocks)[pos]->type != BlockType::Air;
 }
 
+// TODO: move out of here (util ?)
 face_t<2> getFaceUV(glm::ivec2 index) {
   static const float atlasSize = 8.f;
   return face_t<2> {
@@ -86,9 +91,9 @@ void Chunk::generateMesh() {
   };
 
   ivec3 pos;
-  for(pos.x = 1; pos.x < blocks.size.x-1; pos.x++) {
-    for(pos.y = 1; pos.y < blocks.size.y-1; pos.y++) {
-      for(pos.z = 1; pos.z < blocks.size.z-1; pos.z++) {
+  for(pos.x = 1; pos.x < blocks->size.x-1; pos.x++) {
+    for(pos.y = 1; pos.y < blocks->size.y-1; pos.y++) {
+      for(pos.z = 1; pos.z < blocks->size.z-1; pos.z++) {
         if(!isSolid(pos)) continue;
         if(!isSolid(pos + ivec3(1, 0, 0)))  genFace(pos, BlockFace::RIGHT);
         if(!isSolid(pos + ivec3(-1, 0, 0))) genFace(pos, BlockFace::LEFT);
@@ -110,5 +115,11 @@ Mesh const& Chunk::getMesh() {
 }
 
 Block* Chunk::getBlock(ivec3 pos) {
-  return blocks.at(pos).get();
+  if(!blocks) return nullptr;
+  return blocks->at(pos).get();
+}
+
+void Chunk::unload() {
+  delete blocks;
+  blocks = nullptr;
 }
