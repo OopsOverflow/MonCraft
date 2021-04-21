@@ -1,14 +1,13 @@
-#ifndef STONE_BLOCK_H
-#define STONE_BLOCK_H
+#pragma once
 
 #include "Block.h"
 
 class Stone_Block : public Block
 {
 public:
-    Stone_Block();
-
+    static Stone_Block* get();
     glm::ivec2 getFaceUVs(BlockFace face) const override;
-};
 
-#endif // STONE_BLOCK_H
+private:
+    Stone_Block();
+};

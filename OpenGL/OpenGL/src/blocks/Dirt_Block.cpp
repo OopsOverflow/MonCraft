@@ -1,5 +1,10 @@
 #include "Dirt_Block.h"
 
+Dirt_Block* Dirt_Block::get() {
+  static Dirt_Block inst;
+  return &inst;
+}
+
 Dirt_Block::Dirt_Block()
     : Block(BlockType::Dirt)
 {}

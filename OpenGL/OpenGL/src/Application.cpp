@@ -37,7 +37,7 @@ std::unique_ptr<Mesh> makeTargetBlock() {
   std::vector<GLuint> indices;
   std::vector<GLuint> scheme = { 0, 1, 2, 0, 2, 3 };
 
-  auto block = std::unique_ptr<Block>(new Debug_Block());
+  auto block = Blocks::create_static<Debug_Block>();
 
    auto getFaceUV = [](glm::ivec2 index) -> face_t<2>{
     static const float atlasSize = 8.f;

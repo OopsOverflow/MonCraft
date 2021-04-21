@@ -1,5 +1,4 @@
-#ifndef BLOCK_H
-#define BLOCK_H
+#pragma once
 
 #include "GL/glew.h"
 #include <glm/glm.hpp>
@@ -25,7 +24,6 @@ public:
     const BlockType type;
 
     virtual glm::ivec2 getFaceUVs(BlockFace face) const = 0;
+    virtual bool isStatic() const { return true; }
 
 };
-
-#endif // BLOCK_H

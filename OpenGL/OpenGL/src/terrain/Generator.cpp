@@ -35,28 +35,28 @@ Chunk* Generator::generate(ivec3 pos) {
 
       if(blockHeight < -1) {
         for(int i = -1; i < chunkSize + 1; i++) {
-          blocks[ivec3(dpos.x, i, dpos.y) + one] = std::make_unique<Air_Block>();
+          blocks[ivec3(dpos.x, i, dpos.y) + one] = Blocks::create_static<Air_Block>();
         }
       }
 
       else if(blockHeight > chunkSize) {
         for(int i = -1; i < chunkSize + 1; i++) {
-          blocks[ivec3(dpos.x, i, dpos.y) + one] = std::make_unique<Dirt_Block>();
+          blocks[ivec3(dpos.x, i, dpos.y) + one] = Blocks::create_static<Dirt_Block>();
         }
       }
 
       else {
         // 1) air column
         for(int i = chunkSize; i > blockHeight; i--) {
-          blocks[ivec3(dpos.x, i, dpos.y) + one] = std::make_unique<Air_Block>();
+          blocks[ivec3(dpos.x, i, dpos.y) + one] = Blocks::create_static<Air_Block>();
         }
 
         // 2) single grass block
-        blocks[ivec3(dpos.x, blockHeight, dpos.y) + one] = std::make_unique<Grass_Block>();
+        blocks[ivec3(dpos.x, blockHeight, dpos.y) + one] = Blocks::create_static<Grass_Block>();
 
         // 3) dirt column
         for(int i = blockHeight-1; i >= -1; i--) {
-          blocks[ivec3(dpos.x, i, dpos.y) + one] = std::make_unique<Dirt_Block>();
+          blocks[ivec3(dpos.x, i, dpos.y) + one] = Blocks::create_static<Dirt_Block>();
         }
       }
     }

@@ -19,7 +19,7 @@ int distance(ivec3 a, ivec3 b) {
 
 Terrain::Terrain()
   : chunksMaxCount((int)pow(renderDistance * 2 + 1, 3)),
-    chunkMemorySize((sizeof(Block) + sizeof(nullptr)) * pow(chunkSize + 2, 3) / 1024),
+    chunkMemorySize(sizeof(nullptr) * pow(chunkSize + 2, 3) / 1024),
     chunkCacheSize(memoryCap * 1024 / chunkMemorySize),
     generator(chunkSize),
     chunkPos(0),

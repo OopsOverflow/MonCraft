@@ -1,15 +1,13 @@
-#ifndef DEBUG_BLOCK_H
-#define DEBUG_BLOCK_H
+#pragma once
 
 #include "Block.h"
 
 class Debug_Block : public Block
 {
 public:
-    Debug_Block();
-
+    static Debug_Block* get();
     glm::ivec2 getFaceUVs(BlockFace face) const override;
 
+private:
+    Debug_Block();
 };
-
-#endif // DEBUG_BLOCK_H

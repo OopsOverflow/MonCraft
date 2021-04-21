@@ -1,5 +1,10 @@
 #include "Debug_Block.h"
 
+Debug_Block* Debug_Block::get() {
+  static Debug_Block inst;
+  return &inst;
+}
+
 Debug_Block::Debug_Block() : Block(BlockType::Grass)
 { }
 
