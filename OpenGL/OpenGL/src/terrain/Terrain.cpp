@@ -13,6 +13,10 @@ int distance(ivec2 a, ivec2 b) {
   return std::max(abs(b.x - a.x), abs(b.y - a.y));
 }
 
+int distance(ivec3 a, ivec3 b) {
+  return std::max(std::max(abs(b.x - a.x), abs(b.y - a.y)), abs(b.z - a.z));
+}
+
 Terrain::Terrain()
   : generator(chunkSize),
     chunkPos(0),
@@ -29,41 +33,44 @@ Terrain::~Terrain() {
   std::cout << "terrain thread terminated" << std::endl;
 }
 
+#include "Debug.hpp"
+
 // COMBAK: this function is weird and could be improved.
-bool Terrain::getNextPos(ivec2 &pos) {
+bool Terrain::getNextPos(ivec3 &pos) {
   std::lock_guard<std::mutex> lck2(chunksMutex);
 
-  int i = 0, j = -1;
+  ivec3 iter(-renderDistance, 0, -1);
 
-  auto tryPos = [&](int k, int l) {
-    pos = chunkPos + ivec2(k, l);
+  auto tryPos = [&](ivec3 dpos) {
+    pos = chunkPos + dpos;
     if (chunks.find(pos) == chunks.end()) {
-      last_i = i;
-      last_j = j;
+      lastIter = iter;
       return true;
     }
     return false;
   };
 
   if(chunkPos == lastPos) {
-    i = last_i;
-    j = last_j;
+    iter = lastIter;
   } else {
     lastPos = chunkPos;
   }
-  if(i == 0) {
-    if (tryPos(0, 0)) return true;
-    i++;
+  if(iter.x == 0) {
+    if (tryPos(ivec3(0))) return true;
+    iter.x = 1;
   }
 
-  for(; i <= renderDistance; i++) {
-    for(; j <= i; j++) {
-      if (tryPos(i, j))  return true;
-      if (tryPos(-i, j)) return true;
-      if (tryPos(j, i))  return true;
-      if (tryPos(j, -i)) return true;
+  for(; iter.x <= renderDistance; iter.x++) {
+    for(; iter.z <= iter.x; iter.z++) {
+      for(; iter.y < renderDistance; iter.y++) {
+        if(tryPos({iter.x, iter.y, iter.z}))  return true;
+        if(tryPos({-iter.x, iter.y, iter.z})) return true;
+        if(tryPos({iter.z, iter.y, iter.x}))  return true;
+        if(tryPos({iter.z, iter.y, -iter.x})) return true;
+      }
+      iter.y = -renderDistance;
     }
-    j = -i - 1;
+    iter.z = -iter.x - 1;
   }
   return false;
 }
@@ -73,7 +80,7 @@ void Terrain::worker(std::future<void> stopSignal) {
   auto longSleep = 100ms;
   std::future_status stop;
 
-  ivec2 pos;
+  ivec3 pos;
 
   while(1) {
     if(getNextPos(pos)) {
@@ -87,7 +94,7 @@ void Terrain::worker(std::future<void> stopSignal) {
       stop = stopSignal.wait_for(sleep);
     }
     else {
-      // std::cout << "worker idle" << std::endl;
+      std::cout << "worker idle" << std::endl;
       stop = stopSignal.wait_for(longSleep);
     }
     if(stop != std::future_status::timeout) return; // stopSignal was triggered
@@ -98,7 +105,7 @@ void Terrain::update(glm::vec3 pos, glm::vec3 dir, float fovX) {
   std::lock_guard<std::mutex> lck(chunksMutex);
   playerPos = pos;
   viewDir = glm::normalize(dir);
-  chunkPos = floor(vec2(pos.x, pos.z) / float(chunkSize));
+  chunkPos = floor(pos / float(chunkSize));
   this->fovX = fovX;
 
   // clear old chunks
@@ -118,11 +125,12 @@ void Terrain::render() {
   std::lock_guard<std::mutex> lck(chunksMutex);
 
   vec2 viewDir2D = glm::normalize(vec2(viewDir.x, viewDir.z));
-  ivec2 startChunk = chunkPos - ivec2(glm::sign(vec2(viewDir.x, viewDir.z)));
+  ivec3 startChunk = chunkPos - ivec3(glm::sign(viewDir));
 
   for(auto& chunk : chunks) {
     Mesh const& mesh = chunk.second->getMesh();
-    vec2 chunkDir = glm::normalize(vec2(chunk.first - startChunk));
+    ivec3 chunkDir3D = chunk.first - startChunk;
+    vec2 chunkDir = glm::normalize(vec2(chunkDir3D.x, chunkDir3D.z));
 
     float minDot = cos(glm::radians(fovX));
 
@@ -136,12 +144,11 @@ void Terrain::render() {
 
 Block* Terrain::getBlock(ivec3 pos) {
   std::lock_guard<std::mutex> lck(chunksMutex);
-  ivec2 cpos = floor(vec2(pos.x, pos.z) / float(chunkSize));
-  if(pos.y < 0 || pos.y >= chunkSize) // TODO: change this once the terrain height is established
-    return nullptr;
+  ivec3 cpos = floor(vec3(pos) / float(chunkSize));
+
   if(chunks.find(cpos) == chunks.end())
     return nullptr;
 
-  ivec3 dpos = pos - ivec3(cpos.x, 0, cpos.y) * chunkSize;
+  ivec3 dpos = pos - cpos * chunkSize;
   return chunks.at(cpos)->getBlock(dpos + ivec3(1));
 }

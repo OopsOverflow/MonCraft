@@ -8,7 +8,7 @@ class Generator {
 public:
   Generator(int chunkSize);
 
-  Chunk* generate(glm::ivec2 pos);
+  Chunk* generate(glm::ivec3 pos);
 
 private:
   int chunkSize;

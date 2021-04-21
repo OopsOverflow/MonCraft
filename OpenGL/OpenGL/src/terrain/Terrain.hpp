@@ -27,27 +27,27 @@ public:
   Block* getBlock(glm::ivec3 pos);
 
   const int chunkSize = 32;
-  const int renderDistance = 8;
-  const int chunksMaxCount = (int)pow(renderDistance * 2 + 1, 2);
+  const int renderDistance = 3;
+  const int chunksMaxCount = (int)pow(renderDistance * 2 + 1, 3);
 
 private:
   // dirty hash function for the chunks hashmap
-  struct ivec2_hash
+  struct ivec3_hash
   {
-    size_t operator()(glm::ivec2 const& k) const {
-      return std::hash<int>()(k.x << 16 | k.y >> 16);
+    size_t operator()(glm::ivec3 const& k) const {
+      return std::hash<int>()(k.x) ^ std::hash<int>()(k.y) ^  std::hash<int>()(k.z);
     }
-    bool operator()(glm::ivec2 const& a, glm::ivec2 const& b) const {
-      return a.x == b.x && a.y == b.y;
+    bool operator()(glm::ivec3 const& a, glm::ivec3 const& b) const {
+      return a == b;
     }
   };
-  using ChunkMap = std::unordered_map<glm::ivec2, std::unique_ptr<Chunk>, ivec2_hash, ivec2_hash>;
+  using ChunkMap   = std::unordered_map<glm::ivec3, std::shared_ptr<Chunk>, ivec3_hash, ivec3_hash>;
 
   Generator generator; // the chunk generator
 
   glm::vec3 viewDir; // player position
   glm::vec3 playerPos; // player view direction
-  glm::ivec2 chunkPos; // in which chunk the player is
+  glm::ivec3 chunkPos; // in which chunk the player is
   float fovX;
 
   std::thread workerThread; // the worker creates new chunks when it can
@@ -62,7 +62,7 @@ private:
   GLuint texture;
 
   // this is kinda dirty, see cpp file.
-  glm::ivec2 lastPos = glm::ivec2(0);
-  int last_i = 0, last_j = -1;
-  bool getNextPos(glm::ivec2 &pos);
+  glm::ivec3 lastPos = glm::ivec3(0);
+  glm::ivec3 lastIter = glm::ivec3(0, -renderDistance, -1);
+  bool getNextPos(glm::ivec3 &pos);
 };

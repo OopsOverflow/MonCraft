@@ -9,15 +9,17 @@ using glm::vec3;
 using glm::ivec3;
 using std::move;
 
-Chunk::Chunk(ivec2 chunkPos, Blocks blocks)
+#include "Debug.hpp"
+
+Chunk::Chunk(ivec3 chunkPos, Blocks blocks)
   : chunkPos(chunkPos), blocks(move(blocks)), mesh(nullptr)
 {
   generateMesh();
-    // std::cout << "created chunk (" << chunkPos.x << ", " << chunkPos.y << ")" << std::endl;
+  // std::cout << "created chunk " << chunkPos << std::endl;
 }
 
 Chunk::~Chunk() {
-  // std::cout << "deleted chunk (" << chunkPos.x << ", " << chunkPos.y << ")" << std::endl;
+  // std::cout << "deleted chunk " << chunkPos << std::endl;
   delete mesh;
 }
 
@@ -108,11 +110,6 @@ Mesh const& Chunk::getMesh() {
   }
   return *mesh;
 }
-
-ivec2 Chunk::getPosition() const {
-  return chunkPos;
-}
-
 
 Block* Chunk::getBlock(ivec3 pos) {
   return blocks.at(pos).get();

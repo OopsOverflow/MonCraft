@@ -16,7 +16,12 @@ class Blocks : public DataStore<std::unique_ptr<Block>, 3> {
 public:
   Blocks(int size)
       : DataStore<std::unique_ptr<Block>, 3>(glm::ivec3(size))
-  { }
+  {
+    // static int count = 0;
+    // static int totalSize = 0;
+    // totalSize += size * size * size * (sizeof(Block) + sizeof(std::unique_ptr<Block>));
+    // std::cout << "Blocks: " << ++count << "(" << totalSize << ")" << std::endl;
+  }
 };
 
 
@@ -26,14 +31,13 @@ public:
 
 class Chunk {
 public:
-  Chunk(glm::ivec2 chunkPos, Blocks blocks);
+  Chunk(glm::ivec3 chunkPos, Blocks blocks);
   ~Chunk();
 
   Chunk(Chunk const&) = delete;
   Chunk& operator=(Chunk const&) = delete;
 
   Mesh const& getMesh();
-  glm::ivec2 getPosition() const;
   Block* getBlock(glm::ivec3 pos);
 
 private:
@@ -41,7 +45,7 @@ private:
   std::array<GLfloat, 4> genOcclusion(glm::ivec3 pos, BlockFace face);
   bool isSolid(glm::ivec3 pos);
 
-  glm::ivec2 chunkPos;
+  glm::ivec3 chunkPos;
   Blocks blocks;
 
   // the gl mesh and corresponding data.
