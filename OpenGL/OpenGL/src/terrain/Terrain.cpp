@@ -23,9 +23,11 @@ Terrain::Terrain()
     chunkCacheSize(memoryCap * 1024 / chunkMemorySize),
     generator(chunkSize),
     chunkPos(0),
+    chunkPosChanged(false),
     loader(),
     texture(loader.loadTexture("Texture_atlas"))
 {
+  std::cout << "Terrain chunk cache: " << chunkCacheSize << " chunks" << std::endl;
   workerThread = std::thread(&Terrain::worker, this, stopTrigger.get_future());
 }
 
@@ -38,62 +40,70 @@ Terrain::~Terrain() {
 
 #include "Debug.hpp"
 
-// COMBAK: this function is weird and could be improved.
-bool Terrain::getNextPos(ivec3 &pos) {
-  std::lock_guard<std::mutex> lck2(chunksMutex);
+void Terrain::updateWaitingList() {
+  waitingChunks.clear();
 
-  ivec3 iter(-renderDistance, 0, -1);
-
-  auto tryPos = [&](ivec3 dpos) {
-    pos = chunkPos + dpos;
-    if (chunks.find(pos) == chunks.end()) {
-      lastIter = iter;
-      return true;
+  auto insert = [&](ivec2 const& pos) {
+    std::lock_guard<std::mutex> lck(chunksMutex);
+    for(int i = -renderDistance; i <= renderDistance; i++) {
+      ivec3 p = chunkPos + ivec3(pos.x, i, pos.y);
+      if(chunks.find(p) == chunks.end()) {
+        waitingChunks.push(p);
+      }
     }
-    return false;
   };
 
-  if(chunkPos == lastPos) {
-    iter = lastIter;
-  } else {
-    lastPos = chunkPos;
-  }
-  if(iter.x == 0) {
-    if (tryPos(ivec3(0))) return true;
-    iter.x = 1;
-  }
+  insert({0, 0});
 
-  for(; iter.x <= renderDistance; iter.x++) {
-    for(; iter.z <= iter.x; iter.z++) {
-      for(; iter.y < renderDistance; iter.y++) {
-        if(tryPos({iter.x, iter.y, iter.z}))  return true;
-        if(tryPos({-iter.x, iter.y, iter.z})) return true;
-        if(tryPos({iter.z, iter.y, iter.x}))  return true;
-        if(tryPos({iter.z, iter.y, -iter.x})) return true;
-      }
-      iter.y = -renderDistance;
+  for(int dist = 1; dist < renderDistance+1; dist++) {
+    insert({dist, 0});
+    insert({0, dist});
+    insert({-dist, 0});
+    insert({0, -dist});
+
+    for(int off = 1; off < dist; off++) {
+      insert({dist, off});
+      insert({off, dist});
+      insert({-off, dist});
+      insert({-dist, off});
+      insert({-dist, -off});
+      insert({-off, -dist});
+      insert({off, -dist});
+      insert({dist, -off});
     }
-    iter.z = -iter.x - 1;
+
+    insert({dist, dist});
+    insert({-dist, dist});
+    insert({-dist, -dist});
+    insert({dist, -dist});
   }
-  return false;
 }
 
 void Terrain::worker(std::future<void> stopSignal) {
   auto sleep = 1ms;
-  auto longSleep = 100ms;
+  auto longSleep = 500ms;
   std::future_status stop;
 
-  ivec3 pos;
+  do {
 
-  while(1) {
-    if(getNextPos(pos)) {
+    bool changed = ({
+      std::lock_guard<std::mutex> lck(chunksMutex);
+      bool changed = chunkPosChanged;
+      chunkPosChanged = false;
+      changed;
+    });
+
+    if(changed) {
+      TIME(updateWaitingList();)
+    }
+
+    if(waitingChunks.size()) {
+      ivec3 pos = waitingChunks.pop();
+      std::shared_ptr<Chunk> c(generator.generate(pos));
       {
-        std::shared_ptr<Chunk> c(generator.generate(pos));
-        {
-          std::lock_guard<std::mutex> lock(chunksMutex);
-          chunks.emplace(pos, c);
-          loadedChunks.push(c);
-        }
+        std::lock_guard<std::mutex> lock(chunksMutex);
+        chunks.emplace(pos, c);
+        loadedChunks.push(c);
       }
       stop = stopSignal.wait_for(sleep);
     }
@@ -101,16 +111,21 @@ void Terrain::worker(std::future<void> stopSignal) {
       std::cout << "worker idle" << std::endl;
       stop = stopSignal.wait_for(longSleep);
     }
-    if(stop != std::future_status::timeout) return; // stopSignal was triggered
-  }
+  } while(stop == std::future_status::timeout);
+
 }
 
 void Terrain::update(glm::vec3 pos, glm::vec3 dir, float fovX) {
   std::lock_guard<std::mutex> lck(chunksMutex);
   playerPos = pos;
   viewDir = glm::normalize(dir);
-  chunkPos = floor(pos / float(chunkSize));
   this->fovX = fovX;
+
+  ivec3 newChunkPos = floor(pos / float(chunkSize));
+  if(newChunkPos != chunkPos) {
+    chunkPos = newChunkPos;
+    chunkPosChanged = true;
+  }
 
   // clear old chunks
   int count = (int)chunks.size();

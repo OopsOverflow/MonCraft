@@ -12,6 +12,7 @@
 #include "Camera.hpp"
 #include "../util/Loader.hpp"
 #include "../util/PriorityList.hpp"
+#include "../util/AtomicCyclicList.hpp"
 
 class Terrain
 {
@@ -28,11 +29,11 @@ public:
   Block* getBlock(glm::ivec3 pos);
 
 private:
-  const int chunkSize = 32;
-  const int renderDistance = 5;
+  static const int chunkSize = 32;
+  static const int renderDistance = 8;
   const int chunksMaxCount;
 
-  const int memoryCap = 512; // max amount of memory (mebibytes)
+  const int memoryCap = 2048; // max amount of memory (mebibytes)
   const int chunkMemorySize;  // size of a single chunk in memory (kibibytes)
   const int chunkCacheSize;   // maximum number of chunks in cache
 
@@ -48,30 +49,35 @@ private:
     }
   };
 
+
   using ChunkMap = std::unordered_map<glm::ivec3, std::shared_ptr<Chunk>, ivec3_hash, ivec3_hash>;
   using ChunkPList = PriorityList<std::weak_ptr<Chunk>>;
+  using WaitingList = AtomicCyclicList<glm::ivec3, (2*renderDistance+1)*(2*renderDistance+1)*(2*renderDistance+1)>;
 
   Generator generator; // the chunk generator
 
   glm::vec3 viewDir; // player position
   glm::vec3 playerPos; // player view direction
   glm::ivec3 chunkPos; // in which chunk the player is
+  bool chunkPosChanged;
   float fovX;
 
   std::thread workerThread; // the worker creates new chunks when it can
-  std::promise<void> stopTrigger; // asks the thread to terminate
+  std::promise<void> stopTrigger; // asks the worker thread to terminate
 
+  // chunks
   std::mutex chunksMutex;
-  ChunkMap chunks;
-  ChunkPList loadedChunks;
-
-  void worker(std::future<void> stopSignal);
+  ChunkMap chunks; // hashmap to hold the chunks
+  ChunkPList loadedChunks; // cache of fully loaded chunks
+  WaitingList waitingChunks; // chunk positions yet to be loaded
 
   Loader loader;
   GLuint texture;
 
+  void worker(std::future<void> stopSignal);
+
   // this is kinda dirty, see cpp file.
-  glm::ivec3 lastPos = glm::ivec3(0);
-  glm::ivec3 lastIter = glm::ivec3(0, -renderDistance, -1);
-  bool getNextPos(glm::ivec3 &pos);
+  // glm::ivec3 lastIter = glm::ivec3(0, -renderDistance, -1);
+  // glm::ivec3 lastPos = glm::ivec3(0);
+  void updateWaitingList();
 };
