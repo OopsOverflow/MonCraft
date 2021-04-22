@@ -23,6 +23,8 @@ struct BodyPart {
     glm::mat4 localMatrix = glm::mat4(1.0f);
     glm::vec3 localRotation = { 0.0f,0.0f,0.0f };
     glm::vec3 localPosition = { 0.0f,0.0f,0.0f };
+    glm::vec3 reachRotation = { 0.0f,0.0f,0.0f };
+
     std::vector<BodyPart> children;
 };
 
@@ -36,14 +38,16 @@ public:
     void draw(glm::mat4 const& characterPos, bool onlyRightHand);
     void renderBody(const BodyPart& body, std::stack<glm::mat4>& mvpStack);
 
-    void movement(const float distance);
-    void rotateBody(float rotation);
+    void rotateBody(glm::vec3 rotation);
     BodyPart const& getHeadProperties();
-
+    glm::vec3 getBodyRotation();
     void rotateHead(glm::vec2 rotation);
-    void rotateChest(float rotation);
     void rotateMember(glm::vec2 rotation, Member member);
-    glm::vec3 bodyRotation;
+
+    void headReachRotation(float maxRotation);
+    void bodyReachRotation(float maxRotation);
+    void memberReachRotation(float maxRotation);
+
 
 private:
     Loader loader;

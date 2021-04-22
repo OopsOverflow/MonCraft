@@ -12,10 +12,6 @@ class Hitbox
 {
 public:
 	Hitbox(glm::vec3 position);
-	bool setSwimming();
-	bool setWalking();
-	bool setFlying();
-	bool setSpectator();
 	void move(glm::vec3 amount);
 	void drawCharacter();
 	void cameraToHead(Camera& camera);
