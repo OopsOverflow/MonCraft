@@ -8,7 +8,7 @@ template<class T, int N>
 class AtomicCyclicList {
 public:
   AtomicCyclicList()
-    : head(0), tail(0), size_(0)
+    : array(), head(0), tail(0), size_(0)
   { }
 
   int size() {

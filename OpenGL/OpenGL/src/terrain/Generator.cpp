@@ -30,7 +30,7 @@ Chunk* Generator::generate(ivec3 pos) {
   for(dpos.x = -1; dpos.x <= chunkSize; dpos.x++) {
     for(dpos.y = -1; dpos.y <= chunkSize; dpos.y++) {
       ivec2 pos2D = ivec2(pos.x, pos.z) * ivec2(chunkSize) + dpos;
-      float height = noise.fractal2(pos2D, octaves) * .5 + .5;
+      float height = noise.fractal2(pos2D, octaves) * .5f + .5f;
       int blockHeight = (int)floor(height * chunkSize) - pos.y * chunkSize;
 
       if(blockHeight < -1) {

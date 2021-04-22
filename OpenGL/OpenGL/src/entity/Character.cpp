@@ -155,12 +155,12 @@ void Character::rotateChest(float rotation) {
 }
 
 void Character::rotateMember(glm::vec2 rotation, Member member) {
-    BodyPart* model = &chest.children.at(member);
+    BodyPart& model = chest.children.at((int)member);
 
     glm::vec3 pivotLocation;
     rotation.x = -rotation.x;   //angle is positive is the arm is extended forward
 
-    if (member <= 2) {
+    if ((int)member <= 2) {
         pivotLocation = glm::vec3(0.0f, (2 * 12 / 6) * 0.069375f, 0.0f);
         if (member == Member::RIGHT_ARM) rotation.y = -rotation.y;  //the greater the angle, the further the arm is from the body
     }
@@ -169,8 +169,8 @@ void Character::rotateMember(glm::vec2 rotation, Member member) {
         if (member == Member::RIGHT_LEG) rotation.y = -rotation.y;  //the greater the angle, the further the leg is from the body
     }
 
-    model->localMatrix = glm::translate(glm::mat4(1.0f), -pivotLocation) * model->localMatrix;
-    model->localMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(rotation.x) , glm::vec3(1.0f, 0.0f, 0.0f)) * model->localMatrix;
-    model->localMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(rotation.y) , glm::vec3(0.0f, -sin(glm::radians(rotation.x)), cos(glm::radians(rotation.x)))) * model->localMatrix;
-    model->localMatrix = glm::translate(glm::mat4(1.0f), pivotLocation) * model->localMatrix;
+    model.localMatrix = glm::translate(glm::mat4(1.0f), -pivotLocation) * model.localMatrix;
+    model.localMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(rotation.x) , glm::vec3(1.0f, 0.0f, 0.0f)) * model.localMatrix;
+    model.localMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(rotation.y) , glm::vec3(0.0f, -sin(glm::radians(rotation.x)), cos(glm::radians(rotation.x)))) * model.localMatrix;
+    model.localMatrix = glm::translate(glm::mat4(1.0f), pivotLocation) * model.localMatrix;
 }

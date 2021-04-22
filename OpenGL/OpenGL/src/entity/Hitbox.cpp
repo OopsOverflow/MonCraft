@@ -72,7 +72,7 @@ void Hitbox::move(glm::vec3 amount) {
 	pos.z += sin(glm::radians(rotation.y)) * amount.x;
 
 	if (character.getHeadProperties().localRotation.y != 0) {
-		float rotate = 5.0 * amount.z * (character.getHeadProperties().localRotation.y > 0 ? -1 : 1);
+		float rotate = 5.f * amount.z * (character.getHeadProperties().localRotation.y > 0 ? -1 : 1);
 		if (fabs(rotate) > fabs(character.getHeadProperties().localRotation.y)) rotate = character.getHeadProperties().localRotation.y;
 		character.rotateBody(rotate);
 		character.rotateHead({ 0.0f,-rotate });

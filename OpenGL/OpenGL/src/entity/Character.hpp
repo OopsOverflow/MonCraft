@@ -7,6 +7,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include <array>
 #include <vector>
 #include <stack>
 #include <iostream>
@@ -18,7 +19,7 @@
 struct BodyPart {
 
     int vertexCount = 0;
-    GLuint vao;
+    GLuint vao = 0;
     glm::mat4 propagatedMatrix = glm::mat4(1.0f);
     glm::mat4 localMatrix = glm::mat4(1.0f);
     glm::vec3 localRotation = { 0.0f,0.0f,0.0f };
@@ -26,7 +27,7 @@ struct BodyPart {
     std::vector<BodyPart> children;
 };
 
-enum Member { LEFT_ARM = 1, RIGHT_ARM = 2, LEFT_LEG = 3, RIGHT_LEG = 4 };
+enum class Member { LEFT_ARM = 1, RIGHT_ARM = 2, LEFT_LEG = 3, RIGHT_LEG = 4 };
 
 class Character {
 public:

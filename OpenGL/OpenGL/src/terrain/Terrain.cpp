@@ -14,7 +14,7 @@ int distance(ivec3 a, ivec3 b) {
 
 Terrain::Terrain()
   : chunksMaxCount((2*renderDistH+1)*(2*renderDistH+1)*(2*renderDistV+1)),
-    chunkMemorySize(sizeof(nullptr) * pow(chunkSize + 2, 3) / 1024),
+    chunkMemorySize(sizeof(nullptr) * (int)pow(chunkSize + 2, 3) / 1024),
     chunkCacheSize(memoryCap * 1024 / chunkMemorySize),
     generator(chunkSize),
     chunkPos(0),
@@ -81,12 +81,12 @@ void Terrain::worker(std::future<void> stopSignal) {
 
   do {
 
-    bool changed = ({
+    bool changed = false;
+    {
       std::lock_guard<std::mutex> lck(chunksMutex);
-      bool changed = chunkPosChanged;
+      changed = chunkPosChanged;
       chunkPosChanged = false;
-      changed;
-    });
+    }
 
     if(changed) {
       updateWaitingList();
@@ -103,7 +103,7 @@ void Terrain::worker(std::future<void> stopSignal) {
       stop = stopSignal.wait_for(sleep);
     }
     else {
-      std::cout << "worker idle" << std::endl;
+      // std::cout << "worker idle" << std::endl;
       stop = stopSignal.wait_for(longSleep);
     }
   } while(stop == std::future_status::timeout);
