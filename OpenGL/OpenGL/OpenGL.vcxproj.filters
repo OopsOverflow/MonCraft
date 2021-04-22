@@ -206,6 +206,12 @@
     <ClInclude Include="src\include\Music.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\util\AtomicCyclicList.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\util\PriorityList.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\shader\simple.frag" />

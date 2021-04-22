@@ -96,14 +96,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>GLEW_STATIC;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)Dependencies;$(SolutionDir)Dependencies\SDL2\include;$(ProjectDir)src\include;$(ProjectDir)src\include\controller;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OpenMPSupport>true</OpenMPSupport>
+      <AdditionalIncludeDirectories>$(SolutionDir)src\blocks;$(SolutionDir)Dependencies;$(SolutionDir)Dependencies\SFML\include;$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)Dependencies\SDL2\include;$(ProjectDir)src\include;$(ProjectDir)src\include\controller;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\SDL2\lib\x64;$(SolutionDir)Dependencies\GLEW\lib\Release\x64</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;User32.lib;Gdi32.lib;Shell32.lib;glew32s.lib;SDL2.lib;SDL2main.lib;SDL2test.lib;SDL2_image.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\SDL2\lib\x64;$(SolutionDir)Dependencies\SFML\lib\x64;$(SolutionDir)Dependencies\GLEW\lib\Release\x64</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;User32.lib;Gdi32.lib;Shell32.lib;glew32s.lib;SDL2.lib;SDL2main.lib;SDL2test.lib;SDL2_image.lib;sfml-audio-d.lib;sfml-system-d.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -112,13 +112,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>GLEW_STATIC;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)src\blocks;$(SolutionDir)Dependencies\SFML\include;$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)Dependencies;$(SolutionDir)Dependencies\SDL2\include;$(ProjectDir)src\include;$(ProjectDir)src\include\controller;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OpenMPSupport>true</OpenMPSupport>
+      <AdditionalIncludeDirectories>$(SolutionDir)src\blocks;$(SolutionDir)Dependencies;$(SolutionDir)Dependencies\SFML\include;$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)Dependencies\SDL2\include;$(ProjectDir)src\include;$(ProjectDir)src\include\controller;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\SDL2\lib\x86;$(SolutionDir)Dependencies\SFML\lib;$(SolutionDir)Dependencies\GLEW\lib\Release\Win32</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\SDL2\lib\x86;$(SolutionDir)Dependencies\SFML\lib\x86;$(SolutionDir)Dependencies\GLEW\lib\Release\Win32</AdditionalLibraryDirectories>
       <AdditionalDependencies>opengl32.lib;User32.lib;Gdi32.lib;Shell32.lib;glew32s.lib;SDL2.lib;SDL2main.lib;SDL2test.lib;SDL2_image.lib;sfml-audio-d.lib;sfml-system-d.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -130,16 +130,16 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>GLEW_STATIC;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)Dependencies;$(SolutionDir)Dependencies\SDL2\include;$(ProjectDir)src\include;$(ProjectDir)src\include\controller;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OpenMPSupport>true</OpenMPSupport>
+      <AdditionalIncludeDirectories>$(SolutionDir)src\blocks;$(SolutionDir)Dependencies;$(SolutionDir)Dependencies\SFML\include;$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)Dependencies\SDL2\include;$(ProjectDir)src\include;$(ProjectDir)src\include\controller;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\SDL2\lib\x64;$(SolutionDir)Dependencies\GLEW\lib\Release\x64</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;User32.lib;Gdi32.lib;Shell32.lib;glew32s.lib;SDL2.lib;SDL2main.lib;SDL2test.lib;SDL2_image.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\SDL2\lib\x64;$(SolutionDir)Dependencies\SFML\lib\x64;$(SolutionDir)Dependencies\GLEW\lib\Release\x64</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;User32.lib;Gdi32.lib;Shell32.lib;glew32s.lib;SDL2.lib;SDL2main.lib;SDL2test.lib;SDL2_image.lib;;sfml-audio.lib;sfml-system.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -150,16 +150,16 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>GLEW_STATIC;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)src\blocks;$(SolutionDir)Dependencies\SFML\include;$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)Dependencies;$(SolutionDir)Dependencies\SDL2\include;$(ProjectDir)src\include;$(ProjectDir)src\include\controller;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OpenMPSupport>true</OpenMPSupport>
+      <AdditionalIncludeDirectories>$(SolutionDir)src\blocks;$(SolutionDir)Dependencies;$(SolutionDir)Dependencies\SFML\include;$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)Dependencies\SDL2\include;$(ProjectDir)src\include;$(ProjectDir)src\include\controller;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\SDL2\lib\x86;$(SolutionDir)Dependencies\SFML\lib;$(SolutionDir)Dependencies\GLEW\lib\Release\Win32</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;User32.lib;Gdi32.lib;Shell32.lib;glew32s.lib;SDL2.lib;SDL2main.lib;SDL2test.lib;SDL2_image.lib;sfml-audio-d.lib;sfml-system-d.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\SDL2\lib\x86;$(SolutionDir)Dependencies\SFML\lib\x86;$(SolutionDir)Dependencies\GLEW\lib\Release\Win32</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;User32.lib;Gdi32.lib;Shell32.lib;glew32s.lib;SDL2.lib;SDL2main.lib;SDL2test.lib;SDL2_image.lib;;sfml-audio.lib;sfml-system.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -194,6 +194,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\include\Music.hpp" />
+    <ClInclude Include="src\util\AtomicCyclicList.hpp" />
+    <ClInclude Include="src\util\PriorityList.hpp" />
     <ClInclude Include="src\util\Random.hpp" />
     <ClInclude Include="src\blocks\Air_Block.h" />
     <ClInclude Include="src\blocks\Debug_Block.h" />
