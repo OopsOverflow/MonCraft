@@ -110,6 +110,12 @@ Mesh const& Chunk::getMesh() {
   if(mesh == nullptr) {
     mesh = new Mesh(positions, normals, textureCoords, occlusion, indices);
     mesh->model = glm::translate(mesh->model, vec3(chunkPos));
+
+    positions = {};
+    normals = {};
+    textureCoords = {};
+    occlusion = {};
+    indices = {};
   }
   return *mesh;
 }

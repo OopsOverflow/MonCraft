@@ -89,7 +89,7 @@ void Terrain::worker(std::future<void> stopSignal) {
     });
 
     if(changed) {
-      TIME(updateWaitingList();)
+      updateWaitingList();
     }
 
     if(waitingChunks.size()) {
