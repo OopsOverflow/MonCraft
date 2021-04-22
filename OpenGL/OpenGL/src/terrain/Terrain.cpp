@@ -8,17 +8,12 @@ using glm::vec3;
 using glm::vec2;
 using namespace std::chrono_literals;
 
-// the distance function may be changed in the future.
-int distance(ivec2 a, ivec2 b) {
-  return std::max(abs(b.x - a.x), abs(b.y - a.y));
-}
-
 int distance(ivec3 a, ivec3 b) {
   return std::max(std::max(abs(b.x - a.x), abs(b.y - a.y)), abs(b.z - a.z));
 }
 
 Terrain::Terrain()
-  : chunksMaxCount((int)pow(renderDistance * 2 + 1, 3)),
+  : chunksMaxCount((2*renderDistH+1)*(2*renderDistH+1)*(2*renderDistV+1)),
     chunkMemorySize(sizeof(nullptr) * pow(chunkSize + 2, 3) / 1024),
     chunkCacheSize(memoryCap * 1024 / chunkMemorySize),
     generator(chunkSize),
@@ -45,7 +40,7 @@ void Terrain::updateWaitingList() {
 
   auto insert = [&](ivec2 const& pos) {
     std::lock_guard<std::mutex> lck(chunksMutex);
-    for(int i = -renderDistance; i <= renderDistance; i++) {
+    for(int i = -renderDistV; i <= renderDistV; i++) {
       ivec3 p = chunkPos + ivec3(pos.x, i, pos.y);
       if(chunks.find(p) == chunks.end()) {
         waitingChunks.push(p);
@@ -55,7 +50,7 @@ void Terrain::updateWaitingList() {
 
   insert({0, 0});
 
-  for(int dist = 1; dist < renderDistance+1; dist++) {
+  for(int dist = 1; dist < renderDistH+1; dist++) {
     insert({dist, 0});
     insert({0, dist});
     insert({-dist, 0});
@@ -130,13 +125,16 @@ void Terrain::update(glm::vec3 pos, glm::vec3 dir, float fovX) {
   // clear old chunks
   int count = (int)chunks.size();
   for(auto it = chunks.begin(); it != chunks.end() && count > chunksMaxCount;) {
-    int dist = distance(it->first, chunkPos);
-    if(dist > renderDistance) {
+    ivec3 const& a = it->first;
+    ivec3 const& b = chunkPos;
+
+    if(abs(b.x - a.x) > renderDistH || abs(b.z - a.z) > renderDistH || abs(b.y - a.y) > renderDistV) {
       it = chunks.erase(it);
       count --;
     }
-    else
-    ++it;
+    else {
+      ++it;
+    }
   }
 
   // unload low-priority chunks

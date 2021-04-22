@@ -30,7 +30,8 @@ public:
 
 private:
   static const int chunkSize = 32;
-  static const int renderDistance = 8;
+  static const int renderDistH = 8; // horizontal render distance (2n+1 chunks)
+  static const int renderDistV = 3; // vertical render distance (2n+1 chunks)
   const int chunksMaxCount;
 
   const int memoryCap = 2048; // max amount of memory (mebibytes)
@@ -52,7 +53,8 @@ private:
 
   using ChunkMap = std::unordered_map<glm::ivec3, std::shared_ptr<Chunk>, ivec3_hash, ivec3_hash>;
   using ChunkPList = PriorityList<std::weak_ptr<Chunk>>;
-  using WaitingList = AtomicCyclicList<glm::ivec3, (2*renderDistance+1)*(2*renderDistance+1)*(2*renderDistance+1)>;
+  // TODO: should we use runtime alloc instead of compile-time ?
+  using WaitingList = AtomicCyclicList<glm::ivec3, (2*renderDistH+1)*(2*renderDistH+1)*(2*renderDistV+1)>;
 
   Generator generator; // the chunk generator
 
