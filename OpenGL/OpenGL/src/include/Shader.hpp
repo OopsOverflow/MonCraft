@@ -30,11 +30,12 @@ public:
   void activate();
   GLint getUniformLocation(const std::string &location);
   static Shader *getActive();
-
+  GLuint getLocation(ShaderLocation location) const;
   GLuint program;
 
 private:
   static Shader *activeShader;
+
 
   void initLocations();
 

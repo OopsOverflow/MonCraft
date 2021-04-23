@@ -26,6 +26,7 @@ GLint Shader::getUniformLocation(const std::string &location) {
   return glGetUniformLocation(program, location.c_str());
 }
 
+
 // --------------- private ---------------
 
 void Shader::initLocations() {

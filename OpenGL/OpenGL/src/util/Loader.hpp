@@ -25,6 +25,7 @@ public:
     //     const std::vector<GLfloat>& texture);
 
     GLuint loadTexture(const std::string& fileName);
+    GLuint loadCubeMap(std::vector<std::string> faces);
 
 
 private:

@@ -7,6 +7,7 @@
 #include "ShadowMap.hpp"
 #include "Viewport.hpp"
 #include "terrain/Terrain.hpp"
+#include "terrain/SkyBox.hpp"
 #include "util/Loader.hpp"
 #include "util/Raycast.hpp"
 #include "entity/Hitbox.hpp"
@@ -68,6 +69,7 @@ int main(int argc, char* argv[]) {
     Viewport window(WIDTH, HEIGHT);
     Shader shader("src/shader/simple.vert", "src/shader/simple.frag");
     Terrain terrain;
+    SkyBox sky;
     Hitbox character({ 0.0f,32.0f,0.0f });
     ShadowMap shadows(1024);
     Loader loader;
@@ -166,6 +168,10 @@ int main(int argc, char* argv[]) {
         // draw the character
         window.camera.activate();
         character.drawCharacter();
+
+
+        // draw skybox at last
+        sky.render(window.camera);
 
         // finish render
         window.endFrame();
