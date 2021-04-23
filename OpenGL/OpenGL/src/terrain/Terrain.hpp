@@ -64,8 +64,10 @@ private:
   bool chunkPosChanged;
   float fovX;
 
-  std::thread workerThread; // the worker creates new chunks when it can
-  std::promise<void> stopTrigger; // asks the worker thread to terminate
+  std::array<std::thread, 4> workerThreads; // the worker creates new chunks when it can
+  bool stopFlag;
+  std::mutex stopMutex;
+  std::condition_variable stopSignal;
 
   // chunks
   std::mutex chunksMutex;
@@ -76,7 +78,7 @@ private:
   Loader loader;
   GLuint texture;
 
-  void worker(std::future<void> stopSignal);
+  void worker(int n);
 
   // this is kinda dirty, see cpp file.
   // glm::ivec3 lastIter = glm::ivec3(0, -renderDistance, -1);

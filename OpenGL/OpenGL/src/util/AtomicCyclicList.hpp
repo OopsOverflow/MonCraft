@@ -17,18 +17,20 @@ public:
   }
 
   void clear() {
+    std::lock_guard<std::mutex> lck(mutex);
     head = 0;
     tail = 0;
     size_ = 0;
   }
 
-  T pop() {
+  bool pop(T& t) {
     std::lock_guard<std::mutex> lck(mutex);
-    if(size_ == 0) throw std::out_of_range("cyclic list overflow (pop)");
+    if(size_ == 0) return false;
     auto lastTail = tail;
     tail = (tail + 1) % N;
     size_--;
-    return array[lastTail];
+    t = array[lastTail];
+    return true;
   }
 
   void push(T val) {

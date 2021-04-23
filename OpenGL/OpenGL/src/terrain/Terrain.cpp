@@ -23,13 +23,24 @@ Terrain::Terrain()
     texture(loader.loadTexture("Texture_atlas"))
 {
   std::cout << "Terrain chunk cache: " << chunkCacheSize << " chunks" << std::endl;
-  workerThread = std::thread(&Terrain::worker, this, stopTrigger.get_future());
+
+  int n = 0;
+  for(auto& thread : workerThreads) {
+    thread = std::thread(&Terrain::worker, this, n);
+    n++;
+  }
 }
 
 Terrain::~Terrain() {
   std::cout << "shutting down terrain thread..." << std::endl;
-  stopTrigger.set_value();
-  workerThread.join();
+  {
+    std::lock_guard<std::mutex> lk(stopMutex);
+    stopFlag = true;
+  }
+  stopSignal.notify_all();
+  for(auto& thread : workerThreads) {
+    thread.join();
+  }
   std::cout << "terrain thread terminated" << std::endl;
 }
 
@@ -74,39 +85,45 @@ void Terrain::updateWaitingList() {
   }
 }
 
-void Terrain::worker(std::future<void> stopSignal) {
+void Terrain::worker(int n) {
   auto sleep = 1ms;
   auto longSleep = 500ms;
-  std::future_status stop;
+  bool stop;
 
   do {
 
-    bool changed = false;
-    {
-      std::lock_guard<std::mutex> lck(chunksMutex);
-      changed = chunkPosChanged;
-      chunkPosChanged = false;
+    if(n == 0) {
+      bool changed = false;
+      {
+        std::lock_guard<std::mutex> lck(chunksMutex);
+        changed = chunkPosChanged;
+        chunkPosChanged = false;
+      }
+
+      if(changed) {
+        updateWaitingList();
+      }
     }
 
-    if(changed) {
-      updateWaitingList();
-    }
-
-    if(waitingChunks.size()) {
-      ivec3 pos = waitingChunks.pop();
+    ivec3 pos;
+    if(waitingChunks.pop(pos)) {
       std::shared_ptr<Chunk> c(generator.generate(pos));
       {
-        std::lock_guard<std::mutex> lock(chunksMutex);
+        std::lock_guard<std::mutex> lck(chunksMutex);
         chunks.emplace(pos, c);
         loadedChunks.push(c);
       }
-      stop = stopSignal.wait_for(sleep);
+
+      {std::unique_lock<std::mutex> stopLck(stopMutex);
+      stop = stopSignal.wait_for(stopLck, sleep, [&]{return stopFlag;});}
     }
     else {
       // std::cout << "worker idle" << std::endl;
-      stop = stopSignal.wait_for(longSleep);
+      {std::unique_lock<std::mutex> stopLck(stopMutex);
+      stop = stopSignal.wait_for(stopLck, longSleep, [&]{return stopFlag;});}
     }
-  } while(stop == std::future_status::timeout);
+
+  } while(!stop);
 
 }
 
@@ -141,7 +158,8 @@ void Terrain::update(glm::vec3 pos, glm::vec3 dir, float fovX) {
   count = (int)loadedChunks.size();
   for(auto it = loadedChunks.begin(); it != loadedChunks.end() && count > chunkCacheSize;) {
     if (auto chunk = it->lock()) {
-      chunk->unload();
+      // TODO: disabled for now
+      // chunk->unload();
     }
     loadedChunks.pop();
     it = loadedChunks.begin();
