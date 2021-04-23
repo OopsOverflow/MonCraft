@@ -15,9 +15,9 @@
 
 std::vector<std::string> songList =
 {
-     "ES_Reconstruct-AmaranthCove.wav",
-     "ES_Mays-VanSandano.wav",
-     "ES_ANewSleep-ArdenForest.wav",
+     "ES_Reconstruct-AmaranthCove.ogg",
+     "ES_Mays-VanSandano.ogg",
+     "ES_ANewSleep-ArdenForest.ogg",
      "FreeMinecraftMusicHappyBackground.ogg",
      "dev.ogg"
 };
