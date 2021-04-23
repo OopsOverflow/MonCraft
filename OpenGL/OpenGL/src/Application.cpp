@@ -81,8 +81,10 @@ int main(int argc, char* argv[]) {
    
 
     while (window.beginFrame()) {
+
         window.keyboardController.apply(character);
         window.mouseController.apply(character, window.camera);
+        character.animate();
         character.cameraToHead(window.camera);
 
         //Time in ms telling us when this frame started. Useful for keeping a fix framerate

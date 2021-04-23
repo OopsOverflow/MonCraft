@@ -1,12 +1,13 @@
 #include "Hitbox.hpp"
 
+using namespace std::chrono;
 
 Hitbox::Hitbox(glm::vec3 position)
 	:size({ 0.6f, 1.8f, 0.6f }), pos(position),
 	speed({ 0.0f, 0.0f, 0.0f }), acceleration({ 0.0f, 0.0f, 0.0f }),character({0.0f,0.0f,0.0f},{0.0f,0.0f})
 	, mode(Mode::WALKING),view(View::FIRST_PERSON)
 {
-
+	timer = steady_clock::now();
 }
 
 void Hitbox::cameraToHead(Camera& camera) {
@@ -40,6 +41,19 @@ void Hitbox::move(glm::vec3 amount) {
 
 	pos.y += amount.y;
 
+}
+
+void Hitbox::animate() {
+	auto cur_timer = steady_clock::now();
+	auto elapsed = duration_cast<milliseconds>(cur_timer - timer).count();
+	timer = cur_timer;
+
+	character.bodyReachRotation(1000.0 / elapsed * 0.25f);
+	character.headReachRotation(1000.0 / elapsed * 0.25f);
+	character.memberReachRotation(1000.0 / elapsed * 0.25f, Member::LEFT_ARM);
+	character.memberReachRotation(1000.0 / elapsed * 0.25f, Member::RIGHT_ARM);
+	character.memberReachRotation(1000.0 / elapsed * 0.25f, Member::LEFT_LEG);
+	character.memberReachRotation(1000.0 / elapsed * 0.25f, Member::RIGHT_LEG);
 }
 
 

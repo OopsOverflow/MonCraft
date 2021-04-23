@@ -42,11 +42,11 @@ public:
     BodyPart const& getHeadProperties();
     glm::vec3 getBodyRotation();
     void rotateHead(glm::vec2 rotation);
-    void rotateMember(glm::vec2 rotation, Member member);
+    void setMemberRotation(glm::vec2 rotation, Member member);
 
     void headReachRotation(float maxRotation);
     void bodyReachRotation(float maxRotation);
-    void memberReachRotation(float maxRotation);
+    void memberReachRotation(float maxRotation, Member member);
 
 
 private:

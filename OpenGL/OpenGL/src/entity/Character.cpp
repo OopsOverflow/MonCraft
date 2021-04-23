@@ -124,9 +124,14 @@ void Character::rotateBody(glm::vec3 rotation) {
 void Character::bodyReachRotation(float maxRotation) {
 
     glm::vec3 rot = chest.reachRotation - chest.localRotation;
-    //if (fabs(rot.y) > 45)chest.reachRotation.y + (rot.y > 0 ? 45 : -45);
-
-    chest.localRotation = chest.reachRotation;//TODO
+    if (fabs(rot.y) > 45) chest.localRotation.y = chest.reachRotation.y - (rot.y > 0 ? 45 : -45);
+    float totalRot = glm::degrees(acos(cos(rot.x) * cos(rot.y)));
+    if (totalRot>maxRotation) {
+        chest.localRotation += rot * maxRotation / totalRot;
+    }
+    else {
+        chest.localRotation = chest.reachRotation;
+    }
 
     chest.propagatedMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.069375f));
     chest.propagatedMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(-chest.localRotation.x), glm::vec3(1.0f, 0.0f, 0.0f)) * chest.propagatedMatrix;
@@ -145,7 +150,9 @@ void Character::rotateHead(glm::vec2 rotation) {
 
    if (fabs(head->reachRotation.y + rotation.y) > 45) {
        rotateBody({ 0.0f,head->reachRotation.y + rotation.y - (rotation.y > 0 ? 35 : -35),0.0f });
+       chest.localRotation = chest.reachRotation;
        rotation.y = (head->reachRotation.y + rotation.y > 0 ? 35 : -35) - head->reachRotation.y;
+       head->localRotation.y += rotation.y;
     }
     if(fabs(head->reachRotation.x + rotation.x) > 85) rotation.x = (head->reachRotation.x + rotation.x > 0 ? 85 : -85) - head->reachRotation.x;
 
@@ -167,9 +174,13 @@ void Character::headReachRotation(float maxRotation) {
     BodyPart* head = &chest.children.at(0);
     
     glm::vec3 rot = head->reachRotation - head->localRotation;
-    float totalRot = 1.0f;//TODO
-
-    head->localRotation = head->reachRotation * totalRot;
+    float totalRot = glm::degrees(acos(cos(rot.x) * cos(rot.y)));
+    if (totalRot > maxRotation) {
+        head->localRotation += rot * maxRotation / totalRot;
+    }
+    else {
+        head->localRotation = head->reachRotation;
+    }
 
     glm::vec3 pivotLocation = glm::vec3(0.0f, -4, 0.0f);
 
@@ -182,28 +193,48 @@ void Character::headReachRotation(float maxRotation) {
 }
 
 
-void Character::rotateMember(glm::vec2 rotation, Member member) {
+void Character::setMemberRotation(glm::vec2 rotation, Member member) {
     BodyPart* model = &chest.children.at(member);
 
     glm::vec3 pivotLocation;
     rotation.x = -rotation.x;   //angle is positive is the arm is extended forward
 
-    if (member <= 2) {
-        pivotLocation = glm::vec3(0.0f, (2 * 12 / 6) * 0.069375f, 0.0f);
-        if (member == Member::RIGHT_ARM) rotation.y = -rotation.y;  //the greater the angle, the further the arm is from the body
-    }
-    else {
-        pivotLocation = glm::vec3(0.0f, (3 * 12 / 6) * 0.069375f, 0.0f);
-        if (member == Member::RIGHT_LEG) rotation.y = -rotation.y;  //the greater the angle, the further the leg is from the body
-    }
+    if (member == Member::RIGHT_ARM) rotation.y = -rotation.y;  //the greater the angle, the further the arm is from the body
+    if (member == Member::RIGHT_LEG) rotation.y = -rotation.y;  //the greater the angle, the further the leg is from the body
 
-    model->localMatrix = glm::translate(glm::mat4(1.0f), -pivotLocation) * model->localMatrix;
-    model->localMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(rotation.x) , glm::vec3(1.0f, 0.0f, 0.0f)) * model->localMatrix;
-    model->localMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(rotation.y) , glm::vec3(0.0f, -sin(glm::radians(rotation.x)), cos(glm::radians(rotation.x)))) * model->localMatrix;
-    model->localMatrix = glm::translate(glm::mat4(1.0f), pivotLocation) * model->localMatrix;
+    model->reachRotation.x = rotation.x;
+    model->reachRotation.y = rotation.y;
+    
 }
 
-void Character::memberReachRotation(float maxRotation) {
+void Character::memberReachRotation(float maxRotation, Member member) {
 
+    BodyPart* model = &chest.children.at(member);
+    glm::vec3 rot = model->reachRotation - model->localRotation;
+    float totalRot = glm::degrees(acos(cos(rot.x) * cos(rot.y)));
 
+     if (totalRot > maxRotation) {
+        model->localRotation.x += rot.x * maxRotation / totalRot;
+        model->localRotation.y += rot.y * maxRotation / totalRot;
+    }
+    else {
+        model->localRotation = model->reachRotation;
+    }
+
+    glm::vec3 pivotLocation;
+
+    if (member <= 2) {
+        pivotLocation = glm::vec3(0.0f, (2 * 12 / 6), 0.0f);
+    }
+    else {
+        pivotLocation = glm::vec3(0.0f, (3 * 12 / 6), 0.0f);
+    }
+    //std::cout << model->localRotation.x <<", "<<model->localRotation.y<<std::endl;
+
+    model->localMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(4, 12, 4));
+    model->localMatrix = glm::translate(glm::mat4(1.0f), -pivotLocation) * model->localMatrix;
+    model->localMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(model->localRotation.y), glm::vec3(0.0f,1.0f,0.0f )) * model->localMatrix;
+    model->localMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(model->localRotation.x), glm::vec3(cos(glm::radians(model->localRotation.y)), 0.0f , -sin(glm::radians(model->localRotation.y)))) * model->localMatrix;
+
+    model->localMatrix = glm::translate(glm::mat4(1.0f), pivotLocation) * model->localMatrix;
 }
