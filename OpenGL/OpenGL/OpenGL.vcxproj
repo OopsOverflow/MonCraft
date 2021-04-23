@@ -163,6 +163,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\terrain\SkyBox.cpp" />
     <ClCompile Include="src\Music.cpp" />
     <ClCompile Include="src\util\Random.cpp" />
     <ClCompile Include="src\blocks\Air_Block.cpp" />
@@ -193,6 +194,8 @@
     <ClCompile Include="src\blocks\Stone_Block.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="src\terrain\SkyBox.hpp" />
     <ClInclude Include="src\include\Music.hpp" />
     <ClInclude Include="src\util\Random.hpp" />
     <ClInclude Include="src\blocks\Air_Block.h" />
@@ -234,13 +237,20 @@
     <None Include="src\shader\2dtex.vert" />
     <None Include="src\shader\simple.frag" />
     <None Include="src\shader\simple.vert" />
+    <None Include="src\shader\skyBox.frag" />
+    <None Include="src\shader\skyBox.vert" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="data\img\Character.png" />
+    <Image Include="data\img\icon.ico" />
+    <Image Include="data\img\icon.png" />
     <Image Include="data\img\starting_atlas.png" />
     <Image Include="data\img\Testxture.png" />
     <Image Include="data\img\Texture_atlas.png" />
     <Image Include="src\blocks\Textures\Testxture.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="OpenGL.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

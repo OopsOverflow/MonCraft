@@ -99,6 +99,9 @@
     <ClCompile Include="src\Music.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\terrain\SkyBox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\include\Camera.hpp">
@@ -206,12 +209,20 @@
     <ClInclude Include="src\include\Music.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\terrain\SkyBox.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\shader\simple.frag" />
     <None Include="src\shader\simple.vert" />
     <None Include="src\shader\2dtex.frag" />
     <None Include="src\shader\2dtex.vert" />
+    <None Include="src\shader\skyBox.frag" />
+    <None Include="src\shader\skyBox.vert" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="src\blocks\Textures\Testxture.png">
@@ -229,5 +240,16 @@
     <Image Include="data\img\Texture_atlas.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="data\img\icon.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\img\icon.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="OpenGL.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

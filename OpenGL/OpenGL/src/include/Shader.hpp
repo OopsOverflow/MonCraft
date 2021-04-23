@@ -36,7 +36,6 @@ public:
 private:
   static Shader *activeShader;
 
-  GLint locations[8];
 
   void initLocations();
 
