@@ -386,7 +386,7 @@ float SimplexNoise::simplex3(vec3 pos)
 float SimplexNoise::fractal2(vec2 pos, octaves_t const& octaves)
 {
   float val = 0;
-  for (auto octave : octaves) {
+  for (auto const& octave : octaves) {
     val += simplex2(pos * octave.frequency) * octave.magnitude;
   }
   return val;

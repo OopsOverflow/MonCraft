@@ -9,22 +9,29 @@ using glm::vec3;
 using glm::ivec3;
 using std::move;
 
-Chunk::Chunk(ivec2 chunkPos, Blocks blocks)
-  : chunkPos(chunkPos), blocks(move(blocks)), mesh(nullptr)
+#include "Debug.hpp"
+
+Chunk::Chunk(ivec3 chunkPos, Blocks blocks)
+  : chunkPos(chunkPos), blocks(new Blocks(move(blocks))), mesh(nullptr)
 {
   generateMesh();
-    // std::cout << "created chunk (" << chunkPos.x << ", " << chunkPos.y << ")" << std::endl;
+  // std::cout << "created chunk " << chunkPos << std::endl;
 }
 
 Chunk::~Chunk() {
-  // std::cout << "deleted chunk (" << chunkPos.x << ", " << chunkPos.y << ")" << std::endl;
+  // std::cout << "deleted chunk " << chunkPos << std::endl;
   delete mesh;
+  delete blocks;
 }
 
+// /!\ extra care must be taken here.
+//  - uses operator[] which is unsafe (no bounds checks)
+//  - assumes chunk is loaded
 bool Chunk::isSolid(ivec3 pos) {
-  return blocks.at(pos)->type != BlockType::Air;
+  return (*blocks)[pos]->type != BlockType::Air;
 }
 
+// TODO: move out of here (util ?)
 face_t<2> getFaceUV(glm::ivec2 index) {
   static const float atlasSize = 8.f;
   return face_t<2> {
@@ -56,39 +63,37 @@ std::array<GLfloat, 4> Chunk::genOcclusion(ivec3 pos, BlockFace face) {
 void Chunk::generateMesh() {
   // indices scheme
   std::vector<int> scheme = { 0, 1, 2, 0, 2, 3 };
-  auto begin = scheme.begin();
-  auto end = scheme.end();
 
   auto genFace = [&](ivec3 pos, BlockFace face) {
     // indices
-    std::copy(begin, end, std::back_inserter(indices));
-    std::transform(begin, end, begin,[](int x) { return x+4; });
+    indices.insert(indices.end(), scheme.begin(), scheme.end());
+    std::transform(scheme.begin(), scheme.end(), scheme.begin(), [](int x) { return x+4; });
 
     // positions
-    auto posFace = blockPositions[static_cast<size_t>(face)];
-    std::copy(posFace.begin(), posFace.end(), std::back_inserter(positions));
+    auto posFace = blockPositions[(size_t)face];
+    positions.insert(positions.end(), posFace.begin(), posFace.end());
     for(int i = 0, k = 0; i < 12; i++, k = (k+1) % 3) {
-      positions[positions.size()- 12 + i] += pos[k] - 1;
+      positions[positions.size() - 12 + i] += pos[k] - 1;
     }
 
     // normals
-    auto normFace = blockNormals[static_cast<size_t>(face)];
-    std::copy(normFace.begin(), normFace.end(), std::back_inserter(normals));
+    auto normFace = blockNormals[(size_t)face];
+    normals.insert(normals.end(), normFace.begin(), normFace.end());
 
     // textureCoords
     auto indexUV = getBlock(pos)->getFaceUVs(face);
     auto uvFace = getFaceUV(indexUV);
-    std::copy(uvFace.begin(), uvFace.end(), std::back_inserter(textureCoords));
+    textureCoords.insert(textureCoords.end(), uvFace.begin(), uvFace.end());
 
     // occlusion
     auto occl = genOcclusion(pos, face);
-    std::copy(occl.begin(), occl.end(), std::back_inserter(occlusion));
+    occlusion.insert(occlusion.end(), occl.begin(), occl.end());
   };
 
   ivec3 pos;
-  for(pos.x = 1; pos.x < blocks.size.x-1; pos.x++) {
-    for(pos.y = 1; pos.y < blocks.size.y-1; pos.y++) {
-      for(pos.z = 1; pos.z < blocks.size.z-1; pos.z++) {
+  for(pos.x = 1; pos.x < blocks->size.x-1; pos.x++) {
+    for(pos.y = 1; pos.y < blocks->size.y-1; pos.y++) {
+      for(pos.z = 1; pos.z < blocks->size.z-1; pos.z++) {
         if(!isSolid(pos)) continue;
         if(!isSolid(pos + ivec3(1, 0, 0)))  genFace(pos, BlockFace::RIGHT);
         if(!isSolid(pos + ivec3(-1, 0, 0))) genFace(pos, BlockFace::LEFT);
@@ -104,16 +109,23 @@ void Chunk::generateMesh() {
 Mesh const& Chunk::getMesh() {
   if(mesh == nullptr) {
     mesh = new Mesh(positions, normals, textureCoords, occlusion, indices);
-    mesh->model = glm::translate(mesh->model, vec3(chunkPos.x, 0, chunkPos.y));
+    mesh->model = glm::translate(mesh->model, vec3(chunkPos));
+
+    positions = {};
+    normals = {};
+    textureCoords = {};
+    occlusion = {};
+    indices = {};
   }
   return *mesh;
 }
 
-ivec2 Chunk::getPosition() const {
-  return chunkPos;
+Block* Chunk::getBlock(ivec3 pos) {
+  if(!blocks) return nullptr;
+  return blocks->at(pos).get();
 }
 
-
-Block* Chunk::getBlock(ivec3 pos) {
-  return blocks.at(pos).get();
+void Chunk::unload() {
+  delete blocks;
+  blocks = nullptr;
 }

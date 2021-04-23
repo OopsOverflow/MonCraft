@@ -1,17 +1,13 @@
-#ifndef DIRT_BLOCK_H
-#define DIRT_BLOCK_H
+#pragma once
 
 #include "Block.h"
-
 
 class Dirt_Block : public Block
 {
 public:
-    Dirt_Block();
-
+    static Dirt_Block* get();
     glm::ivec2 getFaceUVs(BlockFace face) const override;
 
 private:
+    Dirt_Block();
 };
-
-#endif // DIRT_BLOCK_H

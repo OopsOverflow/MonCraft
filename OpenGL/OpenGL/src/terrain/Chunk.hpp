@@ -12,11 +12,38 @@
  * Describes a subdivision of the terrain.
  */
 
-class Blocks : public DataStore<std::unique_ptr<Block>, 3> {
+class BlockDeleter {
+public:
+  void operator()(Block* block) const {
+    if(!block->isStatic())
+      delete block;
+  }
+};
+
+class Blocks : public DataStore<std::unique_ptr<Block, BlockDeleter>, 3> {
 public:
   Blocks(int size)
-      : DataStore<std::unique_ptr<Block>, 3>(glm::ivec3(size))
-  { }
+      : DataStore<std::unique_ptr<Block, BlockDeleter>, 3>(glm::ivec3(size))
+  {
+    // static int count = 0;
+    // static int totalSize = 0;
+    // totalSize += size * size * size * (sizeof(Block) + sizeof(std::unique_ptr<Block>));
+    // std::cout << "Blocks: " << ++count << "(" << totalSize << ")" << std::endl;
+  }
+
+  template<class T, class... Args>
+  static
+  typename std::enable_if<std::is_base_of<Block, T>::value, std::unique_ptr<Block, BlockDeleter>>::type
+  create_static() {
+    return std::unique_ptr<Block, BlockDeleter>(T::get());
+  }
+
+  template<class T, class... Args>
+  static
+  typename std::enable_if<std::is_base_of<Block, T>::value, std::unique_ptr<Block, BlockDeleter>>::type
+  create_dynamic(Args&&... args) {
+    return std::unique_ptr<Block, BlockDeleter>(new T(std::forward<Args>(args)...));
+  }
 };
 
 
@@ -26,23 +53,23 @@ public:
 
 class Chunk {
 public:
-  Chunk(glm::ivec2 chunkPos, Blocks blocks);
+  Chunk(glm::ivec3 chunkPos, Blocks blocks);
   ~Chunk();
 
   Chunk(Chunk const&) = delete;
   Chunk& operator=(Chunk const&) = delete;
 
   Mesh const& getMesh();
-  glm::ivec2 getPosition() const;
   Block* getBlock(glm::ivec3 pos);
+  void unload();
 
 private:
   void generateMesh();
   std::array<GLfloat, 4> genOcclusion(glm::ivec3 pos, BlockFace face);
   bool isSolid(glm::ivec3 pos);
 
-  glm::ivec2 chunkPos;
-  Blocks blocks;
+  glm::ivec3 chunkPos;
+  Blocks* blocks;
 
   // the gl mesh and corresponding data.
   Mesh* mesh;

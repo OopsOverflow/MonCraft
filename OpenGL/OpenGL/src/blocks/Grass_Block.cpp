@@ -1,5 +1,10 @@
 #include "Grass_Block.h"
 
+Grass_Block* Grass_Block::get() {
+  static Grass_Block inst;
+  return &inst;
+}
+
 Grass_Block::Grass_Block() : Block(BlockType::Grass)
 { }
 

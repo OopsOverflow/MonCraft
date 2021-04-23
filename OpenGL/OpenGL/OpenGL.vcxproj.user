@@ -5,19 +5,19 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <LocalDebuggerEnvironment>PATH=%PATH%;$(SolutionDir)\Dependencies\SDL2\lib\x64</LocalDebuggerEnvironment>
+    <LocalDebuggerEnvironment>PATH=%PATH%;$(SolutionDir)\Dependencies\SDL2\lib\x64;$(SolutionDir)Dependencies\SFML\bin\x64;</LocalDebuggerEnvironment>
     <LocalDebuggerDebuggerType>NativeOnly</LocalDebuggerDebuggerType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <LocalDebuggerEnvironment>PATH=%PATH%;$(SolutionDir)\Dependencies\SDL2\lib\x86;$(SolutionDir)Dependencies\SFML\bin;</LocalDebuggerEnvironment>
+    <LocalDebuggerEnvironment>PATH=%PATH%;$(SolutionDir)\Dependencies\SDL2\lib\x86;$(SolutionDir)Dependencies\SFML\bin\x86;</LocalDebuggerEnvironment>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <LocalDebuggerEnvironment>PATH=%PATH%;$(SolutionDir)\Dependencies\SDL2\lib\x86;$(SolutionDir)Dependencies\SFML\bin;</LocalDebuggerEnvironment>
+    <LocalDebuggerEnvironment>PATH=%PATH%;$(SolutionDir)\Dependencies\SDL2\lib\x86;$(SolutionDir)Dependencies\SFML\bin\x86;</LocalDebuggerEnvironment>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <LocalDebuggerEnvironment>PATH=%PATH%;$(SolutionDir)\Dependencies\SDL2\lib\x64</LocalDebuggerEnvironment>
+    <LocalDebuggerEnvironment>PATH=%PATH%;$(SolutionDir)\Dependencies\SDL2\lib\x64;$(SolutionDir)Dependencies\SFML\bin\x64;</LocalDebuggerEnvironment>
   </PropertyGroup>
 </Project>

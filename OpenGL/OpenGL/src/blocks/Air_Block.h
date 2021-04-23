@@ -1,17 +1,13 @@
-#ifndef AIR_BLOCK_H
-#define AIR_BLOCK_H
+#pragma once
 
 #include "Block.h"
-
 
 class Air_Block : public Block
 {
 public:
-    Air_Block();
-
+    static Air_Block* get();
     glm::ivec2 getFaceUVs(BlockFace face) const override;
 
 private:
+    Air_Block();
 };
-
-#endif // AIR_BLOCK_H

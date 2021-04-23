@@ -6,9 +6,12 @@
 #include <iostream>
 
 Camera::Camera(unsigned int width, unsigned int height, const glm::vec3 &position,
-               const glm::vec3 &center, Projection projType):
- position(position), center(center), fovY(45.f), near_(0.1f), far_(100.f),
- screenWidth(width), screenHeight(height), projType(projType)
+               const glm::vec3 &center, Projection projType)
+ : view(1.f), projection(1.f),
+   position(position), center(center),
+   fovY(45.f), near_(0.1f), far_(100.f),
+   screenWidth(width), screenHeight(height),
+   projType(projType)
 {
 
   computeView();

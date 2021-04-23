@@ -9,7 +9,7 @@ namespace Random
 
     void init()
     {
-        rd.seed(std::time(nullptr));
+        rd.seed((unsigned int)std::time(nullptr));
     }
 
     int64_t intInRange(int64_t lBound, int64_t hBound)

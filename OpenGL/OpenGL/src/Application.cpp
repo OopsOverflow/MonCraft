@@ -38,7 +38,7 @@ std::unique_ptr<Mesh> makeTargetBlock() {
   std::vector<GLuint> indices;
   std::vector<GLuint> scheme = { 0, 1, 2, 0, 2, 3 };
 
-  auto block = std::unique_ptr<Block>(new Debug_Block());
+  auto block = Blocks::create_static<Debug_Block>();
 
    auto getFaceUV = [](glm::ivec2 index) -> face_t<2>{
     static const float atlasSize = 8.f;
@@ -81,24 +81,33 @@ int main(int argc, char* argv[]) {
 
     Music MusicPlayer;
 
-    while (window.beginFrame()) {
-        window.keyboardController.apply(character);
-        window.mouseController.apply(character, window.camera);
-        character.cameraToHead(window.camera);
+    int skyCamSize = 300;
+    Camera skyCam(skyCamSize, skyCamSize, {1, 500, 1}, {0, 0, 0});
 
+    while (window.beginFrame()) {
         //Time in ms telling us when this frame started. Useful for keeping a fix framerate
         uint32_t timeBegin = SDL_GetTicks();
 
         // updates
+        window.keyboardController.apply(character);
+        window.mouseController.apply(character, window.camera);
+        character.cameraToHead(window.camera);
+
         MusicPlayer.update();
-        terrain.update(window.camera.position);
+
+        auto playerPos = window.camera.position;
+        auto viewDir = window.camera.center - window.camera.position;
+        auto fovX = glm::degrees(2 * atan(tan(glm::radians(45.f) / 2) * window.width / window.height)); // see https://en.wikipedia.org/wiki/Field_of_view_in_video_games#Field_of_view_calculations
+        terrain.update(playerPos, viewDir, fovX);
+
         auto castPos = window.camera.position;
         auto castDir = window.camera.center - window.camera.position;
         glm::vec3 castTarget = caster.cast(castPos, castDir, terrain);
         targetBlock->model = glm::translate(glm::mat4(1.f), castTarget);
 
         // draw the shadow map
-        float t = timeBegin / 10000.f;
+        // float t = timeBegin / 10000.f;
+        float t = glm::half_pi<float>();
         float distance = 100.f;
         float a = cos(t);
         float b = sin(t);
@@ -136,13 +145,28 @@ int main(int argc, char* argv[]) {
         glDrawElements(GL_TRIANGLES, targetBlock->getVertexCount(), GL_UNSIGNED_INT, nullptr);
         glBindVertexArray(0);
 
-        //terrain.render();
         // draw the terrain
         shadows.activate();
-
         terrain.render();
-        glBindTexture(GL_TEXTURE_2D, 0);
+
+        // terrain sky view
+        glm::vec3 skyPos(window.camera.position.x, 500, window.camera.position.z);
+        glm::vec3 skyCenter(window.camera.position.x, 0, window.camera.position.z - 1);
+        skyCam.setLookAt(skyPos, skyCenter);
+        skyCam.activate();
+        glEnable(GL_SCISSOR_TEST);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glScissor(0, 0, skyCamSize + 5, skyCamSize + 5);
+        glClearColor(0, 0, 0, 0);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        terrain.render();
+        glScissor(skyCamSize/2-1, skyCamSize/2-1, 2, 2);
+        glClearColor(1, 1, 1, 1);
+        glClear(GL_COLOR_BUFFER_BIT);
+        glDisable(GL_SCISSOR_TEST);
+
         // draw the character
+        window.camera.activate();
         character.drawCharacter();
 
 
@@ -150,7 +174,6 @@ int main(int argc, char* argv[]) {
         sky.render(window.camera);
 
         // finish render
-
         window.endFrame();
 
         //Time in ms telling us when this frame ended. Useful for keeping a fix framerate

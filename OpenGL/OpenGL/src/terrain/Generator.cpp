@@ -13,7 +13,7 @@ Generator::Generator(int chunkSize)
   noise.seed(27);
 }
 
-Chunk* Generator::generate(ivec2 pos) {
+Chunk* Generator::generate(ivec3 pos) {
 
   static const octaves_t octaves = {
     {.65f, 0.004f}, // {magnitude, frequency}
@@ -29,26 +29,37 @@ Chunk* Generator::generate(ivec2 pos) {
   ivec2 dpos(0);
   for(dpos.x = -1; dpos.x <= chunkSize; dpos.x++) {
     for(dpos.y = -1; dpos.y <= chunkSize; dpos.y++) {
-      ivec2 pos2D = pos * ivec2(chunkSize) + dpos;
-      float height = (noise.fractal2(pos2D, octaves) + 1) / 2;
-      int blockHeight = (int)floor(height * chunkSize);
+      ivec2 pos2D = ivec2(pos.x, pos.z) * ivec2(chunkSize) + dpos;
+      float height = noise.fractal2(pos2D, octaves) * .5f + .5f;
+      int blockHeight = (int)floor(height * chunkSize) - pos.y * chunkSize;
 
-      // 1) air column
-      for(int i = chunkSize; i > blockHeight; i--) {
-        blocks.at(ivec3(dpos.x, i, dpos.y) + one) = std::make_unique<Air_Block>();
+      if(blockHeight < -1) {
+        for(int i = -1; i < chunkSize + 1; i++) {
+          blocks[ivec3(dpos.x, i, dpos.y) + one] = Blocks::create_static<Air_Block>();
+        }
       }
 
-      // 1) single grass block
-      blocks.at(ivec3(dpos.x, blockHeight, dpos.y) + one) = std::make_unique<Grass_Block>();
-
-      // 3) dirt column
-      for(int i = blockHeight-1; i >= 0; i--) {
-        blocks.at(ivec3(dpos.x, i, dpos.y) + one) = std::make_unique<Dirt_Block>();
+      else if(blockHeight > chunkSize) {
+        for(int i = -1; i < chunkSize + 1; i++) {
+          blocks[ivec3(dpos.x, i, dpos.y) + one] = Blocks::create_static<Dirt_Block>();
+        }
       }
 
-      // 3) below chunk = void
-      blocks.at(ivec3(dpos.x, 0, dpos.y) + one) = std::make_unique<Air_Block>();
+      else {
+        // 1) air column
+        for(int i = chunkSize; i > blockHeight; i--) {
+          blocks[ivec3(dpos.x, i, dpos.y) + one] = Blocks::create_static<Air_Block>();
+        }
+
+        // 2) single grass block
+        blocks[ivec3(dpos.x, blockHeight, dpos.y) + one] = Blocks::create_static<Grass_Block>();
+
+        // 3) dirt column
+        for(int i = blockHeight-1; i >= -1; i--) {
+          blocks[ivec3(dpos.x, i, dpos.y) + one] = Blocks::create_static<Dirt_Block>();
+        }
+      }
     }
   }
-  return new Chunk(pos * ivec2(chunkSize), std::move(blocks)); // TODO
+  return new Chunk(pos * ivec3(chunkSize), std::move(blocks));
 }

@@ -1,5 +1,10 @@
 #include "Stone_Block.h"
 
+Stone_Block* Stone_Block::get() {
+  static Stone_Block inst;
+  return &inst;
+}
+
 Stone_Block::Stone_Block()
     : Block(BlockType::Stone)
 {}

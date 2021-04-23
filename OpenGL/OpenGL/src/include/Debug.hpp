@@ -11,6 +11,7 @@ class DebugTimer {
 public:
   static void debug_timer_start();
   static void debug_timer_end();
+  static void debug_timer_add();
   static float debug_timer_time();
 };
 
@@ -22,6 +23,18 @@ public:
     DebugTimer::debug_timer_end();                                           \
     std::cout << #exec << " took " << DebugTimer::debug_timer_time() << "ms" \
               << std::endl;                                                  \
+  }
+
+#define TIME_ADD(exec)                                                       \
+  {                                                                          \
+    DebugTimer::debug_timer_start();                                         \
+  }                                                                          \
+  exec { DebugTimer::debug_timer_add(); }
+
+#define TIME_ADD_RESULT()                                                     \
+  {                                                                           \
+    std::cout << "operations took " << DebugTimer::debug_timer_time() << "ms" \
+              << std::endl;                                                   \
   }
 
 template<typename T>
