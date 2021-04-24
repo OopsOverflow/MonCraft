@@ -1,5 +1,5 @@
 #include "Raycast.hpp"
-#include "Debug.hpp"
+#include "debug/Debug.hpp"
 
 using glm::vec3;
 using glm::ivec3;

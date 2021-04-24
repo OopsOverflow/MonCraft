@@ -24,6 +24,7 @@
     <ProjectGuid>{17c8ff58-92cc-45fd-8761-ac39198be1a3}</ProjectGuid>
     <RootNamespace>OpenGL</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>MonCraft</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -113,7 +114,7 @@
       <PreprocessorDefinitions>GLEW_STATIC;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <OpenMPSupport>true</OpenMPSupport>
-      <AdditionalIncludeDirectories>$(SolutionDir)src\blocks;$(SolutionDir)Dependencies;$(SolutionDir)Dependencies\SFML\include;$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)Dependencies\SDL2\include;$(ProjectDir)src\include;$(ProjectDir)src\include\controller;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src\;$(SolutionDir)src\blocks;$(SolutionDir)Dependencies;$(SolutionDir)Dependencies\SFML\include;$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)Dependencies\SDL2\include;$(ProjectDir)src\include\controller;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -151,7 +152,7 @@
       <PreprocessorDefinitions>GLEW_STATIC;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <OpenMPSupport>true</OpenMPSupport>
-      <AdditionalIncludeDirectories>$(SolutionDir)src\blocks;$(SolutionDir)Dependencies;$(SolutionDir)Dependencies\SFML\include;$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)Dependencies\SDL2\include;$(ProjectDir)src\include;$(ProjectDir)src\include\controller;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src\;$(SolutionDir)src\blocks;$(SolutionDir)Dependencies;$(SolutionDir)Dependencies\SFML\include;$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)Dependencies\SDL2\include;$(ProjectDir)src\include\controller;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -164,18 +165,18 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\terrain\SkyBox.cpp" />
-    <ClCompile Include="src\Music.cpp" />
+    <ClCompile Include="src\music\Music.cpp" />
     <ClCompile Include="src\util\Random.cpp" />
     <ClCompile Include="src\blocks\Air_Block.cpp" />
     <ClCompile Include="src\blocks\Debug_Block.cpp" />
-    <ClCompile Include="src\Debug.cpp" />
+    <ClCompile Include="src\debug\Debug.cpp" />
     <ClCompile Include="src\entity\Character.cpp" />
     <ClCompile Include="src\entity\Hitbox.cpp" />
     <ClCompile Include="src\noise\bitmapTex.cpp" />
     <ClCompile Include="src\noise\simplex.cpp" />
     <ClCompile Include="src\noise\value.cpp" />
     <ClCompile Include="src\noise\voronoi.cpp" />
-    <ClCompile Include="src\ShadowMap.cpp" />
+    <ClCompile Include="src\shadow\ShadowMap.cpp" />
     <ClCompile Include="src\terrain\Chunk.cpp" />
     <ClCompile Include="src\terrain\Generator.cpp" />
     <ClCompile Include="src\terrain\Terrain.cpp" />
@@ -185,30 +186,30 @@
     <ClCompile Include="src\blocks\Grass_Block.cpp" />
     <ClCompile Include="src\blocks\Block.cpp" />
     <ClCompile Include="src\Application.cpp" />
-    <ClCompile Include="src\Camera.cpp" />
+    <ClCompile Include="src\camera\Camera.cpp" />
     <ClCompile Include="src\controller\KeyboardController.cpp" />
     <ClCompile Include="src\controller\MouseController.cpp" />
-    <ClCompile Include="src\Shader.cpp" />
+    <ClCompile Include="src\util\Shader.cpp" />
     <ClCompile Include="src\util\Raycast.cpp" />
-    <ClCompile Include="src\Viewport.cpp" />
+    <ClCompile Include="src\viewport\Viewport.cpp" />
     <ClCompile Include="src\blocks\Stone_Block.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
     <ClInclude Include="src\terrain\SkyBox.hpp" />
-    <ClInclude Include="src\include\Music.hpp" />
+    <ClInclude Include="src\music\Music.hpp" />
     <ClInclude Include="src\util\AtomicCyclicList.hpp" />
     <ClInclude Include="src\util\PriorityList.hpp" />
     <ClInclude Include="src\util\Random.hpp" />
     <ClInclude Include="src\blocks\Air_Block.h" />
     <ClInclude Include="src\blocks\Debug_Block.h" />
-    <ClInclude Include="src\DisplayNoise.hpp" />
+    <ClInclude Include="src\noise\DisplayNoise.hpp" />
     <ClInclude Include="src\entity\Character.hpp" />
     <ClInclude Include="src\entity\Cube.hpp" />
     <ClInclude Include="src\entity\Hitbox.hpp" />
-    <ClInclude Include="src\include\Debug.hpp" />
-    <ClInclude Include="src\include\Noise.hpp" />
-    <ClInclude Include="src\include\ShadowMap.hpp" />
+    <ClInclude Include="src\debug\Debug.hpp" />
+    <ClInclude Include="src\noise\Noise.hpp" />
+    <ClInclude Include="src\shadow\ShadowMap.hpp" />
     <ClInclude Include="src\Noise.hpp" />
     <ClInclude Include="src\noise\bitmap.hpp" />
     <ClInclude Include="src\noise\bitmapTex.hpp" />
@@ -226,11 +227,11 @@
     <ClInclude Include="src\blocks\Block.h" />
     <ClInclude Include="src\blocks\Dirt_Block.h" />
     <ClInclude Include="src\blocks\Grass_Block.h" />
-    <ClInclude Include="src\include\Camera.hpp" />
-    <ClInclude Include="src\include\controller\KeyboardController.hpp" />
-    <ClInclude Include="src\include\controller\MouseController.hpp" />
-    <ClInclude Include="src\include\Shader.hpp" />
-    <ClInclude Include="src\include\Viewport.hpp" />
+    <ClInclude Include="src\camera\Camera.hpp" />
+    <ClInclude Include="src\controller\KeyboardController.hpp" />
+    <ClInclude Include="src\controller\MouseController.hpp" />
+    <ClInclude Include="src\util\Shader.hpp" />
+    <ClInclude Include="src\viewport\Viewport.hpp" />
     <ClInclude Include="src\blocks\Stone_Block.h" />
     <ClInclude Include="src\util\Raycast.hpp" />
   </ItemGroup>

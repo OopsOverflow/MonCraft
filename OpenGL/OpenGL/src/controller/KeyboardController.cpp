@@ -1,4 +1,4 @@
-#include "controller/KeyboardController.hpp"
+#include "KeyboardController.hpp"
 
 using namespace std::chrono;
 

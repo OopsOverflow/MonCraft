@@ -3,15 +3,15 @@
 
 #include "SDL2/SDL_image.h"
 
-#include "Shader.hpp"
-#include "ShadowMap.hpp"
-#include "Viewport.hpp"
+#include "util/Shader.hpp"
+#include "shadow/ShadowMap.hpp"
+#include "viewport/Viewport.hpp"
 #include "terrain/Terrain.hpp"
 #include "terrain/SkyBox.hpp"
 #include "util/Loader.hpp"
 #include "util/Raycast.hpp"
 #include "entity/Hitbox.hpp"
-#include "include/Music.hpp"
+#include "music/Music.hpp"
 
 // WINDOW DIMENSIONS
 #define WIDTH     800

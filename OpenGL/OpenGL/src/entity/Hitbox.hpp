@@ -3,7 +3,7 @@
 #include <glm/glm.hpp>
 
 #include "Character.hpp"
-#include "Camera.hpp"
+#include "camera/Camera.hpp"
 
 enum class Mode { SPECTATOR, FLYING, SWIMMING, WALKING };
 enum class View { FIRST_PERSON, THIRD_PERSON };

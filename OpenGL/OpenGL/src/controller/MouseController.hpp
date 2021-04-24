@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Camera.hpp"
+#include "../camera/Camera.hpp"
 #include "../entity/Hitbox.hpp"
 
 class MouseController {

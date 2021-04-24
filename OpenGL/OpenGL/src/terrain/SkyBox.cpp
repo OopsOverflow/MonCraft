@@ -1,6 +1,6 @@
 #include "SkyBox.hpp"
-#include "../include/Camera.hpp"
-#include "Viewport.hpp"
+#include "camera/Camera.hpp"
+#include "viewport/Viewport.hpp"
 
 GLuint SkyBox::initSky(Shader& shader) {
     float skyboxVertices[] = {

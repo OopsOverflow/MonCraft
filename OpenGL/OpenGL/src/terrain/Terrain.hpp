@@ -9,10 +9,10 @@
 
 #include "Chunk.hpp"
 #include "Generator.hpp"
-#include "Camera.hpp"
-#include "../util/Loader.hpp"
-#include "../util/PriorityList.hpp"
-#include "../util/AtomicCyclicList.hpp"
+#include "camera/Camera.hpp"
+#include "util/Loader.hpp"
+#include "util/PriorityList.hpp"
+#include "util/AtomicCyclicList.hpp"
 
 class Terrain
 {

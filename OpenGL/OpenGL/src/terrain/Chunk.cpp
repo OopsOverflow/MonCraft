@@ -9,7 +9,7 @@ using glm::vec3;
 using glm::ivec3;
 using std::move;
 
-#include "Debug.hpp"
+#include "debug/Debug.hpp"
 
 Chunk::Chunk(ivec3 chunkPos, Blocks blocks)
   : chunkPos(chunkPos), blocks(new Blocks(move(blocks))), mesh(nullptr)

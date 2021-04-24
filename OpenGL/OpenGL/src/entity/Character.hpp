@@ -12,9 +12,9 @@
 #include <stack>
 #include <iostream>
 
-#include "Shader.hpp"
-#include "../util/Mesh.hpp"
-#include "../util/Loader.hpp"
+#include "util/Shader.hpp"
+#include "util/Mesh.hpp"
+#include "util/Loader.hpp"
 
 struct BodyPart {
 
