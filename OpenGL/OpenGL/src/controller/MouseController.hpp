@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../camera/Camera.hpp"
+#include "../gl/Camera.hpp"
 #include "../entity/Entity.hpp"
 
 class MouseController {

@@ -4,7 +4,7 @@
 
 #include "Hitbox.hpp"
 #include "Member.hpp"
-#include "../camera/Camera.hpp"
+#include "../gl/Camera.hpp"
 #include "../audio/SoundEffect.hpp"
 
 

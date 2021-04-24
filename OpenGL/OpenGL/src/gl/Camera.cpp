@@ -1,5 +1,5 @@
 #include "Camera.hpp"
-#include "../util/Shader.hpp"
+#include "../gl/Shader.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>

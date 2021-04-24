@@ -3,12 +3,12 @@
 
 #include "SDL2/SDL_image.h"
 
-#include "util/Shader.hpp"
-#include "shadow/ShadowMap.hpp"
-#include "viewport/Viewport.hpp"
+#include "gl/Shader.hpp"
+#include "gl/ShadowMap.hpp"
+#include "gl/Viewport.hpp"
 #include "terrain/Terrain.hpp"
 #include "terrain/SkyBox.hpp"
-#include "util/Loader.hpp"
+#include "gl/Loader.hpp"
 #include "util/Raycast.hpp"
 #include "entity/character/Character.hpp"
 #include "audio/Music.hpp"

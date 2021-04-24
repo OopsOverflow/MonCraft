@@ -2,10 +2,9 @@
 
 #include <string>
 
-#include "../camera/Camera.hpp"
+#include "Camera.hpp"
 #include "../controller/MouseController.hpp"
 #include "../controller/KeyboardController.hpp"
-#include "../entity/Hitbox.hpp"
 
 #include <SDL2/SDL.h>
 

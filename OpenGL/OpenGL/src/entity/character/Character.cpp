@@ -5,3 +5,8 @@ Character::Character()
 {
 
 }
+
+Character::~Character()
+{
+
+}

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "bitmap.hpp"
-#include "../util/Shader.hpp"
+#include "../gl/Shader.hpp"
 
 /**
  * Draws a bitmap on screen. Mostly for debugging purposes.

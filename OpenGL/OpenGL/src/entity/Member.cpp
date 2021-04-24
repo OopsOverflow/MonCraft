@@ -4,6 +4,10 @@ Member::Member(Mesh mesh)
   : mesh(std::move(mesh))
 {}
 
+Member::~Member() {
+  
+}
+
 void Member::rotate(glm::vec2 rotation) {
 
 }

@@ -1,6 +1,6 @@
 #include "SkyBox.hpp"
-#include "../camera/Camera.hpp"
-#include "../viewport/Viewport.hpp"
+#include "../gl/Camera.hpp"
+#include "../gl/Viewport.hpp"
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 

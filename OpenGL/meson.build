@@ -3,10 +3,6 @@ project('MonCraft', 'cpp')
 srcs = files(
   'OpenGL/src/Application.cpp',
 
-  'OpenGL/src/util/Shader.cpp',
-  'OpenGL/src/camera/Camera.cpp',
-  'OpenGL/src/viewport/Viewport.cpp',
-  'OpenGL/src/shadow/ShadowMap.cpp',
   'OpenGL/src/audio/Music.cpp',
   'OpenGL/src/debug/Debug.cpp',
 
@@ -18,8 +14,13 @@ srcs = files(
   'OpenGL/src/noise/voronoi.cpp',
   'OpenGL/src/noise/simplex.cpp',
 
-  'OpenGL/src/util/Mesh.cpp',
-  'OpenGL/src/util/Loader.cpp',
+  'OpenGL/src/gl/ShadowMap.cpp',
+  'OpenGL/src/gl/Shader.cpp',
+  'OpenGL/src/gl/Camera.cpp',
+  'OpenGL/src/gl/Viewport.cpp',
+  'OpenGL/src/gl/Mesh.cpp',
+  'OpenGL/src/gl/Loader.cpp',
+
   'OpenGL/src/util/Raycast.cpp',
   'OpenGL/src/util/Random.cpp',
 

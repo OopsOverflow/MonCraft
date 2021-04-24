@@ -1,7 +1,7 @@
 #pragma once
-#include "../util/Loader.hpp"
-#include "../util/Shader.hpp"
-#include "../camera/Camera.hpp"
+#include "../gl/Loader.hpp"
+#include "../gl/Shader.hpp"
+#include "../gl/Camera.hpp"
 
 class SkyBox
 {

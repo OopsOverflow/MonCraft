@@ -4,7 +4,7 @@
 #include <vector>
 #include <memory>
 
-#include "../util/Mesh.hpp"
+#include "../gl/Mesh.hpp"
 
 class Member {
 
