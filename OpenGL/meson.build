@@ -2,11 +2,13 @@ project('MonCraft', 'cpp')
 
 srcs = files(
   'OpenGL/src/Application.cpp',
-  'OpenGL/src/Shader.cpp',
-  'OpenGL/src/Camera.cpp',
-  'OpenGL/src/Viewport.cpp',
-  'OpenGL/src/ShadowMap.cpp',
-  'OpenGL/src/Music.cpp',
+
+  'OpenGL/src/util/Shader.cpp',
+  'OpenGL/src/camera/Camera.cpp',
+  'OpenGL/src/viewport/Viewport.cpp',
+  'OpenGL/src/shadow/ShadowMap.cpp',
+  'OpenGL/src/music/Music.cpp',
+  'OpenGL/src/debug/Debug.cpp',
 
   'OpenGL/src/controller/KeyboardController.cpp',
   'OpenGL/src/controller/MouseController.cpp',
@@ -35,8 +37,6 @@ srcs = files(
   'OpenGL/src/blocks/Stone_Block.cpp',
   'OpenGL/src/blocks/Grass_Block.cpp',
   'OpenGL/src/blocks/Debug_Block.cpp',
-
-  'OpenGL/src/Debug.cpp',
 )
 
 deps = [
@@ -52,7 +52,7 @@ deps = [
   dependency('sfml-audio'),
 ]
 
-incs = include_directories('OpenGL/src/include')
+incs = include_directories('OpenGL/src')
 
 # install_subdir('OpenGL/src/shader', install_dir : 'shader')
 
