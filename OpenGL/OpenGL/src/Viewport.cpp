@@ -9,6 +9,7 @@
 #include <GL/gl.h>
 
 #include <iostream>
+#include "Music.hpp"
 
 Viewport::Viewport(size_t width, size_t height)
     : camera(width, height, {0, 64, 10}, {0, 64, 20}),
@@ -131,6 +132,10 @@ void Viewport::on_keydown(SDL_Keycode k) {
     break;
   case SDLK_F5:
       keyboardController.pressedF5();
+      break;
+  case SDLK_n:
+      keyboardController.pressedN();
+      std::cout << "N" << std::endl;
       break;
   }
 }

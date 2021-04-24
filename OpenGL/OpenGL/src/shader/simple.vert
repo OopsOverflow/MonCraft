@@ -17,6 +17,7 @@ smooth out vec3 vertexNormal;
 smooth out vec2 txrCoords;
 smooth out vec3 shadowCoords;
 smooth out float vertexOcclusion;
+smooth out float v_fog_depth;
 
 vec3 nsigmoid2(vec3 x, float k) {
   vec3 val = (-pow(x, vec3(3)) + x * 3.0) / 2.0;
@@ -43,6 +44,8 @@ void main() {
   txrCoords = v_texture;
   // Occlusion
   vertexOcclusion = v_occlusion;
+
+  v_fog_depth = -( m_view* m_model * vec4(v_position, 1.0)).z;
 
   vec4 shadowCoords4 = m_shadows * m_model * vec4(v_position, 1.0);
   shadowCoords = vec3(shadowCoords4) / shadowCoords4.w;

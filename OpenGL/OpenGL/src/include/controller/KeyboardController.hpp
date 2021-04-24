@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../entity/Hitbox.hpp"
-
+#include "../include/Music.hpp"
 #include <chrono>
 
 class KeyboardController {
@@ -21,10 +21,12 @@ public:
   void pressedDown();
   void releasedDown();
   void pressedF5();
+  void pressedN();
 
   void apply(Hitbox& character);
 
 private:
+	Music player;
   float speed;
   glm::vec3 direction;
   View view;

@@ -79,7 +79,7 @@ int main(int argc, char* argv[]) {
     GLuint textureID = loader.loadTexture("Texture_atlas");
     character.cameraToHead(window.camera);
 
-    Music MusicPlayer;
+    //Music MusicPlayer;
 
     int skyCamSize = 300;
     Camera skyCam(skyCamSize, skyCamSize, {1, 500, 1}, {0, 0, 0});
@@ -93,7 +93,7 @@ int main(int argc, char* argv[]) {
         window.mouseController.apply(character, window.camera);
         character.cameraToHead(window.camera);
 
-        MusicPlayer.update();
+        //MusicPlayer.update();
 
         auto playerPos = window.camera.position;
         auto viewDir = window.camera.center - window.camera.position;
@@ -171,7 +171,7 @@ int main(int argc, char* argv[]) {
 
 
         // draw skybox at last
-        sky.render(window.camera);
+        //sky.render(window.camera);
 
         // finish render
         window.endFrame();

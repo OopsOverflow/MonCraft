@@ -7,6 +7,7 @@ smooth in vec3 vertexNormal;
 smooth in float vertexOcclusion;
 smooth in vec2 txrCoords;
 smooth in vec3 shadowCoords;
+in float v_fog_depth;
 
 // COMBAK: for some reason on windows these require an explicit location once at least 1 uniform in the program is explicit
 layout(location = 10) uniform vec3 lightDirection;
@@ -15,6 +16,10 @@ layout(location = 11) uniform float lightIntensity;
 uniform sampler2D textureSampler;
 uniform sampler2D shadowSampler;
 out vec4 outputColor;
+
+const vec4 fog_color = vec4(0.5,0.6,0.7, 0.0f);
+const float fog_near = 100.0f;
+const float fog_far = 128.0f;
 
 float computeShadow() {
   // if(shadowCoords.z > 1.0)
@@ -48,9 +53,15 @@ void main() {
 
   // Textures
   outputColor = texture(textureSampler, txrCoords);
+  float fog = smoothstep(fog_near, fog_far, v_fog_depth);
+  outputColor = mix(outputColor, fog_color, fog);
   float shadow = 1 - computeShadow();
   outputColor = outputColor * .5 + outputColor * lightIntensity * shadow * .5;
 
+
+
   float occl = .7;
   outputColor *= 1.0 - (vertexOcclusion * vertexOcclusion / 9.0) * occl;
+
+
 }

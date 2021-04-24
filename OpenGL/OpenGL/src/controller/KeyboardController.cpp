@@ -72,6 +72,10 @@ void KeyboardController::pressedF5() {
     }
 }
 
+void KeyboardController::pressedN() {
+    player.playNext();
+}
+
 
 glm::vec3 normalizeOrZero(glm::vec3 vec) {
   if (vec.x == 0 && vec.y == 0 && vec.z == 0)

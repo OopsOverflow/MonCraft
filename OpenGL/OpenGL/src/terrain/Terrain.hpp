@@ -31,7 +31,7 @@ public:
 private:
   static const int chunkSize = 32;
   static const int renderDistH = 8; // horizontal render distance (2n+1 chunks)
-  static const int renderDistV = 3; // vertical render distance (2n+1 chunks)
+  static const int renderDistV = 10; // vertical render distance (2n+1 chunks)
   const int chunksMaxCount;
 
   const int memoryCap = 2048; // max amount of memory (mebibytes)
