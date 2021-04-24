@@ -164,14 +164,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\entity\Body.cpp" />
+    <ClCompile Include="src\entity\Entity.cpp" />
+    <ClCompile Include="src\entity\Hitbox.cpp" />
     <ClCompile Include="src\terrain\SkyBox.cpp" />
-    <ClCompile Include="src\music\Music.cpp" />
+    <ClCompile Include="src\audio\Music.cpp" />
     <ClCompile Include="src\util\Random.cpp" />
     <ClCompile Include="src\blocks\Air_Block.cpp" />
     <ClCompile Include="src\blocks\Debug_Block.cpp" />
     <ClCompile Include="src\debug\Debug.cpp" />
-    <ClCompile Include="src\entity\Character.cpp" />
-    <ClCompile Include="src\entity\Hitbox.cpp" />
+    <ClCompile Include="src\entity\Trash\Character.cpp" />
+    <ClCompile Include="src\entity\Trash\Hitbox%28trash%29.cpp" />
     <ClCompile Include="src\noise\bitmapTex.cpp" />
     <ClCompile Include="src\noise\simplex.cpp" />
     <ClCompile Include="src\noise\value.cpp" />
@@ -196,17 +199,21 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
+    <ClInclude Include="src\entity\Body.hpp" />
+    <ClInclude Include="src\entity\Entity.hpp" />
+    <ClInclude Include="src\entity\Hitbox.hpp" />
+    <ClInclude Include="src\audio\SoundEffect.hpp" />
     <ClInclude Include="src\terrain\SkyBox.hpp" />
-    <ClInclude Include="src\music\Music.hpp" />
+    <ClInclude Include="src\audio\Music.hpp" />
     <ClInclude Include="src\util\AtomicCyclicList.hpp" />
     <ClInclude Include="src\util\PriorityList.hpp" />
     <ClInclude Include="src\util\Random.hpp" />
     <ClInclude Include="src\blocks\Air_Block.h" />
     <ClInclude Include="src\blocks\Debug_Block.h" />
     <ClInclude Include="src\noise\DisplayNoise.hpp" />
-    <ClInclude Include="src\entity\Character.hpp" />
-    <ClInclude Include="src\entity\Cube.hpp" />
-    <ClInclude Include="src\entity\Hitbox.hpp" />
+    <ClInclude Include="src\entity\Trash\Character.hpp" />
+    <ClInclude Include="src\entity\Trash\Cube.hpp" />
+    <ClInclude Include="src\entity\Trash\Hitbox%28trash%29.hpp" />
     <ClInclude Include="src\debug\Debug.hpp" />
     <ClInclude Include="src\noise\Noise.hpp" />
     <ClInclude Include="src\shadow\ShadowMap.hpp" />
