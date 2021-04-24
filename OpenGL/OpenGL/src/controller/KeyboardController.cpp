@@ -79,7 +79,7 @@ glm::vec3 normalizeOrZero(glm::vec3 vec) {
   return glm::normalize(vec);
 }
 
-void KeyboardController::apply(Hitbox& character) {
+void KeyboardController::apply(Entity& character) {
   auto cur_timer = steady_clock::now();
   auto elapsed = duration_cast<milliseconds>(cur_timer - timer).count();
   timer = cur_timer;

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "util/Shader.hpp"
-#include "camera/Camera.hpp"
+#include "../util/Shader.hpp"
+#include "../camera/Camera.hpp"
 
 class ShadowMap {
 

@@ -1,7 +1,8 @@
 #pragma once
 
-#include "../entity/Hitbox.hpp"
+#include "../entity/Entity.hpp"
 
+#include <glm/glm.hpp>
 #include <chrono>
 
 class KeyboardController {
@@ -22,7 +23,7 @@ public:
   void releasedDown();
   void pressedF5();
 
-  void apply(Hitbox& character);
+  void apply(Entity& character);
 
 private:
   float speed;

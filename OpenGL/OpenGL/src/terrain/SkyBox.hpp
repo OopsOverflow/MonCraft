@@ -1,7 +1,7 @@
 #pragma once
-#include "util/Loader.hpp"
-#include "util/Shader.hpp"
-#include "camera/Camera.hpp"
+#include "../util/Loader.hpp"
+#include "../util/Shader.hpp"
+#include "../camera/Camera.hpp"
 
 class SkyBox
 {
@@ -17,4 +17,3 @@ private:
 	GLuint initSky(Shader& shader);
 	GLuint loadTxr();
 };
-

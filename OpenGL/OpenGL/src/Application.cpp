@@ -10,8 +10,8 @@
 #include "terrain/SkyBox.hpp"
 #include "util/Loader.hpp"
 #include "util/Raycast.hpp"
-#include "entity/Hitbox.hpp"
-#include "music/Music.hpp"
+#include "entity/character/Character.hpp"
+#include "audio/Music.hpp"
 
 // WINDOW DIMENSIONS
 #define WIDTH     800
@@ -70,14 +70,14 @@ int main(int argc, char* argv[]) {
     Shader shader("src/shader/simple.vert", "src/shader/simple.frag");
     Terrain terrain;
     SkyBox sky;
-    Hitbox character({ 0.0f,32.0f,0.0f });
+    // Character character({ 0.0f,32.0f,0.0f });
     ShadowMap shadows(1024);
     Loader loader;
     Raycast caster(100.f);
     std::unique_ptr<Mesh> targetBlock = makeTargetBlock();
 
     GLuint textureID = loader.loadTexture("Texture_atlas");
-    character.cameraToHead(window.camera);
+    // character.cameraToHead(window.camera);
 
     Music MusicPlayer;
 
@@ -89,9 +89,9 @@ int main(int argc, char* argv[]) {
         uint32_t timeBegin = SDL_GetTicks();
 
         // updates
-        window.keyboardController.apply(character);
-        window.mouseController.apply(character, window.camera);
-        character.cameraToHead(window.camera);
+        // window.keyboardController.apply(character);
+        // window.mouseController.apply(character, window.camera);
+        // character.cameraToHead(window.camera);
 
         MusicPlayer.update();
 
@@ -167,7 +167,7 @@ int main(int argc, char* argv[]) {
 
         // draw the character
         window.camera.activate();
-        character.drawCharacter();
+        // character.drawCharacter();
 
 
         // draw skybox at last

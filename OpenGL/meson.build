@@ -7,7 +7,7 @@ srcs = files(
   'OpenGL/src/camera/Camera.cpp',
   'OpenGL/src/viewport/Viewport.cpp',
   'OpenGL/src/shadow/ShadowMap.cpp',
-  'OpenGL/src/music/Music.cpp',
+  'OpenGL/src/audio/Music.cpp',
   'OpenGL/src/debug/Debug.cpp',
 
   'OpenGL/src/controller/KeyboardController.cpp',
@@ -23,8 +23,10 @@ srcs = files(
   'OpenGL/src/util/Raycast.cpp',
   'OpenGL/src/util/Random.cpp',
 
+  'OpenGL/src/entity/Entity.cpp',
   'OpenGL/src/entity/Hitbox.cpp',
-  'OpenGL/src/entity/Character.cpp',
+  'OpenGL/src/entity/Member.cpp',
+  'OpenGL/src/entity/character/Character.cpp',
 
   'OpenGL/src/terrain/Terrain.cpp',
   'OpenGL/src/terrain/Chunk.cpp',

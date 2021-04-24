@@ -58,7 +58,6 @@ void Hitbox::cameraToHead(Camera& camera) {
 		newPos = glm::rotate(glm::mat4(1.0f), glm::radians(-cameraRot.x), { 1.0f,0.0f,0.0f }) * newPos;
 		newPos = glm::rotate(glm::mat4(1.0f), glm::radians(cameraRot.y), { 0.0f,1.0f,0.0f }) * newPos;
 		cameraPos += glm::vec3(newPos);
-
 	}
 	camera.setPosition(cameraPos);
 }
