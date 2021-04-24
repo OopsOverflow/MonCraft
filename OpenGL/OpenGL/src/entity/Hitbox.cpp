@@ -4,7 +4,7 @@ using namespace std::chrono;
 
 Hitbox::Hitbox(glm::vec3 position)
 	:size({ 0.6f, 1.8f, 0.6f }), pos(position),
-	speed({ 0.0f, 0.0f, 0.0f }), acceleration({ 0.0f, 0.0f, 0.0f }),character({0.0f,0.0f,0.0f},{0.0f,0.0f})
+	speed(0.0f), character({0.0f,0.0f,0.0f},{0.0f,0.0f})
 	, mode(Mode::WALKING),view(View::FIRST_PERSON)
 {
 	timer = steady_clock::now();
@@ -24,22 +24,35 @@ void Hitbox::cameraToHead(Camera& camera) {
 	camera.setPosition(cameraPos);
 }
 
-void Hitbox::move(glm::vec3 amount) {
+void Hitbox::move(glm::vec3 direction) {
 	glm::vec3 rotation = character.getHeadProperties().reachRotation + character.getBodyRotation();
-	pos.z += -cos(glm::radians(rotation.y))*amount.z;
-	pos.x += -sin(glm::radians(rotation.y)) * amount.z;
+	pos.z += -cos(glm::radians(rotation.y))* direction.z;
+	pos.x += -sin(glm::radians(rotation.y)) * direction.z;
 
-	pos.x += -cos(glm::radians(rotation.y)) * amount.x;
-	pos.z += sin(glm::radians(rotation.y)) * amount.x;
+	pos.x += -cos(glm::radians(rotation.y)) * direction.x;
+	pos.z += sin(glm::radians(rotation.y)) * direction.x;
+	if (direction.x != 0 || direction.z!=0) {
+		float rotate = 45 * direction.x * (direction.z > 0 ? -1 : 1);
+		rotate = character.getHeadProperties().reachRotation.y-rotate;
+		if (fabs(rotate) > 5.0f) {
+			rotate = 5.0f * (rotate > 0 ? 1 : -1);
+		}
 
-	if (character.getHeadProperties().reachRotation.y != 0) {
-		float rotate = 5.0 * amount.z * (character.getHeadProperties().reachRotation.y > 0 ? -1 : 1);
-		if (fabs(rotate) > fabs(character.getHeadProperties().reachRotation.y)) rotate = character.getHeadProperties().reachRotation.y;
 		character.rotateBody({ 0.0f,rotate,0.0f });
 		character.rotateHead({ 0.0f,-rotate });
+
+		character.setMemberRotation({ 45.0f * speed / 5.0f,0.0f }, Member::LEFT_LEG);
+		character.setMemberRotation({ -45.0f * speed / 5.0f,0.0f }, Member::RIGHT_LEG);
+	}
+	else {
+		character.setMemberRotation({ 0.0f,0.0f }, Member::LEFT_LEG);
+		character.setMemberRotation({ 0.0f,0.0f }, Member::RIGHT_LEG);
+
 	}
 
-	pos.y += amount.y;
+
+
+	pos.y += direction.y;
 
 }
 
@@ -52,8 +65,8 @@ void Hitbox::animate() {
 	character.headReachRotation(1000.0 / elapsed * 0.25f);
 	character.memberReachRotation(1000.0 / elapsed * 0.25f, Member::LEFT_ARM);
 	character.memberReachRotation(1000.0 / elapsed * 0.25f, Member::RIGHT_ARM);
-	character.memberReachRotation(1000.0 / elapsed * 0.25f, Member::LEFT_LEG);
-	character.memberReachRotation(1000.0 / elapsed * 0.25f, Member::RIGHT_LEG);
+	character.memberReachRotation(1000.0 / elapsed * 0.15f, Member::LEFT_LEG);
+	character.memberReachRotation(1000.0 / elapsed * 0.15f, Member::RIGHT_LEG);
 }
 
 

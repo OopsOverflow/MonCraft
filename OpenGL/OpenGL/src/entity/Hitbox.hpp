@@ -24,9 +24,7 @@ public:
 private:
 	
 	glm::vec3 size;
-	glm::vec3 speed;
-	glm::vec3 acceleration;
+	float speed;
 	std::chrono::time_point<std::chrono::steady_clock> timer;
-
 	Mode mode;
 };

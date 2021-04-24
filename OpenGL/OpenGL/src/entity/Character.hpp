@@ -15,6 +15,7 @@
 #include "../util/Mesh.hpp"
 #include "../util/Loader.hpp"
 
+
 struct BodyPart {
 
     int vertexCount = 0;
@@ -53,6 +54,5 @@ private:
     Loader loader;
     GLuint texture;
     BodyPart chest;
-    glm::vec3 view;
 
 };

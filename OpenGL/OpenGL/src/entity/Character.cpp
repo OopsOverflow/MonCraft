@@ -3,7 +3,7 @@
 #include "Cube.hpp"
 
 Character::Character(const glm::vec3 headRotation, const glm::vec2 bobyRotation)
-    : view({ 0.0f,0.0f,0.0f }), loader(), texture(loader.loadTexture("Character"))
+    : loader(), texture(loader.loadTexture("Character"))
 {
     Cube cube;
     Mesh* chestMesh = new Mesh(cube.vertices, cube.normals, cube.chestUVs, cube.occlusions, cube.indices);
@@ -89,8 +89,18 @@ void Character::draw(glm::mat4 const& characterPos, bool onlyRightHand) {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture);
 
-    if (onlyRightHand) {
-
+    if (0) {
+        BodyPart* rightArm = &chest.children.at(Member::RIGHT_ARM);
+        BodyPart* head = &chest.children.at(0);
+        glBindVertexArray(rightArm->vao);
+        glm::mat4 model = characterPos * chest.propagatedMatrix *
+            glm::rotate(glm::mat4(1.0f), glm::radians(-head->reachRotation.x + chest.reachRotation.x), { 1.0f,0.0f,0.0f }) * 
+            glm::rotate(glm::mat4(1.0f), glm::radians(head->reachRotation.y + chest.reachRotation.y), { 0.0f,1.0f,0.0f })*
+            glm::translate(glm::mat4(1.0f), head->localPosition) *
+            rightArm->localMatrix;
+        glUniformMatrix4fv(MATRIX_MODEL, 1, GL_FALSE, glm::value_ptr(model));
+        glDrawElements(GL_TRIANGLES, rightArm->vertexCount, GL_UNSIGNED_INT, nullptr);
+        glBindVertexArray(0);
     }
     else {
         std::stack<glm::mat4> mvpStack;
@@ -124,8 +134,8 @@ void Character::rotateBody(glm::vec3 rotation) {
 void Character::bodyReachRotation(float maxRotation) {
 
     glm::vec3 rot = chest.reachRotation - chest.localRotation;
-    if (fabs(rot.y) > 45) chest.localRotation.y = chest.reachRotation.y - (rot.y > 0 ? 45 : -45);
-    float totalRot = glm::degrees(acos(cos(rot.x) * cos(rot.y)));
+    if (fabs(rot.y) > 50) chest.localRotation.y = chest.reachRotation.y - (rot.y > 0 ? 50 : -50);
+    float totalRot = glm::degrees(acos(cos(rot.x) * cos(rot.y)));//merci Timothée Braud :)
     if (totalRot>maxRotation) {
         chest.localRotation += rot * maxRotation / totalRot;
     }
@@ -148,7 +158,7 @@ void Character::rotateHead(glm::vec2 rotation) {
 
     BodyPart* head = &chest.children.at(0);
 
-   if (fabs(head->reachRotation.y + rotation.y) > 45) {
+   if (fabs(head->reachRotation.y + rotation.y) > 50) {
        rotateBody({ 0.0f,head->reachRotation.y + rotation.y - (rotation.y > 0 ? 35 : -35),0.0f });
        chest.localRotation = chest.reachRotation;
        rotation.y = (head->reachRotation.y + rotation.y > 0 ? 35 : -35) - head->reachRotation.y;
@@ -174,7 +184,7 @@ void Character::headReachRotation(float maxRotation) {
     BodyPart* head = &chest.children.at(0);
     
     glm::vec3 rot = head->reachRotation - head->localRotation;
-    float totalRot = glm::degrees(acos(cos(rot.x) * cos(rot.y)));
+    float totalRot = glm::degrees(acos(cos(rot.x) * cos(rot.y)));//merci Timothée Braud :)
     if (totalRot > maxRotation) {
         head->localRotation += rot * maxRotation / totalRot;
     }
@@ -208,10 +218,9 @@ void Character::setMemberRotation(glm::vec2 rotation, Member member) {
 }
 
 void Character::memberReachRotation(float maxRotation, Member member) {
-
     BodyPart* model = &chest.children.at(member);
     glm::vec3 rot = model->reachRotation - model->localRotation;
-    float totalRot = glm::degrees(acos(cos(rot.x) * cos(rot.y)));
+    float totalRot = glm::degrees(acos(cos(rot.x) * cos(rot.y)));//merci Timothée Braud :)
 
      if (totalRot > maxRotation) {
         model->localRotation.x += rot.x * maxRotation / totalRot;

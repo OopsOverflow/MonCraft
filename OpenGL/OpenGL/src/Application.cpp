@@ -81,9 +81,9 @@ int main(int argc, char* argv[]) {
    
 
     while (window.beginFrame()) {
-
-        window.keyboardController.apply(character);
         window.mouseController.apply(character, window.camera);
+        window.keyboardController.apply(character);
+
         character.animate();
         character.cameraToHead(window.camera);
 
