@@ -13,4 +13,7 @@ public:
 private:
   int chunkSize;
   SimplexNoise noise;
+  SimplexNoise noiseX;
+  SimplexNoise noiseY;
+  SimplexNoise noiseZ;
 };

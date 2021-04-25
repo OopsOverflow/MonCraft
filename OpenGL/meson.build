@@ -27,6 +27,7 @@ srcs = files(
   'OpenGL/src/terrain/Terrain.cpp',
   'OpenGL/src/terrain/Chunk.cpp',
   'OpenGL/src/terrain/Generator.cpp',
+  'OpenGL/src/terrain/SkyBox.cpp',
 
   'OpenGL/src/blocks/Block.cpp',
   'OpenGL/src/blocks/Air_Block.cpp',
