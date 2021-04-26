@@ -17,7 +17,7 @@ public:
   void draw();
   void addChild(std::unique_ptr<Member> child);
 
-private:
+protected:
   glm::mat4 localModel;
   glm::vec2 targetRot;
   glm::vec2 currentRot;

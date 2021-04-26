@@ -6,6 +6,8 @@
 #include "Member.hpp"
 #include "../gl/Camera.hpp"
 #include "../audio/SoundEffect.hpp"
+#include "Chest.hpp"
+#include "Head.hpp"
 
 
 enum class View { FIRST_PERSON, THIRD_PERSON };
@@ -25,9 +27,14 @@ public:
 	virtual void playAnimation(float dt) = 0;
 	View view;
 
-private:
+protected:
 	float accel;
 	float speed;
+
+	//All entities have one head and one chest
+	Head head;
+	Chest chest;
+
 	State state;
 	Hitbox hitbox;
 	glm::vec3 position;

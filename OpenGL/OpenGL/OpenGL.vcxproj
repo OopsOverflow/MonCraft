@@ -211,8 +211,10 @@
     <ClInclude Include="src\debug\Debug.hpp" />
     <ClInclude Include="src\entity\Body.hpp" />
     <ClInclude Include="src\entity\character\Character.hpp" />
-    <ClInclude Include="src\entity\character\Chest.hpp" />
-    <ClInclude Include="src\entity\character\Head.hpp" />
+    <ClInclude Include="src\entity\character\CharacterChest.hpp" />
+    <ClInclude Include="src\entity\character\CharacterHead.hpp" />
+    <ClInclude Include="src\entity\Chest.hpp" />
+    <ClInclude Include="src\entity\Head.hpp" />
     <ClInclude Include="src\entity\character\LeftArm.hpp" />
     <ClInclude Include="src\entity\character\LeftLeg.hpp" />
     <ClInclude Include="src\entity\character\RightArm.hpp" />

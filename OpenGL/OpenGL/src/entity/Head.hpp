@@ -42,4 +42,6 @@ public:
   Head()
    : Member(Mesh(Cube::vertices, Cube::normals, headUVs, Cube::occlusions, Cube::indices))
   { }
+  
+  glm::vec2 getLookAt();
 };

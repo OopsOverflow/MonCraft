@@ -8,8 +8,8 @@
 #include "RightLeg.hpp"
 #include "LeftLeg.hpp"
 #include "RightLeg.hpp"
-#include "Head.hpp"
-#include "Chest.hpp"
+#include "CharacterHead.hpp"
+#include "CharacterChest.hpp"
 
 class Character : public Entity {
 
@@ -22,6 +22,4 @@ private:
   RightArm r_arm;
   LeftLeg l_leg;
   LeftLeg r_leg;
-  Head head;
-  Chest chest;
 };

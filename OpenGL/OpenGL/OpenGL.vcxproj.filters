@@ -176,10 +176,10 @@
     <ClInclude Include="src\entity\character\Character.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\entity\character\Chest.hpp">
+    <ClInclude Include="src\entity\Chest.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\entity\character\Head.hpp">
+    <ClInclude Include="src\entity\Head.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\entity\character\LeftArm.hpp">
@@ -276,6 +276,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\util\Raycast.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entity\character\CharacterHead.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entity\character\CharacterChest.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
