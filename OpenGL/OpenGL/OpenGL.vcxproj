@@ -237,6 +237,8 @@
   <ItemGroup>
     <None Include="src\shader\2dtex.frag" />
     <None Include="src\shader\2dtex.vert" />
+    <None Include="src\shader\shadow.frag" />
+    <None Include="src\shader\shadow.vert" />
     <None Include="src\shader\simple.frag" />
     <None Include="src\shader\simple.vert" />
     <None Include="src\shader\skyBox.frag" />

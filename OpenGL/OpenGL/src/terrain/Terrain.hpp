@@ -23,8 +23,8 @@ public:
   Terrain(Terrain const&) = delete;
   Terrain& operator=(Terrain const&) = delete;
 
-  void update(glm::vec3 pos, glm::vec3 dir, float fovX);
-  void render();
+  void update(Camera& camera);
+  void render(Camera& camera);
 
   Block* getBlock(glm::ivec3 pos);
 

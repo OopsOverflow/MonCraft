@@ -229,6 +229,8 @@
     <None Include="src\shader\2dtex.vert" />
     <None Include="src\shader\skyBox.frag" />
     <None Include="src\shader\skyBox.vert" />
+    <None Include="src\shader\shadow.frag" />
+    <None Include="src\shader\shadow.vert" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="src\blocks\Textures\Testxture.png">

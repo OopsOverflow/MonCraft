@@ -127,13 +127,13 @@ void Terrain::worker(int n) {
 
 }
 
-void Terrain::update(glm::vec3 pos, glm::vec3 dir, float fovX) {
+void Terrain::update(Camera& camera) {
   std::lock_guard<std::mutex> lck(chunksMutex);
-  playerPos = pos;
-  viewDir = glm::normalize(dir);
-  this->fovX = fovX;
+  playerPos = camera.position;
+  viewDir = glm::normalize(camera.center - camera.position);
+  fovX = camera.getFovX();
 
-  ivec3 newChunkPos = floor(pos / float(chunkSize));
+  ivec3 newChunkPos = floor(playerPos / float(chunkSize));
   if(newChunkPos != chunkPos) {
     chunkPos = newChunkPos;
     chunkPosChanged = true;
@@ -166,20 +166,21 @@ void Terrain::update(glm::vec3 pos, glm::vec3 dir, float fovX) {
   }
 }
 
-void Terrain::render() {
+void Terrain::render(Camera& camera) {
   std::lock_guard<std::mutex> lck(chunksMutex);
 
   vec2 viewDir2D = glm::normalize(vec2(viewDir.x, viewDir.z));
   ivec3 startChunk = chunkPos - ivec3(glm::sign(viewDir));
+  glm::mat4 toCamCoordonates = camera.projection * camera.view;
+   
 
   for(auto& chunk : chunks) {
     Mesh const& mesh = chunk.second->getMesh();
-    ivec3 chunkDir3D = chunk.first - startChunk;
-    vec2 chunkDir = glm::normalize(vec2(chunkDir3D.x, chunkDir3D.z));
 
-    float minDot = cos(glm::radians(fovX));
+    glm::vec4 centerPos = toCamCoordonates * glm::vec4(glm::vec3(chunk.first * 32) + glm::vec3(16.0f) , 1.0f);
+    centerPos /= centerPos.w;
 
-    if(distance(chunk.first, chunkPos) < 2 || glm::dot(chunkDir, viewDir2D) > minDot) {
+    if(glm::all(glm::lessThan(abs(glm::vec3(centerPos)), glm::vec3(1.0f)))){
       glBindVertexArray(mesh.getVAO());
       glUniformMatrix4fv(MATRIX_MODEL, 1, GL_FALSE, glm::value_ptr(mesh.model));
       glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_INT, nullptr);

@@ -15,7 +15,7 @@ Chunk::Chunk(ivec3 chunkPos, Blocks blocks)
   : chunkPos(chunkPos), blocks(new Blocks(move(blocks))), mesh(nullptr)
 {
   generateMesh();
-  // std::cout << "created chunk " << chunkPos << std::endl;
+  //std::cout << "created chunk " << chunkPos << std::endl;
 }
 
 Chunk::~Chunk() {

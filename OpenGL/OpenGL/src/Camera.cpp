@@ -197,3 +197,47 @@ void Camera::computeProjection() {
     projection = glm::infinitePerspective(glm::radians(fovY), aspect, near_);
   }
 }
+
+
+std::vector<glm::vec3> Camera::getBoxCorners() {
+    float z1 = -near_;
+    float z2 = -far_;
+    
+    float y1 = z1 * tan(glm::radians(fovY) * 0.5);
+    float y2 = z2 * tan(glm::radians(fovY) * 0.5);
+
+    float x1 = z1 * tan(glm::radians(getFovX()) * 0.5);
+    float x2 = z2 * tan(glm::radians(getFovX()) * 0.5);
+
+    glm::mat4 invertView = glm::inverse(view);
+
+    //float z3 = -1.0f;
+    //float z4 = 1.0f;
+
+    //float y3 = -1.0f;
+    //float y4 = 1.0f;
+
+    //float x3 = -1.0f;
+    //float x4 = 1.0f;
+
+    //glm::vec3 test = glm::vec3(projection * glm::vec4(x4, y4, z3, 1.0f));
+
+    //std::cout << x1 << ", " << y1 << ", " << z1 << std::endl;
+    //std::cout << test.x << ", " << test.y << ", " << test.z << std::endl;
+
+
+    std::vector<glm::vec3> pos;
+    //near
+    pos.push_back(glm::vec3(invertView * glm::vec4(x1, y1, z1, 1.0f))); //top, right
+    pos.push_back(glm::vec3(invertView * glm::vec4(x1, -y1, z1, 1.0f))); //bot, right
+    pos.push_back(glm::vec3(invertView * glm::vec4(-x1, y1, z1, 1.0f))); //top, left
+    pos.push_back(glm::vec3(invertView * glm::vec4(-x1, -y1, z1, 1.0f))); //bot, left
+
+    //far
+    pos.push_back(glm::vec3(invertView * glm::vec4(x2, y2, z2, 1.0f)));
+    pos.push_back(glm::vec3(invertView * glm::vec4(x2, -y2, z2, 1.0f)));
+    pos.push_back(glm::vec3(invertView * glm::vec4(-x2, y2, z2, 1.0f)));
+    pos.push_back(glm::vec3(invertView * glm::vec4(-x2, -y2, z2, 1.0f)));
+
+    return pos;
+}

@@ -63,6 +63,8 @@ std::unique_ptr<Mesh> makeTargetBlock() {
   return std::unique_ptr<Mesh>(mesh);
 }
 
+
+
 int main(int argc, char* argv[]) {
     std::cout << "----Main------\n";
 
@@ -82,9 +84,76 @@ int main(int argc, char* argv[]) {
     Music MusicPlayer;
 
     int skyCamSize = 300;
-    Camera skyCam(skyCamSize, skyCamSize, {1, 500, 1}, {0, 0, 0});
+    Camera skyCam(skyCamSize, skyCamSize, {1, 500, 1}, {0, 0, 0}, Projection::PROJECTION_ORTHOGRAPHIC);
+
+    std::vector<glm::vec3> vec = window.camera.getBoxCorners();
+
+    //std::cout << glm::vec3(glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, -1.f, 1.f) * glm::inverse(window.camera.projection) * window.camera.view * glm::vec4(glm::vec3(16.0f), 1.0f)).z << std::endl;;
+    for (auto& v : vec) {
+        glm::vec4 projection = window.camera.projection* window.camera.view * glm::vec4(v, 1.0f);
+        v = glm::vec3(projection)/projection.w;
+        std::cout <<v.x<<", "<<v.y<<", "<< v.z << std::endl;
+    }
+    const std::vector<GLfloat> vertices = {
+        // TOP
+        vec.at(0).x, vec.at(0).y, vec.at(0).z,
+        vec.at(4).x, vec.at(4).y, vec.at(4).z,
+        vec.at(6).x, vec.at(6).y, vec.at(6).z,
+        vec.at(2).x, vec.at(2).y, vec.at(2).z,
+        vec.at(4).x, vec.at(4).y, vec.at(4).z,
+        vec.at(6).x, vec.at(6).y, vec.at(6).z,
+        // BOTTOM
+        vec.at(1).x, vec.at(1).y, vec.at(1).z,
+        vec.at(5).x, vec.at(5).y, vec.at(5).z,
+        vec.at(7).x, vec.at(7).y, vec.at(7).z,
+        vec.at(3).x, vec.at(3).y, vec.at(3).z,
+        vec.at(5).x, vec.at(5).y, vec.at(5).z,
+        vec.at(7).x, vec.at(7).y, vec.at(7).z,
+        // FRONT
+        vec.at(0).x, vec.at(0).y, vec.at(0).z,
+        vec.at(1).x, vec.at(1).y, vec.at(1).z,
+        vec.at(2).x, vec.at(2).y, vec.at(2).z,
+        vec.at(3).x, vec.at(3).y, vec.at(3).z,
+        vec.at(1).x, vec.at(1).y, vec.at(1).z,
+        vec.at(2).x, vec.at(2).y, vec.at(2).z,
+        // RIGHT
+        vec.at(0).x, vec.at(0).y, vec.at(0).z,
+        vec.at(1).x, vec.at(1).y, vec.at(1).z,
+        vec.at(4).x, vec.at(4).y, vec.at(4).z,
+        vec.at(5).x, vec.at(5).y, vec.at(5).z,
+        vec.at(1).x, vec.at(1).y, vec.at(1).z,
+        vec.at(4).x, vec.at(4).y, vec.at(4).z,
+        // BACK
+        vec.at(4).x, vec.at(4).y, vec.at(4).z,
+        vec.at(5).x, vec.at(5).y, vec.at(5).z,
+        vec.at(6).x, vec.at(6).y, vec.at(6).z,
+        vec.at(7).x, vec.at(7).y, vec.at(7).z,
+        vec.at(5).x, vec.at(5).y, vec.at(5).z,
+        vec.at(6).x, vec.at(6).y, vec.at(6).z,
+        // LEFT
+        vec.at(2).x, vec.at(2).y, vec.at(2).z,
+        vec.at(3).x, vec.at(3).y, vec.at(3).z,
+        vec.at(6).x, vec.at(6).y, vec.at(6).z,
+        vec.at(7).x, vec.at(7).y, vec.at(7).z,
+        vec.at(3).x, vec.at(3).y, vec.at(3).z,
+        vec.at(6).x, vec.at(6).y, vec.at(6).z,
+    };
+    GLuint vao, vbo;
+    glGenVertexArrays(1, &vao);
+    glGenBuffers(1, &vbo);
+
+    glBindVertexArray(vao);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+
+    size_t size = vertices.size() * sizeof(GLfloat);
+
+    glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_STATIC_DRAW);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, size, vertices.data());
+    glVertexAttribPointer(VERTEX_POSITION, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)(0));
+    glEnableVertexAttribArray(VERTEX_POSITION);
 
     while (window.beginFrame()) {
+
         //Time in ms telling us when this frame started. Useful for keeping a fix framerate
         uint32_t timeBegin = SDL_GetTicks();
 
@@ -95,10 +164,8 @@ int main(int argc, char* argv[]) {
 
         MusicPlayer.update();
 
-        auto playerPos = window.camera.position;
-        auto viewDir = window.camera.center - window.camera.position;
-        auto fovX = glm::degrees(2 * atan(tan(glm::radians(45.f) / 2) * window.width / window.height)); // see https://en.wikipedia.org/wiki/Field_of_view_in_video_games#Field_of_view_calculations
-        terrain.update(playerPos, viewDir, fovX);
+
+        terrain.update(window.camera);
 
         auto castPos = window.camera.position;
         auto castDir = window.camera.center - window.camera.position;
@@ -106,8 +173,8 @@ int main(int argc, char* argv[]) {
         targetBlock->model = glm::translate(glm::mat4(1.f), castTarget);
 
         // draw the shadow map
-        // float t = timeBegin / 10000.f;
-        float t = glm::half_pi<float>();
+        float t = timeBegin / 10000.f;
+        //float t = glm::half_pi<float>()/2.0f;
         float distance = 100.f;
         float a = cos(t);
         float b = sin(t);
@@ -116,8 +183,10 @@ int main(int argc, char* argv[]) {
         auto sunTarget = castTarget;
         shadows.update(sunPos, sunTarget);
         shadows.beginFrame();
-        terrain.render();
+        terrain.render(window.camera);
+        character.drawCharacter();
         shadows.endFrame();
+
 
         // prepare render
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -139,7 +208,16 @@ int main(int argc, char* argv[]) {
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, shadows.getTextureID());
 
-        // draw target block
+        // draw target block        
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        glBindVertexArray(vao);
+        glm::mat4 I(1.f);
+        glDisable(GL_CULL_FACE);
+        glUniformMatrix4fv(MATRIX_MODEL, 1, GL_FALSE, glm::value_ptr(I));
+        glDrawArrays(GL_TRIANGLES, 0, vertices.size());
+        window.camera.activate();
+
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         glBindVertexArray(targetBlock->getVAO());
         glUniformMatrix4fv(MATRIX_MODEL, 1, GL_FALSE, glm::value_ptr(targetBlock->model));
         glDrawElements(GL_TRIANGLES, targetBlock->getVertexCount(), GL_UNSIGNED_INT, nullptr);
@@ -147,9 +225,9 @@ int main(int argc, char* argv[]) {
 
         // draw the terrain
         shadows.activate();
-        terrain.render();
+        terrain.render(window.camera);
 
-        // terrain sky view
+        //// terrain sky view
         glm::vec3 skyPos(window.camera.position.x, 500, window.camera.position.z);
         glm::vec3 skyCenter(window.camera.position.x, 0, window.camera.position.z - 1);
         skyCam.setLookAt(skyPos, skyCenter);
@@ -159,7 +237,7 @@ int main(int argc, char* argv[]) {
         glScissor(0, 0, skyCamSize + 5, skyCamSize + 5);
         glClearColor(0, 0, 0, 0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        terrain.render();
+        terrain.render(window.camera);
         glScissor(skyCamSize/2-1, skyCamSize/2-1, 2, 2);
         glClearColor(1, 1, 1, 1);
         glClear(GL_COLOR_BUFFER_BIT);
@@ -173,6 +251,7 @@ int main(int argc, char* argv[]) {
         // draw skybox at last
         sky.render(window.camera);
 
+
         // finish render
         window.endFrame();
 
@@ -183,7 +262,7 @@ int main(int argc, char* argv[]) {
         if (timeEnd - timeBegin < TIME_PER_FRAME_MS)
             SDL_Delay(TIME_PER_FRAME_MS - (timeEnd - timeBegin));
         else if(timeEnd - timeBegin > 2 * TIME_PER_FRAME_MS) {
-          std::cout << "can't keep up ! " << 1000.f / (timeEnd - timeBegin) << "fps" << std::endl;
+          std::cout << "["<< SDL_GetTicks()<< "] can't keep up ! " << 1000.f / (timeEnd - timeBegin) << "fps" << std::endl;
         }
     }
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <vector>
 
 enum class Projection { PROJECTION_ORTHOGRAPHIC,
                   PROJECTION_PERSPECTIVE };
@@ -27,6 +28,13 @@ public:
 
   void getSize(unsigned int &width, unsigned int &height) const;
   Projection getProjectionType() const;
+
+  float getNear() { return near_; }
+  float getFar() { return far_; }
+  float getFovY() { return fovY; }
+  float getFovX(){return glm::degrees(2 * atan(tan(glm::radians(fovY) * 0.5) * screenWidth / screenHeight));} // see https://en.wikipedia.org/wiki/Field_of_view_in_video_games#Field_of_view_calculations
+
+  std::vector<glm::vec3> getBoxCorners();
   
 public:
   glm::mat4 view;
