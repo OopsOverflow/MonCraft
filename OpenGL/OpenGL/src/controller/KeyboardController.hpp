@@ -3,7 +3,6 @@
 #include "../entity/Entity.hpp"
 
 #include <glm/glm.hpp>
-#include <chrono>
 
 class KeyboardController {
 public:
@@ -29,5 +28,4 @@ private:
   float speed;
   glm::vec3 direction;
   View view;
-  std::chrono::time_point<std::chrono::steady_clock> timer;
 };

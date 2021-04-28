@@ -1,9 +1,11 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <vector>
 #include <memory>
 
+#include "Node.hpp"
 #include "../gl/Mesh.hpp"
 
 class Member {
@@ -12,16 +14,11 @@ public:
   Member(Mesh mesh);
   virtual ~Member();
 
-  void rotate(glm::vec2 rotation); // update target rotation
-  void updateRotation(float maxRotation);
   void draw();
-  void addChild(std::unique_ptr<Member> child);
+
+  Node node;
 
 protected:
-  glm::mat4 localModel;
-  glm::vec2 targetRot;
-  glm::vec2 currentRot;
+  glm::mat4 geometryModel;
   Mesh mesh;
-
-  std::vector<std::unique_ptr<Member>> children;
 };

@@ -11,7 +11,7 @@
 #include <iostream>
 
 Viewport::Viewport(size_t width, size_t height)
-    : camera(width, height, {0, 64, 10}, {0, 64, 20}),
+    : camera(width, height, {0, 32, 10}, {0, 32, 0}),
       width(width),
       height(height),
       window(nullptr),

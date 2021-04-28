@@ -4,14 +4,13 @@
 
 #include "Hitbox.hpp"
 #include "Member.hpp"
+#include "Node.hpp"
 #include "../gl/Camera.hpp"
 #include "../audio/SoundEffect.hpp"
-#include "Chest.hpp"
-#include "Head.hpp"
 
 
 enum class View { FIRST_PERSON, THIRD_PERSON };
-enum class State { Walking };
+enum class State { Walking, Idle };
 
 class Entity
 {
@@ -19,24 +18,25 @@ public:
 	Entity();
 	virtual ~Entity();
 
-	void move(glm::vec3 direction);
-	void rotate(glm::vec2 rotation);
-	virtual void rotateHead(glm::vec2 rotation) = 0;
-	virtual void cameraToHead(Camera& cam) = 0;
+	void walk(glm::vec3 direction);
+	void turn(glm::vec2 rotation);
+	void cameraToHead(Camera& cam);
 	virtual void render() = 0;
-	virtual void playAnimation(float dt) = 0;
+	virtual void update(float dt);
 	View view;
 
 protected:
-	float accel;
-	float speed;
 
-	//All entities have one head and one chest
-	Head head;
-	Chest chest;
+	float accel;
+	float maxAccel;
+	float speed;
+	float maxSpeed;
+	float friction;
 
 	State state;
 	Hitbox hitbox;
-	glm::vec3 position;
-	glm::vec2 rotation;
+	glm::vec3 direction;
+
+	Node node;
+	Node headNode;
 };

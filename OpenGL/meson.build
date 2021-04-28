@@ -28,6 +28,7 @@ srcs = files(
   'OpenGL/src/entity/Hitbox.cpp',
   'OpenGL/src/entity/Member.cpp',
   'OpenGL/src/entity/character/Character.cpp',
+  'OpenGL/src/entity/Node.cpp',
 
   'OpenGL/src/terrain/Terrain.cpp',
   'OpenGL/src/terrain/Chunk.cpp',

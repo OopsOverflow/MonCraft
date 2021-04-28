@@ -41,5 +41,12 @@ class RightLeg : public Member {
 public:
   RightLeg()
    : Member(Mesh(Cube::vertices, Cube::normals, rightLegUVs, Cube::occlusions, Cube::indices))
-  { }
+  {
+    glm::mat4 I(1.f);
+
+    geometryModel = glm::scale(I, {4, 12, 4});
+    geometryModel = glm::translate(I, {0, -4, 0}) * geometryModel;
+
+    node.loc = {-2, -8, 0};
+  }
 };

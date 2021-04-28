@@ -1,43 +1,96 @@
 #include "Entity.hpp"
 
+using namespace glm;
+static const mat4 I(1.f);
 
-Entity::Entity() {
+Entity::Entity()
+: accel(0), maxAccel(1), speed(0), maxSpeed(10), friction(2),
+	state(State::Idle)
+{
 
 }
 
-
-Entity::~Entity() {
-
-}
+Entity::~Entity() {}
 
 
-void Entity::move(glm::vec3 direction) {
-	glm::vec3 rotation = character.getHeadProperties().reachRotation + character.getBodyRotation();
-	pos.z += -cos(glm::radians(rotation.y)) * direction.z;
-	pos.x += -sin(glm::radians(rotation.y)) * direction.z;
-
-	pos.x += -cos(glm::radians(rotation.y)) * direction.x;
-	pos.z += sin(glm::radians(rotation.y)) * direction.x;
-	if (direction.x != 0 || direction.z != 0) {
-		float rotate = 45 * direction.x * (direction.z > 0 ? -1 : 1);
-		rotate = character.getHeadProperties().reachRotation.y - rotate;
-		if (fabs(rotate) > 5.0f) {
-			rotate = 5.0f * (rotate > 0 ? 1 : -1);
-		}
-
-		character.rotateBody({ 0.0f,rotate,0.0f });
-		character.rotateHead({ 0.0f,-rotate });
-
-		character.setMemberRotation({ 45.0f * speed / 5.0f,0.0f }, Member::LEFT_LEG);
-		character.setMemberRotation({ -45.0f * speed / 5.0f,0.0f }, Member::RIGHT_LEG);
+void Entity::walk(glm::vec3 dir) {
+	if(dir == vec3(0)) {
+		state = State::Idle;
+		accel = min(accel, 0.f);
 	}
 	else {
-		character.setMemberRotation({ 0.0f,0.0f }, Member::LEFT_LEG);
-		character.setMemberRotation({ 0.0f,0.0f }, Member::RIGHT_LEG);
-
+		dir = normalize(dir);
+		state = State::Walking;
+		speed *= max(dot(direction, dir), 0.f);
+		direction = dir;
+		if(speed >= maxSpeed) {
+			speed = maxSpeed;
+			accel = 0;
+		}
+		accel = maxAccel;
 	}
 }
 
-void Entity::rotate(glm::vec2 rotation) {
+void Entity::turn(glm::vec2 rot) {
+	headNode.rot.x += rot.x;
+	// node.rot.y += rot.y;
 
+	float thresold = glm::quarter_pi<float>();
+	vec2 headRot = headNode.rot;
+	float headDelta = clamp(headRot.y + rot.y, -thresold, thresold) - headRot.y;
+
+	headNode.rot.y += headDelta;
+	node.rot.y += rot.y - headDelta;
+}
+
+void Entity::cameraToHead(Camera& camera) {
+	if(view == View::FIRST_PERSON) {
+		vec3 eyePos = headNode.model * glm::vec4(0, 4, 4, 1);
+		vec3 eyeTarget = headNode.model * glm::vec4(0, 4, 5, 1);
+		camera.setLookAt(eyePos, eyeTarget);
+	}
+	else {
+		vec3 eyePos = headNode.model * glm::vec4(0, 4, 4, 1);
+		vec3 eyeTarget = headNode.model * glm::vec4(0, 4, -100, 1);
+		camera.setLookAt(eyeTarget, eyePos);
+	}
+}
+
+#include "../debug/Debug.hpp"
+
+void Entity::update(float dt) {
+
+	// update forces
+	{
+		float oldSpeed = speed;
+		float oldAccel = accel;
+
+		speed = max(oldSpeed + oldAccel * dt, 0.f);
+		accel -= friction * oldSpeed * dt;
+		auto rotMatrix = glm::rotate(I, node.rot.y + headNode.rot.y, {0, 1, 0});
+		node.loc += vec3(rotMatrix * vec4(direction, 1.f)) * speed;
+	}
+
+	// update chest rotation based on direction
+	if(state == State::Walking || true) {
+
+		float targetRot = 0; // offset body rotation when strafing (not walking straight ahead)
+		float thresold = glm::quarter_pi<float>();
+		vec2 dir = normalize(vec2(direction.x, direction.z));
+
+		targetRot = -asin(dir.x);
+		if(dir.y > 0) targetRot *= -1;
+		targetRot = clamp(targetRot, -thresold, thresold);
+
+		float currentRot = -headNode.rot.y;
+		float dist = targetRot - currentRot;
+
+		float speed = 4.f;
+	  float delta = min(speed * dt, abs(dist)) * sign(dist);
+
+	  node.rot.y += delta;
+	  headNode.rot.y -= delta;
+	}
+
+	node.update();
 }
