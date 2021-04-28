@@ -14,7 +14,10 @@ public:
   Viewport(size_t width, size_t height);
   ~Viewport();
 
-  bool beginFrame();
+  static const int framerate; // fps in seconds
+  static const float timePerFrame; // time per frame in millis
+
+  bool beginFrame(float& dt);
   void endFrame();
 
   Camera camera;
@@ -34,4 +37,7 @@ private:
 
   SDL_Window* window;
   SDL_GLContext context;
+
+  uint32_t timeBegin;
+  uint32_t lastTime;
 };

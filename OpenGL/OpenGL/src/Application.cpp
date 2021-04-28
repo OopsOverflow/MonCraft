@@ -16,9 +16,6 @@
 // WINDOW DIMENSIONS
 #define WIDTH     800
 #define HEIGHT    800
-#define FRAMERATE 60
-#define TIME_PER_FRAME_MS  (unsigned int)(1.0f/FRAMERATE * 1e3)
-#define INDICE_TO_PTR(x) ((void*)(x))
 
 #include "terrain/BlockGeom.hpp"
 #include "blocks/Debug_Block.h"
@@ -83,18 +80,14 @@ int main(int argc, char* argv[]) {
     int skyCamSize = 300;
     Camera skyCam(skyCamSize, skyCamSize, {1, 500, 1}, {0, 0, 0});
 
-    float lastTime = 0;
-
-    while (window.beginFrame()) {
-        //Time in ms telling us when this frame started. Useful for keeping a fix framerate
-        uint32_t timeBegin = SDL_GetTicks();
+    for (float dt = 0; window.beginFrame(dt); window.endFrame()) {
 
         // updates
         MusicPlayer.update();
 
         window.keyboardController.apply(character);
         window.mouseController.apply(character, window.camera);
-        character.update((timeBegin - lastTime) / 1000.f);
+        character.update(dt);
         character.cameraToHead(window.camera);
 
         auto playerPos = window.camera.position;
@@ -171,23 +164,8 @@ int main(int argc, char* argv[]) {
         window.camera.activate();
         character.render();
 
-
         // draw skybox at last
         sky.render(window.camera);
-
-        // finish render
-        window.endFrame();
-
-        //Time in ms telling us when this frame ended. Useful for keeping a fix framerate
-        uint32_t timeEnd = SDL_GetTicks();
-        lastTime = timeBegin;
-
-        //We want FRAMERATE FPS
-        if (timeEnd - timeBegin < TIME_PER_FRAME_MS)
-            SDL_Delay(TIME_PER_FRAME_MS - (timeEnd - timeBegin));
-        else if(timeEnd - timeBegin > 2 * TIME_PER_FRAME_MS) {
-          std::cout << "can't keep up ! " << 1000.f / (timeEnd - timeBegin) << "fps" << std::endl;
-        }
     }
 
     return 0;
