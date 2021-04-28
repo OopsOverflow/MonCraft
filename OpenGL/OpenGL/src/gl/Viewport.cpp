@@ -84,6 +84,8 @@ bool Viewport::beginFrame() {
     if(event.type == SDL_WINDOWEVENT)
       if(event.window.event == SDL_WINDOWEVENT_CLOSE)
         return false;
+    if(event.type == SDL_QUIT)
+      return false;
     on_event(event);
   }
 
