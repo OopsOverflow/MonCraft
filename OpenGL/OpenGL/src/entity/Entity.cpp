@@ -21,7 +21,7 @@ void Entity::walk(glm::vec3 dir) {
 	else {
 		dir = normalize(dir);
 		state = State::Walking;
-		speed *= max(dot(direction, dir), 0.f);
+		speed *= max(dot(direction, dir), 0.f); // TODO: make speed a vector to better handle changes in direction
 		direction = dir;
 		if(speed >= maxSpeed) {
 			speed = maxSpeed;
