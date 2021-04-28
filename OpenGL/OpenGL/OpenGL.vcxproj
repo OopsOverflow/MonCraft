@@ -179,6 +179,7 @@
     <ClCompile Include="src\entity\Entity.cpp" />
     <ClCompile Include="src\entity\Hitbox.cpp" />
     <ClCompile Include="src\entity\Member.cpp" />
+    <ClCompile Include="src\entity\Node.cpp" />
     <ClCompile Include="src\gl\Camera.cpp" />
     <ClCompile Include="src\gl\Loader.cpp" />
     <ClCompile Include="src\gl\Mesh.cpp" />
@@ -213,6 +214,8 @@
     <ClInclude Include="src\entity\character\Character.hpp" />
     <ClInclude Include="src\entity\character\CharacterChest.hpp" />
     <ClInclude Include="src\entity\character\CharacterHead.hpp" />
+    <ClInclude Include="src\entity\character\Chest.hpp" />
+    <ClInclude Include="src\entity\character\Head.hpp" />
     <ClInclude Include="src\entity\Chest.hpp" />
     <ClInclude Include="src\entity\Head.hpp" />
     <ClInclude Include="src\entity\character\LeftArm.hpp" />
@@ -223,6 +226,7 @@
     <ClInclude Include="src\entity\Entity.hpp" />
     <ClInclude Include="src\entity\Hitbox.hpp" />
     <ClInclude Include="src\entity\Member.hpp" />
+    <ClInclude Include="src\entity\Node.hpp" />
     <ClInclude Include="src\entity\Trash\Cube.hpp" />
     <ClInclude Include="src\gl\Camera.hpp" />
     <ClInclude Include="src\gl\Loader.hpp" />

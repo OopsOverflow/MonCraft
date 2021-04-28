@@ -46,7 +46,7 @@ std::array<GLfloat, 4> Chunk::genOcclusion(ivec3 pos, BlockFace face) {
   std::array<GLfloat, 4> occl = { 0.f, 0.f, 0.f, 0.f };
 
   auto const& offsets = blockOcclusionOffsets[static_cast<size_t>(face)];
-  std::array<bool, 8> b;
+  std::array<bool, 8> b{};
 
   for(int i = 0; i < 8; i++) {
     b[i] = isSolid(pos + offsets[i]);
@@ -70,14 +70,14 @@ void Chunk::generateMesh() {
     std::transform(scheme.begin(), scheme.end(), scheme.begin(), [](int x) { return x+4; });
 
     // positions
-    auto posFace = blockPositions[(size_t)face];
+    auto& posFace = blockPositions[(size_t)face];
     positions.insert(positions.end(), posFace.begin(), posFace.end());
     for(int i = 0, k = 0; i < 12; i++, k = (k+1) % 3) {
       positions[positions.size() - 12 + i] += pos[k] - 1;
     }
 
     // normals
-    auto normFace = blockNormals[(size_t)face];
+    auto& normFace = blockNormals[(size_t)face];
     normals.insert(normals.end(), normFace.begin(), normFace.end());
 
     // textureCoords
@@ -90,7 +90,7 @@ void Chunk::generateMesh() {
     occlusion.insert(occlusion.end(), occl.begin(), occl.end());
   };
 
-  ivec3 pos;
+  ivec3 pos{};
   for(pos.x = 1; pos.x < blocks->size.x-1; pos.x++) {
     for(pos.y = 1; pos.y < blocks->size.y-1; pos.y++) {
       for(pos.z = 1; pos.z < blocks->size.z-1; pos.z++) {

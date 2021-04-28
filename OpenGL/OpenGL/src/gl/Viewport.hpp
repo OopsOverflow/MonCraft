@@ -15,7 +15,7 @@ public:
   ~Viewport();
 
   static const int framerate; // fps in seconds
-  static const float timePerFrame; // time per frame in millis
+  static const int timePerFrame; // time per frame in millis
 
   bool beginFrame(float& dt);
   void endFrame();
@@ -24,8 +24,8 @@ public:
   MouseController mouseController;
   KeyboardController keyboardController;
 
-  size_t width;
-  size_t height;
+  unsigned width;
+  unsigned height;
 
 private:
   void on_event(SDL_Event const& e);

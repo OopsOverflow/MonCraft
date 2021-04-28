@@ -11,7 +11,7 @@
 #include <iostream>
 
 const int Viewport::framerate = 60;
-const float Viewport::timePerFrame = 1000.f / framerate;
+const int Viewport::timePerFrame = 1000 / framerate;
 
 Viewport::Viewport(size_t width, size_t height)
     : camera(width, height, {0, 32, 10}, {0, 32, 0}),
