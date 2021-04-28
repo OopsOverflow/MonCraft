@@ -33,6 +33,9 @@ void Entity::walk(glm::vec3 dir) {
 
 void Entity::turn(glm::vec2 rot) {
 	headNode.rot.x += rot.x;
+
+	float maxRotX = glm::radians(85.f);
+	headNode.rot.x = clamp(headNode.rot.x, -maxRotX, maxRotX);
 	// node.rot.y += rot.y;
 
 	float thresold = glm::quarter_pi<float>();
