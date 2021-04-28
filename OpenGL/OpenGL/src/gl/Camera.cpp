@@ -38,18 +38,6 @@ void Camera::setPosition(const glm::vec3 &newPos) {
   position = newPos;
 }
 
-void Camera::setRotation(const glm::vec3& rot) {
-     glm::vec4 newCenter(0.0f,0.0f,0.0f,1.0f);
-     newCenter = glm::translate(glm::mat4(1.0f), { 0.0f,0.0f,100.0f }) * newCenter;
-     newCenter = glm::rotate(glm::mat4(1.0f), glm::radians(-rot.x), { 1.0f,0.0f,0.0f }) * newCenter;
-     newCenter = glm::rotate(glm::mat4(1.0f), glm::radians(rot.y), { 0.0f,1.0f,0.0f })* newCenter;
-
-     center = position + glm::vec3(newCenter);
-     computeView();
-     computeProjection();
-
-}
-
 void Camera::setLookAt(const glm::vec3 &position, const glm::vec3 &center) {
   this->position = position;
   this->center = center;
