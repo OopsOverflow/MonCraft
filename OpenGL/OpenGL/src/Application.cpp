@@ -70,30 +70,32 @@ int main(int argc, char* argv[]) {
     Shader shader("src/shader/simple.vert", "src/shader/simple.frag");
     Terrain terrain;
     SkyBox sky;
-    // Character character({ 0.0f,32.0f,0.0f });
+    Character character({ 0.0f,32.0f,0.0f });
     ShadowMap shadows(1024);
     Loader loader;
     Raycast caster(100.f);
     std::unique_ptr<Mesh> targetBlock = makeTargetBlock();
 
     GLuint textureID = loader.loadTexture("Texture_atlas");
-    // character.cameraToHead(window.camera);
 
     Music MusicPlayer;
 
     int skyCamSize = 300;
     Camera skyCam(skyCamSize, skyCamSize, {1, 500, 1}, {0, 0, 0});
 
+    float lastTime = 0;
+
     while (window.beginFrame()) {
         //Time in ms telling us when this frame started. Useful for keeping a fix framerate
         uint32_t timeBegin = SDL_GetTicks();
 
         // updates
-        // window.keyboardController.apply(character);
-        // window.mouseController.apply(character, window.camera);
-        // character.cameraToHead(window.camera);
-
         MusicPlayer.update();
+
+        window.keyboardController.apply(character);
+        window.mouseController.apply(character, window.camera);
+        character.update((timeBegin - lastTime) / 1000.f);
+        character.cameraToHead(window.camera);
 
         auto playerPos = window.camera.position;
         auto viewDir = window.camera.center - window.camera.position;
@@ -167,7 +169,7 @@ int main(int argc, char* argv[]) {
 
         // draw the character
         window.camera.activate();
-        // character.drawCharacter();
+        character.render();
 
 
         // draw skybox at last
@@ -178,6 +180,7 @@ int main(int argc, char* argv[]) {
 
         //Time in ms telling us when this frame ended. Useful for keeping a fix framerate
         uint32_t timeEnd = SDL_GetTicks();
+        lastTime = timeBegin;
 
         //We want FRAMERATE FPS
         if (timeEnd - timeBegin < TIME_PER_FRAME_MS)
