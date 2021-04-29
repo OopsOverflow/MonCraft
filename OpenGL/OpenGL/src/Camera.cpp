@@ -100,8 +100,13 @@ void Camera::setSize(unsigned int width, unsigned int height) {
 }
 
 void Camera::setProjectionType(Projection projType) {
+    this->projType = projType;
+    computeProjection();
+}
+
+void Camera::setProjectionType(Projection projType, float box[6]) {
   this->projType = projType;
-  computeProjection();
+  computeProjection(box);
 }
 
 void Camera::translatePixels(int x, int y) {
@@ -179,7 +184,7 @@ void Camera::computeView() {
   view = glm::lookAt(position, center, up);
 }
 
-void Camera::computeProjection() {
+void Camera::computeProjection(float box[6]) {
   float aspect = (float)screenWidth / (float)screenHeight;
 
   if (projType == Projection::PROJECTION_ORTHOGRAPHIC) {
@@ -196,6 +201,14 @@ void Camera::computeProjection() {
     // precision issues with matrices.
     projection = glm::infinitePerspective(glm::radians(fovY), aspect, near_);
   }
+  else {
+      projection = glm::ortho(box[0], box[1], box[2], box[3], box[4], box[5]);
+  }
+}
+
+void Camera::computeProjection() {
+    float defaults[6] = {0.0f,0.0f,0.0f,0.0f,0.0f,0.0f};
+    computeProjection(defaults);
 }
 
 
@@ -240,13 +253,13 @@ std::vector<glm::vec3> Camera::getBoxCorners(Frustrum frustrum) {
         x2 = z2 * tan(glm::radians(getFovX()) * 0.5);
 
     }
-    else {
+    else if(projType == Projection::PROJECTION_ORTHOGRAPHIC) {
         float aspect = (float)screenWidth / (float)screenHeight;
         float y = glm::length(center - position) * tan(glm::radians(fovY * 0.5f));
         float x = y * aspect;
 
         z1 = 0.0f;
-        z2 = 1024.0f;
+        z2 = 1000.0f;
 
         y1 = y;
         y2 = y;

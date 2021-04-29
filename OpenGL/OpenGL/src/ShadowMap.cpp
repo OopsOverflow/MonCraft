@@ -4,8 +4,7 @@
 
 
 ShadowMap::ShadowMap()
-  : size(size),
-    camera(size, size, {10, 10, 10}, {0, 0, 0}, Projection::PROJECTION_ORTHOGRAPHIC),
+  :camera(800, 800, {10, 10, 10}, {0, 0, 0}, Projection::PROJECTION_ORTHOGRAPHIC),
     shader("src/shader/shadow.vert", "src/shader/shadow.frag"),
     distance(100.f), direction({ -10, -10, -10 })
 {
@@ -15,7 +14,7 @@ ShadowMap::ShadowMap()
   for (int i = 0; i < 3; i++) {
       glBindTexture(GL_TEXTURE_2D, depthTex[i]);
 
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 512, 512, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 1024, 1024, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
       float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };//Uncalculated shadows are white
@@ -40,10 +39,11 @@ ShadowMap::ShadowMap()
 
 void ShadowMap::changeDirection(glm::vec3 direction) {
     this->direction = direction;
+    camera.setLookAt({ 0.0f,0.0f,0.0f }, direction);
 
 }
 
-void ShadowMap::update(Camera& cam) {
+void ShadowMap::update(Camera& cam, Frustrum frustrum) {
     float minX = FLT_MAX;
     float maxX = -FLT_MAX;
     float minY = FLT_MAX;
@@ -51,7 +51,7 @@ void ShadowMap::update(Camera& cam) {
     float minZ = FLT_MAX;
     float maxZ = -FLT_MAX;
 
-    std::vector<glm::vec3> corners = cam.getBoxCorners(Frustrum::NEAR);
+    std::vector<glm::vec3> corners = cam.getBoxCorners(frustrum);
     for (glm::vec3 vec : corners)
     {
         vec = glm::vec3(camera.view * glm::vec4(vec, 1.0f));
@@ -59,50 +59,13 @@ void ShadowMap::update(Camera& cam) {
         maxX = glm::max(vec.x, maxX);
         minY = glm::min(vec.y, minY);
         maxY = glm::max(vec.y, maxY);
-        minZ = glm::min(vec.z, minZ);
-        maxZ = glm::max(vec.z, maxZ);
+        minZ = glm::min(-vec.z, minZ);
+        maxZ = glm::max(-vec.z, maxZ);
 
     }
-    glm::vec4 minPoint = glm::inverse(camera.view) * glm::vec4(minX, minY, minZ, 1.0f);
-    glm::vec4 maxPoint = glm::inverse(camera.view) * glm::vec4(maxX, maxY, maxZ, 1.0f);
-    glm::vec3 center = { (minPoint.x + maxPoint.x) * 0.5,(minPoint.y + maxPoint.y) * 0.5, (minPoint.z + maxPoint.z) * 0.5 };
-    float xSize = abs(maxPoint.x - minPoint.x);
-    float ySize = abs(maxPoint.y - minPoint.y);
-    if (xSize > ySize) {
-        camera.setSize(1024 * xSize / ySize, 1024);
-    }
-    else {
-        camera.setSize(1024, 1024 * ySize / xSize);
-    }
-    camera.setLookAt(center - direction, center);
 
-
-
-
-  //auto vecX4 = proj * view * glm::vec4(1, 0, 0, 0);
-  //auto vecY4 = proj * view * glm::vec4(0, 1, 0, 0);
-  //auto vecZ4 = proj * view * glm::vec4(0, 0,-1, 0);
-  //auto vecX = glm::normalize(glm::vec2(vecX4.x, vecX4.y));
-  //auto vecY = glm::normalize(glm::vec2(vecY4.x, vecY4.y));
-  //auto vecZ = glm::normalize(glm::vec2(vecZ4.x, vecZ4.y));
-
-  //auto angleA = glm::orientedAngle(vecX, vecY);
-
-  //auto shear1 = glm::shearX3D(glm::mat4(1.f), -(float)tan(glm::half_pi<float>() - angleA), 0.f);
-  //proj = shear1 * proj;
-
-  //vecX4 = proj * view * glm::vec4(1, 0, 0, 0);
-  //vecY4 = proj * view * glm::vec4(0, 1, 0, 0);
-  //vecZ4 = proj * view * glm::vec4(0, 0,-1, 0);
-  //vecX = glm::normalize(glm::vec2(vecX4.x, vecX4.y));
-  //vecY = glm::normalize(glm::vec2(vecY4.x, vecY4.y));
-  //vecZ = glm::normalize(glm::vec2(vecZ4.x, vecZ4.y));
-  //auto angleB = glm::orientedAngle(vecZ, vecY);
-
-  //auto shear2 = glm::shearY3D(glm::mat4(1.f), -(float)tan(angleB), 0.f);
-  //proj = shear2 * proj;
-
-  //camera.projection = proj;
+    float box[6] = { minX,maxX,minY,maxY,minZ,maxZ };
+    camera.setProjectionType(Projection::CUSTOM_PROJECTION, box);
 }
 
 

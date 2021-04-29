@@ -89,23 +89,10 @@ int main(int argc, char* argv[]) {
     glm::vec3 castTarget = caster.cast(castPos, castDir, terrain);
     targetBlock->model = glm::translate(glm::mat4(1.f), castTarget);
     
-    //float t = timeBegin / 10000.f;
-    float t = glm::half_pi<float>() / 3.0f;
-    float distance = 100.f;
-    float a = cos(t);
-    float b = sin(t);
-    if (b < 0) b = -b;
-    auto sunPos = castTarget + glm::normalize(glm::vec3(a, b, a)) * distance;
-    auto sunTarget = castTarget;
-    shadows.changeDirection(sunTarget - sunPos);
-    shadows.update(window.camera);
-
-
     int skyCamSize = 300;
     Camera skyCam(skyCamSize, skyCamSize, {1, 500, 1}, {0, 0, 0}, Projection::PROJECTION_ORTHOGRAPHIC);
 
-    std::vector<glm::vec3> vec = window.camera.getBoxCorners(Frustrum::NEAR);
-    std::vector<glm::vec3> v = shadows.camera.getBoxCorners(Frustrum::NEAR);
+    std::vector<glm::vec3> vec = window.camera.getBoxCorners(Frustrum::ALL);
     /*for (auto& v : vec) {
         glm::vec4 projection = window.camera.projection* window.camera.view * glm::vec4(v, 1.0f);
         v = glm::vec3(projection)/projection.w;
@@ -153,48 +140,6 @@ int main(int argc, char* argv[]) {
         vec.at(7).x, vec.at(7).y, vec.at(7).z,
         vec.at(3).x, vec.at(3).y, vec.at(3).z,
         vec.at(6).x, vec.at(6).y, vec.at(6).z,
-
-        v.at(0).x, v.at(0).y, v.at(0).z,
-        v.at(4).x, v.at(4).y, v.at(4).z,
-        v.at(6).x, v.at(6).y, v.at(6).z,
-        v.at(2).x, v.at(2).y, v.at(2).z,
-        v.at(4).x, v.at(4).y, v.at(4).z,
-        v.at(6).x, v.at(6).y, v.at(6).z,
-        // BOTTOM
-        v.at(1).x, v.at(1).y, v.at(1).z,
-        v.at(5).x, v.at(5).y, v.at(5).z,
-        v.at(7).x, v.at(7).y, v.at(7).z,
-        v.at(3).x, v.at(3).y, v.at(3).z,
-        v.at(5).x, v.at(5).y, v.at(5).z,
-        v.at(7).x, v.at(7).y, v.at(7).z,
-        // FRONT
-        v.at(0).x, v.at(0).y, v.at(0).z,
-        v.at(1).x, v.at(1).y, v.at(1).z,
-        v.at(2).x, v.at(2).y, v.at(2).z,
-        v.at(3).x, v.at(3).y, v.at(3).z,
-        v.at(1).x, v.at(1).y, v.at(1).z,
-        v.at(2).x, v.at(2).y, v.at(2).z,
-        // RIGHT
-        v.at(0).x, v.at(0).y, v.at(0).z,
-        v.at(1).x, v.at(1).y, v.at(1).z,
-        v.at(4).x, v.at(4).y, v.at(4).z,
-        v.at(5).x, v.at(5).y, v.at(5).z,
-        v.at(1).x, v.at(1).y, v.at(1).z,
-        v.at(4).x, v.at(4).y, v.at(4).z,
-        // BACK
-        v.at(4).x, v.at(4).y, v.at(4).z,
-        v.at(5).x, v.at(5).y, v.at(5).z,
-        v.at(6).x, v.at(6).y, v.at(6).z,
-        v.at(7).x, v.at(7).y, v.at(7).z,
-        v.at(5).x, v.at(5).y, v.at(5).z,
-        v.at(6).x, v.at(6).y, v.at(6).z,
-        // LEFT
-        v.at(2).x, v.at(2).y, v.at(2).z,
-        v.at(3).x, v.at(3).y, v.at(3).z,
-        v.at(6).x, v.at(6).y, v.at(6).z,
-        v.at(7).x, v.at(7).y, v.at(7).z,
-        v.at(3).x, v.at(3).y, v.at(3).z,
-        v.at(6).x, v.at(6).y, v.at(6).z,
     };
 
     GLuint vao, vbo;
@@ -216,6 +161,18 @@ int main(int argc, char* argv[]) {
         //Time in ms telling us when this frame started. Useful for keeping a fix framerate
         uint32_t timeBegin = SDL_GetTicks();
 
+        //float t = timeBegin / 10000.f;
+        float t = glm::half_pi<float>() / 3.0f;
+        float distance = 100.f;
+        float a = cos(t);
+        float b = sin(t);
+        if (b < 0) b = -b;
+        auto sunPos = castTarget + glm::normalize(glm::vec3(a, b, a)) * distance;
+        auto sunTarget = castTarget;
+        shadows.changeDirection(sunTarget - sunPos);
+
+
+
         // updates
         window.keyboardController.apply(character);
         window.mouseController.apply(character, window.camera);
@@ -231,7 +188,7 @@ int main(int argc, char* argv[]) {
         // draw the shadow map
 
 
-        shadows.update(window.camera);
+        shadows.update(window.camera, Frustrum::ALL);
         shadows.beginFrame();
         terrain.render(shadows.camera);
         character.drawCharacter();
@@ -282,7 +239,7 @@ int main(int argc, char* argv[]) {
         terrain.render(window.camera);
 
         //// terrain sky view
-        glm::vec3 skyPos(window.camera.position.x, 500, window.camera.position.z);
+       /* glm::vec3 skyPos(window.camera.position.x, 500, window.camera.position.z);
         glm::vec3 skyCenter(window.camera.position.x, 0, window.camera.position.z - 1);
         skyCam.setLookAt(skyPos, skyCenter);
         skyCam.activate();
@@ -295,7 +252,7 @@ int main(int argc, char* argv[]) {
         glScissor(skyCamSize/2-1, skyCamSize/2-1, 2, 2);
         glClearColor(1, 1, 1, 1);
         glClear(GL_COLOR_BUFFER_BIT);
-        glDisable(GL_SCISSOR_TEST);
+        glDisable(GL_SCISSOR_TEST);*/
 
         // draw the character
         window.camera.activate();

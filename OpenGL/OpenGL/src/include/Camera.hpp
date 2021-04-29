@@ -4,7 +4,7 @@
 #include <vector>
 
 enum class Projection { PROJECTION_ORTHOGRAPHIC,
-                  PROJECTION_PERSPECTIVE };
+                  PROJECTION_PERSPECTIVE, CUSTOM_PROJECTION}; //custom projection is used only for the shadows
 
 enum class Frustrum { ALL, NEAR, MEDIUM, FAR };
 
@@ -13,10 +13,11 @@ public:
     Camera(unsigned int width, unsigned int height, const glm::vec3& position,
         const glm::vec3& center, Projection proj = Projection::PROJECTION_PERSPECTIVE);
 
-  void activate();
+    void activate();
 
-  void setSize(unsigned int width, unsigned int height);
-  void setProjectionType(Projection projType);
+    void setSize(unsigned int width, unsigned int height);
+    void setProjectionType(Projection projType);
+    void setProjectionType(Projection projType, float box[6]);
   void setPosition(const glm::vec3 &position);
   void setLookAt(const glm::vec3 &pos, const glm::vec3 &center);
   void setRotation(const glm::vec3 &rotation);
@@ -54,6 +55,7 @@ protected:
   Projection projType;
 
 private:
+  void computeProjection(float box[6]);
   void computeProjection();
   void computeView();
 };

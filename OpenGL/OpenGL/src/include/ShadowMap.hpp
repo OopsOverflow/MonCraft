@@ -15,7 +15,7 @@ public:
 
 
   void changeDirection(glm::vec3 direction);
-  void update(Camera& cam);
+  void update(Camera& cam, Frustrum frustrum);
   void beginFrame();
   void endFrame();
   void activate(Frustrum frustrum);
@@ -24,7 +24,6 @@ public:
 private:
   GLuint fbo;
   GLuint depthTex[3];
-  int size;
   Shader shader;
   float distance;
 
