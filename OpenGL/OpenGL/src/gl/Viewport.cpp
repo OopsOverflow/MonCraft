@@ -71,7 +71,7 @@ void Viewport::on_event(SDL_Event const& e) {
     on_keyup(e.key.keysym.sym);
     break;
   case SDL_MOUSEMOTION:
-    mouseController.motion(e.motion.x, e.motion.y);
+    mouseController.motionRel(e.motion.xrel, e.motion.yrel);
     break;
   case SDL_MOUSEBUTTONDOWN:
     on_mousedown(e.button);
@@ -151,6 +151,12 @@ void Viewport::on_keydown(SDL_Keycode k) {
   case SDLK_F5:
       keyboardController.pressedF5();
       break;
+  case SDLK_ESCAPE:
+      SDL_SetRelativeMouseMode(SDL_FALSE);
+      int x, y;
+      SDL_GetMouseState(&x, &y);
+      mouseController.rotateEnd(x, y);
+      break;
   }
 }
 
@@ -180,6 +186,7 @@ void Viewport::on_keyup(SDL_Keycode k) {
 void Viewport::on_mousedown(SDL_MouseButtonEvent const& e) {
   switch (e.button) {
   case SDL_BUTTON_LEFT:
+      SDL_SetRelativeMouseMode(SDL_TRUE);
       mouseController.rotateStart(e.x, e.y);
     break;
   default:
@@ -190,7 +197,7 @@ void Viewport::on_mousedown(SDL_MouseButtonEvent const& e) {
 void Viewport::on_mouseup(SDL_MouseButtonEvent const& e) {
   switch (e.button) {
   case SDL_BUTTON_LEFT:
-      mouseController.rotateEnd(e.x, e.y);
+      // mouseController.rotateEnd(e.x, e.y);
     break;
   default:
     break;

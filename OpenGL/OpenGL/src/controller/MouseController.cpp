@@ -31,6 +31,13 @@ void MouseController::motion(int x, int y) {
   }
 }
 
+void MouseController::motionRel(int dx, int dy) {
+    if (rotation) {
+    deltaX += dx;
+    deltaY += dy;
+  }
+}
+
 void MouseController::apply(Entity& character, Camera& camera) {
 
   unsigned int screenWidth;

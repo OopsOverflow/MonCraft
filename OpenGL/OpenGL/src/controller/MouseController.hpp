@@ -10,6 +10,7 @@ public:
   void rotateStart(int x, int y);
   void rotateEnd(int x, int y);
   void motion(int x, int y);
+  void motionRel(int dx, int dy);
 
 
   void apply(Entity& character, Camera& camera);
