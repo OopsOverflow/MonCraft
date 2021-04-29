@@ -199,31 +199,66 @@ void Camera::computeProjection() {
 }
 
 
-std::vector<glm::vec3> Camera::getBoxCorners() {
-    float z1 = -near_;
-    float z2 = -far_;
-    
-    float y1 = z1 * tan(glm::radians(fovY) * 0.5);
-    float y2 = z2 * tan(glm::radians(fovY) * 0.5);
 
-    float x1 = z1 * tan(glm::radians(getFovX()) * 0.5);
-    float x2 = z2 * tan(glm::radians(getFovX()) * 0.5);
+std::vector<glm::vec3> Camera::getBoxCorners(Frustrum frustrum) {
+    float z1, z2;
+    float range = far_ - near_;
+
+    switch (frustrum)
+    {
+    case Frustrum::ALL:
+        z1 = -near_;
+        z2 = -far_;
+        break;
+    case Frustrum::NEAR:
+        z1 = -near_;
+        z2 = -near_ - range / 3.0f;
+        break;
+    case Frustrum::MEDIUM:
+        z1 = -near_ - range / 3.0f;
+        z2 = -near_ - 2.0f * range / 3.0f;
+        break;
+    case Frustrum::FAR:
+        z1 = -near_ - 2.0f * range / 3.0f;
+        z2 = -far_;
+        break;
+    default:
+        break;
+    }
+
+
+    float y1;
+    float y2;
+    float x1;
+    float x2;
+
+    if (projType == Projection::PROJECTION_PERSPECTIVE) {
+        y1 = z1 * tan(glm::radians(fovY) * 0.5);
+        y2 = z2 * tan(glm::radians(fovY) * 0.5);
+
+        x1 = z1 * tan(glm::radians(getFovX()) * 0.5);
+        x2 = z2 * tan(glm::radians(getFovX()) * 0.5);
+
+    }
+    else {
+        float aspect = (float)screenWidth / (float)screenHeight;
+        float y = glm::length(center - position) * tan(glm::radians(fovY * 0.5f));
+        float x = y * aspect;
+
+        z1 = 0.0f;
+        z2 = 1024.0f;
+
+        y1 = y;
+        y2 = y;
+
+        x1 = x;
+        x2 = x;
+    }
+
+
+
 
     glm::mat4 invertView = glm::inverse(view);
-
-    //float z3 = -1.0f;
-    //float z4 = 1.0f;
-
-    //float y3 = -1.0f;
-    //float y4 = 1.0f;
-
-    //float x3 = -1.0f;
-    //float x4 = 1.0f;
-
-    //glm::vec3 test = glm::vec3(projection * glm::vec4(x4, y4, z3, 1.0f));
-
-    //std::cout << x1 << ", " << y1 << ", " << z1 << std::endl;
-    //std::cout << test.x << ", " << test.y << ", " << test.z << std::endl;
 
 
     std::vector<glm::vec3> pos;

@@ -73,7 +73,7 @@ int main(int argc, char* argv[]) {
     Terrain terrain;
     SkyBox sky;
     Hitbox character({ 0.0f,32.0f,0.0f });
-    ShadowMap shadows(1024);
+    ShadowMap shadows;
     Loader loader;
     Raycast caster(100.f);
     std::unique_ptr<Mesh> targetBlock = makeTargetBlock();
@@ -83,18 +83,34 @@ int main(int argc, char* argv[]) {
 
     Music MusicPlayer;
 
+
+    auto castPos = window.camera.position;
+    auto castDir = window.camera.center - window.camera.position;
+    glm::vec3 castTarget = caster.cast(castPos, castDir, terrain);
+    targetBlock->model = glm::translate(glm::mat4(1.f), castTarget);
+    
+    //float t = timeBegin / 10000.f;
+    float t = glm::half_pi<float>() / 3.0f;
+    float distance = 100.f;
+    float a = cos(t);
+    float b = sin(t);
+    if (b < 0) b = -b;
+    auto sunPos = castTarget + glm::normalize(glm::vec3(a, b, a)) * distance;
+    auto sunTarget = castTarget;
+    shadows.changeDirection(sunTarget - sunPos);
+    shadows.update(window.camera);
+
+
     int skyCamSize = 300;
     Camera skyCam(skyCamSize, skyCamSize, {1, 500, 1}, {0, 0, 0}, Projection::PROJECTION_ORTHOGRAPHIC);
 
-    std::vector<glm::vec3> vec = window.camera.getBoxCorners();
-
-    //std::cout << glm::vec3(glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, -1.f, 1.f) * glm::inverse(window.camera.projection) * window.camera.view * glm::vec4(glm::vec3(16.0f), 1.0f)).z << std::endl;;
-    for (auto& v : vec) {
+    std::vector<glm::vec3> vec = window.camera.getBoxCorners(Frustrum::NEAR);
+    std::vector<glm::vec3> v = shadows.camera.getBoxCorners(Frustrum::NEAR);
+    /*for (auto& v : vec) {
         glm::vec4 projection = window.camera.projection* window.camera.view * glm::vec4(v, 1.0f);
         v = glm::vec3(projection)/projection.w;
-        std::cout <<v.x<<", "<<v.y<<", "<< v.z << std::endl;
-    }
-    const std::vector<GLfloat> vertices = {
+    }*/
+    std::vector<GLfloat> vertices = {
         // TOP
         vec.at(0).x, vec.at(0).y, vec.at(0).z,
         vec.at(4).x, vec.at(4).y, vec.at(4).z,
@@ -137,7 +153,50 @@ int main(int argc, char* argv[]) {
         vec.at(7).x, vec.at(7).y, vec.at(7).z,
         vec.at(3).x, vec.at(3).y, vec.at(3).z,
         vec.at(6).x, vec.at(6).y, vec.at(6).z,
+
+        v.at(0).x, v.at(0).y, v.at(0).z,
+        v.at(4).x, v.at(4).y, v.at(4).z,
+        v.at(6).x, v.at(6).y, v.at(6).z,
+        v.at(2).x, v.at(2).y, v.at(2).z,
+        v.at(4).x, v.at(4).y, v.at(4).z,
+        v.at(6).x, v.at(6).y, v.at(6).z,
+        // BOTTOM
+        v.at(1).x, v.at(1).y, v.at(1).z,
+        v.at(5).x, v.at(5).y, v.at(5).z,
+        v.at(7).x, v.at(7).y, v.at(7).z,
+        v.at(3).x, v.at(3).y, v.at(3).z,
+        v.at(5).x, v.at(5).y, v.at(5).z,
+        v.at(7).x, v.at(7).y, v.at(7).z,
+        // FRONT
+        v.at(0).x, v.at(0).y, v.at(0).z,
+        v.at(1).x, v.at(1).y, v.at(1).z,
+        v.at(2).x, v.at(2).y, v.at(2).z,
+        v.at(3).x, v.at(3).y, v.at(3).z,
+        v.at(1).x, v.at(1).y, v.at(1).z,
+        v.at(2).x, v.at(2).y, v.at(2).z,
+        // RIGHT
+        v.at(0).x, v.at(0).y, v.at(0).z,
+        v.at(1).x, v.at(1).y, v.at(1).z,
+        v.at(4).x, v.at(4).y, v.at(4).z,
+        v.at(5).x, v.at(5).y, v.at(5).z,
+        v.at(1).x, v.at(1).y, v.at(1).z,
+        v.at(4).x, v.at(4).y, v.at(4).z,
+        // BACK
+        v.at(4).x, v.at(4).y, v.at(4).z,
+        v.at(5).x, v.at(5).y, v.at(5).z,
+        v.at(6).x, v.at(6).y, v.at(6).z,
+        v.at(7).x, v.at(7).y, v.at(7).z,
+        v.at(5).x, v.at(5).y, v.at(5).z,
+        v.at(6).x, v.at(6).y, v.at(6).z,
+        // LEFT
+        v.at(2).x, v.at(2).y, v.at(2).z,
+        v.at(3).x, v.at(3).y, v.at(3).z,
+        v.at(6).x, v.at(6).y, v.at(6).z,
+        v.at(7).x, v.at(7).y, v.at(7).z,
+        v.at(3).x, v.at(3).y, v.at(3).z,
+        v.at(6).x, v.at(6).y, v.at(6).z,
     };
+
     GLuint vao, vbo;
     glGenVertexArrays(1, &vao);
     glGenBuffers(1, &vbo);
@@ -147,7 +206,7 @@ int main(int argc, char* argv[]) {
 
     size_t size = vertices.size() * sizeof(GLfloat);
 
-    glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, 2 * size, nullptr, GL_STATIC_DRAW);
     glBufferSubData(GL_ARRAY_BUFFER, 0, size, vertices.data());
     glVertexAttribPointer(VERTEX_POSITION, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)(0));
     glEnableVertexAttribArray(VERTEX_POSITION);
@@ -167,23 +226,14 @@ int main(int argc, char* argv[]) {
 
         terrain.update(window.camera);
 
-        auto castPos = window.camera.position;
-        auto castDir = window.camera.center - window.camera.position;
-        glm::vec3 castTarget = caster.cast(castPos, castDir, terrain);
-        targetBlock->model = glm::translate(glm::mat4(1.f), castTarget);
+
 
         // draw the shadow map
-        float t = timeBegin / 10000.f;
-        //float t = glm::half_pi<float>()/2.0f;
-        float distance = 100.f;
-        float a = cos(t);
-        float b = sin(t);
-        if(b < 0) b = -b;
-        auto sunPos = castTarget + glm::normalize(glm::vec3(a, b, a)) * distance;
-        auto sunTarget = castTarget;
-        shadows.update(sunPos, sunTarget);
+
+
+        shadows.update(window.camera);
         shadows.beginFrame();
-        terrain.render(window.camera);
+        terrain.render(shadows.camera);
         character.drawCharacter();
         shadows.endFrame();
 
@@ -191,7 +241,9 @@ int main(int argc, char* argv[]) {
         // prepare render
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         shader.activate();
-        window.camera.activate();
+        //window.camera.activate();
+
+ shadows.camera.activate();
 
         // set light position / intensity
         glUniform1f(shader.getUniformLocation("lightIntensity"), 1);
@@ -206,7 +258,7 @@ int main(int argc, char* argv[]) {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, textureID);
         glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, shadows.getTextureID());
+        glBindTexture(GL_TEXTURE_2D, shadows.getTextureID(Frustrum::NEAR));
 
         // draw target block        
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -214,8 +266,10 @@ int main(int argc, char* argv[]) {
         glm::mat4 I(1.f);
         glDisable(GL_CULL_FACE);
         glUniformMatrix4fv(MATRIX_MODEL, 1, GL_FALSE, glm::value_ptr(I));
+        //glUniformMatrix4fv(MATRIX_VIEW, 1, GL_FALSE, glm::value_ptr(I));
         glDrawArrays(GL_TRIANGLES, 0, vertices.size());
-        window.camera.activate();
+        //window.camera.activate();
+ shadows.camera.activate();
 
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         glBindVertexArray(targetBlock->getVAO());
@@ -224,7 +278,7 @@ int main(int argc, char* argv[]) {
         glBindVertexArray(0);
 
         // draw the terrain
-        shadows.activate();
+        shadows.activate(Frustrum::NEAR);
         terrain.render(window.camera);
 
         //// terrain sky view

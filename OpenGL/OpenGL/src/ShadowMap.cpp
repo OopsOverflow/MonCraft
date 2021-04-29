@@ -1,28 +1,30 @@
 #include "ShadowMap.hpp"
 #include <glm/gtc/type_ptr.hpp>
+#include <vector>
 
-using glm::vec3;
 
-ShadowMap::ShadowMap(int size)
+ShadowMap::ShadowMap()
   : size(size),
     camera(size, size, {10, 10, 10}, {0, 0, 0}, Projection::PROJECTION_ORTHOGRAPHIC),
     shader("src/shader/shadow.vert", "src/shader/shadow.frag"),
-    distance(100.f)
+    distance(100.f), direction({ -10, -10, -10 })
 {
   glGenFramebuffers(1, &fbo);
-  glGenTextures(1, &tex);
+  glGenTextures(3, depthTex);
   glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-  glBindTexture(GL_TEXTURE_2D, tex);
+  for (int i = 0; i < 3; i++) {
+      glBindTexture(GL_TEXTURE_2D, depthTex[i]);
 
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, size, size, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };//Uncalculated shadows are white
-  glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 512, 512, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+      float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };//Uncalculated shadows are white
+      glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+  }
 
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, tex, 0);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTex[0], 0);
   glDrawBuffer(GL_NONE);
   glReadBuffer(GL_NONE);
 
@@ -35,10 +37,47 @@ ShadowMap::ShadowMap(int size)
 #include <glm/gtx/vector_angle.hpp>
 #include <glm/gtx/transform2.hpp>
 
-void ShadowMap::update(glm::vec3 sunPos, glm::vec3 center) {
-  camera.setLookAt(sunPos, center);
-  auto proj = camera.projection;
-  auto view = camera.view;
+
+void ShadowMap::changeDirection(glm::vec3 direction) {
+    this->direction = direction;
+
+}
+
+void ShadowMap::update(Camera& cam) {
+    float minX = FLT_MAX;
+    float maxX = -FLT_MAX;
+    float minY = FLT_MAX;
+    float maxY = -FLT_MAX;
+    float minZ = FLT_MAX;
+    float maxZ = -FLT_MAX;
+
+    std::vector<glm::vec3> corners = cam.getBoxCorners(Frustrum::NEAR);
+    for (glm::vec3 vec : corners)
+    {
+        vec = glm::vec3(camera.view * glm::vec4(vec, 1.0f));
+        minX = glm::min(vec.x, minX);
+        maxX = glm::max(vec.x, maxX);
+        minY = glm::min(vec.y, minY);
+        maxY = glm::max(vec.y, maxY);
+        minZ = glm::min(vec.z, minZ);
+        maxZ = glm::max(vec.z, maxZ);
+
+    }
+    glm::vec4 minPoint = glm::inverse(camera.view) * glm::vec4(minX, minY, minZ, 1.0f);
+    glm::vec4 maxPoint = glm::inverse(camera.view) * glm::vec4(maxX, maxY, maxZ, 1.0f);
+    glm::vec3 center = { (minPoint.x + maxPoint.x) * 0.5,(minPoint.y + maxPoint.y) * 0.5, (minPoint.z + maxPoint.z) * 0.5 };
+    float xSize = abs(maxPoint.x - minPoint.x);
+    float ySize = abs(maxPoint.y - minPoint.y);
+    if (xSize > ySize) {
+        camera.setSize(1024 * xSize / ySize, 1024);
+    }
+    else {
+        camera.setSize(1024, 1024 * ySize / xSize);
+    }
+    camera.setLookAt(center - direction, center);
+
+
+
 
   //auto vecX4 = proj * view * glm::vec4(1, 0, 0, 0);
   //auto vecY4 = proj * view * glm::vec4(0, 1, 0, 0);
@@ -66,6 +105,9 @@ void ShadowMap::update(glm::vec3 sunPos, glm::vec3 center) {
   //camera.projection = proj;
 }
 
+
+
+
 void ShadowMap::beginFrame() {
   shader.activate();
   camera.activate();
@@ -73,26 +115,26 @@ void ShadowMap::beginFrame() {
   glClear(GL_DEPTH_BUFFER_BIT);
   auto shadows = camera.projection * camera.view;
   glUniformMatrix4fv(MATRIX_SHADOWS, 1, GL_FALSE, glm::value_ptr(shadows));
-  // glCullFace(GL_FRONT);
+  //glCullFace(GL_FRONT);
 }
 
 void ShadowMap::endFrame() {
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
-  // glCullFace(GL_BACK);
+  //glCullFace(GL_BACK);
 }
 
-void ShadowMap::activate() {
+void ShadowMap::activate(Frustrum frustrum) {
   glActiveTexture(GL_TEXTURE1);
-  glBindTexture(GL_TEXTURE_2D, tex);
+  glBindTexture(GL_TEXTURE_2D, depthTex[0]);
   auto shadows = camera.projection * camera.view;
   glUniformMatrix4fv(MATRIX_SHADOWS, 1, GL_FALSE, glm::value_ptr(shadows));
 }
 
 ShadowMap::~ShadowMap() {
-  glDeleteTextures(1, &tex);
+  glDeleteTextures(1, depthTex);
   glDeleteFramebuffers(1, &fbo);
 }
 
-GLuint ShadowMap::getTextureID() const {
-  return tex;
+GLuint ShadowMap::getTextureID(Frustrum frustrum) const {
+  return depthTex[0];
 }

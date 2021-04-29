@@ -6,6 +6,8 @@
 enum class Projection { PROJECTION_ORTHOGRAPHIC,
                   PROJECTION_PERSPECTIVE };
 
+enum class Frustrum { ALL, NEAR, MEDIUM, FAR };
+
 class Camera {
 public:
     Camera(unsigned int width, unsigned int height, const glm::vec3& position,
@@ -34,7 +36,8 @@ public:
   float getFovY() { return fovY; }
   float getFovX(){return glm::degrees(2 * atan(tan(glm::radians(fovY) * 0.5) * screenWidth / screenHeight));} // see https://en.wikipedia.org/wiki/Field_of_view_in_video_games#Field_of_view_calculations
 
-  std::vector<glm::vec3> getBoxCorners();
+
+  std::vector<glm::vec3> getBoxCorners(Frustrum frustrum);
   
 public:
   glm::mat4 view;

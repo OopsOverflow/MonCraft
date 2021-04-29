@@ -7,23 +7,26 @@ class ShadowMap {
 
 public:
 
-  ShadowMap(int size);
+  ShadowMap();
   ~ShadowMap();
 
   ShadowMap(ShadowMap const&) = delete;
   ShadowMap& operator=(ShadowMap&) = delete;
 
-  void update(glm::vec3 sunPos, glm::vec3 center);
+
+  void changeDirection(glm::vec3 direction);
+  void update(Camera& cam);
   void beginFrame();
   void endFrame();
-  void activate();
-  GLuint getTextureID() const;
-
+  void activate(Frustrum frustrum);
+  GLuint getTextureID(Frustrum frustrum) const;
+  Camera camera;
 private:
   GLuint fbo;
-  GLuint tex;
+  GLuint depthTex[3];
   int size;
-  Camera camera;
   Shader shader;
   float distance;
+
+  glm::vec3 direction;
 };

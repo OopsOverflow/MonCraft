@@ -39,13 +39,6 @@ void MouseController::apply(Hitbox& character, Camera& camera) {
   float maxRotation = 360.f;
   camera.getSize(screenWidth, screenHeight);
   if (rotation) {
-      std::vector<glm::vec3> vec = camera.getBoxCorners();
-      //std::cout << camera.position.x<<", "<<camera.position.y<<", "<<camera.position.z << std::endl;
-
-      glm::vec3 vecS = glm::vec3(camera.view * glm::vec4(vec.at(4), 1.0f));
-      //std::cout << ((float)vec.at(4).x + vec.at(7).x) * 0.5 << ", " << ((float)vec.at(4).y + vec.at(7).y) * 0.5 << ", " << ((float)vec.at(4).z + vec.at(7).z) * 0.5 << std::endl;
-      //std::cout << vecS.x << ", " << vecS.y << ", " << vecS.z << std::endl;
-      //std::cout << "---------------" << std::endl;
       character.character.rotateHead({ -deltaY * maxRotation/ (float)screenWidth,-deltaX * maxRotation / (float)screenWidth });
   }
 

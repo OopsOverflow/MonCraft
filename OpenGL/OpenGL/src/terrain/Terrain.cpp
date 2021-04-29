@@ -177,10 +177,15 @@ void Terrain::render(Camera& camera) {
   for(auto& chunk : chunks) {
     Mesh const& mesh = chunk.second->getMesh();
 
-    glm::vec4 centerPos = toCamCoordonates * glm::vec4(glm::vec3(chunk.first * 32) + glm::vec3(16.0f) , 1.0f);
+    glm::vec4 centerPos = toCamCoordonates*glm::vec4(glm::vec3(chunk.first * 32) + glm::vec3(16.0f) , 1.0f);
+    //centerPos = camera.view * centerPos;
+
+    //centerPos.x = abs(centerPos.x) - 16.0f;
+    //centerPos.y = abs(centerPos.y) - 16.0f;
+    //centerPos = camera.projection * centerPos;
     centerPos /= centerPos.w;
 
-    if(glm::all(glm::lessThan(abs(glm::vec3(centerPos)), glm::vec3(1.0f)))){
+    if(glm::all(glm::lessThan(abs(glm::vec3(centerPos)), glm::vec3(1.0f,1.0f,1.0f)))){
       glBindVertexArray(mesh.getVAO());
       glUniformMatrix4fv(MATRIX_MODEL, 1, GL_FALSE, glm::value_ptr(mesh.model));
       glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_INT, nullptr);
