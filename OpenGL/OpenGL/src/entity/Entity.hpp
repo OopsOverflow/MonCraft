@@ -27,11 +27,12 @@ public:
 
 protected:
 
-	float accel;
-	float maxAccel;
-	float speed;
 	float maxSpeed;
+	float maxAccel;
 	float friction;
+
+	glm::vec3 speed;
+	glm::vec3 accel;
 
 	State state;
 	Hitbox hitbox;
