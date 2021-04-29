@@ -161,8 +161,8 @@ int main(int argc, char* argv[]) {
         //Time in ms telling us when this frame started. Useful for keeping a fix framerate
         uint32_t timeBegin = SDL_GetTicks();
 
-        //float t = timeBegin / 10000.f;
-        float t = glm::half_pi<float>() / 3.0f;
+        float t = timeBegin / 10000.f;
+        //float t = glm::half_pi<float>() / 3.0f;
         float distance = 100.f;
         float a = cos(t);
         float b = sin(t);

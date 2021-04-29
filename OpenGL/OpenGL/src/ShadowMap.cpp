@@ -63,8 +63,8 @@ void ShadowMap::update(Camera& cam, Frustrum frustrum) {
         maxZ = glm::max(-vec.z, maxZ);
 
     }
-
-    float box[6] = { minX,maxX,minY,maxY,minZ,maxZ };
+    //render out of the view in case we have to cast shadows from a moutain
+    float box[6] = { minX,maxX,minY,maxY,2 * minZ - maxZ,maxZ };
     camera.setProjectionType(Projection::CUSTOM_PROJECTION, box);
 }
 
@@ -78,17 +78,17 @@ void ShadowMap::beginFrame() {
   glClear(GL_DEPTH_BUFFER_BIT);
   auto shadows = camera.projection * camera.view;
   glUniformMatrix4fv(MATRIX_SHADOWS, 1, GL_FALSE, glm::value_ptr(shadows));
-  //glCullFace(GL_FRONT);
+  glCullFace(GL_FRONT_AND_BACK);
 }
 
 void ShadowMap::endFrame() {
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
-  //glCullFace(GL_BACK);
+  glCullFace(GL_BACK);
 }
 
 void ShadowMap::activate(Frustrum frustrum) {
   glActiveTexture(GL_TEXTURE1);
-  glBindTexture(GL_TEXTURE_2D, depthTex[0]);
+  glBindTexture(GL_TEXTURE_2D, getTextureID(frustrum));
   auto shadows = camera.projection * camera.view;
   glUniformMatrix4fv(MATRIX_SHADOWS, 1, GL_FALSE, glm::value_ptr(shadows));
 }
@@ -99,5 +99,8 @@ ShadowMap::~ShadowMap() {
 }
 
 GLuint ShadowMap::getTextureID(Frustrum frustrum) const {
-  return depthTex[0];
+  if(frustrum==Frustrum::NEAR)return depthTex[0];
+  if (frustrum == Frustrum::MEDIUM)return depthTex[1];
+  if (frustrum == Frustrum::FAR)return depthTex[2];
+    return depthTex[3];
 }
