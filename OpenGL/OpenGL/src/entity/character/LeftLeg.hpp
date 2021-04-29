@@ -47,6 +47,9 @@ public:
     geometryModel = glm::scale(I, {4, 12, 4});
     geometryModel = glm::translate(I, {0, -4, 0}) * geometryModel;
 
+    float zFightingOffset = 0.2f; // offset the legs slightly inwards and backwards
+    geometryModel = glm::translate(I, {-zFightingOffset, 0, -zFightingOffset}) * geometryModel;
+
     node.loc = {2, -8, 0};
   }
 };

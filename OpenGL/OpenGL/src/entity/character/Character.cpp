@@ -4,7 +4,7 @@ using namespace glm;
 
 Character::Character(vec3 pos) {
   node.loc = pos;
-  rootNode.sca = vec3(.1f);
+  rootNode.sca = vec3(1.85 / 32.f); // steve is 1.85 blocks high, 32 pixels high
   rootNode.rot.y = glm::pi<float>();
   headNode.loc = {0, 6, 0};
   node.addChild(&rootNode);
