@@ -17,6 +17,7 @@ Character::Character(vec3 pos) {
   chest.node.addChild(&r_leg.node);
 
   tex = texLoader.loadTexture("Character");
+  animState = 0;
 }
 
 Character::~Character() {}
@@ -24,6 +25,8 @@ Character::~Character() {}
 #include "../../debug/Debug.hpp"
 
 void Character::update(float dt) {
+  Entity::update(dt);
+
   // smooth head rot with constant speed
   {
     float speed = 5;
@@ -39,7 +42,41 @@ void Character::update(float dt) {
     }
   }
 
-  Entity::update(dt);
+  // walk animation
+  if(state == State::Walking) {
+    float speed = 10;
+    float dx = cos(speed * animState);
+
+    l_leg.node.rot.x = dx;
+    r_leg.node.rot.x = -dx;
+    l_arm.node.rot.x = -dx;
+    r_arm.node.rot.x = dx;
+
+    animState += dt;
+  }
+
+  // transition to stand-by
+  else {
+    float speed = 10;
+    auto dist = l_leg.node.rot.x;
+    if(dist != 0) {
+      auto delta = dist * speed * dt;
+      if(abs(delta) > abs(dist)) {
+        l_leg.node.rot.x = 0;
+        r_leg.node.rot.x = 0;
+        l_arm.node.rot.x = 0;
+        r_arm.node.rot.x = 0;
+        animState = 0;
+      }
+      else {
+        l_leg.node.rot.x -= delta;
+        r_leg.node.rot.x += delta;
+        l_arm.node.rot.x += delta;
+        r_arm.node.rot.x -= delta;
+      }
+    }
+  }
+
 }
 
 void Character::render() {

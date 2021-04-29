@@ -32,4 +32,6 @@ private:
 
   GLuint tex;
   Loader texLoader;
+
+  float animState;
 };
