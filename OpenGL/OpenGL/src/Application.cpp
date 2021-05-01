@@ -57,8 +57,9 @@ int main(int argc, char* argv[]) {
 
         auto castPos = window.camera.position + .5f; // COMBAK: find out why camera pos is offset by .5 relative to block origin
         auto castDir = window.camera.center - window.camera.position;
-        glm::vec3 castTarget = caster.cast(castPos, castDir, terrain);
-        targetBlock->model = glm::translate(glm::mat4(1.f), castTarget);
+        auto cast = caster.cast(castPos, castDir, terrain);
+        glm::vec3 beforeTarget = cast.position + cast.normal;
+        targetBlock->model = glm::translate(glm::mat4(1.f), beforeTarget);
 
         // draw the shadow map
         // float t = timeBegin / 10000.f;
@@ -67,8 +68,8 @@ int main(int argc, char* argv[]) {
         float a = cos(t);
         float b = sin(t);
         if(b < 0) b = -b;
-        auto sunPos = castTarget + glm::normalize(glm::vec3(a, b, a)) * distance;
-        auto sunTarget = castTarget;
+        auto sunPos = cast.position + glm::normalize(glm::vec3(a, b, a)) * distance;
+        auto sunTarget = cast.position;
         shadows.update(sunPos, sunTarget);
         shadows.beginFrame();
         terrain.render();
