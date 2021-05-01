@@ -14,7 +14,7 @@ ivec3 Raycast::cast(vec3 pos, vec3 direction, Terrain& terrain) const {
   const vec3 step = sign(direction); // (stepX/stepY)
   direction = glm::normalize(direction);
   const vec3 tdelta = abs(1.f / direction); // (tDeltaX/tDeltaY)
-  const vec3 offset = (ipos - pos) * step + (1.f - step) / 2.f;
+  const vec3 offset = (ipos - pos) * step + (1.f + step) / 2.f; // <=> (step > 0) ? (1 - pos + ipos) : (pos - ipos)
   vec3 tmax = offset * tdelta; // (tMaxX/tMaxY)
 
   Block* block;

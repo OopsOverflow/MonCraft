@@ -38,6 +38,8 @@ int main(int argc, char* argv[]) {
     int skyCamSize = 300;
     Camera skyCam(skyCamSize, skyCamSize, {1, 500, 1}, {0, 0, 0});
 
+    glEnable(GL_SCISSOR_TEST);
+
     for (float dt = 0; window.beginFrame(dt); window.endFrame()) {
 
         // updates
@@ -53,7 +55,7 @@ int main(int argc, char* argv[]) {
         auto fovX = glm::degrees(2 * atan(tan(glm::radians(45.f) / 2) * window.width / window.height)); // see https://en.wikipedia.org/wiki/Field_of_view_in_video_games#Field_of_view_calculations
         terrain.update(playerPos, viewDir, fovX);
 
-        auto castPos = window.camera.position;
+        auto castPos = window.camera.position + .5f; // COMBAK: find out why camera pos is offset by .5 relative to block origin
         auto castDir = window.camera.center - window.camera.position;
         glm::vec3 castTarget = caster.cast(castPos, castDir, terrain);
         targetBlock->model = glm::translate(glm::mat4(1.f), castTarget);
@@ -107,16 +109,21 @@ int main(int argc, char* argv[]) {
         glm::vec3 skyCenter(window.camera.position.x, 0, window.camera.position.z - 1);
         skyCam.setLookAt(skyPos, skyCenter);
         skyCam.activate();
-        glEnable(GL_SCISSOR_TEST);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
         glScissor(0, 0, skyCamSize + 5, skyCamSize + 5);
         glClearColor(0, 0, 0, 0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         terrain.render();
         glScissor(skyCamSize/2-1, skyCamSize/2-1, 2, 2);
         glClearColor(1, 1, 1, 1);
-        glClear(GL_COLOR_BUFFER_BIT);
-        glDisable(GL_SCISSOR_TEST);
+        glClear(GL_COLOR_BUFFER_BIT); // draw point
+
+        // draw a dot in the middle of the screen
+        float pointSize = 8;
+        glScissor((window.width - pointSize) / 2, (window.height - pointSize) / 2, pointSize, pointSize);
+        glClearColor(1, 0, 0, 1);
+        glClear(GL_COLOR_BUFFER_BIT); // draw point
+        glScissor(0, 0, window.width, window.height);
 
         // draw the character
         window.camera.activate();
