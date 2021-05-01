@@ -12,53 +12,11 @@
 #include "util/Raycast.hpp"
 #include "entity/character/Character.hpp"
 #include "audio/Music.hpp"
+#include "debug/DebugBlock.hpp"
 
 // WINDOW DIMENSIONS
 #define WIDTH     800
 #define HEIGHT    800
-
-#include "terrain/BlockGeom.hpp"
-#include "blocks/Debug_Block.h"
-#include <glm/gtc/type_ptr.hpp>
-#include <algorithm>
-
-// TODO: temporary until I finish the skewed shadow matrix
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/vector_angle.hpp>
-#include <glm/gtx/transform2.hpp>
-
-std::unique_ptr<Mesh> makeTargetBlock() {
-  std::vector<GLfloat> positions;
-  std::vector<GLfloat> normals;
-  std::vector<GLfloat> textureCoords;
-  std::vector<GLfloat> occlusion(4 * 6, 0);
-  std::vector<GLuint> indices;
-  std::vector<GLuint> scheme = { 0, 1, 2, 0, 2, 3 };
-
-  auto block = Blocks::create_static<Debug_Block>();
-
-   auto getFaceUV = [](glm::ivec2 index) -> face_t<2>{
-    static const float atlasSize = 8.f;
-    return face_t<2> {
-      (index.x + 1) / atlasSize, (index.y + 0) / atlasSize,
-      (index.x + 0) / atlasSize, (index.y + 0) / atlasSize,
-      (index.x + 0) / atlasSize, (index.y + 1) / atlasSize,
-      (index.x + 1) / atlasSize, (index.y + 1) / atlasSize,
-    };
-  };
-
-  for(int i = 0; i < 6; i++) {
-    std::copy(blockPositions[i].begin(), blockPositions[i].end(), std::back_inserter(positions));
-    std::copy(blockNormals[i].begin(), blockNormals[i].end(), std::back_inserter(normals));
-    auto uvs = getFaceUV(block->getFaceUVs((BlockFace)i));
-    std::copy(uvs.begin(), uvs.end(), std::back_inserter(textureCoords));
-    std::copy(scheme.begin(), scheme.end(), std::back_inserter(indices));
-    std::transform(scheme.begin(), scheme.end(), scheme.begin(),[](int x) { return x+4; });
-  }
-
-  Mesh* mesh = new Mesh(positions, normals, textureCoords, occlusion, indices);
-  return std::unique_ptr<Mesh>(mesh);
-}
 
 int main(int argc, char* argv[]) {
     std::cout << "----Main------\n";
@@ -71,7 +29,7 @@ int main(int argc, char* argv[]) {
     ShadowMap shadows(1024);
     Loader loader;
     Raycast caster(100.f);
-    std::unique_ptr<Mesh> targetBlock = makeTargetBlock();
+    std::unique_ptr<Mesh> targetBlock = makeDebugBlock();
 
     GLuint textureID = loader.loadTexture("Texture_atlas");
 
