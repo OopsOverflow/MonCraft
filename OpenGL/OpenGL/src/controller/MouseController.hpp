@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../gl/Camera.hpp"
 #include "../entity/Entity.hpp"
 
 class MouseController {
@@ -13,7 +12,7 @@ public:
   void motionRel(int dx, int dy);
 
 
-  void apply(Entity& character, Camera& camera);
+  void apply(Entity& character);
 
 private:
   int lastX;
@@ -22,5 +21,5 @@ private:
   int deltaY;
   bool rotation;
 
-  float speed;
+	float sensivity; // rotation radians per mouse pixel on screen
 };

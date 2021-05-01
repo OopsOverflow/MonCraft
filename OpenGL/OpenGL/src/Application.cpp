@@ -40,13 +40,14 @@ int main(int argc, char* argv[]) {
 
     glEnable(GL_SCISSOR_TEST);
 
+    // main loop
     for (float dt = 0; window.beginFrame(dt); window.endFrame()) {
 
         // updates
         MusicPlayer.update();
 
         window.keyboardController.apply(character);
-        window.mouseController.apply(character, window.camera);
+        window.mouseController.apply(character);
         character.update(dt);
         character.cameraToHead(window.camera);
 

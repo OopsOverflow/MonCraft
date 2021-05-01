@@ -5,7 +5,7 @@
 
 MouseController::MouseController() {
   lastX = lastY = deltaX = deltaY = 0;
-  speed = 0.f;
+  sensivity = 0.005;
   rotation = false;
 }
 
@@ -38,15 +38,11 @@ void MouseController::motionRel(int dx, int dy) {
   }
 }
 
-void MouseController::apply(Entity& character, Camera& camera) {
 
-  unsigned int screenWidth;
-  unsigned int screenHeight;
+void MouseController::apply(Entity& character) {
 
-  float maxRotation = glm::pi<float>();
-  camera.getSize(screenWidth, screenHeight);
   if (rotation) {
-    character.turn(glm::vec2(deltaY / (float)screenHeight, -deltaX / (float)screenWidth) * maxRotation);
+    character.turn(glm::vec2(deltaY, -deltaX) * sensivity);
   }
 
   lastX += deltaX;
