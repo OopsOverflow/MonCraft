@@ -10,12 +10,16 @@
 
 #include <iostream>
 
+const int Viewport::framerate = 60;
+const int Viewport::timePerFrame = 1000 / framerate;
+
 Viewport::Viewport(size_t width, size_t height)
-    : camera(width, height, {0, 64, 10}, {0, 64, 20}),
+    : camera(width, height, {0, 32, 10}, {0, 32, 0}),
       width(width),
       height(height),
       window(nullptr),
-      context(nullptr)
+      context(nullptr),
+      timeBegin(0), lastTime(0)
 {
 
   //Initialize SDL2
@@ -67,7 +71,7 @@ void Viewport::on_event(SDL_Event const& e) {
     on_keyup(e.key.keysym.sym);
     break;
   case SDL_MOUSEMOTION:
-    mouseController.motion(e.motion.x, e.motion.y);
+    mouseController.motionRel(e.motion.xrel, e.motion.yrel);
     break;
   case SDL_MOUSEBUTTONDOWN:
     on_mousedown(e.button);
@@ -78,12 +82,14 @@ void Viewport::on_event(SDL_Event const& e) {
   }
 }
 
-bool Viewport::beginFrame() {
+bool Viewport::beginFrame(float& dt) {
   SDL_Event event;
   while (SDL_PollEvent(&event)) {
     if(event.type == SDL_WINDOWEVENT)
       if(event.window.event == SDL_WINDOWEVENT_CLOSE)
         return false;
+    if(event.type == SDL_QUIT)
+      return false;
     on_event(event);
   }
 
@@ -91,12 +97,25 @@ bool Viewport::beginFrame() {
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);
 
+  timeBegin = SDL_GetTicks();
+  dt = (timeBegin - lastTime) / 1000.f;
+
   return true;
 }
 
 void Viewport::endFrame() {
   //Display on screen (swap the buffer on screen and the buffer you are drawing on)
   SDL_GL_SwapWindow(window);
+
+  //Time in ms telling us when this frame ended. Useful for keeping a fix framerate
+  uint32_t timeEnd = SDL_GetTicks();
+  lastTime = timeBegin;
+
+  if (timeEnd - timeBegin < timePerFrame)
+      SDL_Delay(timePerFrame - (timeEnd - timeBegin));
+  else if(timeEnd - timeBegin > 2 * timePerFrame) {
+    std::cout << "can't keep up ! " << 1000.f / (timeEnd - timeBegin) << "fps" << std::endl;
+  }
 }
 
 void Viewport::on_window_event(SDL_WindowEvent const& e) {
@@ -132,6 +151,12 @@ void Viewport::on_keydown(SDL_Keycode k) {
   case SDLK_F5:
       keyboardController.pressedF5();
       break;
+  case SDLK_ESCAPE:
+      SDL_SetRelativeMouseMode(SDL_FALSE);
+      int x, y;
+      SDL_GetMouseState(&x, &y);
+      mouseController.rotateEnd(x, y);
+      break;
   }
 }
 
@@ -161,6 +186,7 @@ void Viewport::on_keyup(SDL_Keycode k) {
 void Viewport::on_mousedown(SDL_MouseButtonEvent const& e) {
   switch (e.button) {
   case SDL_BUTTON_LEFT:
+      SDL_SetRelativeMouseMode(SDL_TRUE);
       mouseController.rotateStart(e.x, e.y);
     break;
   default:
@@ -171,7 +197,7 @@ void Viewport::on_mousedown(SDL_MouseButtonEvent const& e) {
 void Viewport::on_mouseup(SDL_MouseButtonEvent const& e) {
   switch (e.button) {
   case SDL_BUTTON_LEFT:
-      mouseController.rotateEnd(e.x, e.y);
+      // mouseController.rotateEnd(e.x, e.y);
     break;
   default:
     break;

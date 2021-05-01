@@ -4,7 +4,7 @@
 #include <memory>
 
 #include "BlockGeom.hpp"
-#include "../util/Mesh.hpp"
+#include "../gl/Mesh.hpp"
 #include "../util/DataStore.hpp"
 #include "../blocks/Block.h"
 

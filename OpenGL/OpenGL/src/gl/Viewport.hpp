@@ -3,9 +3,8 @@
 #include <string>
 
 #include "Camera.hpp"
-#include "controller/MouseController.hpp"
-#include "controller/KeyboardController.hpp"
-#include "../entity/Hitbox.hpp"
+#include "../controller/MouseController.hpp"
+#include "../controller/KeyboardController.hpp"
 
 #include <SDL2/SDL.h>
 
@@ -15,15 +14,18 @@ public:
   Viewport(size_t width, size_t height);
   ~Viewport();
 
-  bool beginFrame();
+  static const int framerate; // fps in seconds
+  static const int timePerFrame; // time per frame in millis
+
+  bool beginFrame(float& dt);
   void endFrame();
 
   Camera camera;
   MouseController mouseController;
   KeyboardController keyboardController;
 
-  size_t width;
-  size_t height;
+  unsigned width;
+  unsigned height;
 
 private:
   void on_event(SDL_Event const& e);
@@ -35,4 +37,7 @@ private:
 
   SDL_Window* window;
   SDL_GLContext context;
+
+  uint32_t timeBegin;
+  uint32_t lastTime;
 };

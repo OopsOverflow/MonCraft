@@ -1,4 +1,4 @@
-#include "controller/MouseController.hpp"
+#include "MouseController.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
@@ -31,15 +31,22 @@ void MouseController::motion(int x, int y) {
   }
 }
 
-void MouseController::apply(Hitbox& character, Camera& camera) {
+void MouseController::motionRel(int dx, int dy) {
+    if (rotation) {
+    deltaX += dx;
+    deltaY += dy;
+  }
+}
+
+void MouseController::apply(Entity& character, Camera& camera) {
 
   unsigned int screenWidth;
   unsigned int screenHeight;
 
-  float maxRotation = 360.f;
+  float maxRotation = glm::pi<float>();
   camera.getSize(screenWidth, screenHeight);
   if (rotation) {
-      character.character.rotateHead({ -deltaY * maxRotation/ (float)screenWidth,-deltaX * maxRotation / (float)screenWidth });
+    character.turn(glm::vec2(deltaY / (float)screenHeight, -deltaX / (float)screenWidth) * maxRotation);
   }
 
   lastX += deltaX;

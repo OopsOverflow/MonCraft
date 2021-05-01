@@ -9,8 +9,8 @@
 
 #include "Chunk.hpp"
 #include "Generator.hpp"
-#include "Camera.hpp"
-#include "../util/Loader.hpp"
+#include "../gl/Camera.hpp"
+#include "../gl/Loader.hpp"
 #include "../util/PriorityList.hpp"
 #include "../util/AtomicCyclicList.hpp"
 

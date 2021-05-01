@@ -44,7 +44,7 @@ Terrain::~Terrain() {
   std::cout << "terrain thread terminated" << std::endl;
 }
 
-#include "Debug.hpp"
+#include "debug/Debug.hpp"
 
 void Terrain::updateWaitingList() {
   waitingChunks.clear();

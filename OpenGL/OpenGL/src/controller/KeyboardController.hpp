@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../entity/Hitbox.hpp"
+#include "../entity/Entity.hpp"
 
-#include <chrono>
+#include <glm/glm.hpp>
 
 class KeyboardController {
 public:
@@ -22,11 +22,10 @@ public:
   void releasedDown();
   void pressedF5();
 
-  void apply(Hitbox& character);
+  void apply(Entity& character);
 
 private:
   float speed;
   glm::vec3 direction;
   View view;
-  std::chrono::time_point<std::chrono::steady_clock> timer;
 };

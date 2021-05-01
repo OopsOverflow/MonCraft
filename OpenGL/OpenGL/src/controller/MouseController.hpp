@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Camera.hpp"
-#include "../entity/Hitbox.hpp"
+#include "../gl/Camera.hpp"
+#include "../entity/Entity.hpp"
 
 class MouseController {
 public:
@@ -10,9 +10,10 @@ public:
   void rotateStart(int x, int y);
   void rotateEnd(int x, int y);
   void motion(int x, int y);
+  void motionRel(int dx, int dy);
 
 
-  void apply(Hitbox& character, Camera& camera);
+  void apply(Entity& character, Camera& camera);
 
 private:
   int lastX;

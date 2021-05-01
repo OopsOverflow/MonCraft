@@ -1,6 +1,8 @@
 #include "SkyBox.hpp"
-#include "../include/Camera.hpp"
-#include "Viewport.hpp"
+#include "../gl/Camera.hpp"
+#include "../gl/Viewport.hpp"
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 GLuint SkyBox::initSky(Shader& shader) {
     float skyboxVertices[] = {
@@ -88,10 +90,10 @@ SkyBox::SkyBox() :
     buffer(initSky(skyBoxShader)),
     skyTxr(loadTxr())
 {
-    
+
 }
 
-void SkyBox::render(Camera& camera) 
+void SkyBox::render(Camera& camera)
 {
     glDisable(GL_CULL_FACE);
     glDepthFunc(GL_LEQUAL);
@@ -107,4 +109,3 @@ void SkyBox::render(Camera& camera)
     glDepthFunc(GL_LESS);
     glEnable(GL_CULL_FACE);
 }
-

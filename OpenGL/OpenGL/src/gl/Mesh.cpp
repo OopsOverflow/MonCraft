@@ -1,7 +1,7 @@
 #include "Mesh.hpp"
 
 #include <iostream>
-#include "Shader.hpp"
+#include "gl/Shader.hpp"
 
 Mesh::Mesh(GLuint vao, GLuint vbo, GLuint ebo, GLuint vertCount)
     : myVAO(vao), myVBO(vbo), myEBO(ebo), myVertCount(vertCount)
