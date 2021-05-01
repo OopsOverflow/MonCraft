@@ -39,7 +39,7 @@
     <ClCompile Include="src\blocks\Grass_Block.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\blocks\Dirt_Block.cpp">
+    <ClCompile Include="src\blocks\Sand_Block.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\blocks\Stone_Block.cpp">
@@ -102,6 +102,18 @@
     <ClCompile Include="src\terrain\SkyBox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\blocks\Dirt_Block.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\blocks\Oak_Trunk_Block.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\blocks\Cactus_Block.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\blocks\Ice_Block.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\include\Camera.hpp">
@@ -122,7 +134,7 @@
     <ClInclude Include="src\blocks\Block.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\blocks\Dirt_Block.h">
+    <ClInclude Include="src\blocks\Sand_Block.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\blocks\Grass_Block.h">
@@ -219,6 +231,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\terrain\SkyBox.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\blocks\Dirt_Block.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\blocks\Oak_Trunk_Block.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\blocks\Cactus_Block.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\blocks\Ice_Block.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
