@@ -38,8 +38,11 @@ void MouseController::motionRel(int dx, int dy) {
   }
 }
 
+void MouseController::triggerAction(MouseController::Action action) {
+  actions.push_back(action);
+}
 
-void MouseController::apply(Entity& character) {
+void MouseController::apply(Character& character, Terrain& terrain) {
 
   if (rotation) {
     character.turn(glm::vec2(deltaY, -deltaX) * sensivity);
@@ -50,4 +53,15 @@ void MouseController::apply(Entity& character) {
   deltaX = 0;
   deltaY = 0;
 
+  for(auto action : actions) switch (action) {
+    case Action::ATTACK:
+      character.placeBlock(terrain);
+      break;
+    case Action::DESTROY:
+      character.breakBlock(terrain);
+      break;
+    default:
+      break;
+  };
+  actions = {};
 }

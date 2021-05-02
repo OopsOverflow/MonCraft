@@ -27,6 +27,7 @@ public:
   void render();
 
   Block* getBlock(glm::ivec3 pos);
+  void setBlock(glm::ivec3 pos, std::unique_ptr<Block, BlockDeleter> block);
 
 private:
   static const int chunkSize = 32;
@@ -79,9 +80,5 @@ private:
   GLuint texture;
 
   void worker(int n);
-
-  // this is kinda dirty, see cpp file.
-  // glm::ivec3 lastIter = glm::ivec3(0, -renderDistance, -1);
-  // glm::ivec3 lastPos = glm::ivec3(0);
   void updateWaitingList();
 };

@@ -1,7 +1,9 @@
 #pragma once
 
 #include "../Entity.hpp"
-#include "../../gl/Loader.hpp"
+#include "gl/Loader.hpp"
+#include "terrain/Terrain.hpp"
+#include "util/Raycast.hpp"
 
 #include "LeftArm.hpp"
 #include "RightArm.hpp"
@@ -21,6 +23,9 @@ public:
 	void render() override;
 	void update(float dt) override;
 
+  void breakBlock(Terrain& terrain);
+  void placeBlock(Terrain& terrain);
+
 private:
   Node rootNode;
   Head head;
@@ -34,4 +39,6 @@ private:
   Loader texLoader;
 
   float animState;
+
+  Raycast caster;
 };

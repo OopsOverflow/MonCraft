@@ -12,6 +12,8 @@
 #include "util/Raycast.hpp"
 #include "entity/character/Character.hpp"
 #include "audio/Music.hpp"
+
+#include "debug/Debug.hpp"
 #include "debug/DebugBlock.hpp"
 
 // WINDOW DIMENSIONS
@@ -47,7 +49,7 @@ int main(int argc, char* argv[]) {
         MusicPlayer.update();
 
         window.keyboardController.apply(character);
-        window.mouseController.apply(character);
+        window.mouseController.apply(character, terrain);
         character.update(dt);
         character.cameraToHead(window.camera);
 
@@ -59,8 +61,7 @@ int main(int argc, char* argv[]) {
         auto castPos = window.camera.position + .5f; // COMBAK: find out why camera pos is offset by .5 relative to block origin
         auto castDir = window.camera.center - window.camera.position;
         auto cast = caster.cast(castPos, castDir, terrain);
-        glm::vec3 beforeTarget = cast.position + cast.normal;
-        targetBlock->model = glm::translate(glm::mat4(1.f), beforeTarget);
+        targetBlock->model = glm::translate(glm::mat4(1.f), cast.position);
 
         // draw the shadow map
         // float t = timeBegin / 10000.f;

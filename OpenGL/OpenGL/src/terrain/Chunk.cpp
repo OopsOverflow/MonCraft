@@ -120,9 +120,30 @@ Mesh const& Chunk::getMesh() {
   return *mesh;
 }
 
+void Chunk::updateMesh() {
+  generateMesh();
+  if(mesh) {
+    delete mesh;
+    mesh = new Mesh(positions, normals, textureCoords, occlusion, indices);
+    mesh->model = glm::translate(mesh->model, vec3(chunkPos));
+
+    positions = {};
+    normals = {};
+    textureCoords = {};
+    occlusion = {};
+    indices = {};
+  }
+}
+
 Block* Chunk::getBlock(ivec3 pos) {
   if(!blocks) return nullptr;
   return blocks->at(pos).get();
+}
+
+void Chunk::setBlock(ivec3 pos, std::unique_ptr<Block, BlockDeleter> block) {
+  if(!blocks) throw std::runtime_error("setBlock: Chunk is not loaded");
+  blocks->at(pos) = std::move(block);
+  updateMesh();
 }
 
 void Chunk::unload() {

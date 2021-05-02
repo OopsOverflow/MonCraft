@@ -1,6 +1,7 @@
 #pragma once
 
-#include "../entity/Entity.hpp"
+#include "entity/character/Character.hpp"
+#include "terrain/Terrain.hpp"
 
 class MouseController {
 public:
@@ -11,8 +12,13 @@ public:
   void motion(int x, int y);
   void motionRel(int dx, int dy);
 
+	enum class Action {
+		PLACE, DESTROY, ATTACK
+	};
 
-  void apply(Entity& character);
+	void triggerAction(Action action);
+
+  void apply(Character& character, Terrain& terrain);
 
 private:
   int lastX;
@@ -22,4 +28,6 @@ private:
   bool rotation;
 
 	float sensivity; // rotation radians per mouse pixel on screen
+
+	std::vector<Action> actions;
 };

@@ -197,3 +197,14 @@ Block* Terrain::getBlock(ivec3 pos) {
   ivec3 dpos = pos - cpos * chunkSize;
   return chunks.at(cpos)->getBlock(dpos + ivec3(1));
 }
+
+void Terrain::setBlock(ivec3 pos, std::unique_ptr<Block, BlockDeleter> block) {
+  std::lock_guard<std::mutex> lck(chunksMutex);
+  ivec3 cpos = floor(vec3(pos) / float(chunkSize));
+
+  if(chunks.find(cpos) == chunks.end())
+    throw std::runtime_error("setBlock: chunk not found");
+
+  ivec3 dpos = pos - cpos * chunkSize;
+  return chunks.at(cpos)->setBlock(dpos + ivec3(1), std::move(block));
+}
