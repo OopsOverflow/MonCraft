@@ -14,16 +14,12 @@ int distance(ivec3 a, ivec3 b) {
 
 Terrain::Terrain()
   : chunksMaxCount((2*renderDistH+1)*(2*renderDistH+1)*(2*renderDistV+1)),
-    chunkMemorySize(sizeof(nullptr) * (int)pow(chunkSize + 2, 3) / 1024),
-    chunkCacheSize(memoryCap * 1024 / chunkMemorySize),
     generator(chunkSize),
     chunkPos(0),
     chunkPosChanged(false),
     loader(),
     texture(loader.loadTexture("Texture_atlas"))
 {
-  std::cout << "Terrain chunk cache: " << chunkCacheSize << " chunks" << std::endl;
-
   int n = 0;
   for(auto& thread : workerThreads) {
     thread = std::thread(&Terrain::worker, this, n);
@@ -111,7 +107,6 @@ void Terrain::worker(int n) {
       {
         std::lock_guard<std::mutex> lck(chunksMutex);
         chunks.emplace(pos, c);
-        loadedChunks.push(c);
       }
 
       {std::unique_lock<std::mutex> stopLck(stopMutex);
@@ -153,17 +148,6 @@ void Terrain::update(glm::vec3 pos, glm::vec3 dir, float fovX) {
       ++it;
     }
   }
-
-  // unload low-priority chunks
-  count = (int)loadedChunks.size();
-  for(auto it = loadedChunks.begin(); it != loadedChunks.end() && count > chunkCacheSize;) {
-    if (auto chunk = it->lock()) {
-      // TODO: disabled for now
-      // chunk->unload();
-    }
-    loadedChunks.pop();
-    it = loadedChunks.begin();
-  }
 }
 
 void Terrain::render() {
@@ -195,7 +179,7 @@ Block* Terrain::getBlock(ivec3 pos) {
     return nullptr;
 
   ivec3 dpos = pos - cpos * chunkSize;
-  return chunks.at(cpos)->getBlock(dpos + ivec3(1));
+  return chunks.at(cpos)->getBlock(dpos);
 }
 
 void Terrain::setBlock(ivec3 pos, std::unique_ptr<Block, BlockDeleter> block) {
@@ -206,5 +190,5 @@ void Terrain::setBlock(ivec3 pos, std::unique_ptr<Block, BlockDeleter> block) {
     throw std::runtime_error("setBlock: chunk not found");
 
   ivec3 dpos = pos - cpos * chunkSize;
-  return chunks.at(cpos)->setBlock(dpos + ivec3(1), std::move(block));
+  return chunks.at(cpos)->setBlock(dpos, std::move(block));
 }

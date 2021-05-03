@@ -62,16 +62,15 @@ public:
   Mesh const& getMesh();
   Block* getBlock(glm::ivec3 pos);
   void setBlock(glm::ivec3 pos, std::unique_ptr<Block, BlockDeleter> block);
-  void unload();
 
 private:
-  void generateMesh();
+  void generateMeshData();
   void updateMesh();
   std::array<GLfloat, 4> genOcclusion(glm::ivec3 pos, BlockFace face);
   bool isSolid(glm::ivec3 pos);
 
   glm::ivec3 chunkPos;
-  Blocks* blocks;
+  Blocks blocks;
 
   // the gl mesh and corresponding data.
   Mesh* mesh;

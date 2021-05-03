@@ -35,11 +35,6 @@ private:
   static const int renderDistV = 3; // vertical render distance (2n+1 chunks)
   const int chunksMaxCount;
 
-  const int memoryCap = 2048; // max amount of memory (mebibytes)
-  const int chunkMemorySize;  // size of a single chunk in memory (kibibytes)
-  const int chunkCacheSize;   // maximum number of chunks in cache
-
-
   // dirty hash function for the chunks hashmap
   struct ivec3_hash
   {
@@ -73,7 +68,6 @@ private:
   // chunks
   std::mutex chunksMutex;
   ChunkMap chunks; // hashmap to hold the chunks
-  ChunkPList loadedChunks; // cache of fully loaded chunks
   WaitingList waitingChunks; // chunk positions yet to be loaded
 
   Loader loader;
