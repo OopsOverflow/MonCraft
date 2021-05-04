@@ -33,7 +33,6 @@ private:
   void update();
   bool isSolid(glm::ivec3 pos);
   bool isSolidNoChecks(glm::ivec3 pos);
-  std::array<GLfloat, 4> genOcclusion(glm::ivec3 pos, BlockFace face);
 
   glm::ivec3 chunkPos;
   // the gl mesh and corresponding data.

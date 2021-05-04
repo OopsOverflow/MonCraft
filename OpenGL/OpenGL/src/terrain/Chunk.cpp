@@ -49,39 +49,41 @@ bool Chunk::isSolidNoChecks(ivec3 pos) {
   return (*this)[pos]->type != BlockType::Air;
 }
 
-// TODO: move out of here (util ?)
-face_t<2> getFaceUV(ivec2 index) {
-  static const float atlasSize = 8.f;
-  return face_t<2> {
-    (index.x + 1) / atlasSize, (index.y + 0) / atlasSize,
-    (index.x + 0) / atlasSize, (index.y + 0) / atlasSize,
-    (index.x + 0) / atlasSize, (index.y + 1) / atlasSize,
-    (index.x + 1) / atlasSize, (index.y + 1) / atlasSize,
-  };
-}
-
-std::array<GLfloat, 4> Chunk::genOcclusion(ivec3 pos, BlockFace face) {
-  std::array<GLfloat, 4> occl = { 0.f, 0.f, 0.f, 0.f };
-
-  auto const& offsets = blockOcclusionOffsets[static_cast<size_t>(face)];
-  std::array<bool, 8> b{};
-
-  for(int i = 0; i < 8; i++) {
-    b[i] = isSolid(pos + offsets[i]);
-  }
-
-  occl[0] = b[0] + b[1] + b[2];
-  occl[1] = b[2] + b[3] + b[4];
-  occl[2] = b[4] + b[5] + b[6];
-  occl[3] = b[6] + b[7] + b[0];
-
-  return occl;
-}
-
 void Chunk::compute() {
   std::lock_guard<std::mutex> lck(computeMutex);
   // indices scheme
   std::vector<int> scheme = { 0, 1, 2, 0, 2, 3 };
+
+  DataStore<bool, 3> solidBlocks(size + 2); // a cache to limit calls to isSolid()
+
+  auto genOcclusion = [&solidBlocks](ivec3 pos, BlockFace face) -> std::array<GLfloat, 4> {
+    std::array<GLfloat, 4> occl{};
+
+    auto const& offsets = blockOcclusionOffsets[static_cast<size_t>(face)];
+    std::array<bool, 8> b{};
+
+    for(int i = 0; i < 8; i++) {
+      b[i] = solidBlocks[pos + offsets[i] + 1];
+    }
+
+    occl[0] = b[0] + b[1] + b[2];
+    occl[1] = b[2] + b[3] + b[4];
+    occl[2] = b[4] + b[5] + b[6];
+    occl[3] = b[6] + b[7] + b[0];
+
+    return occl;
+  };
+
+  auto genFaceUV = [](glm::ivec2 index) {
+    static const int atlasSize = 8;
+
+    return face_t<2>{
+      (index.x + 1.f) / atlasSize, (index.y + 0.f) / atlasSize,
+      (index.x + 0.f) / atlasSize, (index.y + 0.f) / atlasSize,
+      (index.x + 0.f) / atlasSize, (index.y + 1.f) / atlasSize,
+      (index.x + 1.f) / atlasSize, (index.y + 1.f) / atlasSize,
+    };
+  };
 
   auto genFace = [&](ivec3 pos, BlockFace face) {
     // indices
@@ -101,7 +103,7 @@ void Chunk::compute() {
 
     // textureCoords
     auto indexUV = getBlock(pos)->getFaceUVs(face);
-    auto uvFace = getFaceUV(indexUV);
+    auto uvFace = genFaceUV(indexUV);
     textureCoords.insert(textureCoords.end(), uvFace.begin(), uvFace.end());
 
     // occlusion
@@ -109,9 +111,9 @@ void Chunk::compute() {
     occlusion.insert(occlusion.end(), occl.begin(), occl.end());
   };
 
-  // cache the solid state of blocks
-  DataStore<bool, 3> solidBlocks(size + 2);
   ivec3 pos{};
+
+  // cache the solid state of blocks
   for(pos.x = 0; pos.x < size.x + 2; pos.x++) {
     for(pos.y = 0; pos.y < size.y + 2; pos.y++) {
       for(pos.z = 0; pos.z < size.z + 2; pos.z++) {
@@ -120,6 +122,7 @@ void Chunk::compute() {
     }
   }
 
+  // finally generate the face quads
   for(pos.x = 0; pos.x < size.x; pos.x++) {
     for(pos.y = 0; pos.y < size.y; pos.y++) {
       for(pos.z = 0; pos.z < size.z; pos.z++) {
