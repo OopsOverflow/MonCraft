@@ -25,12 +25,12 @@ public:
   bool isLoaded();
 
   void compute();
-  void update();
   void draw();
 
   std::array<std::weak_ptr<Chunk>, 26> neighbors;
 
 private:
+  void update();
   bool isSolid(glm::ivec3 pos);
   bool isSolidNoChecks(glm::ivec3 pos);
   std::array<GLfloat, 4> genOcclusion(glm::ivec3 pos, BlockFace face);

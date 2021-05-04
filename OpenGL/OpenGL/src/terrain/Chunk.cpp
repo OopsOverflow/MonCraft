@@ -109,17 +109,27 @@ void Chunk::compute() {
     occlusion.insert(occlusion.end(), occl.begin(), occl.end());
   };
 
+  // cache the solid state of blocks
+  DataStore<bool, 3> solidBlocks(size + 2);
   ivec3 pos{};
+  for(pos.x = 0; pos.x < size.x + 2; pos.x++) {
+    for(pos.y = 0; pos.y < size.y + 2; pos.y++) {
+      for(pos.z = 0; pos.z < size.z + 2; pos.z++) {
+        solidBlocks[pos] = isSolid(pos - 1);
+      }
+    }
+  }
+
   for(pos.x = 0; pos.x < size.x; pos.x++) {
     for(pos.y = 0; pos.y < size.y; pos.y++) {
       for(pos.z = 0; pos.z < size.z; pos.z++) {
-        if(!isSolid(pos)) continue;
-        if(!isSolid(pos + ivec3(1, 0, 0)))  genFace(pos, BlockFace::RIGHT);
-        if(!isSolid(pos + ivec3(-1, 0, 0))) genFace(pos, BlockFace::LEFT);
-        if(!isSolid(pos + ivec3(0, 1, 0)))  genFace(pos, BlockFace::TOP);
-        if(!isSolid(pos + ivec3(0, -1, 0))) genFace(pos, BlockFace::BOTTOM);
-        if(!isSolid(pos + ivec3(0, 0, 1)))  genFace(pos, BlockFace::FRONT);
-        if(!isSolid(pos + ivec3(0, 0, -1))) genFace(pos, BlockFace::BACK);
+        if(!solidBlocks[pos + 1]) continue;
+        if(!solidBlocks[pos + ivec3(1, 0, 0) + 1])  genFace(pos, BlockFace::RIGHT);
+        if(!solidBlocks[pos + ivec3(-1, 0, 0) + 1]) genFace(pos, BlockFace::LEFT);
+        if(!solidBlocks[pos + ivec3(0, 1, 0) + 1])  genFace(pos, BlockFace::TOP);
+        if(!solidBlocks[pos + ivec3(0, -1, 0) + 1]) genFace(pos, BlockFace::BOTTOM);
+        if(!solidBlocks[pos + ivec3(0, 0, 1) + 1])  genFace(pos, BlockFace::FRONT);
+        if(!solidBlocks[pos + ivec3(0, 0, -1) + 1]) genFace(pos, BlockFace::BACK);
       }
     }
   }
