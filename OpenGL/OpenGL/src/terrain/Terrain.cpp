@@ -110,38 +110,6 @@ void Terrain::genWorker() {
   auto longSleep = 500ms;
   bool stop;
 
-  static const std::array<ivec3, 26> offsets = {
-    // ivec3{ 0, 0, 0 },
-    ivec3{ 0, 0, 1 },
-    ivec3{ 0, 0,-1 },
-    ivec3{ 0, 1, 0 },
-    ivec3{ 0, 1, 1 },
-    ivec3{ 0, 1,-1 },
-    ivec3{ 0,-1, 0 },
-    ivec3{ 0,-1, 1 },
-    ivec3{ 0,-1,-1 },
-
-    ivec3{ 1, 0, 0 },
-    ivec3{ 1, 0, 1 },
-    ivec3{ 1, 0,-1 },
-    ivec3{ 1, 1, 0 },
-    ivec3{ 1, 1, 1 },
-    ivec3{ 1, 1,-1 },
-    ivec3{ 1,-1, 0 },
-    ivec3{ 1,-1, 1 },
-    ivec3{ 1,-1,-1 },
-
-    ivec3{-1, 0, 0 },
-    ivec3{-1, 0, 1 },
-    ivec3{-1, 0,-1 },
-    ivec3{-1, 1, 0 },
-    ivec3{-1, 1, 1 },
-    ivec3{-1, 1,-1 },
-    ivec3{-1,-1, 0 },
-    ivec3{-1,-1, 1 },
-    ivec3{-1,-1,-1 },
-  };
-
   // this lambda returns the chunk in the hashmap, or safely generates, stores then returns it.
   auto getOrGen = [&](ivec3 pos) -> std::shared_ptr<Chunk> {
     {
@@ -168,8 +136,8 @@ void Terrain::genWorker() {
       std::shared_ptr<Chunk> chunk(getOrGen(pos));
 
       // sets the neighboring chunks around in order defined by offsets
-      for(int i = 0; i < offsets.size(); i++) {
-        auto neighbor = getOrGen(pos + offsets[i]);
+      for(size_t i = 0; i < Chunk::neighborOffsets.size(); i++) {
+        auto neighbor = getOrGen(pos + Chunk::neighborOffsets[i]);
         {
           std::lock_guard<std::mutex> lck(chunksMutex);
           chunk->neighbors[i] = neighbor;

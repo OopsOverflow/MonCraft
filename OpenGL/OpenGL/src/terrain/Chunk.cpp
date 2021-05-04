@@ -11,6 +11,38 @@ using std::move;
 
 #include "debug/Debug.hpp"
 
+const std::array<ivec3, 26> Chunk::neighborOffsets = {
+  // ivec3{ 0, 0, 0 },
+  ivec3{ 0, 0, 1 },
+  ivec3{ 0, 0,-1 },
+  ivec3{ 0, 1, 0 },
+  ivec3{ 0, 1, 1 },
+  ivec3{ 0, 1,-1 },
+  ivec3{ 0,-1, 0 },
+  ivec3{ 0,-1, 1 },
+  ivec3{ 0,-1,-1 },
+
+  ivec3{ 1, 0, 0 },
+  ivec3{ 1, 0, 1 },
+  ivec3{ 1, 0,-1 },
+  ivec3{ 1, 1, 0 },
+  ivec3{ 1, 1, 1 },
+  ivec3{ 1, 1,-1 },
+  ivec3{ 1,-1, 0 },
+  ivec3{ 1,-1, 1 },
+  ivec3{ 1,-1,-1 },
+
+  ivec3{-1, 0, 0 },
+  ivec3{-1, 0, 1 },
+  ivec3{-1, 0,-1 },
+  ivec3{-1, 1, 0 },
+  ivec3{-1, 1, 1 },
+  ivec3{-1, 1,-1 },
+  ivec3{-1,-1, 0 },
+  ivec3{-1,-1, 1 },
+  ivec3{-1,-1,-1 },
+};
+
 Chunk::Chunk(ivec3 chunkPos, int chunkSize)
   : DataStore<Block::unique_ptr_t, 3>(glm::ivec3(chunkSize)),
     chunkPos(chunkPos),

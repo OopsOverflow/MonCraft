@@ -188,7 +188,7 @@ void Viewport::on_mousedown(SDL_MouseButtonEvent const& e) {
   switch (e.button) {
   case SDL_BUTTON_LEFT:
     if(mouseCaptured) {
-      mouseController.triggerAction(MouseController::Action::ATTACK);
+      mouseController.triggerAction(MouseController::Action::DESTROY);
     }
     else {
       SDL_SetRelativeMouseMode(SDL_TRUE);
@@ -198,7 +198,7 @@ void Viewport::on_mousedown(SDL_MouseButtonEvent const& e) {
     break;
   case SDL_BUTTON_RIGHT:
     if(mouseCaptured) {
-      mouseController.triggerAction(MouseController::Action::DESTROY);
+      mouseController.triggerAction(MouseController::Action::PLACE);
     }
     break;
   default:

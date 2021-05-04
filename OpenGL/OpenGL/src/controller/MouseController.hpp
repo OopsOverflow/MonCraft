@@ -12,8 +12,9 @@ public:
   void motion(int x, int y);
   void motionRel(int dx, int dy);
 
+	// for now only two actions a player can achieve with the mouse: placing and destroying blocks.
 	enum class Action {
-		PLACE, DESTROY, ATTACK
+		PLACE, DESTROY
 	};
 
 	void triggerAction(Action action);

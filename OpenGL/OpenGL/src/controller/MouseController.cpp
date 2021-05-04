@@ -54,7 +54,7 @@ void MouseController::apply(Character& character, Terrain& terrain) {
   deltaY = 0;
 
   for(auto action : actions) switch (action) {
-    case Action::ATTACK:
+    case Action::PLACE:
       character.placeBlock(terrain);
       break;
     case Action::DESTROY:
