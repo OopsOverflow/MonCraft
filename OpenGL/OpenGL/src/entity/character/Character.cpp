@@ -35,7 +35,7 @@ void Character::breakBlock(Terrain& terrain) {
   auto cast = caster.cast(eyePos + .5f, eyeTarget - eyePos, terrain);
 
   if(cast.success && cast.block->type != BlockType::Air) {
-    terrain.setBlock(cast.position, Blocks::create_static<Air_Block>());
+    terrain.setBlock(cast.position, Block::create_static<Air_Block>());
   }
 }
 
@@ -45,7 +45,7 @@ void Character::placeBlock(Terrain& terrain) {
   auto cast = caster.cast(eyePos + .5f, eyeTarget - eyePos, terrain);
 
   if(cast.success && terrain.getBlock(cast.position + cast.normal)->type == BlockType::Air) { // TODO: will crash in chunk is unloaded
-    terrain.setBlock(cast.position + cast.normal, Blocks::create_static<Dirt_Block>());
+    terrain.setBlock(cast.position + cast.normal, Block::create_static<Dirt_Block>());
   }
 }
 

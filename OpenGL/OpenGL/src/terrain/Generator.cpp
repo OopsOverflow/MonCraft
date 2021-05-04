@@ -42,16 +42,16 @@ Chunk* Generator::generate(ivec3 chunkPos) {
         auto& block = blocks[dpos];
 
         if(dpos.y > blockHeight) {
-          block = Blocks::create_static<Air_Block>();
+          block = Block::create_static<Air_Block>();
         }
         else if(dpos.y == blockHeight) {
-          block = Blocks::create_static<Grass_Block>();
+          block = Block::create_static<Grass_Block>();
         }
         else if(dpos.y >= blockHeight - 3) {
-          block = Blocks::create_static<Dirt_Block>();
+          block = Block::create_static<Dirt_Block>();
         }
         else {
-          block = Blocks::create_static<Stone_Block>();
+          block = Block::create_static<Stone_Block>();
         }
 
       }

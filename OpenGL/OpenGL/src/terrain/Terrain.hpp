@@ -27,7 +27,7 @@ public:
   void render();
 
   Block* getBlock(glm::ivec3 pos);
-  void setBlock(glm::ivec3 pos, std::unique_ptr<Block, BlockDeleter> block);
+  void setBlock(glm::ivec3 pos, Block::unique_ptr_t block);
 
 private:
   static const int chunkSize = 32;

@@ -12,37 +12,11 @@
  * Describes a subdivision of the terrain.
  */
 
-class BlockDeleter {
-public:
-  void operator()(Block* block) const {
-    if(!block->isStatic())
-      delete block;
-  }
-};
-
-class Blocks : public DataStore<std::unique_ptr<Block, BlockDeleter>, 3> {
+class Blocks : public DataStore<Block::unique_ptr_t, 3> {
 public:
   Blocks(int size)
-      : DataStore<std::unique_ptr<Block, BlockDeleter>, 3>(glm::ivec3(size))
+      : DataStore<Block::unique_ptr_t, 3>(glm::ivec3(size))
   {
-    // static int count = 0;
-    // static int totalSize = 0;
-    // totalSize += size * size * size * (sizeof(Block) + sizeof(std::unique_ptr<Block>));
-    // std::cout << "Blocks: " << ++count << "(" << totalSize << ")" << std::endl;
-  }
-
-  template<class T, class... Args>
-  static
-  typename std::enable_if<std::is_base_of<Block, T>::value, std::unique_ptr<Block, BlockDeleter>>::type
-  create_static() {
-    return std::unique_ptr<Block, BlockDeleter>(T::get());
-  }
-
-  template<class T, class... Args>
-  static
-  typename std::enable_if<std::is_base_of<Block, T>::value, std::unique_ptr<Block, BlockDeleter>>::type
-  create_dynamic(Args&&... args) {
-    return std::unique_ptr<Block, BlockDeleter>(new T(std::forward<Args>(args)...));
   }
 };
 
@@ -61,7 +35,7 @@ public:
 
   Mesh const& getMesh();
   Block* getBlock(glm::ivec3 pos);
-  void setBlock(glm::ivec3 pos, std::unique_ptr<Block, BlockDeleter> block);
+  void setBlock(glm::ivec3 pos, Block::unique_ptr_t block);
 
 private:
   void generateMeshData();

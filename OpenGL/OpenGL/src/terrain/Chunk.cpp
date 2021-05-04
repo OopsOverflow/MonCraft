@@ -135,7 +135,7 @@ Block* Chunk::getBlock(ivec3 pos) {
   return blocks.at(pos).get();
 }
 
-void Chunk::setBlock(ivec3 pos, std::unique_ptr<Block, BlockDeleter> block) {
+void Chunk::setBlock(ivec3 pos, Block::unique_ptr_t block) {
   blocks.at(pos) = std::move(block);
   updateMesh();
 }

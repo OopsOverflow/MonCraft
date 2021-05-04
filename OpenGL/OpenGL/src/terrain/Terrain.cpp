@@ -182,7 +182,7 @@ Block* Terrain::getBlock(ivec3 pos) {
   return chunks.at(cpos)->getBlock(dpos);
 }
 
-void Terrain::setBlock(ivec3 pos, std::unique_ptr<Block, BlockDeleter> block) {
+void Terrain::setBlock(ivec3 pos, Block::unique_ptr_t block) {
   std::lock_guard<std::mutex> lck(chunksMutex);
   ivec3 cpos = floor(vec3(pos) / float(chunkSize));
 
