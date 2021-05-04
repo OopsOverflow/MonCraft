@@ -250,10 +250,36 @@ void Terrain::setBlock(ivec3 pos, Block::unique_ptr_t block) {
   std::lock_guard<std::mutex> lck(chunksMutex);
   ivec3 cpos = floor(vec3(pos) / float(chunkSize));
 
-  if(chunks.find(cpos) == chunks.end())
+  auto it = chunks.find(cpos);
+  if(it == chunks.end())
     throw std::runtime_error("setBlock: chunk not found");
 
   ivec3 dpos = pos - cpos * chunkSize;
-  chunks.at(cpos)->at(dpos) = std::move(block);
-  chunks.at(cpos)->compute();
+
+  auto chunk = it->second;
+  chunk->at(dpos) = std::move(block);
+  chunk->compute();
+
+  // now update neighbors if close to a border
+  // COMBAK: this seems overly compicated and may be moved to Chunk.
+  static const ivec3 mask(9, 3, 1);
+
+  auto greater = equal(dpos, ivec3(chunkSize - 1));
+  auto lesser = equal(dpos, ivec3(0));
+
+  if(any(greater) || any(lesser)) {
+    auto tmp = ivec3(greater) * mask + ivec3(lesser) * 2 * mask;
+
+    std::vector<int> updates;
+    for(int i = 0; i < 2*2*2; i++) {
+      int index = tmp.x * ((i&0b100)>>2) + tmp.y * ((i&0b010)>>1) + tmp.z * (i&0b001);
+      if(index == 0) continue;
+      if(std::find(updates.begin(), updates.end(), index) != updates.end()) continue;
+      updates.push_back(index);
+      if(auto neigh = chunk->neighbors[index - 1].lock()) {
+        neigh->compute();
+      }
+    }
+  }
+
 }
