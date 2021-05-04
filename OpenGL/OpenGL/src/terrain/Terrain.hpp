@@ -31,7 +31,7 @@ public:
 
 private:
   static const int chunkSize = 32;
-  static const int renderDistH = 8; // horizontal render distance (2n+1 chunks)
+  static const int renderDistH = 3; // horizontal render distance (2n+1 chunks)
   static const int renderDistV = 3; // vertical render distance (2n+1 chunks)
   const int chunksMaxCount;
 
@@ -46,9 +46,8 @@ private:
     }
   };
 
-
-  using ChunkMap = std::unordered_map<glm::ivec3, std::shared_ptr<ChunkMesh>, ivec3_hash, ivec3_hash>;
-  using ChunkPList = PriorityList<std::weak_ptr<Chunk>>;
+  template<class T>
+  using Grid3D = std::unordered_map<glm::ivec3, T, ivec3_hash, ivec3_hash>;
   // TODO: should we use runtime alloc instead of compile-time ?
   using WaitingList = AtomicCyclicList<glm::ivec3, (2*renderDistH+1)*(2*renderDistH+1)*(2*renderDistV+1)>;
 
@@ -60,19 +59,22 @@ private:
   bool chunkPosChanged;
   float fovX;
 
-  std::array<std::thread, 4> workerThreads; // the worker creates new chunks when it can
+  // std::array<std::thread, 4> workerThreads; // the worker creates new chunks when it can
+  std::thread mainWorkerThread; // manages the queue of chunks to generate
+  std::array<std::thread, 4> genWorkerThreads; // creates new chunks when it can
   bool stopFlag;
   std::mutex stopMutex;
   std::condition_variable stopSignal;
 
   // chunks
   std::mutex chunksMutex;
-  ChunkMap chunks; // hashmap to hold the chunks
+  Grid3D<std::shared_ptr<Chunk>> chunks; // hashmap to hold the chunks
   WaitingList waitingChunks; // chunk positions yet to be loaded
 
   Loader loader;
   GLuint texture;
 
-  void worker(int n);
+  void mainWorker();
+  void genWorker();
   void updateWaitingList();
 };

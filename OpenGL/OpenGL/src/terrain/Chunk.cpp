@@ -11,33 +11,42 @@ using std::move;
 
 #include "debug/Debug.hpp"
 
-Chunk::Chunk(int size)
-  : DataStore<Block::unique_ptr_t, 3>(glm::ivec3(size))
-{
-}
-
-ChunkMesh::ChunkMesh(ivec3 chunkPos, std::shared_ptr<Chunk> chunk)
-  : chunk(chunk),
+Chunk::Chunk(ivec3 chunkPos, int chunkSize)
+  : DataStore<Block::unique_ptr_t, 3>(glm::ivec3(chunkSize)),
     chunkPos(chunkPos),
-    mesh(nullptr)
+    mesh(nullptr),
+    computed(false)
 {
-  generateMeshData();
-  // std::cout << "created ChunkMesh " << chunkPos << std::endl;
+  // std::cout << "created Chunk " << chunkPos << std::endl;
 }
 
-ChunkMesh::~ChunkMesh() {
-  // std::cout << "deleted ChunkMesh " << chunkPos << std::endl;
-  delete mesh;
+Chunk::~Chunk() {
+  // std::cout << "deleted Chunk " << chunkPos << std::endl;
 }
 
 // /!\ extra care must be taken here.
 //  - uses operator[] which is unsafe (no bounds checks)
-//  - assumes ChunkMesh is loaded
-bool ChunkMesh::isSolid(ivec3 pos) {
-  if(any(lessThan(pos, ivec3(0))) || any(greaterThanEqual(pos, chunk->size))) {
-    return false; // TODO
+bool Chunk::isSolid(ivec3 pos) {
+  static const ivec3 mask(9, 3, 1);
+
+  auto greater = greaterThanEqual(pos, size);
+  auto lesser = lessThan(pos, ivec3(0));
+  if(any(greater) || any(lesser)) {
+    auto tmp = ivec3(greater) * mask + ivec3(lesser) * 2 * mask;
+    int index = tmp.x + tmp.y + tmp.z - 1;
+
+    if(auto neigh = neighbors[index].lock()) {
+      return neigh->isSolidNoChecks(pos - size * (ivec3(greater) - ivec3(lesser)));
+    }
+    else return false;
   }
-  return (*chunk)[pos]->type != BlockType::Air;
+  return (*this)[pos]->type != BlockType::Air;
+}
+
+// /!\ extra care must be taken here.
+//  - uses operator[] which is unsafe (no bounds checks)
+bool Chunk::isSolidNoChecks(ivec3 pos) {
+  return (*this)[pos]->type != BlockType::Air;
 }
 
 // TODO: move out of here (util ?)
@@ -51,7 +60,7 @@ face_t<2> getFaceUV(ivec2 index) {
   };
 }
 
-std::array<GLfloat, 4> ChunkMesh::genOcclusion(ivec3 pos, BlockFace face) {
+std::array<GLfloat, 4> Chunk::genOcclusion(ivec3 pos, BlockFace face) {
   std::array<GLfloat, 4> occl = { 0.f, 0.f, 0.f, 0.f };
 
   auto const& offsets = blockOcclusionOffsets[static_cast<size_t>(face)];
@@ -69,7 +78,8 @@ std::array<GLfloat, 4> ChunkMesh::genOcclusion(ivec3 pos, BlockFace face) {
   return occl;
 }
 
-void ChunkMesh::generateMeshData() {
+void Chunk::compute() {
+  std::lock_guard<std::mutex> lck(computeMutex);
   // indices scheme
   std::vector<int> scheme = { 0, 1, 2, 0, 2, 3 };
 
@@ -82,7 +92,7 @@ void ChunkMesh::generateMeshData() {
     auto& posFace = blockPositions[(size_t)face];
     positions.insert(positions.end(), posFace.begin(), posFace.end());
     for(int i = 0, k = 0; i < 12; i++, k = (k+1) % 3) {
-      positions[positions.size() - 12 + i] += pos[k] - 1;
+      positions[positions.size() - 12 + i] += pos[k];
     }
 
     // normals
@@ -100,9 +110,9 @@ void ChunkMesh::generateMeshData() {
   };
 
   ivec3 pos{};
-  for(pos.x = 0; pos.x < chunk->size.x; pos.x++) {
-    for(pos.y = 0; pos.y < chunk->size.y; pos.y++) {
-      for(pos.z = 0; pos.z < chunk->size.z; pos.z++) {
+  for(pos.x = 0; pos.x < size.x; pos.x++) {
+    for(pos.y = 0; pos.y < size.y; pos.y++) {
+      for(pos.z = 0; pos.z < size.z; pos.z++) {
         if(!isSolid(pos)) continue;
         if(!isSolid(pos + ivec3(1, 0, 0)))  genFace(pos, BlockFace::RIGHT);
         if(!isSolid(pos + ivec3(-1, 0, 0))) genFace(pos, BlockFace::LEFT);
@@ -113,35 +123,47 @@ void ChunkMesh::generateMeshData() {
       }
     }
   }
-}
 
-Mesh const& ChunkMesh::getMesh() {
-  if(mesh == nullptr) {
-    mesh = new Mesh(positions, normals, textureCoords, occlusion, indices);
-    mesh->model = translate(mesh->model, vec3(chunkPos));
-
-    positions = {};
-    normals = {};
-    textureCoords = {};
-    occlusion = {};
-    indices = {};
+  if(indices.size() != 0) { // that chunk is not filled with air
+    computed = true;
   }
-  return *mesh;
 }
 
-void ChunkMesh::updateMesh() {
-  generateMeshData();
+void Chunk::update() {
+  if(computeMutex.try_lock()) {
+    if(computed) {
+      mesh = std::make_unique<Mesh>(positions, normals, textureCoords, occlusion, indices);
+      mesh->model = translate(mesh->model, vec3(size * chunkPos));
+
+      positions = {};
+      normals = {};
+      textureCoords = {};
+      occlusion = {};
+      indices = {};
+      computed = false;
+    }
+    computeMutex.unlock();
+  }
+}
+
+void Chunk::draw() {
+  update();
   if(mesh) {
-    delete mesh;
-    getMesh(); // this will re-generate the mesh
+    glBindVertexArray(mesh->getVAO());
+    glUniformMatrix4fv(MATRIX_MODEL, 1, GL_FALSE, glm::value_ptr(mesh->model));
+    glDrawElements(GL_TRIANGLES, mesh->getVertexCount(), GL_UNSIGNED_INT, nullptr);
   }
 }
 
-Block* ChunkMesh::getBlock(ivec3 pos) {
-  return chunk->at(pos).get();
+bool Chunk::isLoaded() {
+  std::lock_guard<std::mutex> lck(computeMutex);
+  return computed || mesh;
 }
 
-void ChunkMesh::setBlock(ivec3 pos, Block::unique_ptr_t block) {
-  chunk->at(pos) = std::move(block);
-  updateMesh();
+Block* Chunk::getBlock(ivec3 pos) {
+  return at(pos).get();
+}
+
+void Chunk::setBlock(ivec3 pos, Block::unique_ptr_t block) {
+  at(pos) = std::move(block);
 }

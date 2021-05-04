@@ -13,17 +13,16 @@ int distance(ivec3 a, ivec3 b) {
 }
 
 Terrain::Terrain()
-  : chunksMaxCount((2*renderDistH+1)*(2*renderDistH+1)*(2*renderDistV+1)),
+  : chunksMaxCount((2*renderDistH+2)*(2*renderDistH+2)*(2*renderDistV+2)),
     generator(chunkSize),
     chunkPos(0),
     chunkPosChanged(false),
     loader(),
     texture(loader.loadTexture("Texture_atlas"))
 {
-  int n = 0;
-  for(auto& thread : workerThreads) {
-    thread = std::thread(&Terrain::worker, this, n);
-    n++;
+  mainWorkerThread = std::thread(&Terrain::mainWorker, this);
+  for(auto& thread : genWorkerThreads) {
+    thread = std::thread(&Terrain::genWorker, this);
   }
 }
 
@@ -34,7 +33,8 @@ Terrain::~Terrain() {
     stopFlag = true;
   }
   stopSignal.notify_all();
-  for(auto& thread : workerThreads) {
+  mainWorkerThread.join();
+  for(auto& thread : genWorkerThreads) {
     thread.join();
   }
   std::cout << "terrain thread terminated" << std::endl;
@@ -49,7 +49,8 @@ void Terrain::updateWaitingList() {
     std::lock_guard<std::mutex> lck(chunksMutex);
     for(int i = -renderDistV; i <= renderDistV; i++) {
       ivec3 p = chunkPos + ivec3(pos.x, i, pos.y);
-      if(chunks.find(p) == chunks.end()) {
+      auto it = chunks.find(p);
+      if(it == chunks.end() || !it->second->isLoaded()) {
         waitingChunks.push(p);
       }
     }
@@ -81,34 +82,101 @@ void Terrain::updateWaitingList() {
   }
 }
 
-void Terrain::worker(int n) {
-  auto sleep = 1ms;
+void Terrain::mainWorker() {
   auto longSleep = 500ms;
   bool stop;
 
   do {
 
-    if(n == 0) {
-      bool changed = false;
-      {
-        std::lock_guard<std::mutex> lck(chunksMutex);
-        changed = chunkPosChanged;
-        chunkPosChanged = false;
-      }
+    bool changed = false;
+    {
+      std::lock_guard<std::mutex> lck(chunksMutex);
+      changed = chunkPosChanged;
+      chunkPosChanged = false;
+    }
 
-      if(changed) {
-        updateWaitingList();
+    if(changed) {
+      updateWaitingList();
+    }
+
+    {std::unique_lock<std::mutex> stopLck(stopMutex);
+    stop = stopSignal.wait_for(stopLck, longSleep, [&]{return stopFlag;});}
+
+  } while(!stop);
+}
+
+void Terrain::genWorker() {
+  auto sleep = 1ms;
+  auto longSleep = 500ms;
+  bool stop;
+
+  static const std::array<ivec3, 26> offsets = {
+    // ivec3{ 0, 0, 0 },
+    ivec3{ 0, 0, 1 },
+    ivec3{ 0, 0,-1 },
+    ivec3{ 0, 1, 0 },
+    ivec3{ 0, 1, 1 },
+    ivec3{ 0, 1,-1 },
+    ivec3{ 0,-1, 0 },
+    ivec3{ 0,-1, 1 },
+    ivec3{ 0,-1,-1 },
+
+    ivec3{ 1, 0, 0 },
+    ivec3{ 1, 0, 1 },
+    ivec3{ 1, 0,-1 },
+    ivec3{ 1, 1, 0 },
+    ivec3{ 1, 1, 1 },
+    ivec3{ 1, 1,-1 },
+    ivec3{ 1,-1, 0 },
+    ivec3{ 1,-1, 1 },
+    ivec3{ 1,-1,-1 },
+
+    ivec3{-1, 0, 0 },
+    ivec3{-1, 0, 1 },
+    ivec3{-1, 0,-1 },
+    ivec3{-1, 1, 0 },
+    ivec3{-1, 1, 1 },
+    ivec3{-1, 1,-1 },
+    ivec3{-1,-1, 0 },
+    ivec3{-1,-1, 1 },
+    ivec3{-1,-1,-1 },
+  };
+
+  // this lambda returns the chunk in the hashmap, or safely generates, stores then returns it.
+  auto getOrGen = [&](ivec3 pos) -> std::shared_ptr<Chunk> {
+    {
+      std::lock_guard<std::mutex> lck(chunksMutex);
+      auto it = chunks.find(pos);
+      if(it != chunks.end()) {
+        return it->second;
       }
     }
+    auto chunk = generator.generate(pos);
+    {
+      std::lock_guard<std::mutex> lck(chunksMutex);
+      chunks.emplace(pos, chunk);
+    }
+    return chunk;
+  };
+
+  do {
 
     ivec3 pos;
     if(waitingChunks.pop(pos)) {
-      std::shared_ptr<Chunk> chunk(generator.generate(pos));
-      std::shared_ptr<ChunkMesh> mesh(new ChunkMesh(pos * chunkSize, chunk));
-      {
-        std::lock_guard<std::mutex> lck(chunksMutex);
-        chunks.emplace(pos, mesh);
+
+      // the main, center chunk
+      std::shared_ptr<Chunk> chunk(getOrGen(pos));
+
+      // sets the neighboring chunks around in order defined by offsets
+      for(int i = 0; i < offsets.size(); i++) {
+        auto neighbor = getOrGen(pos + offsets[i]);
+        {
+          std::lock_guard<std::mutex> lck(chunksMutex);
+          chunk->neighbors[i] = neighbor;
+        }
       }
+
+      chunk->compute();
 
       {std::unique_lock<std::mutex> stopLck(stopMutex);
       stop = stopSignal.wait_for(stopLck, sleep, [&]{return stopFlag;});}
@@ -120,7 +188,6 @@ void Terrain::worker(int n) {
     }
 
   } while(!stop);
-
 }
 
 void Terrain::update(glm::vec3 pos, glm::vec3 dir, float fovX) {
@@ -158,16 +225,12 @@ void Terrain::render() {
   ivec3 startChunk = chunkPos - ivec3(glm::sign(viewDir));
 
   for(auto& chunk : chunks) {
-    Mesh const& mesh = chunk.second->getMesh();
     ivec3 chunkDir3D = chunk.first - startChunk;
     vec2 chunkDir = glm::normalize(vec2(chunkDir3D.x, chunkDir3D.z));
 
     float minDot = cos(glm::radians(fovX));
-
     if(distance(chunk.first, chunkPos) < 2 || glm::dot(chunkDir, viewDir2D) > minDot) {
-      glBindVertexArray(mesh.getVAO());
-      glUniformMatrix4fv(MATRIX_MODEL, 1, GL_FALSE, glm::value_ptr(mesh.model));
-      glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_INT, nullptr);
+      chunk.second->draw();
     }
   }
 }
@@ -180,7 +243,7 @@ Block* Terrain::getBlock(ivec3 pos) {
     return nullptr;
 
   ivec3 dpos = pos - cpos * chunkSize;
-  return chunks.at(cpos)->getBlock(dpos);
+  return chunks.at(cpos)->at(dpos).get();
 }
 
 void Terrain::setBlock(ivec3 pos, Block::unique_ptr_t block) {
@@ -191,5 +254,6 @@ void Terrain::setBlock(ivec3 pos, Block::unique_ptr_t block) {
     throw std::runtime_error("setBlock: chunk not found");
 
   ivec3 dpos = pos - cpos * chunkSize;
-  chunks.at(cpos)->setBlock(dpos, std::move(block));
+  chunks.at(cpos)->at(dpos) = std::move(block);
+  chunks.at(cpos)->compute();
 }

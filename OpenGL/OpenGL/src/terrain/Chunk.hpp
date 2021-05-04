@@ -2,6 +2,7 @@
 
 #include <glm/glm.hpp>
 #include <memory>
+#include <mutex>
 
 #include "gl/Mesh.hpp"
 #include "util/DataStore.hpp"
@@ -13,37 +14,33 @@
 
 class Chunk : public DataStore<Block::unique_ptr_t, 3> {
 public:
-  Chunk(int size);
-};
+  Chunk(glm::ivec3 chunkPos, int chunkSize);
+  ~Chunk();
 
+  Chunk(Chunk const&) = delete;
+  Chunk& operator=(Chunk const&) = delete;
 
-/**
- * A Chunk holds a portion of the terrain data and manages a mesh accordingly.
- */
-
-class ChunkMesh {
-public:
-  ChunkMesh(glm::ivec3 chunkPos, std::shared_ptr<Chunk> chunks);
-  ~ChunkMesh();
-
-  ChunkMesh(ChunkMesh const&) = delete;
-  ChunkMesh& operator=(ChunkMesh const&) = delete;
-
-  Mesh const& getMesh();
   Block* getBlock(glm::ivec3 pos);
   void setBlock(glm::ivec3 pos, Block::unique_ptr_t block);
+  bool isLoaded();
+
+  void compute();
+  void update();
+  void draw();
+
+  std::array<std::weak_ptr<Chunk>, 26> neighbors;
 
 private:
-  void generateMeshData();
-  void updateMesh();
-  std::array<GLfloat, 4> genOcclusion(glm::ivec3 pos, BlockFace face);
   bool isSolid(glm::ivec3 pos);
+  bool isSolidNoChecks(glm::ivec3 pos);
+  std::array<GLfloat, 4> genOcclusion(glm::ivec3 pos, BlockFace face);
 
-  std::shared_ptr<Chunk> chunk;
-
-  // the gl mesh and corresponding data.
   glm::ivec3 chunkPos;
-  Mesh* mesh;
+  // the gl mesh and corresponding data.
+  std::unique_ptr<Mesh> mesh;
   std::vector<GLuint> indices;
   std::vector<GLfloat> positions, normals, textureCoords, occlusion;
+
+  std::mutex computeMutex;
+  bool computed;
 };

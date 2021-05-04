@@ -27,7 +27,7 @@ std::shared_ptr<Chunk> Generator::generate(ivec3 chunkPos) {
     {.00f, 0.100f},
   };
 
-  std::shared_ptr<Chunk> chunk(new Chunk(chunkSize));
+  std::shared_ptr<Chunk> chunk(new Chunk(chunkPos, chunkSize));
 
   ivec3 dpos(0);
 
