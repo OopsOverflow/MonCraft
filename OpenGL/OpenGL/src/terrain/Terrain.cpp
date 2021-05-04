@@ -106,7 +106,7 @@ void Terrain::mainWorker() {
 }
 
 void Terrain::genWorker() {
-  auto sleep = 1ms;
+  auto sleep = 10ms;
   auto longSleep = 500ms;
   bool stop;
 

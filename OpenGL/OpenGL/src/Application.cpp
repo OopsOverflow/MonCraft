@@ -104,7 +104,7 @@ int main(int argc, char* argv[]) {
         glBindVertexArray(0);
 
         // draw the terrain
-        shadows.activate();
+        // shadows.activate();
         terrain.render();
 
         // terrain sky view
