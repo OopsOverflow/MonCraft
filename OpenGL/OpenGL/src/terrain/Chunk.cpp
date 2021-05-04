@@ -1,36 +1,43 @@
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <algorithm>
 
 #include "Chunk.hpp"
 #include "BlockGeom.hpp"
+#include "gl/Shader.hpp"
 
 using namespace glm;
 using std::move;
 
 #include "debug/Debug.hpp"
 
-Chunk::Chunk(ivec3 chunkPos, Blocks blocks)
-  : chunkPos(chunkPos),
-    blocks(move(blocks)),
+Chunk::Chunk(int size)
+  : DataStore<Block::unique_ptr_t, 3>(glm::ivec3(size))
+{
+}
+
+ChunkMesh::ChunkMesh(ivec3 chunkPos, std::shared_ptr<Chunk> chunk)
+  : chunk(chunk),
+    chunkPos(chunkPos),
     mesh(nullptr)
 {
   generateMeshData();
-  // std::cout << "created chunk " << chunkPos << std::endl;
+  // std::cout << "created ChunkMesh " << chunkPos << std::endl;
 }
 
-Chunk::~Chunk() {
-  // std::cout << "deleted chunk " << chunkPos << std::endl;
+ChunkMesh::~ChunkMesh() {
+  // std::cout << "deleted ChunkMesh " << chunkPos << std::endl;
   delete mesh;
 }
 
 // /!\ extra care must be taken here.
 //  - uses operator[] which is unsafe (no bounds checks)
-//  - assumes chunk is loaded
-bool Chunk::isSolid(ivec3 pos) {
-  if(any(lessThan(pos, ivec3(0))) || any(greaterThanEqual(pos, blocks.size))) {
+//  - assumes ChunkMesh is loaded
+bool ChunkMesh::isSolid(ivec3 pos) {
+  if(any(lessThan(pos, ivec3(0))) || any(greaterThanEqual(pos, chunk->size))) {
     return false; // TODO
   }
-  return blocks[pos]->type != BlockType::Air;
+  return (*chunk)[pos]->type != BlockType::Air;
 }
 
 // TODO: move out of here (util ?)
@@ -44,7 +51,7 @@ face_t<2> getFaceUV(ivec2 index) {
   };
 }
 
-std::array<GLfloat, 4> Chunk::genOcclusion(ivec3 pos, BlockFace face) {
+std::array<GLfloat, 4> ChunkMesh::genOcclusion(ivec3 pos, BlockFace face) {
   std::array<GLfloat, 4> occl = { 0.f, 0.f, 0.f, 0.f };
 
   auto const& offsets = blockOcclusionOffsets[static_cast<size_t>(face)];
@@ -62,7 +69,7 @@ std::array<GLfloat, 4> Chunk::genOcclusion(ivec3 pos, BlockFace face) {
   return occl;
 }
 
-void Chunk::generateMeshData() {
+void ChunkMesh::generateMeshData() {
   // indices scheme
   std::vector<int> scheme = { 0, 1, 2, 0, 2, 3 };
 
@@ -93,9 +100,9 @@ void Chunk::generateMeshData() {
   };
 
   ivec3 pos{};
-  for(pos.x = 0; pos.x < blocks.size.x; pos.x++) {
-    for(pos.y = 0; pos.y < blocks.size.y; pos.y++) {
-      for(pos.z = 0; pos.z < blocks.size.z; pos.z++) {
+  for(pos.x = 0; pos.x < chunk->size.x; pos.x++) {
+    for(pos.y = 0; pos.y < chunk->size.y; pos.y++) {
+      for(pos.z = 0; pos.z < chunk->size.z; pos.z++) {
         if(!isSolid(pos)) continue;
         if(!isSolid(pos + ivec3(1, 0, 0)))  genFace(pos, BlockFace::RIGHT);
         if(!isSolid(pos + ivec3(-1, 0, 0))) genFace(pos, BlockFace::LEFT);
@@ -108,7 +115,7 @@ void Chunk::generateMeshData() {
   }
 }
 
-Mesh const& Chunk::getMesh() {
+Mesh const& ChunkMesh::getMesh() {
   if(mesh == nullptr) {
     mesh = new Mesh(positions, normals, textureCoords, occlusion, indices);
     mesh->model = translate(mesh->model, vec3(chunkPos));
@@ -122,20 +129,19 @@ Mesh const& Chunk::getMesh() {
   return *mesh;
 }
 
-void Chunk::updateMesh() {
+void ChunkMesh::updateMesh() {
   generateMeshData();
   if(mesh) {
     delete mesh;
-    mesh = nullptr;
     getMesh(); // this will re-generate the mesh
   }
 }
 
-Block* Chunk::getBlock(ivec3 pos) {
-  return blocks.at(pos).get();
+Block* ChunkMesh::getBlock(ivec3 pos) {
+  return chunk->at(pos).get();
 }
 
-void Chunk::setBlock(ivec3 pos, Block::unique_ptr_t block) {
-  blocks.at(pos) = std::move(block);
+void ChunkMesh::setBlock(ivec3 pos, Block::unique_ptr_t block) {
+  chunk->at(pos) = std::move(block);
   updateMesh();
 }

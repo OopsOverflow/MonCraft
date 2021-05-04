@@ -16,7 +16,7 @@ Generator::Generator(int chunkSize)
   noiseZ.seed(21554);
 }
 
-Chunk* Generator::generate(ivec3 chunkPos) {
+std::shared_ptr<Chunk> Generator::generate(ivec3 chunkPos) {
 
   static const int maxHeight = 100;
 
@@ -27,7 +27,7 @@ Chunk* Generator::generate(ivec3 chunkPos) {
     {.00f, 0.100f},
   };
 
-  Blocks blocks(chunkSize);
+  std::shared_ptr<Chunk> chunk(new Chunk(chunkSize));
 
   ivec3 dpos(0);
 
@@ -39,7 +39,7 @@ Chunk* Generator::generate(ivec3 chunkPos) {
 
         float height = noise.fractal2(ivec2(pos.x, pos.z), octaves) * .5f + .5f;
         int blockHeight = (int)floor(height * maxHeight) - chunkPos.y * chunkSize;
-        auto& block = blocks[dpos];
+        auto& block = (*chunk)[dpos];
 
         if(dpos.y > blockHeight) {
           block = Block::create_static<Air_Block>();
@@ -58,5 +58,5 @@ Chunk* Generator::generate(ivec3 chunkPos) {
     }
   }
 
-  return new Chunk(chunkPos * ivec3(chunkSize), std::move(blocks));
+  return chunk;
 }

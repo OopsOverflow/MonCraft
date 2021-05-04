@@ -103,10 +103,11 @@ void Terrain::worker(int n) {
 
     ivec3 pos;
     if(waitingChunks.pop(pos)) {
-      std::shared_ptr<Chunk> c(generator.generate(pos));
+      std::shared_ptr<Chunk> chunk(generator.generate(pos));
+      std::shared_ptr<ChunkMesh> mesh(new ChunkMesh(pos * chunkSize, chunk));
       {
         std::lock_guard<std::mutex> lck(chunksMutex);
-        chunks.emplace(pos, c);
+        chunks.emplace(pos, mesh);
       }
 
       {std::unique_lock<std::mutex> stopLck(stopMutex);
@@ -190,5 +191,5 @@ void Terrain::setBlock(ivec3 pos, Block::unique_ptr_t block) {
     throw std::runtime_error("setBlock: chunk not found");
 
   ivec3 dpos = pos - cpos * chunkSize;
-  return chunks.at(cpos)->setBlock(dpos, std::move(block));
+  chunks.at(cpos)->setBlock(dpos, std::move(block));
 }

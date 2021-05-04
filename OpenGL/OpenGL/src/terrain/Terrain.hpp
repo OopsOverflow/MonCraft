@@ -47,7 +47,7 @@ private:
   };
 
 
-  using ChunkMap = std::unordered_map<glm::ivec3, std::shared_ptr<Chunk>, ivec3_hash, ivec3_hash>;
+  using ChunkMap = std::unordered_map<glm::ivec3, std::shared_ptr<ChunkMesh>, ivec3_hash, ivec3_hash>;
   using ChunkPList = PriorityList<std::weak_ptr<Chunk>>;
   // TODO: should we use runtime alloc instead of compile-time ?
   using WaitingList = AtomicCyclicList<glm::ivec3, (2*renderDistH+1)*(2*renderDistH+1)*(2*renderDistV+1)>;
