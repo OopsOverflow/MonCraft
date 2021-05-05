@@ -3,23 +3,31 @@
 using namespace glm;
 static const mat4 I(1.f);
 
-Entity::Entity()
-: maxSpeed(10), maxAccel(1), friction(5),
-	speed(0), accel(0),
-	state(State::Idle)
-{ }
+Entity::Entity(Hitbox hitbox)
+: maxSpeed(10), maxAccel(10), friction(5),
+	speed(0), accel(0), onFloor(false),
+	state(State::Idle),
+	hitbox(std::move(hitbox))
+{}
 
 Entity::~Entity() {}
 
-void Entity::walk(vec3 dir) {
-	if(dir == vec3(0)) {
+void Entity::walk(vec2 dir) {
+	if(dir == vec2(0)) {
 		state = State::Idle;
 		accel = vec3(0);
 	}
 	else {
 		state = State::Walking;
-		direction = normalize(dir);
+		direction = normalize(vec3(dir.x, 0, dir.y));
 		accel = direction * maxAccel;
+	}
+}
+
+void Entity::jump() {
+	if(onFloor) {
+		onFloor = false;
+		speed.y += 100.f;
 	}
 }
 
@@ -50,22 +58,42 @@ void Entity::cameraToHead(Camera& camera) {
 
 #include "../debug/Debug.hpp"
 
-void Entity::update(float dt) {
+void Entity::update(Terrain& terrain, float dt) {
 	// update forces
+	vec3 posOffset;
 	{
+		vec3 acc = accel + vec3(0, -1, 0) * 10.f;
 		// disable friction in accel direction
 		vec3 drag = speed * friction;
-		if(accel != vec3(0))
-			drag -= normalize(accel) * max(dot(drag, normalize(accel)), 0.f); // substract component in accel direction from drag
+		if(acc != vec3(0))
+			drag -= normalize(acc) * max(dot(drag, normalize(acc)), 0.f); // substract component in accel direction from drag
 
 		// update speed
-		speed = speed + accel * dt - drag * dt;
+		speed = speed + acc * dt - drag * dt;
 		if(length(speed) >= maxSpeed)
 			speed = normalize(speed) * maxSpeed;
 
 		// apply motion
 		auto rotMatrix = rotate(I, node.rot.y + headNode.rot.y, {0, 1, 0});
-		node.loc += vec3(rotMatrix * vec4(speed, 1.f));
+		posOffset = vec3(rotMatrix * vec4(speed * dt, 1.f));
+	}
+
+	// check collisions
+	{
+		vec3 collOffset = hitbox.computeCollision(node.loc, posOffset, terrain);
+
+		if(collOffset.y > 0) {
+			onFloor = true;
+		}
+
+		node.loc += posOffset + collOffset;
+
+		// cancel speed in collision direction
+		if(collOffset != vec3(0))
+			speed = vec3(0);
+		// auto rotMatrix = rotate(I, -node.rot.y - headNode.rot.y, {0, 1, 0});
+		// vec3 nColl = normalize(vec3(rotMatrix * vec4(-collOffset, 1.f)));
+		// if(collOffset != vec3(0)) speed -= nColl * dot(speed, nColl); // substract component in collision direction from speed
 	}
 
 	// update chest rotation based on direction

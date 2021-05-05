@@ -27,7 +27,7 @@ int main(int argc, char* argv[]) {
     Shader shader("src/shader/simple.vert", "src/shader/simple.frag");
     Terrain terrain;
     SkyBox sky;
-    Character character({ 0.0f,32.0f,0.0f });
+    Character character({ 0.0f,40.0f,0.0f });
     ShadowMap shadows(1024);
     Loader loader;
     Raycast caster(100.f);
@@ -50,7 +50,7 @@ int main(int argc, char* argv[]) {
 
         window.keyboardController.apply(character);
         window.mouseController.apply(character, terrain);
-        character.update(dt);
+        character.update(terrain, dt);
         character.cameraToHead(window.camera);
 
         auto playerPos = window.camera.position;
@@ -98,10 +98,10 @@ int main(int argc, char* argv[]) {
         glBindTexture(GL_TEXTURE_2D, shadows.getTextureID());
 
         // draw target block
-        glBindVertexArray(targetBlock->getVAO());
-        glUniformMatrix4fv(MATRIX_MODEL, 1, GL_FALSE, glm::value_ptr(targetBlock->model));
-        glDrawElements(GL_TRIANGLES, targetBlock->getVertexCount(), GL_UNSIGNED_INT, nullptr);
-        glBindVertexArray(0);
+        // glBindVertexArray(targetBlock->getVAO());
+        // glUniformMatrix4fv(MATRIX_MODEL, 1, GL_FALSE, glm::value_ptr(targetBlock->model));
+        // glDrawElements(GL_TRIANGLES, targetBlock->getVertexCount(), GL_UNSIGNED_INT, nullptr);
+        // glBindVertexArray(0);
 
         // draw the terrain
         // shadows.activate();

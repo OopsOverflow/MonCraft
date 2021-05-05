@@ -6,11 +6,13 @@
 using namespace glm;
 
 Character::Character(vec3 pos)
-    : caster(100) // distance the player can place blocks
+    : Entity(Hitbox(-vec3(.3f, .5f, .3f), vec3(.3f, 1.3f, .3f))),
+      caster(100) // distance the player can place blocks
 {
   node.loc = pos;
-  rootNode.sca = vec3(1.85 / 32.f); // steve is 1.85 blocks high, 32 pixels high
+  rootNode.sca = vec3(1.85f / 32.f); // steve is 1.85 blocks high, 32 pixels high
   rootNode.rot.y = glm::pi<float>();
+  rootNode.loc.y = 9.5f / 32.f * 1.85f;
   headNode.loc = {0, 6, 0};
   node.addChild(&rootNode);
   rootNode.addChild(&headNode);
@@ -49,8 +51,8 @@ void Character::placeBlock(Terrain& terrain) {
   }
 }
 
-void Character::update(float dt) {
-  Entity::update(dt);
+void Character::update(Terrain& terrain, float dt) {
+  Entity::update(terrain, dt);
 
   // smooth head rot with constant speed
   {

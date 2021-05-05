@@ -71,5 +71,7 @@ void KeyboardController::pressedF5() {
 
 void KeyboardController::apply(Entity& character) {
   character.view = view;
-  character.walk(direction);
+  character.walk(glm::vec2(direction.x, direction.z));
+  if(direction.y > 0)
+    character.jump();
 }
