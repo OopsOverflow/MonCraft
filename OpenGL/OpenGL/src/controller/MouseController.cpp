@@ -5,7 +5,7 @@
 
 MouseController::MouseController() {
   lastX = lastY = deltaX = deltaY = 0;
-  sensivity = 0.005;
+  sensivity = 0.005f;
   rotation = false;
 }
 
