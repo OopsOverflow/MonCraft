@@ -83,7 +83,7 @@ void Terrain::updateWaitingList() {
 }
 
 void Terrain::mainWorker() {
-  auto longSleep = 500ms;
+  auto longSleep = 100ms;
   bool stop;
 
   do {
@@ -105,46 +105,91 @@ void Terrain::mainWorker() {
   } while(!stop);
 }
 
+// gets the chunks in the hashmap, or safely generates, stores then returns them.
+std::vector<std::shared_ptr<Chunk>> Terrain::getOrGenAllChunks(glm::ivec3 center, std::vector<glm::ivec3> const& offsets) {
+  std::vector<std::shared_ptr<Chunk>> res(offsets.size());
+  std::vector<std::pair<int, std::shared_future<std::shared_ptr<Chunk>>>> work;
+
+  for(size_t i = 0; i < offsets.size(); i++) {
+    auto pos = center + offsets[i];
+    bool ok = false;
+
+    // look for pos in wip
+    if(!ok) {
+      std::lock_guard<std::mutex> lck(wipMutex);
+      auto it = std::find_if(wip.begin(), wip.end(), [pos](auto const& pair) {
+        return pair.first == pos;
+      });
+      if(it != wip.end()) {
+        work.emplace_back(i, it->second);
+        ok = true;
+      }
+    }
+
+    // else, look for pos in chunks
+    if(!ok) {
+      std::lock_guard<std::mutex> lck(chunksMutex);
+      auto it = chunks.find(pos);
+      if(it != chunks.end()) {
+        res[i] = it->second;
+        ok = true;
+      }
+    }
+
+    // else, generate
+    if(!ok) {
+      std::promise<std::shared_ptr<Chunk>> prom;
+      {
+        std::lock_guard<std::mutex> lck(wipMutex);
+        wip.emplace_back(pos, prom.get_future().share());
+      }
+      auto chunk = generator.generate(pos);
+      res[i] = chunk;
+      prom.set_value(chunk);
+      {
+        std::lock_guard<std::mutex> lck(chunksMutex);
+        chunks.emplace(pos, chunk);
+      }
+      {
+        std::lock_guard<std::mutex> lck(wipMutex);
+        auto it = std::find_if(wip.begin(), wip.end(), [pos](auto const& pair) {
+          return pair.first == pos;
+        });
+        if(it != wip.end()) {
+          wip.erase(it);
+        }
+      }
+    }
+  }
+
+  // now, wait for all futures
+  for(auto const& task : work) {
+    res[task.first] = task.second.get();
+  }
+
+  return res;
+}
+
 void Terrain::genWorker() {
   auto sleep = 10ms;
   auto longSleep = 500ms;
   bool stop;
-
-  // this lambda returns the chunk in the hashmap, or safely generates, stores then returns it.
-  auto getOrGen = [&](ivec3 pos) -> std::shared_ptr<Chunk> {
-    {
-      std::lock_guard<std::mutex> lck(chunksMutex);
-      auto it = chunks.find(pos);
-      if(it != chunks.end()) {
-        return it->second;
-      }
-    }
-    auto chunk = generator.generate(pos);
-    {
-      std::lock_guard<std::mutex> lck(chunksMutex);
-      chunks.emplace(pos, chunk);
-    }
-    return chunk;
-  };
 
   do {
 
     ivec3 pos;
     if(waitingChunks.pop(pos)) {
 
-      // the main, center chunk
-      std::shared_ptr<Chunk> chunk(getOrGen(pos));
-
-      // sets the neighboring chunks around in order defined by offsets
-      for(size_t i = 0; i < Chunk::neighborOffsets.size(); i++) {
-        auto neighbor = getOrGen(pos + Chunk::neighborOffsets[i]);
-        {
-          std::lock_guard<std::mutex> lck(chunksMutex);
-          chunk->neighbors[i] = neighbor;
-        }
+      std::vector<ivec3> offsets(27);
+      offsets[0] = ivec3(0);
+      std::copy(Chunk::neighborOffsets.begin(), Chunk::neighborOffsets.end(), ++offsets.begin());
+      auto chunks = getOrGenAllChunks(pos, offsets);
+      {
+        std::lock_guard<std::mutex> lck(chunksMutex);
+        auto const& chunk = chunks[0];
+        std::copy(++chunks.begin(), chunks.end(), chunk->neighbors.begin());
       }
-
-      chunk->compute();
+      chunks[0]->compute();
 
       {std::unique_lock<std::mutex> stopLck(stopMutex);
       stop = stopSignal.wait_for(stopLck, sleep, [&]{return stopFlag;});}
