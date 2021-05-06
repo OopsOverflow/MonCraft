@@ -9,7 +9,7 @@ Camera::Camera(unsigned int width, unsigned int height, const glm::vec3 &positio
                const glm::vec3 &center, Projection projType)
  : view(1.f), projection(1.f),
    position(position), center(center),
-   fovY(45.f), near_(0.1f), far_(100.f),
+   fovY(45.f), near_(0.1f), far_(200.f),
    screenWidth(width), screenHeight(height),
    projType(projType)
 {
@@ -195,11 +195,8 @@ void Camera::computeProjection(float box[6]) {
   }
 
   else if (projType == Projection::PROJECTION_PERSPECTIVE) {
-    // COMBAK: Here I am using a far plane at infinity to make sure the
-    // whole scene fits. One can argue that the projection looses precision but
-    // I have never seen any artefacts so far. Anyway I haven't understood the
-    // precision issues with matrices.
-    projection = glm::infinitePerspective(glm::radians(fovY), aspect, near_);
+
+    projection = glm::perspective(glm::radians(fovY), aspect, near_,far_);
   }
   else {
       projection = glm::ortho(box[0], box[1], box[2], box[3], box[4], box[5]);
@@ -267,8 +264,6 @@ std::vector<glm::vec3> Camera::getBoxCorners(Frustrum frustrum) {
         x1 = x;
         x2 = x;
     }
-
-
 
 
     glm::mat4 invertView = glm::inverse(view);

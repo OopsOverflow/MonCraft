@@ -6,7 +6,7 @@
 enum class Projection { PROJECTION_ORTHOGRAPHIC,
                   PROJECTION_PERSPECTIVE, CUSTOM_PROJECTION}; //custom projection is used only for the shadows
 
-enum class Frustrum { ALL, NEAR, MEDIUM, FAR };
+enum class Frustrum { NEAR = 0, MEDIUM = 1, FAR = 2, ALL = 3 };
 
 class Camera {
 public:

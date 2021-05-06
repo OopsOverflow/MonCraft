@@ -7,7 +7,7 @@ class ShadowMap {
 
 public:
 
-  ShadowMap();
+  ShadowMap(float size);
   ~ShadowMap();
 
   ShadowMap(ShadowMap const&) = delete;
@@ -18,7 +18,8 @@ public:
   void update(Camera& cam, Frustrum frustrum);
   void beginFrame();
   void endFrame();
-  void activate(Frustrum frustrum);
+  void activate(Shader& shader);
+  void bindForWriting(Frustrum frustrum);
   GLuint getTextureID(Frustrum frustrum) const;
   Camera camera;
 private:
@@ -27,5 +28,6 @@ private:
   Shader shader;
   float distance;
 
+  glm::mat4 shadowMatrix[3];
   glm::vec3 direction;
 };

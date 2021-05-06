@@ -3,32 +3,32 @@
 #include <vector>
 
 
-ShadowMap::ShadowMap()
-  :camera(800, 800, {10, 10, 10}, {0, 0, 0}, Projection::PROJECTION_ORTHOGRAPHIC),
+ShadowMap::ShadowMap(float size)
+  :camera(size, size, {10, 10, 10}, {0, 0, 0}, Projection::PROJECTION_ORTHOGRAPHIC),
     shader("src/shader/shadow.vert", "src/shader/shadow.frag"),
     distance(100.f), direction({ -10, -10, -10 })
 {
   glGenFramebuffers(1, &fbo);
   glGenTextures(3, depthTex);
   glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-  for (int i = 0; i < 3; i++) {
-      glBindTexture(GL_TEXTURE_2D, depthTex[i]);
+  for (size_t i = 0; i < 3; i+=1) {
+      glBindTexture(GL_TEXTURE_2D_ARRAY, depthTex[i]);
 
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 1024, 1024, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+      glTexImage2D(GL_TEXTURE_2D_ARRAY, 0, GL_DEPTH_COMPONENT, size, size, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+      glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+      glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
       float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };//Uncalculated shadows are white
-      glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+      glTexParameterfv(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_BORDER_COLOR, borderColor);
+      glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+      glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
   }
 
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTex[0], 0);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D_ARRAY, depthTex[0], 0);
   glDrawBuffer(GL_NONE);
   glReadBuffer(GL_NONE);
 
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
-  glBindFramebuffer(GL_TEXTURE_2D, 0);
+  glBindFramebuffer(GL_TEXTURE_2D_ARRAY, 0);
 }
 
 // TODO: temporary until I finish the skewed shadow matrix
@@ -66,6 +66,7 @@ void ShadowMap::update(Camera& cam, Frustrum frustrum) {
     //render out of the view in case we have to cast shadows from a moutain
     float box[6] = { minX,maxX,minY,maxY,2 * minZ - maxZ,maxZ };
     camera.setProjectionType(Projection::CUSTOM_PROJECTION, box);
+    shadowMatrix[(size_t)frustrum] = camera.projection * camera.view;
 }
 
 
@@ -86,21 +87,39 @@ void ShadowMap::endFrame() {
   glCullFace(GL_BACK);
 }
 
-void ShadowMap::activate(Frustrum frustrum) {
-  glActiveTexture(GL_TEXTURE1);
-  glBindTexture(GL_TEXTURE_2D, getTextureID(frustrum));
-  auto shadows = camera.projection * camera.view;
-  glUniformMatrix4fv(MATRIX_SHADOWS, 1, GL_FALSE, glm::value_ptr(shadows));
+void ShadowMap::activate(Shader& shader) {
+    //GL_TEXTURE0 is the block texture
+    GLint shadowSampler = shader.getUniformLocation("shadowSampler[0]");
+    glUniform1i(shadowSampler, 1);
+
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, depthTex[0]);
+
+
+    shadowSampler = shader.getUniformLocation("shadowSampler[1]");
+    glUniform1i(shadowSampler, 2);
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D, depthTex[1]);
+
+    shadowSampler = shader.getUniformLocation("shadowSampler[2]");
+    glUniform1i(shadowSampler, 3);
+    glActiveTexture(GL_TEXTURE3);
+    glBindTexture(GL_TEXTURE_2D, depthTex[2]);
+
+  glUniformMatrix4fv(MATRIX_SHADOWS, 3, GL_FALSE, (GLfloat*) shadowMatrix);
 }
 
+void ShadowMap::bindForWriting(Frustrum frustrum) {
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, getTextureID(frustrum), 0);
+}
+
+
 ShadowMap::~ShadowMap() {
-  glDeleteTextures(1, depthTex);
+  glDeleteTextures(3, depthTex);
   glDeleteFramebuffers(1, &fbo);
 }
 
 GLuint ShadowMap::getTextureID(Frustrum frustrum) const {
-  if(frustrum==Frustrum::NEAR)return depthTex[0];
-  if (frustrum == Frustrum::MEDIUM)return depthTex[1];
-  if (frustrum == Frustrum::FAR)return depthTex[2];
-    return depthTex[3];
+    return depthTex[(size_t)frustrum];
 }

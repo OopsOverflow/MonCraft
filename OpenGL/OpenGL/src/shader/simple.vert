@@ -15,7 +15,7 @@ smooth out vec3 vertexPosition;
 smooth out vec4 vertexColor;
 smooth out vec3 vertexNormal;
 smooth out vec2 txrCoords;
-smooth out vec3 shadowCoords;
+smooth out vec3 shadowCoords[3];
 smooth out float vertexOcclusion;
 
 void main() {
@@ -35,6 +35,12 @@ void main() {
   // Occlusion
   vertexOcclusion = v_occlusion;
 
-  vec4 shadowCoords4 = m_shadows[0] * m_model * vec4(v_position, 1.0);
-  shadowCoords = vec3(shadowCoords4) / shadowCoords4.w;
+  vec4 shadowCoords4[3];
+  shadowCoords4[0] = m_shadows[0] * m_model * vec4(v_position, 1.0);
+  shadowCoords[0] = vec3(shadowCoords4[0]) / shadowCoords4[0].w;
+  shadowCoords4[1] = m_shadows[1] * m_model * vec4(v_position, 1.0);
+  shadowCoords[1] = vec3(shadowCoords4[1]) / shadowCoords4[1].w;
+  shadowCoords4[2] = m_shadows[2] * m_model * vec4(v_position, 1.0);
+  shadowCoords[2] = vec3(shadowCoords4[2]) / shadowCoords4[2].w;
+
 }

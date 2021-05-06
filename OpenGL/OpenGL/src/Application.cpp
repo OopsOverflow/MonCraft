@@ -73,7 +73,7 @@ int main(int argc, char* argv[]) {
     Terrain terrain;
     SkyBox sky;
     Hitbox character({ 0.0f,32.0f,0.0f });
-    ShadowMap shadows;
+    ShadowMap shadows(800);
     Loader loader;
     Raycast caster(100.f);
     std::unique_ptr<Mesh> targetBlock = makeTargetBlock();
@@ -188,19 +188,34 @@ int main(int argc, char* argv[]) {
         // draw the shadow map
 
 
-        shadows.update(window.camera, Frustrum::ALL);
+
         shadows.beginFrame();
+
+        shadows.bindForWriting(Frustrum::NEAR);
+        shadows.update(window.camera, Frustrum::NEAR);
         terrain.render(shadows.camera);
         character.drawCharacter();
+
+        glClear(GL_DEPTH_BUFFER_BIT);
+
+        shadows.bindForWriting(Frustrum::MEDIUM);
+        shadows.update(window.camera, Frustrum::MEDIUM);
+        terrain.render(shadows.camera);
+
+        glClear(GL_DEPTH_BUFFER_BIT);
+
+        shadows.bindForWriting(Frustrum::FAR);
+        shadows.update(window.camera, Frustrum::FAR);
+        terrain.render(shadows.camera);
         shadows.endFrame();
 
 
         // prepare render
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         shader.activate();
-        //window.camera.activate();
+        window.camera.activate();
 
- shadows.camera.activate();
+//shadows.camera.activate();
 
         // set light position / intensity
         glUniform1f(shader.getUniformLocation("lightIntensity"), 1);
@@ -209,13 +224,9 @@ int main(int argc, char* argv[]) {
 
         // bind textures
         GLint texSampler = shader.getUniformLocation("textureSampler");
-        GLint shadowSampler = shader.getUniformLocation("shadowSampler");
         glUniform1i(texSampler, 0);
-        glUniform1i(shadowSampler,  1);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, textureID);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, shadows.getTextureID(Frustrum::NEAR));
 
         // draw target block        
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -225,8 +236,8 @@ int main(int argc, char* argv[]) {
         glUniformMatrix4fv(MATRIX_MODEL, 1, GL_FALSE, glm::value_ptr(I));
         //glUniformMatrix4fv(MATRIX_VIEW, 1, GL_FALSE, glm::value_ptr(I));
         glDrawArrays(GL_TRIANGLES, 0, vertices.size());
-        //window.camera.activate();
- shadows.camera.activate();
+        window.camera.activate();
+//shadows.camera.activate();
 
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         glBindVertexArray(targetBlock->getVAO());
@@ -235,7 +246,7 @@ int main(int argc, char* argv[]) {
         glBindVertexArray(0);
 
         // draw the terrain
-        shadows.activate(Frustrum::NEAR);
+        shadows.activate(shader);
         terrain.render(window.camera);
 
         //// terrain sky view
