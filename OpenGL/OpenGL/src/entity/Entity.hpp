@@ -5,8 +5,8 @@
 #include "Hitbox.hpp"
 #include "Member.hpp"
 #include "Node.hpp"
-#include "../gl/Camera.hpp"
-#include "../audio/SoundEffect.hpp"
+#include "gl/Camera.hpp"
+#include "audio/SoundEffect.hpp"
 
 
 enum class View { FIRST_PERSON, THIRD_PERSON };

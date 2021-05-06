@@ -5,7 +5,7 @@
 
 MouseController::MouseController() {
   lastX = lastY = deltaX = deltaY = 0;
-  speed = 0.f;
+  sensivity = 0.005f;
   rotation = false;
 }
 
@@ -38,15 +38,14 @@ void MouseController::motionRel(int dx, int dy) {
   }
 }
 
-void MouseController::apply(Entity& character, Camera& camera) {
+void MouseController::triggerAction(MouseController::Action action) {
+  actions.push_back(action);
+}
 
-  unsigned int screenWidth;
-  unsigned int screenHeight;
+void MouseController::apply(Character& character, Terrain& terrain) {
 
-  float maxRotation = glm::pi<float>();
-  camera.getSize(screenWidth, screenHeight);
   if (rotation) {
-    character.turn(glm::vec2(deltaY / (float)screenHeight, -deltaX / (float)screenWidth) * maxRotation);
+    character.turn(glm::vec2(deltaY, -deltaX) * sensivity);
   }
 
   lastX += deltaX;
@@ -54,4 +53,15 @@ void MouseController::apply(Entity& character, Camera& camera) {
   deltaX = 0;
   deltaY = 0;
 
+  for(auto action : actions) switch (action) {
+    case Action::PLACE:
+      character.placeBlock(terrain);
+      break;
+    case Action::DESTROY:
+      character.breakBlock(terrain);
+      break;
+    default:
+      break;
+  };
+  actions = {};
 }

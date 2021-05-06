@@ -1,10 +1,15 @@
 #include "Character.hpp"
+#include "blocks/Debug_Block.h"
+#include "blocks/Air_Block.h"
+#include "blocks/Dirt_Block.h"
 
 using namespace glm;
 
-Character::Character(vec3 pos) {
+Character::Character(vec3 pos)
+    : caster(100) // distance the player can place blocks
+{
   node.loc = pos;
-  rootNode.sca = vec3(1.85 / 32.f); // steve is 1.85 blocks high, 32 pixels high
+  rootNode.sca = vec3(1.85f / 32.f); // steve is 1.85 blocks high, 32 pixels high
   rootNode.rot.y = glm::pi<float>();
   headNode.loc = {0, 6, 0};
   node.addChild(&rootNode);
@@ -22,7 +27,27 @@ Character::Character(vec3 pos) {
 
 Character::~Character() {}
 
-#include "../../debug/Debug.hpp"
+#include "debug/Debug.hpp"
+
+void Character::breakBlock(Terrain& terrain) {
+  vec3 eyePos = headNode.model * vec4(0, 4, 4, 1);
+  vec3 eyeTarget = headNode.model * vec4(0, 4, 5, 1);
+  auto cast = caster.cast(eyePos + .5f, eyeTarget - eyePos, terrain);
+
+  if(cast.success && cast.block->type != BlockType::Air) {
+    terrain.setBlock(cast.position, Block::create_static<Air_Block>());
+  }
+}
+
+void Character::placeBlock(Terrain& terrain) {
+  vec3 eyePos = headNode.model * vec4(0, 4, 4, 1);
+  vec3 eyeTarget = headNode.model * vec4(0, 4, 5, 1);
+  auto cast = caster.cast(eyePos + .5f, eyeTarget - eyePos, terrain);
+
+  if(cast.success && terrain.getBlock(cast.position + cast.normal)->type == BlockType::Air) { // TODO: will crash in chunk is unloaded
+    terrain.setBlock(cast.position + cast.normal, Block::create_static<Dirt_Block>());
+  }
+}
 
 void Character::update(float dt) {
   Entity::update(dt);

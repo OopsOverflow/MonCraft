@@ -40,4 +40,6 @@ private:
 
   uint32_t timeBegin;
   uint32_t lastTime;
+
+  bool mouseCaptured = false;
 };

@@ -156,6 +156,7 @@ void Viewport::on_keydown(SDL_Keycode k) {
       int x, y;
       SDL_GetMouseState(&x, &y);
       mouseController.rotateEnd(x, y);
+      mouseCaptured = false;
       break;
   }
 }
@@ -186,8 +187,19 @@ void Viewport::on_keyup(SDL_Keycode k) {
 void Viewport::on_mousedown(SDL_MouseButtonEvent const& e) {
   switch (e.button) {
   case SDL_BUTTON_LEFT:
+    if(mouseCaptured) {
+      mouseController.triggerAction(MouseController::Action::DESTROY);
+    }
+    else {
       SDL_SetRelativeMouseMode(SDL_TRUE);
       mouseController.rotateStart(e.x, e.y);
+      mouseCaptured = true;
+    }
+    break;
+  case SDL_BUTTON_RIGHT:
+    if(mouseCaptured) {
+      mouseController.triggerAction(MouseController::Action::PLACE);
+    }
     break;
   default:
     break;

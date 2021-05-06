@@ -10,6 +10,7 @@ public:
     bool success; // false if max dist was reached
     glm::vec3 position; // found block position
     glm::vec3 normal; // which block face (normal) was hit first by the ray
+    Block* block;
   };
 
   // credit: http://www.cse.chalmers.se/edu/year/2010/course/TDA361/grid.pdf

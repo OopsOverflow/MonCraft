@@ -14,6 +14,10 @@
 #include "../util/PriorityList.hpp"
 #include "../util/AtomicCyclicList.hpp"
 
+/**
+* Manages the chunks, load/unload, render and manipulation of blocks.
+*/
+
 class Terrain
 {
 public:
@@ -23,23 +27,36 @@ public:
   Terrain(Terrain const&) = delete;
   Terrain& operator=(Terrain const&) = delete;
 
+  /**
+  * TODO: pass a camera instead ?
+  */
   void update(glm::vec3 pos, glm::vec3 dir, float fovX);
+
+  /**
+  * Renders the visible chunks.
+  */
   void render();
 
+  /**
+  * Gets a block in the world.
+  * if block is unavailable, returns nullptr.
+  */
   Block* getBlock(glm::ivec3 pos);
 
+  /**
+  * Sets a block in the world.
+  * throws if the block is unavailable.
+  */
+  void setBlock(glm::ivec3 pos, Block::unique_ptr_t block);
+
 private:
-  static const int chunkSize = 32;
+  static const int chunkSize = 16;
   static const int renderDistH = 8; // horizontal render distance (2n+1 chunks)
-  static const int renderDistV = 3; // vertical render distance (2n+1 chunks)
+  static const int renderDistV = 4; // vertical render distance (2n+1 chunks)
   const int chunksMaxCount;
 
-  const int memoryCap = 2048; // max amount of memory (mebibytes)
-  const int chunkMemorySize;  // size of a single chunk in memory (kibibytes)
-  const int chunkCacheSize;   // maximum number of chunks in cache
-
-
   // dirty hash function for the chunks hashmap
+  // (this may need to be improved ?)
   struct ivec3_hash
   {
     size_t operator()(glm::ivec3 const& k) const {
@@ -50,38 +67,44 @@ private:
     }
   };
 
-
-  using ChunkMap = std::unordered_map<glm::ivec3, std::shared_ptr<Chunk>, ivec3_hash, ivec3_hash>;
-  using ChunkPList = PriorityList<std::weak_ptr<Chunk>>;
+  // types
+  template<class T>
+  using Grid3D = std::unordered_map<glm::ivec3, T, ivec3_hash, ivec3_hash>;
   // TODO: should we use runtime alloc instead of compile-time ?
   using WaitingList = AtomicCyclicList<glm::ivec3, (2*renderDistH+1)*(2*renderDistH+1)*(2*renderDistV+1)>;
+  using WorkInProgress = std::vector<std::pair<glm::ivec3, std::shared_future<std::shared_ptr<Chunk>>>>;
+  // using WorkInProgress = Grid3D<std::shared_future<std::shared_ptr<Chunk>>>;
 
   Generator generator; // the chunk generator
 
-  glm::vec3 viewDir; // player position
+  glm::vec3 viewDir;   // player position
   glm::vec3 playerPos; // player view direction
   glm::ivec3 chunkPos; // in which chunk the player is
   bool chunkPosChanged;
   float fovX;
 
-  std::array<std::thread, 4> workerThreads; // the worker creates new chunks when it can
+  // threading
+  std::thread mainWorkerThread; // manages the queue of chunks to generate
+  std::array<std::thread, 4> genWorkerThreads; // creates new chunks when it can
+  void mainWorker();
+  void genWorker();
+  void updateWaitingList();
+  std::vector<std::shared_ptr<Chunk>> getOrGenAllChunks(glm::ivec3 center, std::vector<glm::ivec3> const& offsets);
+
+  // signals to stop the threads
   bool stopFlag;
   std::mutex stopMutex;
   std::condition_variable stopSignal;
 
-  // chunks
-  std::mutex chunksMutex;
-  ChunkMap chunks; // hashmap to hold the chunks
-  ChunkPList loadedChunks; // cache of fully loaded chunks
+  // chunk storage
+  std::mutex chunksMutex; // serializes acces to the hashmap
+  Grid3D<std::shared_ptr<Chunk>> chunks; // hashmap to hold the chunks
   WaitingList waitingChunks; // chunk positions yet to be loaded
+  std::mutex wipMutex;
+  WorkInProgress wip;
 
+
+  // texture
   Loader loader;
   GLuint texture;
-
-  void worker(int n);
-
-  // this is kinda dirty, see cpp file.
-  // glm::ivec3 lastIter = glm::ivec3(0, -renderDistance, -1);
-  // glm::ivec3 lastPos = glm::ivec3(0);
-  void updateWaitingList();
 };

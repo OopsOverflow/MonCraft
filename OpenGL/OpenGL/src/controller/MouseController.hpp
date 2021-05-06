@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../gl/Camera.hpp"
-#include "../entity/Entity.hpp"
+#include "entity/character/Character.hpp"
+#include "terrain/Terrain.hpp"
 
 class MouseController {
 public:
@@ -12,8 +12,14 @@ public:
   void motion(int x, int y);
   void motionRel(int dx, int dy);
 
+	// for now only two actions a player can achieve with the mouse: placing and destroying blocks.
+	enum class Action {
+		PLACE, DESTROY
+	};
 
-  void apply(Entity& character, Camera& camera);
+	void triggerAction(Action action);
+
+  void apply(Character& character, Terrain& terrain);
 
 private:
   int lastX;
@@ -22,5 +28,7 @@ private:
   int deltaY;
   bool rotation;
 
-  float speed;
+	float sensivity; // rotation radians per mouse pixel on screen
+
+	std::vector<Action> actions;
 };

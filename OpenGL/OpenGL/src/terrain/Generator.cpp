@@ -2,64 +2,61 @@
 #include "../blocks/Grass_Block.h"
 #include "../blocks/Dirt_Block.h"
 #include "../blocks/Air_Block.h"
+#include "../blocks/Stone_Block.h"
 #include "../blocks/Debug_Block.h"
 
-using glm::ivec2;
-using glm::ivec3;
+using namespace glm;
 
 Generator::Generator(int chunkSize)
   : chunkSize(chunkSize)
 {
   noise.seed(27);
+  noiseX.seed(1156);
+  noiseY.seed(9848);
+  noiseZ.seed(21554);
 }
 
-Chunk* Generator::generate(ivec3 pos) {
+std::shared_ptr<Chunk> Generator::generate(ivec3 chunkPos) {
+
+  static const int maxHeight = 100;
 
   static const octaves_t octaves = {
-    {.65f, 0.004f}, // {magnitude, frequency}
-    {.20f, 0.008f},
-    {.10f, 0.050f},
-    {.05f, 0.100f},
+    {.60f, 0.004f}, // {magnitude, frequency}
+    {.35f, 0.008f},
+    {.05f, 0.050f},
+    {.00f, 0.100f},
   };
 
-  Blocks blocks(chunkSize + 2);
+  std::shared_ptr<Chunk> chunk(new Chunk(chunkPos, chunkSize));
 
-  const ivec3 one(1);
+  ivec3 dpos(0);
 
-  ivec2 dpos(0);
-  for(dpos.x = -1; dpos.x <= chunkSize; dpos.x++) {
-    for(dpos.y = -1; dpos.y <= chunkSize; dpos.y++) {
-      ivec2 pos2D = ivec2(pos.x, pos.z) * ivec2(chunkSize) + dpos;
-      float height = noise.fractal2(pos2D, octaves) * .5f + .5f;
-      int blockHeight = (int)floor(height * chunkSize) - pos.y * chunkSize;
+  for(dpos.x = 0; dpos.x < chunkSize; dpos.x++) {
+    for(dpos.y = 0; dpos.y < chunkSize; dpos.y++) {
+      for(dpos.z = 0; dpos.z < chunkSize; dpos.z++) {
 
-      if(blockHeight < -1) {
-        for(int i = -1; i < chunkSize + 1; i++) {
-          blocks[ivec3(dpos.x, i, dpos.y) + one] = Blocks::create_static<Air_Block>();
+        ivec3 pos = chunkPos * chunkSize + dpos;
+
+        float height = noise.fractal2(ivec2(pos.x, pos.z), octaves) * .5f + .5f;
+        int blockHeight = (int)floor(height * maxHeight) - chunkPos.y * chunkSize;
+        auto& block = (*chunk)[dpos];
+
+        if(dpos.y > blockHeight) {
+          block = Block::create_static<Air_Block>();
         }
-      }
-
-      else if(blockHeight > chunkSize) {
-        for(int i = -1; i < chunkSize + 1; i++) {
-          blocks[ivec3(dpos.x, i, dpos.y) + one] = Blocks::create_static<Dirt_Block>();
+        else if(dpos.y == blockHeight) {
+          block = Block::create_static<Grass_Block>();
         }
-      }
-
-      else {
-        // 1) air column
-        for(int i = chunkSize; i > blockHeight; i--) {
-          blocks[ivec3(dpos.x, i, dpos.y) + one] = Blocks::create_static<Air_Block>();
+        else if(dpos.y >= blockHeight - 3) {
+          block = Block::create_static<Dirt_Block>();
+        }
+        else {
+          block = Block::create_static<Stone_Block>();
         }
 
-        // 2) single grass block
-        blocks[ivec3(dpos.x, blockHeight, dpos.y) + one] = Blocks::create_static<Grass_Block>();
-
-        // 3) dirt column
-        for(int i = blockHeight-1; i >= -1; i--) {
-          blocks[ivec3(dpos.x, i, dpos.y) + one] = Blocks::create_static<Dirt_Block>();
-        }
       }
     }
   }
-  return new Chunk(pos * ivec3(chunkSize), std::move(blocks));
+
+  return chunk;
 }
