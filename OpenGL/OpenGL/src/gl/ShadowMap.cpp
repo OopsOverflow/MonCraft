@@ -3,9 +3,9 @@
 
 using namespace glm;
 
-ShadowMap::ShadowMap(int size)
-  : size(size),
-    camera(size, size, {10, 10, 10}, {0, 0, 0}, Projection::PROJECTION_ORTHOGRAPHIC),
+ShadowMap::ShadowMap(float resolution)
+  : resolution(resolution),
+    camera(10, 10, {10, 10, 10}, {0, 0, 0}, Projection::PROJECTION_ORTHOGRAPHIC),
     shader("src/shader/shadow.vert", "src/shader/shadow.frag"),
     distance(100.f)
 {
@@ -14,7 +14,7 @@ ShadowMap::ShadowMap(int size)
 
   for (size_t i = 0; i < 3; i+=1) {
     glBindTexture(GL_TEXTURE_2D, depthTex[i]);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, size, size, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+    // glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 10, size, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };//Uncalculated shadows are white
@@ -30,16 +30,23 @@ ShadowMap::ShadowMap(int size)
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-// TODO: temporary until I finish the skewed shadow matrix
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/vector_angle.hpp>
-#include <glm/gtx/transform2.hpp>
-
 void ShadowMap::update(vec3 sunPos, vec3 center) {
   camera.setLookAt(sunPos, center);
 }
 
 void ShadowMap::attach(Camera const& cam) {
+
+  unsigned int newW, newH;
+  cam.getSize(newW, newH);
+  if(newW != width || newH != height) {
+    width = newW; height = newH;
+    for (size_t i = 0; i < 3; i+=1) {
+      glBindTexture(GL_TEXTURE_2D, depthTex[i]);
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, newW * resolution, newH * resolution, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+    }
+    camera.setSize(newW * resolution, newH * resolution);
+  }
+
   std::vector<vec3> corners[] = {
     cam.getBoxCorners(Frustum::NEAR),
     cam.getBoxCorners(Frustum::MEDIUM),
@@ -79,6 +86,7 @@ void ShadowMap::beginFrame(Frustum frustum) {
   glUniformMatrix4fv(MATRIX_SHADOWS, 1, GL_FALSE, value_ptr(shadowMatrices[(size_t)frustum]));
   glClear(GL_DEPTH_BUFFER_BIT);
   glDisable(GL_CULL_FACE);
+  glViewport(0, 0, width * resolution, height * resolution);
 }
 
 void ShadowMap::endFrame() {

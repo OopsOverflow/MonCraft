@@ -189,7 +189,7 @@ std::vector<glm::vec3> Camera::getBoxCorners(Frustum frustum) const {
         break;
     case Frustum::NEAR:
         z1 = -near_;
-        z2 = -near_ - range / 3.0f;
+        z2 = -near_ - range / 5.0f;
         break;
     case Frustum::MEDIUM:
         z1 = -near_ - range / 3.0f;

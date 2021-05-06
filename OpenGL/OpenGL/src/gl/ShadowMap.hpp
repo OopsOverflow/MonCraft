@@ -7,7 +7,7 @@ class ShadowMap {
 
 public:
 
-  ShadowMap(int size);
+  ShadowMap(float resolution);
   ~ShadowMap();
 
   ShadowMap(ShadowMap const&) = delete;
@@ -24,7 +24,8 @@ public:
 private:
   GLuint fbo;
   GLuint depthTex[3];
-  int size;
+  unsigned int width, height;
+  float resolution;
   Shader shader;
   float distance;
   glm::mat4 shadowMatrices[3];
