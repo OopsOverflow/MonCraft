@@ -38,6 +38,7 @@ private:
   SDL_Window* window;
   SDL_GLContext context;
 
+  uint32_t lastSpacePress;
   uint32_t timeBegin;
   uint32_t lastTime;
 

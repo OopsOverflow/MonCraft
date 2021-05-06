@@ -2,8 +2,10 @@
 
 KeyboardController::KeyboardController() {
   view = View::FIRST_PERSON;
-  speed = 3.f;
+  state = State::Idle;
   direction = glm::vec3(0.f);
+  change = false;
+  sprint = false;
 }
 
 void KeyboardController::pressedForward() {
@@ -69,7 +71,25 @@ void KeyboardController::pressedF5() {
     }
 }
 
+void KeyboardController::changedMod() {
+    change = true;
+}
+
+void KeyboardController::pressedControl() {
+    sprint = true;
+
+}
+void KeyboardController::releasedControl() {
+    sprint = false;
+
+}
+
 void KeyboardController::apply(Entity& character) {
   character.view = view;
+  character.sprint = sprint;
+  if (change) {
+      character.god = !character.god;
+      change = false;
+  }
   character.walk(direction);
 }

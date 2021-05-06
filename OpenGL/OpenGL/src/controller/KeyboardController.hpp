@@ -20,12 +20,19 @@ public:
   void releasedUp();
   void pressedDown();
   void releasedDown();
+  void pressedControl();
+  void releasedControl();
+
   void pressedF5();
+  void changedMod();
 
   void apply(Entity& character);
 
 private:
-  float speed;
   glm::vec3 direction;
+  State state;
   View view;
+
+  bool sprint;
+  bool change;
 };

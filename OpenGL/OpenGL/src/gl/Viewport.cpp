@@ -19,7 +19,7 @@ Viewport::Viewport(size_t width, size_t height)
       height(height),
       window(nullptr),
       context(nullptr),
-      timeBegin(0), lastTime(0)
+      lastSpacePress(0), timeBegin(0), lastTime(0)
 {
 
   //Initialize SDL2
@@ -143,13 +143,25 @@ void Viewport::on_keydown(SDL_Keycode k) {
     keyboardController.pressedLeft();
     break;
   case SDLK_SPACE:
-    keyboardController.pressedUp();
+  {
+      uint32_t currentTime = SDL_GetTicks();
+      if (currentTime - lastSpacePress > 100 && currentTime - lastSpacePress < 250) {
+          keyboardController.changedMod();
+      }
+      else {
+          keyboardController.pressedUp();
+      }
+      lastSpacePress = currentTime; }
+
     break;
   case SDLK_LSHIFT:
     keyboardController.pressedDown();
     break;
   case SDLK_F5:
       keyboardController.pressedF5();
+      break;
+  case SDLK_LCTRL:
+      keyboardController.pressedControl();
       break;
   case SDLK_ESCAPE:
       SDL_SetRelativeMouseMode(SDL_FALSE);
@@ -181,6 +193,9 @@ void Viewport::on_keyup(SDL_Keycode k) {
   case SDLK_LSHIFT:
     keyboardController.releasedDown();
     break;
+  case SDLK_LCTRL:
+      keyboardController.releasedControl();
+      break;
   }
 }
 

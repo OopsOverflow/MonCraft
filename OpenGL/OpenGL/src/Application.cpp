@@ -27,7 +27,7 @@ int main(int argc, char* argv[]) {
     Shader shader("src/shader/simple.vert", "src/shader/simple.frag");
     Terrain terrain;
     SkyBox sky;
-    Character character({ 0.0f,40.0f,0.0f });
+    Character character({ 5000.0f,100.0f,5000.0f });
     ShadowMap shadows(1024);
     Loader loader;
     Raycast caster(100.f);
@@ -130,7 +130,7 @@ int main(int argc, char* argv[]) {
 
         // draw the character
         window.camera.activate();
-        character.render();
+        if (character.view == View::THIRD_PERSON)character.render();
 
         // draw skybox at last
         sky.render(window.camera);

@@ -10,7 +10,7 @@ Hitbox::Hitbox(glm::vec3 c1, glm::vec3 c2)
 
 glm::vec3 Hitbox::computeCollision(glm::vec3 pos, vec3 displ, Terrain& terrain) {
 
-  float thresold = 0.0001f; // histeresis
+  float thresold = length(displ)*0.15f + 0.0001f; // histeresis
 
   auto isSolid = [&](ivec3 ipos) {
     Block* block = terrain.getBlock(ipos);
