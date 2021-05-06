@@ -65,4 +65,5 @@ void main() {
   outputColor *= 1.0 - (vertexOcclusion * vertexOcclusion / 9.0) * occl;
 
   outputColor = texture(textureSampler, (gl_FragCoord.xy*0.5+0.5)/1024.0);
+  outputColor = texture(shadowSampler[1], (gl_FragCoord.xy*0.5+0.5)/400.0);
 }

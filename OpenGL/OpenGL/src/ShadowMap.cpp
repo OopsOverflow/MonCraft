@@ -10,37 +10,28 @@ ShadowMap::ShadowMap(float size)
 {
   glGenFramebuffers(1, &fbo);
   glGenTextures(3, depthTex);
-  glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-  for (size_t i = 0; i < 3; i+=1) {
-      glBindTexture(GL_TEXTURE_2D_ARRAY, depthTex[i]);
 
-      glTexImage2D(GL_TEXTURE_2D_ARRAY, 0, GL_DEPTH_COMPONENT, size, size, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-      glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-      glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-      float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };//Uncalculated shadows are white
-      glTexParameterfv(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_BORDER_COLOR, borderColor);
-      glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-      glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+  for (size_t i = 0; i < 3; i+=1) {
+    glBindTexture(GL_TEXTURE_2D, depthTex[i]);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, size, size, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };//Uncalculated shadows are white
+    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+    glBindTexture(GL_TEXTURE_2D, 0);
   }
 
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D_ARRAY, depthTex[0], 0);
+  glBindFramebuffer(GL_FRAMEBUFFER, fbo);
   glDrawBuffer(GL_NONE);
   glReadBuffer(GL_NONE);
-
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
-  glBindFramebuffer(GL_TEXTURE_2D_ARRAY, 0);
 }
-
-// TODO: temporary until I finish the skewed shadow matrix
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/vector_angle.hpp>
-#include <glm/gtx/transform2.hpp>
-
 
 void ShadowMap::changeDirection(glm::vec3 direction) {
     this->direction = direction;
     camera.setLookAt({ 0.0f,0.0f,0.0f }, direction);
-
 }
 
 void ShadowMap::update(Camera& cam, Frustrum frustrum) {
@@ -61,57 +52,53 @@ void ShadowMap::update(Camera& cam, Frustrum frustrum) {
         maxY = glm::max(vec.y, maxY);
         minZ = glm::min(-vec.z, minZ);
         maxZ = glm::max(-vec.z, maxZ);
-
     }
     //render out of the view in case we have to cast shadows from a moutain
     float box[6] = { minX,maxX,minY,maxY,2 * minZ - maxZ,maxZ };
     camera.setProjectionType(Projection::CUSTOM_PROJECTION, box);
+    camera.activate();
     shadowMatrix[(size_t)frustrum] = camera.projection * camera.view;
+
+    camera.setProjectionType(Projection::PROJECTION_ORTHOGRAPHIC);
+    camera.setLookAt({0, 50, 0}, {0, 0, 1});
 }
-
-
-
 
 void ShadowMap::beginFrame() {
   shader.activate();
+  camera = Camera(1024, 1024, {0, 50, 0}, {0, 0, 1});
   camera.activate();
   glBindFramebuffer(GL_FRAMEBUFFER, fbo);
   glClear(GL_DEPTH_BUFFER_BIT);
   auto shadows = camera.projection * camera.view;
   glUniformMatrix4fv(MATRIX_SHADOWS, 1, GL_FALSE, glm::value_ptr(shadows));
-  glCullFace(GL_FRONT_AND_BACK);
 }
 
 void ShadowMap::endFrame() {
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
-  glCullFace(GL_BACK);
 }
 
 void ShadowMap::activate(Shader& shader) {
-    //GL_TEXTURE0 is the block texture
-    GLint shadowSampler = shader.getUniformLocation("shadowSampler[0]");
-    glUniform1i(shadowSampler, 1);
+  GLint shadowSampler = shader.getUniformLocation("shadowSampler[0]");
+  glUniform1i(shadowSampler, 1);
+  glActiveTexture(GL_TEXTURE1);
+  glBindTexture(GL_TEXTURE_2D, depthTex[0]);
 
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, depthTex[0]);
+  shadowSampler = shader.getUniformLocation("shadowSampler[1]");
+  glUniform1i(shadowSampler, 2);
+  glActiveTexture(GL_TEXTURE2);
+  glBindTexture(GL_TEXTURE_2D, depthTex[1]);
 
-
-    shadowSampler = shader.getUniformLocation("shadowSampler[1]");
-    glUniform1i(shadowSampler, 2);
-    glActiveTexture(GL_TEXTURE2);
-    glBindTexture(GL_TEXTURE_2D, depthTex[1]);
-
-    shadowSampler = shader.getUniformLocation("shadowSampler[2]");
-    glUniform1i(shadowSampler, 3);
-    glActiveTexture(GL_TEXTURE3);
-    glBindTexture(GL_TEXTURE_2D, depthTex[2]);
+  shadowSampler = shader.getUniformLocation("shadowSampler[2]");
+  glUniform1i(shadowSampler, 3);
+  glActiveTexture(GL_TEXTURE3);
+  glBindTexture(GL_TEXTURE_2D, depthTex[2]);
 
   glUniformMatrix4fv(MATRIX_SHADOWS, 3, GL_FALSE, (GLfloat*) shadowMatrix);
 }
 
 void ShadowMap::bindForWriting(Frustrum frustrum) {
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, getTextureID(frustrum), 0);
+  glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, getTextureID(frustrum), 0);
 }
 
 

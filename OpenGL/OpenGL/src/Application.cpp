@@ -88,7 +88,7 @@ int main(int argc, char* argv[]) {
     auto castDir = window.camera.center - window.camera.position;
     glm::vec3 castTarget = caster.cast(castPos, castDir, terrain);
     targetBlock->model = glm::translate(glm::mat4(1.f), castTarget);
-    
+
     int skyCamSize = 300;
     Camera skyCam(skyCamSize, skyCamSize, {1, 500, 1}, {0, 0, 0}, Projection::PROJECTION_ORTHOGRAPHIC);
 
@@ -187,25 +187,9 @@ int main(int argc, char* argv[]) {
 
         // draw the shadow map
 
-
-
         shadows.beginFrame();
-
-        shadows.bindForWriting(Frustrum::NEAR);
-        shadows.update(window.camera, Frustrum::NEAR);
-        terrain.render(shadows.camera);
-        character.drawCharacter();
-
-        glClear(GL_DEPTH_BUFFER_BIT);
-
         shadows.bindForWriting(Frustrum::MEDIUM);
         shadows.update(window.camera, Frustrum::MEDIUM);
-        terrain.render(shadows.camera);
-
-        glClear(GL_DEPTH_BUFFER_BIT);
-
-        shadows.bindForWriting(Frustrum::FAR);
-        shadows.update(window.camera, Frustrum::FAR);
         terrain.render(shadows.camera);
         shadows.endFrame();
 
@@ -228,7 +212,7 @@ int main(int argc, char* argv[]) {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, textureID);
 
-        // draw target block        
+        // draw target block
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         glBindVertexArray(vao);
         glm::mat4 I(1.f);
