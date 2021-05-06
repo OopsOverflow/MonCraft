@@ -18,7 +18,7 @@ Generator::Generator(int chunkSize)
 
 std::shared_ptr<Chunk> Generator::generate(ivec3 chunkPos) {
 
-  static const int maxHeight = 100;
+  static const int maxHeight = 50;
 
   static const octaves_t octaves = {
     {.60f, 0.004f}, // {magnitude, frequency}

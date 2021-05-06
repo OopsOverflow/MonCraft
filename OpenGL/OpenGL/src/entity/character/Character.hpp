@@ -21,7 +21,7 @@ public:
   virtual ~Character();
 
 	void render() override;
-	void update(float dt) override;
+	void update(Terrain& terrain, float dt) override;
 
   void breakBlock(Terrain& terrain);
   void placeBlock(Terrain& terrain);

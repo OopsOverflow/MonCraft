@@ -3,23 +3,47 @@
 using namespace glm;
 static const mat4 I(1.f);
 
-Entity::Entity()
-: maxSpeed(10), maxAccel(1), friction(5),
+Entity::Entity(Hitbox hitbox)
+: maxSpeed(4.3f), maxAccel(5.f), airFriction(1.f), groundFriction(5.f),
+	gravity(15.f), jumpSpeed(8.f), maxFallSpeed(78.4f),
 	speed(0), accel(0),
-	state(State::Idle)
-{ }
+	onFloor(false), god(false),
+	state(State::Idle),
+	hitbox(std::move(hitbox))
+{}
 
 Entity::~Entity() {}
 
 void Entity::walk(vec3 dir) {
-	if(dir == vec3(0)) {
-		state = State::Idle;
-		accel = vec3(0);
+
+	if(god) {
+		if(dir == vec3(0)) {
+			state = State::Idle;
+			accel = vec3(0);
+		}
+		else {
+			state = State::Walking;
+			direction = normalize(dir);
+			accel = direction * maxAccel;
+		}
 	}
-	else {
-		state = State::Walking;
-		direction = normalize(dir);
-		accel = direction * maxAccel;
+
+	else { // not god
+		float dirY = dir.y;
+		dir.y = 0;
+		if(dir == vec3(0)) {
+			state = State::Idle;
+			accel = vec3(0);
+		}
+		else {
+			state = State::Walking;
+			direction = normalize(dir);
+			accel = direction * maxAccel;
+		}
+		if(dirY > 0 && onFloor) {
+			onFloor = false;
+			speed.y = jumpSpeed;
+		}
 	}
 }
 
@@ -50,22 +74,52 @@ void Entity::cameraToHead(Camera& camera) {
 
 #include "../debug/Debug.hpp"
 
-void Entity::update(float dt) {
+void Entity::update(Terrain& terrain, float dt) {
 	// update forces
+	vec3 posOffset;
 	{
+		vec3 acc = accel;
+		if(!god) acc += vec3(0, -1, 0) * gravity; // gravity
+
 		// disable friction in accel direction
-		vec3 drag = speed * friction;
-		if(accel != vec3(0))
-			drag -= normalize(accel) * max(dot(drag, normalize(accel)), 0.f); // substract component in accel direction from drag
+		vec2 dragXZ = vec2(speed.x, speed.z) * groundFriction;
+		float dragY = speed.y * airFriction;
+		vec2 accXZ = vec2(acc.x, acc.z);
+		if(accXZ != vec2(0))
+			dragXZ -= normalize(accXZ) * max(dot(dragXZ, normalize(accXZ)), 0.f); // substract component in accel direction from drag
 
 		// update speed
-		speed = speed + accel * dt - drag * dt;
-		if(length(speed) >= maxSpeed)
-			speed = normalize(speed) * maxSpeed;
+		speed = speed + acc * dt - vec3(dragXZ.x, dragY, dragXZ.y) * dt;
+		vec2 speedXZ = vec2(speed.x, speed.z);
+		if(length(speedXZ) >= maxSpeed) {
+			speedXZ = normalize(speedXZ) * maxSpeed;
+			speed = vec3(speedXZ.x, speed.y, speedXZ.y);
+		}
+		speed.y = max(speed.y, -maxFallSpeed);
 
 		// apply motion
 		auto rotMatrix = rotate(I, node.rot.y + headNode.rot.y, {0, 1, 0});
-		node.loc += vec3(rotMatrix * vec4(speed, 1.f));
+		posOffset = vec3(rotMatrix * vec4(speed * dt, 1.f));
+	}
+
+	// check collisions
+	{
+		// update position
+		vec3 newPos = hitbox.computeCollision(node.loc, posOffset, terrain);
+		vec3 off = newPos - (node.loc + posOffset);
+		node.loc = newPos;
+
+		// on ground
+		if(off.y > 0) {
+			onFloor = true;
+		}
+
+		// cancel speed in collision direction
+		if(off != vec3(0)) {
+			auto rotMatrix = rotate(I, -node.rot.y - headNode.rot.y, {0, 1, 0});
+			vec3 worldOffDir = normalize(vec3(rotMatrix * vec4(off, 1.f)));
+			if(off != vec3(0)) speed -= worldOffDir * dot(speed, worldOffDir); // substract component in collision direction from speed
+		}
 	}
 
 	// update chest rotation based on direction

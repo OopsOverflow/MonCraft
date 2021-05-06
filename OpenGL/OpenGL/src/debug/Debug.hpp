@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <iomanip>
 #include <chrono>
 #include <glm/glm.hpp>
 
@@ -47,6 +48,7 @@ void debug_bindump(T val) {
 
 template<typename T, glm::length_t N>
 std::ostream& operator<<(std::ostream& os, glm::vec<N, T> const& v) {
+  os << std::setprecision(5);
   os << "vec" << N << "(";
   for(size_t i = 0; i < N-1; i++)
     os << v[i] << ", ";
