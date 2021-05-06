@@ -10,6 +10,8 @@ Hitbox::Hitbox(glm::vec3 c1, glm::vec3 c2)
 
 glm::vec3 Hitbox::computeCollision(glm::vec3 pos, vec3 displ, Terrain& terrain) {
 
+  float thresold = 0.0001f; // histeresis
+
   auto isSolid = [&](ivec3 ipos) {
     Block* block = terrain.getBlock(ipos);
     if(block && block->type != BlockType::Air) {
@@ -18,91 +20,50 @@ glm::vec3 Hitbox::computeCollision(glm::vec3 pos, vec3 displ, Terrain& terrain) 
     return false;
   };
 
-  ivec3 ipos(0);
-  vec3 res(0);
+  auto testComponent = [&](int c) {
 
-  vec3 p1 = pos + c1;
-  vec3 p2 = pos + c2;
+    vec3 p1 = pos + c1;
+    vec3 p2 = pos + c2;
 
-  ivec3 oldStart = floor(p1 + .5f);
-  ivec3 oldEnd = floor(p2 + .5f);
+    ivec3 oldStart = floor(p1 + .5f);
+    ivec3 oldEnd = floor(p2 + .5f);
 
-  p1 += displ;
-  p2 += displ;
+    p1[c] += displ[c];
+    p2[c] += displ[c];
 
-  ivec3 start = floor(p1 + .5f);
-  ivec3 end = floor(p2 + .5f);
+    ivec3 start = floor(p1 + .5f);
+    ivec3 end = floor(p2 + .5f);
 
-  ivec3 dir = sign(displ);
+    if(start[c] < oldStart[c] || end[c] > oldEnd[c]) {
 
-    for(ipos.x = oldStart.x; ipos.x <= oldEnd.x; ipos.x++) {
-      for(ipos.y = oldStart.y; ipos.y <= oldEnd.y; ipos.y++) {
-        for(ipos.z = oldStart.z; ipos.z <= oldEnd.z; ipos.z++) {
-          if(isSolid(ipos)) {
-            std::cout << "Things got out of hand" << std::endl;
-            // return res;
+      ivec3 ipos(0);
+      for(ipos.x = start.x; ipos.x <= end.x; ipos.x++) {
+        for(ipos.y = start.y; ipos.y <= end.y; ipos.y++) {
+          for(ipos.z = start.z; ipos.z <= end.z; ipos.z++) {
+
+            if(isSolid(ipos)) {
+              if(start[c] < oldStart[c]) {
+                pos[c] = ipos[c] + .5f - c1[c] + thresold;
+                return;
+              }
+              else if(end[c] > oldEnd[c]) {
+                pos[c] = ipos[c] - .5f - c2[c] - thresold;
+                return;
+              }
+            }
+
           }
         }
       }
+
     }
 
-  if(oldStart.x != start.x && dir.x < 0) {
-    ipos.x = start.x;
-    for(ipos.y = oldStart.y; ipos.y <= oldEnd.y; ipos.y++) {
-      for(ipos.z = oldStart.z; ipos.z <= oldEnd.z; ipos.z++) {
-        if(isSolid(ipos)) res.x = ipos.x + .5f - p1.x;
-      }
-    }
-  }
+    pos[c] += displ[c];
+  };
 
-  if(oldStart.y != start.y && dir.y < 0) {
-    ipos.y = start.y;
-    for(ipos.x = oldStart.x; ipos.x <= oldEnd.x; ipos.x++) {
-      for(ipos.z = oldStart.z; ipos.z <= oldEnd.z; ipos.z++) {
-        if(isSolid(ipos)) res.y = ipos.y + .5f - p1.y;
-      }
-    }
-  }
+  testComponent(0);
+  testComponent(1);
+  testComponent(2);
 
-  if(oldStart.z != start.z && dir.z < 0) {
-    ipos.z = start.z;
-    for(ipos.x = oldStart.x; ipos.x <= oldEnd.x; ipos.x++) {
-      for(ipos.y = oldStart.y; ipos.y <= oldEnd.y; ipos.y++) {
-        if(isSolid(ipos)) res.z = ipos.z + .5f - p1.z;
-      }
-    }
-  }
-
-  if(oldEnd.x != end.x && dir.x > 0) {
-    ipos.x = end.x;
-    for(ipos.y = oldStart.y; ipos.y <= oldEnd.y; ipos.y++) {
-      for(ipos.z = oldStart.z; ipos.z <= oldEnd.z; ipos.z++) {
-        if(isSolid(ipos)) res.x = -displ.x;
-      }
-    }
-  }
-
-  if(oldEnd.y != end.y && dir.y > 0) {
-    ipos.y = end.y;
-    for(ipos.x = oldStart.x; ipos.x <= oldEnd.x; ipos.x++) {
-      for(ipos.z = oldStart.z; ipos.z <= oldEnd.z; ipos.z++) {
-        if(isSolid(ipos)) res.y = -displ.y;
-      }
-    }
-  }
-
-  if(oldEnd.z != end.z && dir.z > 0) {
-    ipos.z = end.z;
-    for(ipos.x = oldStart.x; ipos.x <= oldEnd.x; ipos.x++) {
-      for(ipos.y = oldStart.y; ipos.y <= oldEnd.y; ipos.y++) {
-        if(isSolid(ipos)) {
-          res.z = -displ.z;
-        }
-      }
-    }
-  }
-
-  // std::cout << "--" << std::endl;
-
-  return res;
+  return pos;
 }

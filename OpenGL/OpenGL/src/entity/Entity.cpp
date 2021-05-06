@@ -4,30 +4,46 @@ using namespace glm;
 static const mat4 I(1.f);
 
 Entity::Entity(Hitbox hitbox)
-: maxSpeed(10), maxAccel(10), friction(5),
-	speed(0), accel(0), onFloor(false),
+: maxSpeed(4.3f), maxAccel(5.f), airFriction(1.f), groundFriction(5.f),
+	gravity(15.f), jumpSpeed(8.f), maxFallSpeed(78.4f),
+	speed(0), accel(0),
+	onFloor(false), god(false),
 	state(State::Idle),
 	hitbox(std::move(hitbox))
 {}
 
 Entity::~Entity() {}
 
-void Entity::walk(vec2 dir) {
-	if(dir == vec2(0)) {
-		state = State::Idle;
-		accel = vec3(0);
-	}
-	else {
-		state = State::Walking;
-		direction = normalize(vec3(dir.x, 0, dir.y));
-		accel = direction * maxAccel;
-	}
-}
+void Entity::walk(vec3 dir) {
 
-void Entity::jump() {
-	if(onFloor) {
-		onFloor = false;
-		speed.y += 100.f;
+	if(god) {
+		if(dir == vec3(0)) {
+			state = State::Idle;
+			accel = vec3(0);
+		}
+		else {
+			state = State::Walking;
+			direction = normalize(dir);
+			accel = direction * maxAccel;
+		}
+	}
+
+	else { // not god
+		float dirY = dir.y;
+		dir.y = 0;
+		if(dir == vec3(0)) {
+			state = State::Idle;
+			accel = vec3(0);
+		}
+		else {
+			state = State::Walking;
+			direction = normalize(dir);
+			accel = direction * maxAccel;
+		}
+		if(dirY > 0 && onFloor) {
+			onFloor = false;
+			speed.y = jumpSpeed;
+		}
 	}
 }
 
@@ -62,16 +78,24 @@ void Entity::update(Terrain& terrain, float dt) {
 	// update forces
 	vec3 posOffset;
 	{
-		vec3 acc = accel + vec3(0, -1, 0) * 10.f;
+		vec3 acc = accel;
+		if(!god) acc += vec3(0, -1, 0) * gravity; // gravity
+
 		// disable friction in accel direction
-		vec3 drag = speed * friction;
-		if(acc != vec3(0))
-			drag -= normalize(acc) * max(dot(drag, normalize(acc)), 0.f); // substract component in accel direction from drag
+		vec2 dragXZ = vec2(speed.x, speed.z) * groundFriction;
+		float dragY = speed.y * airFriction;
+		vec2 accXZ = vec2(acc.x, acc.z);
+		if(accXZ != vec2(0))
+			dragXZ -= normalize(accXZ) * max(dot(dragXZ, normalize(accXZ)), 0.f); // substract component in accel direction from drag
 
 		// update speed
-		speed = speed + acc * dt - drag * dt;
-		if(length(speed) >= maxSpeed)
-			speed = normalize(speed) * maxSpeed;
+		speed = speed + acc * dt - vec3(dragXZ.x, dragY, dragXZ.y) * dt;
+		vec2 speedXZ = vec2(speed.x, speed.z);
+		if(length(speedXZ) >= maxSpeed) {
+			speedXZ = normalize(speedXZ) * maxSpeed;
+			speed = vec3(speedXZ.x, speed.y, speedXZ.y);
+		}
+		speed.y = max(speed.y, -maxFallSpeed);
 
 		// apply motion
 		auto rotMatrix = rotate(I, node.rot.y + headNode.rot.y, {0, 1, 0});
@@ -80,20 +104,22 @@ void Entity::update(Terrain& terrain, float dt) {
 
 	// check collisions
 	{
-		vec3 collOffset = hitbox.computeCollision(node.loc, posOffset, terrain);
+		// update position
+		vec3 newPos = hitbox.computeCollision(node.loc, posOffset, terrain);
+		vec3 off = newPos - (node.loc + posOffset);
+		node.loc = newPos;
 
-		if(collOffset.y > 0) {
+		// on ground
+		if(off.y > 0) {
 			onFloor = true;
 		}
 
-		node.loc += posOffset + collOffset;
-
 		// cancel speed in collision direction
-		if(collOffset != vec3(0))
-			speed = vec3(0);
-		// auto rotMatrix = rotate(I, -node.rot.y - headNode.rot.y, {0, 1, 0});
-		// vec3 nColl = normalize(vec3(rotMatrix * vec4(-collOffset, 1.f)));
-		// if(collOffset != vec3(0)) speed -= nColl * dot(speed, nColl); // substract component in collision direction from speed
+		if(off != vec3(0)) {
+			auto rotMatrix = rotate(I, -node.rot.y - headNode.rot.y, {0, 1, 0});
+			vec3 worldOffDir = normalize(vec3(rotMatrix * vec4(off, 1.f)));
+			if(off != vec3(0)) speed -= worldOffDir * dot(speed, worldOffDir); // substract component in collision direction from speed
+		}
 	}
 
 	// update chest rotation based on direction

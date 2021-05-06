@@ -18,8 +18,7 @@ public:
 	Entity(Hitbox hitbox);
 	virtual ~Entity();
 
-	void walk(glm::vec2 direction);
-	void jump();
+	void walk(glm::vec3 direction);
 	void turn(glm::vec2 rotation);
 	void cameraToHead(Camera& cam);
 	virtual void render() = 0;
@@ -30,12 +29,17 @@ protected:
 
 	float maxSpeed;
 	float maxAccel;
-	float friction;
+	float airFriction;
+	float groundFriction;
+	float gravity;
+	float jumpSpeed;
+	float maxFallSpeed;
 
 	glm::vec3 speed;
 	glm::vec3 accel;
 
 	bool onFloor;
+	bool god;
 
 	State state;
 	Hitbox hitbox;
