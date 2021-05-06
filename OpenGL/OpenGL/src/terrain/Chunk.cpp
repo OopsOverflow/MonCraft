@@ -172,6 +172,9 @@ void Chunk::compute() {
   if(indices.size() != 0) { // that chunk is not filled with air
     computed = true;
   }
+  else if(mesh) {
+    mesh = std::unique_ptr<Mesh>(nullptr);
+  }
 }
 
 void Chunk::update() {
