@@ -46,7 +46,9 @@ void Character::placeBlock(Terrain& terrain) {
   vec3 eyeTarget = headNode.model * vec4(0, 4, 5, 1);
   auto cast = caster.cast(eyePos + .5f, eyeTarget - eyePos, terrain);
 
-  if(cast.success && terrain.getBlock(cast.position + cast.normal)->type == BlockType::Air) { // TODO: will crash in chunk is unloaded
+  if(cast.success) { // TODO: will crash in chunk is unloaded
+    if(hitbox.collides(node.loc, cast.position + cast.normal)) return;
+    if(terrain.getBlock(cast.position + cast.normal)->type != BlockType::Air) return;
     terrain.setBlock(cast.position + cast.normal, Block::create_static<Dirt_Block>());
   }
 }

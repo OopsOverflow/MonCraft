@@ -67,3 +67,10 @@ glm::vec3 Hitbox::computeCollision(glm::vec3 pos, vec3 displ, Terrain& terrain) 
 
   return pos;
 }
+
+bool Hitbox::collides(vec3 pos, ivec3 blockPos) {
+  ivec3 min = floor(pos + c1 + .5f);
+  ivec3 max = floor(pos + c2 + .5f);
+
+  return all(greaterThanEqual(blockPos, min)) && all(lessThanEqual(blockPos, max));
+}

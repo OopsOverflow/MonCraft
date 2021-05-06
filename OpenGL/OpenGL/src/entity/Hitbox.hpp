@@ -13,6 +13,8 @@ public:
    */
   glm::vec3 computeCollision(glm::vec3 pos, glm::vec3 displ, Terrain& terrain);
 
+  bool collides(glm::vec3 pos, glm::ivec3 blockPos);
+
 private:
   glm::vec3 c1, c2;
 };
