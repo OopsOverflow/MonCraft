@@ -64,6 +64,7 @@ public:
   * The nth neighbor occupies the position chunkPos + neighborOffsets[n]
   */
   static const std::array<glm::ivec3, 26> neighborOffsets;
+  static const std::array<int, 26> neighborOffsetsInverse;
 
 private:
   void update(); // new's the Chunk if computed. Called in draw() for now.

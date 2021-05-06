@@ -43,6 +43,12 @@ const std::array<ivec3, 26> Chunk::neighborOffsets = {
   ivec3{-1,-1,-1 },
 };
 
+const std::array<int, 26> Chunk::neighborOffsetsInverse = { // https://oeis.org/A059249
+  1, 0, 5, 7, 6, 2, 4, 3,
+  17, 19, 18, 23, 25, 24, 20, 22, 21, 
+  8, 10, 9, 14, 16, 15, 11, 13, 12
+};
+
 Chunk::Chunk(ivec3 chunkPos, int chunkSize)
   : DataStore<Block::unique_ptr_t, 3>(glm::ivec3(chunkSize)),
     chunkPos(chunkPos),

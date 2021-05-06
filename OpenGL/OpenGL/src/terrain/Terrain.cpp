@@ -188,6 +188,10 @@ void Terrain::genWorker() {
         std::lock_guard<std::mutex> lck(chunksMutex);
         auto const& chunk = chunks[0];
         std::copy(++chunks.begin(), chunks.end(), chunk->neighbors.begin());
+        for(size_t i = 1; i < chunks.size(); i++) {
+          int inv = Chunk::neighborOffsetsInverse[i-1];
+          chunks[i]->neighbors[inv] = chunk;
+        }
       }
       chunks[0]->compute();
 
