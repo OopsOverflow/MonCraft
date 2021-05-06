@@ -1,7 +1,7 @@
 #include "ShadowMap.hpp"
 #include <glm/gtc/type_ptr.hpp>
 
-using glm::vec3;
+using namespace glm;
 
 ShadowMap::ShadowMap(int size)
   : size(size),
@@ -35,56 +35,74 @@ ShadowMap::ShadowMap(int size)
 #include <glm/gtx/vector_angle.hpp>
 #include <glm/gtx/transform2.hpp>
 
-void ShadowMap::update(glm::vec3 sunPos, glm::vec3 center) {
+void ShadowMap::update(vec3 sunPos, vec3 center) {
   camera.setLookAt(sunPos, center);
 }
 
-void ShadowMap::attach(Camera const& cam, Frustum frustum) {
-  float minX = FLT_MAX;
-  float maxX = -FLT_MAX;
-  float minY = FLT_MAX;
-  float maxY = -FLT_MAX;
-  float minZ = FLT_MAX;
-  float maxZ = -FLT_MAX;
+void ShadowMap::attach(Camera const& cam) {
+  std::vector<vec3> corners[] = {
+    cam.getBoxCorners(Frustum::NEAR),
+    cam.getBoxCorners(Frustum::MEDIUM),
+    cam.getBoxCorners(Frustum::FAR),
+  };
 
-  std::vector<glm::vec3> corners = cam.getBoxCorners(frustum);
-  for (glm::vec3 vec : corners)
-  {
-      vec = glm::vec3(camera.view * glm::vec4(vec, 1.0f));
-      minX = glm::min(vec.x, minX);
-      maxX = glm::max(vec.x, maxX);
-      minY = glm::min(vec.y, minY);
-      maxY = glm::max(vec.y, maxY);
-      minZ = glm::min(-vec.z, minZ);
-      maxZ = glm::max(-vec.z, maxZ);
+  for (size_t i = 0; i < 3; i++) {
+    float minX = FLT_MAX;
+    float maxX = -FLT_MAX;
+    float minY = FLT_MAX;
+    float maxY = -FLT_MAX;
+    float minZ = FLT_MAX;
+    float maxZ = -FLT_MAX;
+
+    for (auto vec : corners[i]) {
+      vec = vec3(camera.view * vec4(vec, 1.0f));
+      minX = min(vec.x, minX);
+      maxX = max(vec.x, maxX);
+      minY = min(vec.y, minY);
+      maxY = max(vec.y, maxY);
+      minZ = min(-vec.z, minZ);
+      maxZ = max(-vec.z, maxZ);
+    }
+
+    //render out of the view in case we have to cast shadows from a moutain
+    float box[6] = { minX,maxX,minY,maxY,2 * minZ - maxZ,maxZ };
+    camera.setProjectionType(Projection::CUSTOM_PROJECTION, box);
+    shadowMatrices[i] = camera.projection * camera.view;
   }
-
-  //render out of the view in case we have to cast shadows from a moutain
-  float box[6] = { minX,maxX,minY,maxY,2 * minZ - maxZ,maxZ };
-  camera.setProjectionType(Projection::CUSTOM_PROJECTION, box);
 }
 
 void ShadowMap::beginFrame(Frustum frustum) {
   shader.activate();
   camera.activate();
   glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-  glClear(GL_DEPTH_BUFFER_BIT);
-  auto shadows = camera.projection * camera.view;
-  glUniformMatrix4fv(MATRIX_SHADOWS, 1, GL_FALSE, glm::value_ptr(shadows));
-
-  glBindFramebuffer(GL_FRAMEBUFFER, fbo);
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, getTextureID(frustum), 0);
+  glUniformMatrix4fv(MATRIX_SHADOWS, 1, GL_FALSE, value_ptr(shadowMatrices[(size_t)frustum]));
+  glClear(GL_DEPTH_BUFFER_BIT);
+  glDisable(GL_CULL_FACE);
 }
 
 void ShadowMap::endFrame() {
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  glEnable(GL_CULL_FACE);
 }
 
-void ShadowMap::activate() {
+void ShadowMap::activate(Shader const& shader) {
+  GLint shadowSampler = shader.getUniformLocation("shadowSampler[0]");
+  glUniform1i(shadowSampler, 1);
   glActiveTexture(GL_TEXTURE1);
   glBindTexture(GL_TEXTURE_2D, depthTex[0]);
-  auto shadows = camera.projection * camera.view;
-  glUniformMatrix4fv(MATRIX_SHADOWS, 1, GL_FALSE, glm::value_ptr(shadows));
+
+  shadowSampler = shader.getUniformLocation("shadowSampler[1]");
+  glUniform1i(shadowSampler, 2);
+  glActiveTexture(GL_TEXTURE2);
+  glBindTexture(GL_TEXTURE_2D, depthTex[1]);
+
+  shadowSampler = shader.getUniformLocation("shadowSampler[2]");
+  glUniform1i(shadowSampler, 3);
+  glActiveTexture(GL_TEXTURE3);
+  glBindTexture(GL_TEXTURE_2D, depthTex[2]);
+
+  glUniformMatrix4fv(MATRIX_SHADOWS, 3, GL_FALSE, (GLfloat*)shadowMatrices);
 }
 
 ShadowMap::~ShadowMap() {

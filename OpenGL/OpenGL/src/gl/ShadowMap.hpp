@@ -14,10 +14,10 @@ public:
   ShadowMap& operator=(ShadowMap&) = delete;
 
   void update(glm::vec3 sunPos, glm::vec3 center);
-  void attach(Camera const& cam, Frustum frustum);
+  void attach(Camera const& cam);
   void beginFrame(Frustum frustum);
   void endFrame();
-  void activate();
+  void activate(Shader const& shader);
   GLuint getTextureID(Frustum frustum) const;
 
   Camera camera;

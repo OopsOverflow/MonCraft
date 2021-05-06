@@ -28,7 +28,7 @@ public:
   Shader(const char *vertexPath, const char *fragmentPath);
 
   void activate();
-  GLint getUniformLocation(const std::string &location);
+  GLint getUniformLocation(const std::string &location) const;
   static Shader *getActive();
   GLuint getLocation(ShaderLocation location) const;
   GLuint program;

@@ -43,8 +43,12 @@ int main(int argc, char* argv[]) {
 
     glEnable(GL_SCISSOR_TEST);
 
+    float t = 0;
+
     // main loop
     for (float dt = 0; window.beginFrame(dt); window.endFrame()) {
+
+        t += dt;
 
         // updates
         MusicPlayer.update();
@@ -56,22 +60,28 @@ int main(int argc, char* argv[]) {
 
         auto playerPos = window.camera.position;
         auto viewDir = window.camera.center - window.camera.position;
-        auto fovX = degrees(2 * atan(tan(radians(45.f) / 2) * window.width / window.height)); // see https://en.wikipedia.org/wiki/Field_of_view_in_video_games#Field_of_view_calculations
-        terrain.update(playerPos, viewDir, fovX);
+        terrain.update(playerPos, viewDir, window.camera.getFovX());
 
         // draw the shadow map
-        // float t = timeBegin / 10000.f;
-        float t = quarter_pi<float>();
+        float sunSpeed = 100.f;
+        float sunTime = pi<float>() * .20f;
+        sunTime += t / 1000.f * sunSpeed;
         float distance = 100.f;
-        float a = cos(t);
-        float b = sin(t);
+        float a = cos(sunTime);
+        float b = sin(sunTime);
         if(b < 0) b = -b;
         auto sunPos = normalize(vec3(a, b, a)) * distance;
         auto sunTarget = vec3(0);
         shadows.update(sunPos, sunTarget);
-        shadows.attach(window.camera, Frustum::NEAR);
+        shadows.attach(window.camera);
 
         shadows.beginFrame(Frustum::NEAR);
+        terrain.render();
+        shadows.endFrame();
+        shadows.beginFrame(Frustum::MEDIUM);
+        terrain.render();
+        shadows.endFrame();
+        shadows.beginFrame(Frustum::FAR);
         terrain.render();
         shadows.endFrame();
 
@@ -86,17 +96,13 @@ int main(int argc, char* argv[]) {
 
         // bind textures
         GLint texSampler = shader.getUniformLocation("textureSampler");
-        GLint shadowSampler = shader.getUniformLocation("shadowSampler");
         glUniform1i(texSampler, 0);
-        glUniform1i(shadowSampler, 1);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, textureID);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, shadows.getTextureID(Frustum::NEAR));
 
         // draw the terrain
         window.camera.activate();
-        shadows.activate();
+        shadows.activate(shader);
         terrain.render();
 
         // terrain sky view
