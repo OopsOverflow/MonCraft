@@ -22,7 +22,7 @@ void Shader::activate() {
 
 Shader *Shader::getActive() { return activeShader; }
 
-GLint Shader::getUniformLocation(const std::string &location) {
+GLint Shader::getUniformLocation(const std::string &location) const {
   return glGetUniformLocation(program, location.c_str());
 }
 

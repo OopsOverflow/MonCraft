@@ -16,6 +16,8 @@
 #include "debug/Debug.hpp"
 #include "debug/DebugBlock.hpp"
 
+using namespace glm;
+
 // WINDOW DIMENSIONS
 #define WIDTH     800
 #define HEIGHT    800
@@ -27,11 +29,10 @@ int main(int argc, char* argv[]) {
     Shader shader("src/shader/simple.vert", "src/shader/simple.frag");
     Terrain terrain;
     SkyBox sky;
-    Character character({ 5000.0f,100.0f,5000.0f });
-    ShadowMap shadows(1024);
+    Character character({ 0.0f,100.0f,0.0f });
+    ShadowMap shadows(1);
     Loader loader;
     Raycast caster(100.f);
-    std::unique_ptr<Mesh> targetBlock = makeDebugBlock();
 
     GLuint textureID = loader.loadTexture("Texture_atlas");
 
@@ -42,8 +43,12 @@ int main(int argc, char* argv[]) {
 
     glEnable(GL_SCISSOR_TEST);
 
+    float t = 0;
+
     // main loop
     for (float dt = 0; window.beginFrame(dt); window.endFrame()) {
+
+        t += dt;
 
         // updates
         MusicPlayer.update();
@@ -55,68 +60,61 @@ int main(int argc, char* argv[]) {
 
         auto playerPos = window.camera.position;
         auto viewDir = window.camera.center - window.camera.position;
-        auto fovX = glm::degrees(2 * atan(tan(glm::radians(45.f) / 2) * window.width / window.height)); // see https://en.wikipedia.org/wiki/Field_of_view_in_video_games#Field_of_view_calculations
-        terrain.update(playerPos, viewDir, fovX);
-
-        auto castPos = window.camera.position + .5f; // COMBAK: find out why camera pos is offset by .5 relative to block origin
-        auto castDir = window.camera.center - window.camera.position;
-        auto cast = caster.cast(castPos, castDir, terrain);
-        targetBlock->model = glm::translate(glm::mat4(1.f), cast.position);
+        terrain.update(playerPos, viewDir, window.camera.getFovX());
 
         // draw the shadow map
-        // float t = timeBegin / 10000.f;
-        float t = glm::half_pi<float>();
+        float sunSpeed = 100.f;
+        float sunTime = pi<float>() * .20f;
+        sunTime += t / 1000.f * sunSpeed;
         float distance = 100.f;
-        float a = cos(t);
-        float b = sin(t);
+        float a = cos(sunTime);
+        float b = sin(sunTime);
         if(b < 0) b = -b;
-        auto sunPos = cast.position + glm::normalize(glm::vec3(a, b, a)) * distance;
-        auto sunTarget = cast.position;
+        auto sunPos = normalize(vec3(a, b, a)) * distance;
+        auto sunTarget = vec3(0);
         shadows.update(sunPos, sunTarget);
-        shadows.beginFrame();
+        shadows.attach(window.camera);
+
+        shadows.beginFrame(Frustum::NEAR);
+        terrain.render();
+        shadows.endFrame();
+        shadows.beginFrame(Frustum::MEDIUM);
+        terrain.render();
+        shadows.endFrame();
+        shadows.beginFrame(Frustum::FAR);
         terrain.render();
         shadows.endFrame();
 
         // prepare render
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         shader.activate();
-        window.camera.activate();
 
         // set light position / intensity
         glUniform1f(shader.getUniformLocation("lightIntensity"), 1);
-        auto sunDir = window.camera.view * glm::normalize(-glm::vec4(a, b, a, 0.f));
-        glUniform3fv(shader.getUniformLocation("lightDirection"), 1, glm::value_ptr(sunDir));
+        auto sunDir = window.camera.view * normalize(-vec4(a, b, a, 0.f));
+        glUniform3fv(shader.getUniformLocation("lightDirection"), 1, value_ptr(sunDir));
 
         // bind textures
         GLint texSampler = shader.getUniformLocation("textureSampler");
-        GLint shadowSampler = shader.getUniformLocation("shadowSampler");
         glUniform1i(texSampler, 0);
-        glUniform1i(shadowSampler,  1);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, textureID);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, shadows.getTextureID());
-
-        // draw target block
-        // glBindVertexArray(targetBlock->getVAO());
-        // glUniformMatrix4fv(MATRIX_MODEL, 1, GL_FALSE, glm::value_ptr(targetBlock->model));
-        // glDrawElements(GL_TRIANGLES, targetBlock->getVertexCount(), GL_UNSIGNED_INT, nullptr);
-        // glBindVertexArray(0);
 
         // draw the terrain
-        // shadows.activate();
+        window.camera.activate();
+        shadows.activate(shader);
         terrain.render();
 
         // terrain sky view
-        glm::vec3 skyPos(window.camera.position.x, 500, window.camera.position.z);
-        glm::vec3 skyCenter(window.camera.position.x, 0, window.camera.position.z - 1);
-        skyCam.setLookAt(skyPos, skyCenter);
-        skyCam.activate();
-
         glScissor(0, 0, skyCamSize + 5, skyCamSize + 5);
         glClearColor(0, 0, 0, 0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        // draw shadow view
+        shadows.camera.activate();
+        glViewport(0, 0, skyCamSize, skyCamSize),
         terrain.render();
+
         glScissor(skyCamSize/2-1, skyCamSize/2-1, 2, 2);
         glClearColor(1, 1, 1, 1);
         glClear(GL_COLOR_BUFFER_BIT); // draw point

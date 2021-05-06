@@ -1,9 +1,14 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <vector>
 
-enum class Projection { PROJECTION_ORTHOGRAPHIC,
-                  PROJECTION_PERSPECTIVE };
+enum class Projection {
+  PROJECTION_ORTHOGRAPHIC,
+  PROJECTION_PERSPECTIVE,
+  CUSTOM_PROJECTION };
+
+enum class Frustum { NEAR = 0, MEDIUM = 1, FAR = 2, ALL = 3 };
 
 class Camera {
 public:
@@ -14,9 +19,9 @@ public:
 
   void setSize(unsigned int width, unsigned int height);
   void setProjectionType(Projection projType);
+  void setProjectionType(Projection projType, float box[6]);
   void setPosition(const glm::vec3 &position);
   void setLookAt(const glm::vec3 &pos, const glm::vec3 &center);
-
 
   void translate(const glm::vec3 &direction, bool localSpace = false);
   void translatePixels(int x, int y);
@@ -25,8 +30,13 @@ public:
   void rotatePixels(int x, int y, bool localSpace = false);
   // void setRotation(const glm::vec3 &rotation);
 
+  float getFovY() const { return fovY; }
+  float getFovX() const { return glm::degrees(2 * atan(tan(glm::radians(fovY) * 0.5) * screenWidth / screenHeight)); } // see https://en.wikipedia.org/wiki/Field_of_view_in_video_games#Field_of_view_calculations
+
   void getSize(unsigned int &width, unsigned int &height) const;
   Projection getProjectionType() const;
+
+  std::vector<glm::vec3> getBoxCorners(Frustum frustum) const;
 
 public:
   glm::mat4 view;
@@ -43,6 +53,7 @@ protected:
   Projection projType;
 
 private:
+  void computeProjection(float box[6]);
   void computeProjection();
   void computeView();
 };

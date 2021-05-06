@@ -9,7 +9,7 @@ Camera::Camera(unsigned int width, unsigned int height, const glm::vec3 &positio
                const glm::vec3 &center, Projection projType)
  : view(1.f), projection(1.f),
    position(position), center(center),
-   fovY(45.f), near_(0.1f), far_(100.f),
+   fovY(45.f), near_(0.1f), far_(200.f),
    screenWidth(width), screenHeight(height),
    projType(projType)
 {
@@ -92,6 +92,11 @@ void Camera::setProjectionType(Projection projType) {
   computeProjection();
 }
 
+void Camera::setProjectionType(Projection projType, float box[6]) {
+  this->projType = projType;
+  computeProjection(box);
+}
+
 void Camera::translatePixels(int x, int y) {
   glm::vec3 translation((float)x, (float)-y, 0.f);
 
@@ -105,24 +110,6 @@ void Camera::translatePixels(int x, int y) {
 
   translate(translation, true);
 }
-
-/*-----Obsolete
-void Camera::zoom(float factor) {
-  glm::vec3 translation = center - position;
-  float coef = 1.f - 1.f / (float)pow(2, factor);
-  translation *= coef;
-
-  glm::mat4 trans(1.f);
-  trans = glm::translate(trans, -translation);
-
-  position += translation;
-  view = view * trans;
-
-  if (projType == Projection::PROJECTION_ORTHOGRAPHIC) {
-    computeProjection();
-  }
-}
-*/
 
 void Camera::rotatePixels(int x, int y, bool localSpace) {
   // in the turnTable rotation style we rotate around y axis in global space
@@ -167,7 +154,7 @@ void Camera::computeView() {
   view = glm::lookAt(position, center, up);
 }
 
-void Camera::computeProjection() {
+void Camera::computeProjection(float box[6]) {
   float aspect = (float)screenWidth / (float)screenHeight;
 
   if (projType == Projection::PROJECTION_ORTHOGRAPHIC) {
@@ -178,10 +165,89 @@ void Camera::computeProjection() {
   }
 
   else if (projType == Projection::PROJECTION_PERSPECTIVE) {
-    // COMBAK: Here I am using a far plane at infinity to make sure the
-    // whole scene fits. One can argue that the projection looses precision but
-    // I have never seen any artefacts so far. Anyway I haven't understood the
-    // precision issues with matrices.
-    projection = glm::infinitePerspective(glm::radians(fovY), aspect, near_);
+    projection = glm::perspective(glm::radians(fovY), aspect, near_, far_);
   }
+  else {
+      projection = glm::ortho(box[0], box[1], box[2], box[3], box[4], box[5]);
+  }
+}
+
+void Camera::computeProjection() {
+    float defaults[6] = {0.0f,0.0f,0.0f,0.0f,0.0f,0.0f};
+    computeProjection(defaults);
+}
+
+std::vector<glm::vec3> Camera::getBoxCorners(Frustum frustum) const {
+    float z1, z2;
+    float range = far_ - near_;
+
+    switch (frustum)
+    {
+    case Frustum::ALL:
+        z1 = -near_;
+        z2 = -far_;
+        break;
+    case Frustum::NEAR:
+        z1 = -near_;
+        z2 = -near_ - range / 5.0f;
+        break;
+    case Frustum::MEDIUM:
+        z1 = -near_ - range / 3.0f;
+        z2 = -near_ - 2.0f * range / 3.0f;
+        break;
+    case Frustum::FAR:
+        z1 = -near_ - 2.0f * range / 3.0f;
+        z2 = -far_;
+        break;
+    default:
+        break;
+    }
+
+    float y1;
+    float y2;
+    float x1;
+    float x2;
+
+    if (projType == Projection::PROJECTION_PERSPECTIVE) {
+        y1 = z1 * tan(glm::radians(fovY) * 0.5);
+        y2 = z2 * tan(glm::radians(fovY) * 0.5);
+
+        x1 = z1 * tan(glm::radians(getFovX()) * 0.5);
+        x2 = z2 * tan(glm::radians(getFovX()) * 0.5);
+
+    }
+    else if(projType == Projection::PROJECTION_ORTHOGRAPHIC) {
+        float aspect = (float)screenWidth / (float)screenHeight;
+        float y = glm::length(center - position) * tan(glm::radians(fovY * 0.5f));
+        float x = y * aspect;
+
+        z1 = 0.0f;
+        z2 = 1000.0f;
+
+        y1 = y;
+        y2 = y;
+
+        x1 = x;
+        x2 = x;
+    }
+    else {
+      throw std::runtime_error("unimplemented");
+    }
+
+    glm::mat4 invertView = glm::inverse(view);
+
+    std::vector<glm::vec3> pos;
+    //near
+    pos.push_back(glm::vec3(invertView * glm::vec4(x1, y1, z1, 1.0f))); //top, right
+    pos.push_back(glm::vec3(invertView * glm::vec4(x1, -y1, z1, 1.0f))); //bot, right
+    pos.push_back(glm::vec3(invertView * glm::vec4(-x1, y1, z1, 1.0f))); //top, left
+    pos.push_back(glm::vec3(invertView * glm::vec4(-x1, -y1, z1, 1.0f))); //bot, left
+
+    //far
+    pos.push_back(glm::vec3(invertView * glm::vec4(x2, y2, z2, 1.0f)));
+    pos.push_back(glm::vec3(invertView * glm::vec4(x2, -y2, z2, 1.0f)));
+    pos.push_back(glm::vec3(invertView * glm::vec4(-x2, y2, z2, 1.0f)));
+    pos.push_back(glm::vec3(invertView * glm::vec4(-x2, -y2, z2, 1.0f)));
+
+    return pos;
 }
