@@ -11,10 +11,10 @@ Raycast::Raycast(float maxDist) : maxDist(maxDist)
 Raycast::CastResult Raycast::cast(vec3 pos, vec3 direction, Terrain& terrain) const {
 
   CastResult res{
-    .success  = false,
-    .position = floor(pos),
-    .normal   = vec3(0),
-    .block    = nullptr
+    false,
+    floor(pos),
+    vec3(0),
+    nullptr
   };
 
   const vec3 step = sign(direction); // (stepX/stepY)

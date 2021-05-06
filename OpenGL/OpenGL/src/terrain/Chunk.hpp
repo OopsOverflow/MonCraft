@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 #include <memory>
 #include <mutex>
+#include <array>
 
 #include "gl/Mesh.hpp"
 #include "util/DataStore.hpp"
