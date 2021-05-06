@@ -14,16 +14,18 @@ public:
   ShadowMap& operator=(ShadowMap&) = delete;
 
   void update(glm::vec3 sunPos, glm::vec3 center);
-  void beginFrame();
+  void attach(Camera const& cam, Frustum frustum);
+  void beginFrame(Frustum frustum);
   void endFrame();
   void activate();
-  GLuint getTextureID() const;
+  GLuint getTextureID(Frustum frustum) const;
 
+  Camera camera;
 private:
   GLuint fbo;
-  GLuint tex;
+  GLuint depthTex[3];
   int size;
-  Camera camera;
   Shader shader;
   float distance;
+  glm::mat4 shadowMatrices[3];
 };

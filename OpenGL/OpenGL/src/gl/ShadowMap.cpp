@@ -10,24 +10,24 @@ ShadowMap::ShadowMap(int size)
     distance(100.f)
 {
   glGenFramebuffers(1, &fbo);
-  glGenTextures(1, &tex);
+  glGenTextures(3, depthTex);
+
+  for (size_t i = 0; i < 3; i+=1) {
+    glBindTexture(GL_TEXTURE_2D, depthTex[i]);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, size, size, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };//Uncalculated shadows are white
+    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+    glBindTexture(GL_TEXTURE_2D, 0);
+  }
+
   glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-  glBindTexture(GL_TEXTURE_2D, tex);
-
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, size, size, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-  glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, tex, 0);
   glDrawBuffer(GL_NONE);
   glReadBuffer(GL_NONE);
-
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
-  glBindFramebuffer(GL_TEXTURE_2D, 0);
 }
 
 // TODO: temporary until I finish the skewed shadow matrix
@@ -37,62 +37,61 @@ ShadowMap::ShadowMap(int size)
 
 void ShadowMap::update(glm::vec3 sunPos, glm::vec3 center) {
   camera.setLookAt(sunPos, center);
-  auto proj = camera.projection;
-  auto view = camera.view;
-
-  auto vecX4 = proj * view * glm::vec4(1, 0, 0, 0);
-  auto vecY4 = proj * view * glm::vec4(0, 1, 0, 0);
-  auto vecZ4 = proj * view * glm::vec4(0, 0,-1, 0);
-  auto vecX = glm::normalize(glm::vec2(vecX4.x, vecX4.y));
-  auto vecY = glm::normalize(glm::vec2(vecY4.x, vecY4.y));
-  auto vecZ = glm::normalize(glm::vec2(vecZ4.x, vecZ4.y));
-
-  auto angleA = glm::orientedAngle(vecX, vecY);
-
-  auto shear1 = glm::shearX3D(glm::mat4(1.f), -(float)tan(glm::half_pi<float>() - angleA), 0.f);
-  proj = shear1 * proj;
-
-  vecX4 = proj * view * glm::vec4(1, 0, 0, 0);
-  vecY4 = proj * view * glm::vec4(0, 1, 0, 0);
-  vecZ4 = proj * view * glm::vec4(0, 0,-1, 0);
-  vecX = glm::normalize(glm::vec2(vecX4.x, vecX4.y));
-  vecY = glm::normalize(glm::vec2(vecY4.x, vecY4.y));
-  vecZ = glm::normalize(glm::vec2(vecZ4.x, vecZ4.y));
-  auto angleB = glm::orientedAngle(vecZ, vecY);
-
-  auto shear2 = glm::shearY3D(glm::mat4(1.f), -(float)tan(angleB), 0.f);
-  proj = shear2 * proj;
-
-  camera.projection = proj;
 }
 
-void ShadowMap::beginFrame() {
+void ShadowMap::attach(Camera const& cam, Frustum frustum) {
+  float minX = FLT_MAX;
+  float maxX = -FLT_MAX;
+  float minY = FLT_MAX;
+  float maxY = -FLT_MAX;
+  float minZ = FLT_MAX;
+  float maxZ = -FLT_MAX;
+
+  std::vector<glm::vec3> corners = cam.getBoxCorners(frustum);
+  for (glm::vec3 vec : corners)
+  {
+      vec = glm::vec3(camera.view * glm::vec4(vec, 1.0f));
+      minX = glm::min(vec.x, minX);
+      maxX = glm::max(vec.x, maxX);
+      minY = glm::min(vec.y, minY);
+      maxY = glm::max(vec.y, maxY);
+      minZ = glm::min(-vec.z, minZ);
+      maxZ = glm::max(-vec.z, maxZ);
+  }
+
+  //render out of the view in case we have to cast shadows from a moutain
+  float box[6] = { minX,maxX,minY,maxY,2 * minZ - maxZ,maxZ };
+  camera.setProjectionType(Projection::CUSTOM_PROJECTION, box);
+}
+
+void ShadowMap::beginFrame(Frustum frustum) {
   shader.activate();
   camera.activate();
   glBindFramebuffer(GL_FRAMEBUFFER, fbo);
   glClear(GL_DEPTH_BUFFER_BIT);
   auto shadows = camera.projection * camera.view;
   glUniformMatrix4fv(MATRIX_SHADOWS, 1, GL_FALSE, glm::value_ptr(shadows));
-  // glCullFace(GL_FRONT);
+
+  glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, getTextureID(frustum), 0);
 }
 
 void ShadowMap::endFrame() {
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
-  // glCullFace(GL_BACK);
 }
 
 void ShadowMap::activate() {
   glActiveTexture(GL_TEXTURE1);
-  glBindTexture(GL_TEXTURE_2D, tex);
+  glBindTexture(GL_TEXTURE_2D, depthTex[0]);
   auto shadows = camera.projection * camera.view;
   glUniformMatrix4fv(MATRIX_SHADOWS, 1, GL_FALSE, glm::value_ptr(shadows));
 }
 
 ShadowMap::~ShadowMap() {
-  glDeleteTextures(1, &tex);
+  glDeleteTextures(3, depthTex);
   glDeleteFramebuffers(1, &fbo);
 }
 
-GLuint ShadowMap::getTextureID() const {
-  return tex;
+GLuint ShadowMap::getTextureID(Frustum frustum) const {
+  return depthTex[(size_t)frustum];
 }

@@ -21,25 +21,25 @@ float computeShadow() {
   //   return 0.0;
 
   // float bias = 0.0002;
-  // float bias = 0.001;
-  float bias = 1.0 / textureSize(shadowSampler, 0).x;
+  float bias = 0;
+  // float bias = 1.0 / textureSize(shadowSampler, 0).x;
   float currentDepth = shadowCoords.z * 0.5 + 0.5;
-  vec2 texelSize = 1.0 / textureSize(shadowSampler, 0) / 2;
+  // vec2 texelSize = 1.0 / textureSize(shadowSampler, 0) / 2;
 
   // no pcf
-  // float pcfDepth = texture(shadowSampler, shadowCoords.xy * 0.5 + 0.5).r;
-  // return currentDepth - bias > pcfDepth ? 1.0 : 0.0;
+  float pcfDepth = texture(shadowSampler, shadowCoords.xy * 0.5 + 0.5).r;
+  return currentDepth - bias > pcfDepth ? 1.0 : 0.0;
 
   // pcf
-  float shadow = 0.0;
-  for(float x = -1.5; x <= 1.5; ++x) {
-      for(float y = -1.5; y <= 1.5; ++y) {
-          float pcfDepth = texture(shadowSampler, shadowCoords.xy * 0.5 + 0.5 + vec2(x, y) * texelSize).r;
-          shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
-      }
-  }
-  shadow /= 16.0;
-  return shadow;
+  // float shadow = 0.0;
+  // for(float x = -1.5; x <= 1.5; ++x) {
+  //     for(float y = -1.5; y <= 1.5; ++y) {
+  //         float pcfDepth = texture(shadowSampler, shadowCoords.xy * 0.5 + 0.5 + vec2(x, y) * texelSize).r;
+  //         shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
+  //     }
+  // }
+  // shadow /= 16.0;
+  // return shadow;
 }
 
 void main() {
