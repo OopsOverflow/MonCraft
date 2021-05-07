@@ -61,7 +61,7 @@ int main(int argc, char* argv[]) {
         terrain.update(playerPos, viewDir, window.camera.getFovX());
 
         // draw the shadow map
-        float sunSpeed = 100.f;
+        float sunSpeed = 1.f;
         float sunTime = pi<float>() * .25f;
         sunTime += t / 1000.f * sunSpeed;
         float distance = 100.f;

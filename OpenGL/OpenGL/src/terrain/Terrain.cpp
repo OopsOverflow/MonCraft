@@ -241,15 +241,30 @@ void Terrain::render() {
   vec2 viewDir2D = glm::normalize(vec2(viewDir.x, viewDir.z));
   ivec3 startChunk = chunkPos - ivec3(glm::sign(viewDir));
 
+  // draw solid and update chunks
   for(auto& chunk : chunks) {
     ivec3 chunkDir3D = chunk.first - startChunk;
     vec2 chunkDir = glm::normalize(vec2(chunkDir3D.x, chunkDir3D.z));
 
     float minDot = cos(glm::radians(fovX));
     if(distance(chunk.first, chunkPos) < 2 || glm::dot(chunkDir, viewDir2D) > minDot) {
+      chunk.second->update();
       chunk.second->drawSolid();
     }
   }
+
+  // draw transparent
+  // glDisable(GL_CULL_FACE);
+  for(auto& chunk : chunks) {
+    ivec3 chunkDir3D = chunk.first - startChunk;
+    vec2 chunkDir = glm::normalize(vec2(chunkDir3D.x, chunkDir3D.z));
+
+    float minDot = cos(glm::radians(fovX));
+    if(distance(chunk.first, chunkPos) < 2 || glm::dot(chunkDir, viewDir2D) > minDot) {
+      chunk.second->drawTransparent();
+    }
+  }
+  // glEnable(GL_CULL_FACE);
 }
 
 Block* Terrain::getBlock(ivec3 pos) {

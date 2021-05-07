@@ -87,6 +87,31 @@ bool Chunk::isSolidNoChecks(ivec3 pos) {
   return (*this)[pos]->type != BlockType::Air;
 }
 
+// /!\ extra care must be taken here.
+//  - uses operator[] which is unsafe (no bounds checks)
+bool Chunk::isTransparent(ivec3 pos) {
+  static const ivec3 mask(9, 3, 1);
+
+  auto greater = greaterThanEqual(pos, size);
+  auto lesser = lessThan(pos, ivec3(0));
+  if(any(greater) || any(lesser)) {
+    auto tmp = ivec3(greater) * mask + ivec3(lesser) * 2 * mask;
+    int index = tmp.x + tmp.y + tmp.z - 1;
+
+    if(auto neigh = neighbors[index].lock()) {
+      return neigh->isTransparentNoChecks(pos - size * (ivec3(greater) - ivec3(lesser)));
+    }
+    else return false;
+  }
+  return (*this)[pos]->type == BlockType::Leaf;
+}
+
+// /!\ extra care must be taken here.
+//  - uses operator[] which is unsafe (no bounds checks)
+bool Chunk::isTransparentNoChecks(ivec3 pos) {
+  return (*this)[pos]->type == BlockType::Leaf; // TODO: other blocks as well
+}
+
 void Chunk::compute() {
   std::lock_guard<std::mutex> lck(computeMutex);
   // indices scheme
@@ -125,7 +150,6 @@ void Chunk::compute() {
   };
 
   auto genFace = [&](ivec3 pos, BlockFace face, MeshData& data) {
-
     auto& _scheme = data.scheme;
     auto& _ind  = data.indices;
     auto& _pos  = data.positions;
@@ -169,17 +193,32 @@ void Chunk::compute() {
     }
   }
 
+  static const std::array<std::pair<ivec3, BlockFace>, 6> offsets = {
+    std::pair<ivec3, BlockFace>
+    {ivec3(1, 0, 0), BlockFace::RIGHT},
+    {ivec3(-1, 0, 0), BlockFace::LEFT},
+    {ivec3(0, 1, 0), BlockFace::TOP},
+    {ivec3(0, -1, 0), BlockFace::BOTTOM},
+    {ivec3(0, 0, 1), BlockFace::FRONT},
+    {ivec3(0, 0, -1), BlockFace::BACK},
+  };
+
   // finally generate the face quads
   for(pos.x = 0; pos.x < size.x; pos.x++) {
     for(pos.y = 0; pos.y < size.y; pos.y++) {
       for(pos.z = 0; pos.z < size.z; pos.z++) {
         if(!solidBlocks[pos + 1]) continue;
-        if(!solidBlocks[pos + ivec3(1, 0, 0) + 1])  genFace(pos, BlockFace::RIGHT, solidData);
-        if(!solidBlocks[pos + ivec3(-1, 0, 0) + 1]) genFace(pos, BlockFace::LEFT, solidData);
-        if(!solidBlocks[pos + ivec3(0, 1, 0) + 1])  genFace(pos, BlockFace::TOP, solidData);
-        if(!solidBlocks[pos + ivec3(0, -1, 0) + 1]) genFace(pos, BlockFace::BOTTOM, solidData);
-        if(!solidBlocks[pos + ivec3(0, 0, 1) + 1])  genFace(pos, BlockFace::FRONT, solidData);
-        if(!solidBlocks[pos + ivec3(0, 0, -1) + 1]) genFace(pos, BlockFace::BACK, solidData);
+        bool transp = isTransparent(pos);
+
+        for(auto const& off : offsets) {
+          bool offSolid = solidBlocks[pos + off.first + 1];
+          bool offTransp = isTransparent(pos + off.first);
+          if(!offSolid || offTransp) {
+            if(transp) genFace(pos, off.second, transparentData);
+            else genFace(pos, off.second, solidData);
+          }
+        }
+
       }
     }
   }
@@ -205,7 +244,7 @@ void Chunk::update() {
       solidMesh->model = translate(mat4(1.0), vec3(size * chunkPos));
       solidData = {};
     }
-    if(solidData.indices.size() != 0) {
+    if(transparentData.indices.size() != 0) {
       transparentMesh = std::make_unique<Mesh>(
         transparentData.positions,
         transparentData.normals,
@@ -220,11 +259,18 @@ void Chunk::update() {
 }
 
 void Chunk::drawSolid() {
-  update();
   if(solidMesh) {
     glBindVertexArray(solidMesh->getVAO());
     glUniformMatrix4fv(MATRIX_MODEL, 1, GL_FALSE, glm::value_ptr(solidMesh->model));
     glDrawElements(GL_TRIANGLES, solidMesh->getVertexCount(), GL_UNSIGNED_INT, nullptr);
+  }
+}
+
+void Chunk::drawTransparent() {
+  if(transparentMesh) {
+    glBindVertexArray(transparentMesh->getVAO());
+    glUniformMatrix4fv(MATRIX_MODEL, 1, GL_FALSE, glm::value_ptr(transparentMesh->model));
+    glDrawElements(GL_TRIANGLES, transparentMesh->getVertexCount(), GL_UNSIGNED_INT, nullptr);
   }
 }
 

@@ -81,4 +81,8 @@ void main() {
   //     outputColor[i] += 0.2;
   //   }
   // }
+
+  if(outputColor.a < 0.1) {
+    discard;
+  }
 }

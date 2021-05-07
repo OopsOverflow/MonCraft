@@ -47,6 +47,11 @@ public:
   void compute();
 
   /**
+  * New's the Chunk if computed. Must be called before draws.
+  */
+  void update();
+
+  /**
   * Gl draw the solid block mesh.
   * It will avoid draw calls for empty chunks.
   */
@@ -73,7 +78,8 @@ public:
   static const std::array<int, 26> neighborOffsetsInverse;
 
 private:
-  void update(); // new's the Chunk if computed. Called in draw() for now.
+  bool isTransparent(glm::ivec3 pos);
+  bool isTransparentNoChecks(glm::ivec3 pos);
   bool isSolid(glm::ivec3 pos);
   bool isSolidNoChecks(glm::ivec3 pos);
 

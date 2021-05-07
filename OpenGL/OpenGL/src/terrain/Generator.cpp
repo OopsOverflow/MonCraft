@@ -4,11 +4,13 @@
 #include "../blocks/Air_Block.hpp"
 #include "../blocks/Stone_Block.hpp"
 #include "../blocks/Debug_Block.hpp"
+#include "../blocks/Leaf_Block.hpp"
 
 using namespace glm;
 
 Generator::Generator(int chunkSize)
-  : chunkSize(chunkSize)
+  : chunkSize(chunkSize),
+    treeNoise(92847)
 {
   noise.seed(27);
   noiseX.seed(1156);
@@ -16,7 +18,7 @@ Generator::Generator(int chunkSize)
   noiseZ.seed(21554);
 }
 
-std::shared_ptr<Chunk> Generator::generate(ivec3 chunkPos) {
+std::shared_ptr<Chunk> Generator::generate(ivec3 chunkPos) const {
 
   static const int maxHeight = 50;
 
@@ -40,8 +42,12 @@ std::shared_ptr<Chunk> Generator::generate(ivec3 chunkPos) {
         float height = noise.fractal2(ivec2(pos.x, pos.z), octaves) * .5f + .5f;
         int blockHeight = (int)floor(height * maxHeight) - chunkPos.y * chunkSize;
         auto& block = (*chunk)[dpos];
+        float tree = treeNoise.sample1D(ivec2(pos.x, pos.z)) / (float)INT_MAX;
 
-        if(dpos.y > blockHeight) {
+        if(dpos.y == blockHeight + 1 && tree > 0.995) {
+          block = Block::create_static<Leaf_Block>();
+        }
+        else if(dpos.y > blockHeight) {
           block = Block::create_static<Air_Block>();
         }
         else if(dpos.y == blockHeight) {

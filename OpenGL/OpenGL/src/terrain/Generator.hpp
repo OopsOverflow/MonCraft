@@ -15,7 +15,7 @@ public:
   /**
   * Generates a chunk at the given chunk index.
   */
-  std::shared_ptr<Chunk> generate(glm::ivec3 pos);
+  std::shared_ptr<Chunk> generate(glm::ivec3 pos) const;
 
 private:
   int chunkSize;
@@ -23,4 +23,5 @@ private:
   SimplexNoise noiseX;
   SimplexNoise noiseY;
   SimplexNoise noiseZ;
+  ValueNoise treeNoise;
 };
