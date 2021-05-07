@@ -47,10 +47,16 @@ public:
   void compute();
 
   /**
-  * Gl draw the mesh.
+  * Gl draw the solid block mesh.
   * It will avoid draw calls for empty chunks.
   */
-  void draw();
+  void drawSolid();
+
+  /**
+  * Gl draw the transparent block mesh.
+  * It will avoid draw calls for empty chunks.
+  */
+  void drawTransparent();
 
 
   /**
@@ -74,10 +80,17 @@ private:
   glm::ivec3 chunkPos; // chunk index, not world position (position is size * chunkPos)
 
   // the gl mesh and corresponding data.
-  std::unique_ptr<Mesh> mesh;
-  std::vector<GLuint> indices;
-  std::vector<GLfloat> positions, normals, textureCoords, occlusion;
+  std::unique_ptr<Mesh> solidMesh;
+  std::unique_ptr<Mesh> transparentMesh;
 
+  struct MeshData {
+    std::vector<GLuint> scheme;
+    std::vector<GLuint> indices;
+    std::vector<GLfloat> positions, normals, textureCoords, occlusion;
+  };
+
+  MeshData solidData;
+  MeshData transparentData;
+  bool loaded;
   std::mutex computeMutex;
-  bool computed;
 };

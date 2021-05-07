@@ -45,15 +45,15 @@ const std::array<ivec3, 26> Chunk::neighborOffsets = {
 
 const std::array<int, 26> Chunk::neighborOffsetsInverse = { // https://oeis.org/A059249
   1, 0, 5, 7, 6, 2, 4, 3,
-  17, 19, 18, 23, 25, 24, 20, 22, 21, 
+  17, 19, 18, 23, 25, 24, 20, 22, 21,
   8, 10, 9, 14, 16, 15, 11, 13, 12
 };
 
 Chunk::Chunk(ivec3 chunkPos, int chunkSize)
   : DataStore<Block::unique_ptr_t, 3>(glm::ivec3(chunkSize)),
     chunkPos(chunkPos),
-    mesh(nullptr),
-    computed(false)
+    solidMesh(nullptr), transparentMesh(nullptr),
+    loaded(false)
 {
   // std::cout << "created Chunk " << chunkPos << std::endl;
 }
@@ -90,7 +90,8 @@ bool Chunk::isSolidNoChecks(ivec3 pos) {
 void Chunk::compute() {
   std::lock_guard<std::mutex> lck(computeMutex);
   // indices scheme
-  std::vector<int> scheme = { 0, 1, 2, 0, 2, 3 };
+  solidData.scheme = { 0, 1, 2, 0, 2, 3 };
+  transparentData.scheme = { 0, 1, 2, 0, 2, 3 };
 
   DataStore<bool, 3> solidBlocks(size + 2); // a cache to limit calls to isSolid()
 
@@ -123,30 +124,38 @@ void Chunk::compute() {
     };
   };
 
-  auto genFace = [&](ivec3 pos, BlockFace face) {
+  auto genFace = [&](ivec3 pos, BlockFace face, MeshData& data) {
+
+    auto& _scheme = data.scheme;
+    auto& _ind  = data.indices;
+    auto& _pos  = data.positions;
+    auto& _norm = data.normals;
+    auto& _uvs  = data.textureCoords;
+    auto& _occl = data.occlusion;
+
     // indices
-    indices.insert(indices.end(), scheme.begin(), scheme.end());
-    std::transform(scheme.begin(), scheme.end(), scheme.begin(), [](int x) { return x+4; });
+    _ind.insert(_ind.end(), _scheme.begin(), _scheme.end());
+    std::transform(_scheme.begin(), _scheme.end(), _scheme.begin(), [](int x) { return x+4; });
 
     // positions
     auto& posFace = blockPositions[(size_t)face];
-    positions.insert(positions.end(), posFace.begin(), posFace.end());
+    _pos.insert(_pos.end(), posFace.begin(), posFace.end());
     for(int i = 0, k = 0; i < 12; i++, k = (k+1) % 3) {
-      positions[positions.size() - 12 + i] += pos[k];
+      _pos[_pos.size() - 12 + i] += pos[k];
     }
 
     // normals
-    auto& normFace = blockNormals[(size_t)face];
-    normals.insert(normals.end(), normFace.begin(), normFace.end());
+    auto const& normFace = blockNormals[(size_t)face];
+    _norm.insert(_norm.end(), normFace.begin(), normFace.end());
 
     // textureCoords
     auto indexUV = getBlock(pos)->getFaceUVs(face);
     auto uvFace = genFaceUV(indexUV);
-    textureCoords.insert(textureCoords.end(), uvFace.begin(), uvFace.end());
+    _uvs.insert(_uvs.end(), uvFace.begin(), uvFace.end());
 
     // occlusion
     auto occl = genOcclusion(pos, face);
-    occlusion.insert(occlusion.end(), occl.begin(), occl.end());
+    _occl.insert(_occl.end(), occl.begin(), occl.end());
   };
 
   ivec3 pos{};
@@ -165,53 +174,63 @@ void Chunk::compute() {
     for(pos.y = 0; pos.y < size.y; pos.y++) {
       for(pos.z = 0; pos.z < size.z; pos.z++) {
         if(!solidBlocks[pos + 1]) continue;
-        if(!solidBlocks[pos + ivec3(1, 0, 0) + 1])  genFace(pos, BlockFace::RIGHT);
-        if(!solidBlocks[pos + ivec3(-1, 0, 0) + 1]) genFace(pos, BlockFace::LEFT);
-        if(!solidBlocks[pos + ivec3(0, 1, 0) + 1])  genFace(pos, BlockFace::TOP);
-        if(!solidBlocks[pos + ivec3(0, -1, 0) + 1]) genFace(pos, BlockFace::BOTTOM);
-        if(!solidBlocks[pos + ivec3(0, 0, 1) + 1])  genFace(pos, BlockFace::FRONT);
-        if(!solidBlocks[pos + ivec3(0, 0, -1) + 1]) genFace(pos, BlockFace::BACK);
+        if(!solidBlocks[pos + ivec3(1, 0, 0) + 1])  genFace(pos, BlockFace::RIGHT, solidData);
+        if(!solidBlocks[pos + ivec3(-1, 0, 0) + 1]) genFace(pos, BlockFace::LEFT, solidData);
+        if(!solidBlocks[pos + ivec3(0, 1, 0) + 1])  genFace(pos, BlockFace::TOP, solidData);
+        if(!solidBlocks[pos + ivec3(0, -1, 0) + 1]) genFace(pos, BlockFace::BOTTOM, solidData);
+        if(!solidBlocks[pos + ivec3(0, 0, 1) + 1])  genFace(pos, BlockFace::FRONT, solidData);
+        if(!solidBlocks[pos + ivec3(0, 0, -1) + 1]) genFace(pos, BlockFace::BACK, solidData);
       }
     }
   }
 
-  if(indices.size() != 0) { // that chunk is not filled with air
-    computed = true;
+  if(solidMesh && solidData.indices.size() == 0) { // that chunk is filled with air, discard
+    solidMesh = std::unique_ptr<Mesh>(nullptr);
   }
-  else if(mesh) {
-    mesh = std::unique_ptr<Mesh>(nullptr);
+  if(transparentMesh && transparentData.indices.size() == 0) { // that chunk is filled with air, discard
+    transparentMesh = std::unique_ptr<Mesh>(nullptr);
   }
+  loaded = true;
 }
 
 void Chunk::update() {
   if(computeMutex.try_lock()) {
-    if(computed) {
-      mesh = std::make_unique<Mesh>(positions, normals, textureCoords, occlusion, indices);
-      mesh->model = translate(mesh->model, vec3(size * chunkPos));
-
-      positions = {};
-      normals = {};
-      textureCoords = {};
-      occlusion = {};
-      indices = {};
-      computed = false;
+    if(solidData.indices.size() != 0) {
+      solidMesh = std::make_unique<Mesh>(
+        solidData.positions,
+        solidData.normals,
+        solidData.textureCoords,
+        solidData.occlusion,
+        solidData.indices);
+      solidMesh->model = translate(mat4(1.0), vec3(size * chunkPos));
+      solidData = {};
+    }
+    if(solidData.indices.size() != 0) {
+      transparentMesh = std::make_unique<Mesh>(
+        transparentData.positions,
+        transparentData.normals,
+        transparentData.textureCoords,
+        transparentData.occlusion,
+        transparentData.indices);
+      transparentMesh->model = translate(mat4(1.0), vec3(size * chunkPos));
+      transparentData = {};
     }
     computeMutex.unlock();
   }
 }
 
-void Chunk::draw() {
+void Chunk::drawSolid() {
   update();
-  if(mesh) {
-    glBindVertexArray(mesh->getVAO());
-    glUniformMatrix4fv(MATRIX_MODEL, 1, GL_FALSE, glm::value_ptr(mesh->model));
-    glDrawElements(GL_TRIANGLES, mesh->getVertexCount(), GL_UNSIGNED_INT, nullptr);
+  if(solidMesh) {
+    glBindVertexArray(solidMesh->getVAO());
+    glUniformMatrix4fv(MATRIX_MODEL, 1, GL_FALSE, glm::value_ptr(solidMesh->model));
+    glDrawElements(GL_TRIANGLES, solidMesh->getVertexCount(), GL_UNSIGNED_INT, nullptr);
   }
 }
 
 bool Chunk::isLoaded() {
   std::lock_guard<std::mutex> lck(computeMutex);
-  return computed || mesh;
+  return loaded;
 }
 
 Block* Chunk::getBlock(ivec3 pos) {

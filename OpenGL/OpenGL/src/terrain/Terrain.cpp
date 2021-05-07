@@ -247,7 +247,7 @@ void Terrain::render() {
 
     float minDot = cos(glm::radians(fovX));
     if(distance(chunk.first, chunkPos) < 2 || glm::dot(chunkDir, viewDir2D) > minDot) {
-      chunk.second->draw();
+      chunk.second->drawSolid();
     }
   }
 }

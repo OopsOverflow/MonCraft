@@ -62,18 +62,18 @@ void main() {
   outputColor = texture(textureSampler, txrCoords);
 
   // shadow
-  vec4 shadow = vec4(0.0);
+  vec3 shadow = vec3(0.0);
   for (int i = 0 ; i < 3 ; i++) {
     if (gl_FragCoord.z <= clipCascadeEndZ[i]) {
-      shadow.xyz = vec3(1.0 - computeShadow(i));
+      shadow = vec3(1.0 - computeShadow(i));
       break;
     }
   }
 
-  outputColor = outputColor * .5 + outputColor * lightIntensity * .5 * shadow * lambertian;
+  outputColor.xyz = outputColor.xyz * .5 + outputColor.xyz * lightIntensity * .5 * shadow * lambertian;
 
   float occl = .7;
-  outputColor *= 1.0 - (vertexOcclusion * vertexOcclusion / 9.0) * occl;
+  outputColor.xyz *= 1.0 - (vertexOcclusion * vertexOcclusion / 9.0) * occl;
 
   // show in which shadow cascade we are
   // for (int i = 0 ; i < 3 ; i++) {
