@@ -7,7 +7,7 @@
 
 #include "gl/Mesh.hpp"
 #include "util/DataStore.hpp"
-#include "blocks/Block.h"
+#include "blocks/Block.hpp"
 
 /**
 * Describes a subdivision of the terrain.

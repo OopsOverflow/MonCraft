@@ -149,22 +149,22 @@
     <ClInclude Include="src\audio\SoundEffect.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\blocks\Air_Block.h">
+    <ClInclude Include="src\blocks\Air_Block.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\blocks\Block.h">
+    <ClInclude Include="src\blocks\Block.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\blocks\Debug_Block.h">
+    <ClInclude Include="src\blocks\Debug_Block.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\blocks\Dirt_Block.h">
+    <ClInclude Include="src\blocks\Dirt_Block.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\blocks\Grass_Block.h">
+    <ClInclude Include="src\blocks\Grass_Block.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\blocks\Stone_Block.h">
+    <ClInclude Include="src\blocks\Stone_Block.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\controller\KeyboardController.hpp">

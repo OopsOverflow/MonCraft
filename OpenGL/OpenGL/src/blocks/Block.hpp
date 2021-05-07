@@ -10,7 +10,8 @@ enum class BlockType
     Air,
     Grass,
     Dirt,
-    Stone
+    Stone,
+    Leaf
 };
 
 enum class BlockFace { TOP, BOTTOM, FRONT, RIGHT, BACK, LEFT };

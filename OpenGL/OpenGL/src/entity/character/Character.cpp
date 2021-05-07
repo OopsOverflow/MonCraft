@@ -1,7 +1,7 @@
 #include "Character.hpp"
-#include "blocks/Debug_Block.h"
-#include "blocks/Air_Block.h"
-#include "blocks/Dirt_Block.h"
+#include "blocks/Debug_Block.hpp"
+#include "blocks/Air_Block.hpp"
+#include "blocks/Dirt_Block.hpp"
 
 using namespace glm;
 

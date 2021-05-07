@@ -1,9 +1,9 @@
 #include "Generator.hpp"
-#include "../blocks/Grass_Block.h"
-#include "../blocks/Dirt_Block.h"
-#include "../blocks/Air_Block.h"
-#include "../blocks/Stone_Block.h"
-#include "../blocks/Debug_Block.h"
+#include "../blocks/Grass_Block.hpp"
+#include "../blocks/Dirt_Block.hpp"
+#include "../blocks/Air_Block.hpp"
+#include "../blocks/Stone_Block.hpp"
+#include "../blocks/Debug_Block.hpp"
 
 using namespace glm;
 

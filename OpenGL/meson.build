@@ -35,12 +35,7 @@ srcs = files(
   'OpenGL/src/terrain/Generator.cpp',
   'OpenGL/src/terrain/SkyBox.cpp',
 
-  'OpenGL/src/blocks/Block.cpp',
-  'OpenGL/src/blocks/Air_Block.cpp',
-  'OpenGL/src/blocks/Dirt_Block.cpp',
-  'OpenGL/src/blocks/Stone_Block.cpp',
-  'OpenGL/src/blocks/Grass_Block.cpp',
-  'OpenGL/src/blocks/Debug_Block.cpp',
+  'OpenGL/src/blocks/Block.cpp'
 )
 
 deps = [
