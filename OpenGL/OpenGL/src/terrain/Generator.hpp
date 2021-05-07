@@ -15,7 +15,7 @@ public:
   /**
   * Generates a chunk at the given chunk index.
   */
-  std::shared_ptr<Chunk> generate(glm::ivec3 pos) const;
+  std::unique_ptr<Chunk> generate(glm::ivec3 pos) const;
 
 private:
   int chunkSize;

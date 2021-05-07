@@ -44,13 +44,13 @@ Terrain::~Terrain() {
 
 void Terrain::updateWaitingList() {
   waitingChunks.clear();
+  auto cpos = getChunkPos();
 
   auto insert = [&](ivec2 const& pos) {
-    std::lock_guard<std::mutex> lck(chunksMutex);
     for(int i = -renderDistV; i <= renderDistV; i++) {
-      ivec3 p = chunkPos + ivec3(pos.x, i, pos.y);
-      auto it = chunks.find(p);
-      if(it == chunks.end() || !it->second->isLoaded()) {
+      ivec3 p = cpos + ivec3(pos.x, i, pos.y);
+      auto chunk = chunks.find(p);
+      if(!chunk || !chunk->isLoaded()) {
         waitingChunks.push(p);
       }
     }
@@ -82,92 +82,56 @@ void Terrain::updateWaitingList() {
   }
 }
 
-void Terrain::mainWorker() {
-  auto longSleep = 100ms;
-  bool stop;
-
-  do {
-
-    bool changed = false;
-    {
-      std::lock_guard<std::mutex> lck(chunksMutex);
-      changed = chunkPosChanged;
-      chunkPosChanged = false;
-    }
-
-    if(changed) {
-      updateWaitingList();
-    }
-
-    {std::unique_lock<std::mutex> stopLck(stopMutex);
-    stop = stopSignal.wait_for(stopLck, longSleep, [&]{return stopFlag;});}
-
-  } while(!stop);
+bool Terrain::sleepFor(std::chrono::milliseconds millis) {
+  std::unique_lock<std::mutex> stopLck(stopMutex);
+  return stopSignal.wait_for(stopLck, millis, [&]{return stopFlag;});
 }
 
-// gets the chunks in the hashmap, or safely generates, stores then returns them.
-std::vector<std::shared_ptr<Chunk>> Terrain::getOrGenAllChunks(glm::ivec3 center, std::vector<glm::ivec3> const& offsets) {
-  std::vector<std::shared_ptr<Chunk>> res(offsets.size());
-  std::vector<std::pair<int, std::shared_future<std::shared_ptr<Chunk>>>> work;
+glm::ivec3 Terrain::getChunkPos() {
+  std::lock_guard<std::mutex> lck(posMutex);
+  return chunkPos;
+}
 
-  for(size_t i = 0; i < offsets.size(); i++) {
-    auto pos = center + offsets[i];
-    bool ok = false;
-
-    // look for pos in wip
-    if(!ok) {
-      std::lock_guard<std::mutex> lck(wipMutex);
-      auto it = std::find_if(wip.begin(), wip.end(), [pos](auto const& pair) {
-        return pair.first == pos;
-      });
-      if(it != wip.end()) {
-        work.emplace_back(i, it->second);
-        ok = true;
-      }
-    }
-
-    // else, look for pos in chunks
-    if(!ok) {
-      std::lock_guard<std::mutex> lck(chunksMutex);
-      auto it = chunks.find(pos);
-      if(it != chunks.end()) {
-        res[i] = it->second;
-        ok = true;
-      }
-    }
-
-    // else, generate
-    if(!ok) {
-      std::promise<std::shared_ptr<Chunk>> prom;
-      {
-        std::lock_guard<std::mutex> lck(wipMutex);
-        wip.emplace_back(pos, prom.get_future().share());
-      }
-      auto chunk = generator.generate(pos);
-      res[i] = chunk;
-      prom.set_value(chunk);
-      {
-        std::lock_guard<std::mutex> lck(chunksMutex);
-        chunks.emplace(pos, chunk);
-      }
-      {
-        std::lock_guard<std::mutex> lck(wipMutex);
-        auto it = std::find_if(wip.begin(), wip.end(), [pos](auto const& pair) {
-          return pair.first == pos;
-        });
-        if(it != wip.end()) {
-          wip.erase(it);
-        }
-      }
-    }
+void Terrain::setChunkPos(glm::ivec3 cpos) {
+  std::lock_guard<std::mutex> lck(posMutex);
+  if(cpos != chunkPos) {
+    chunkPos = cpos;
+    chunkPosChanged = true;
   }
+}
 
-  // now, wait for all futures
-  for(auto const& task : work) {
-    res[task.first] = task.second.get();
+bool Terrain::hasPosChanged() {
+  std::lock_guard<std::mutex> lck(posMutex);
+  if(chunkPosChanged) {
+    chunkPosChanged = false;
+    return true;
   }
+  return false;
+}
 
-  return res;
+void Terrain::mainWorker() {
+  do {
+    if(hasPosChanged()) updateWaitingList();
+  } while(!sleepFor(100ms));
+}
+
+bool Terrain::addInBusyList(ivec3 cpos) {
+  std::lock_guard<std::mutex> lck(busyListMutex);
+  auto it = std::find(busyList.begin(), busyList.end(), cpos);
+  if(it == busyList.end()) {
+    busyList.push_back(cpos);
+    return true;
+  }
+  else return false;
+}
+
+void Terrain::remFromBusyList(ivec3 cpos) {
+  std::lock_guard<std::mutex> lck(busyListMutex);
+  auto it = std::find(busyList.begin(), busyList.end(), cpos);
+  if(it != busyList.end()) {
+    busyList.erase(it);
+  }
+  else throw std::runtime_error("remFromBusyList failed");
 }
 
 void Terrain::genWorker() {
@@ -175,71 +139,96 @@ void Terrain::genWorker() {
   auto longSleep = 500ms;
   bool stop;
 
+  auto getOrGen = [&](ivec3 cpos) {
+    if(auto neigh = chunks.find(cpos)) {
+      return neigh;
+    }
+    else if(addInBusyList(cpos)) {
+      chunks.insert(cpos, generator.generate(cpos));
+      remFromBusyList(cpos);
+      return chunks.find(cpos);
+    }
+    else while(1) {
+      sleepFor(sleep);
+      if(auto neigh = chunks.find(cpos)) return neigh;
+    }
+  };
+
+  auto getOrGenN = [&](ivec3 cpos) {
+    int count = 0;
+    std::array<bool, 26> finished;
+    std::array<std::weak_ptr<Chunk>, 26> neighbors;
+    int i = 0;
+
+    while(count < 26) {
+     if(finished[i]) continue;
+      ivec3 thisPos = cpos + Chunk::neighborOffsets[i];
+
+      if(auto neigh = chunks.find(thisPos)) {
+        neighbors[i] = neigh;
+        finished[i] = true;
+        count++;
+      }
+      else if(addInBusyList(cpos)) {
+        chunks.insert(cpos, generator.generate(cpos));
+        remFromBusyList(cpos);
+        sleepFor(sleep);
+        neighbors[i] = chunks.find(cpos);
+        finished[i] = true;
+        count++;
+      }
+      i = (i + 1) % 26;
+    }
+  };
+
   do {
 
     ivec3 pos;
     if(waitingChunks.pop(pos)) {
 
-      std::vector<ivec3> offsets(27);
-      offsets[0] = ivec3(0);
-      std::copy(Chunk::neighborOffsets.begin(), Chunk::neighborOffsets.end(), ++offsets.begin());
-      auto chunks = getOrGenAllChunks(pos, offsets);
-      {
-        std::lock_guard<std::mutex> lck(chunksMutex);
-        auto const& chunk = chunks[0];
-        std::copy(++chunks.begin(), chunks.end(), chunk->neighbors.begin());
-        for(size_t i = 1; i < chunks.size(); i++) {
-          int inv = Chunk::neighborOffsetsInverse[i-1];
-          chunks[i]->neighbors[inv] = chunk;
-        }
-      }
-      chunks[0]->compute();
+      auto chunk = getOrGen(pos);
 
-      {std::unique_lock<std::mutex> stopLck(stopMutex);
-      stop = stopSignal.wait_for(stopLck, sleep, [&]{return stopFlag;});}
+      std::array<bool, 26> success;
+      std::array<std::weak_ptr<Chunk>, 26> neighbors;
+
+      for(size_t i = 0; i < 26; i++) {
+        auto neigh = getOrGen(pos + Chunk::neighborOffsets[i]);
+        neigh->neighbors[Chunk::neighborOffsetsInverse[i]] = chunk;
+        neighbors[i] = neigh;
+      }
+
+      chunk->neighbors = neighbors;
+      chunk->compute();
+
+      stop = sleepFor(sleep);
     }
     else {
-      // std::cout << "worker idle" << std::endl;
-      {std::unique_lock<std::mutex> stopLck(stopMutex);
-      stop = stopSignal.wait_for(stopLck, longSleep, [&]{return stopFlag;});}
+      stop = sleepFor(longSleep);
     }
 
   } while(!stop);
 }
 
 void Terrain::update(glm::vec3 pos, glm::vec3 dir, float fovX) {
-  std::lock_guard<std::mutex> lck(chunksMutex);
   playerPos = pos;
   viewDir = glm::normalize(dir);
   this->fovX = fovX;
 
   ivec3 newChunkPos = floor(pos / float(chunkSize));
-  if(newChunkPos != chunkPos) {
-    chunkPos = newChunkPos;
-    chunkPosChanged = true;
-  }
+  setChunkPos(newChunkPos);
 
   // clear old chunks
-  int count = (int)chunks.size();
-  for(auto it = chunks.begin(); it != chunks.end() && count > chunksMaxCount;) {
-    ivec3 const& a = it->first;
-    ivec3 const& b = chunkPos;
-
-    if(abs(b.x - a.x) > renderDistH || abs(b.z - a.z) > renderDistH || abs(b.y - a.y) > renderDistV) {
-      it = chunks.erase(it);
-      count --;
-    }
-    else {
-      ++it;
-    }
-  }
+  chunks.eraseChunks(10, [newChunkPos](ivec3 cpos) {
+    ivec3 const& a = cpos;
+    ivec3 const& b = newChunkPos;
+    return abs(b.x - a.x) > renderDistH + 1 || abs(b.z - a.z) > renderDistH + 1 || abs(b.y - a.y) > renderDistV + 1;
+  });
 }
 
 void Terrain::render() {
-  std::lock_guard<std::mutex> lck(chunksMutex);
-
+  ivec3 cpos = getChunkPos();
   vec2 viewDir2D = glm::normalize(vec2(viewDir.x, viewDir.z));
-  ivec3 startChunk = chunkPos - ivec3(glm::sign(viewDir));
+  ivec3 startChunk = cpos - ivec3(glm::sign(viewDir));
 
   // draw solid and update chunks
   for(auto& chunk : chunks) {
@@ -247,7 +236,7 @@ void Terrain::render() {
     vec2 chunkDir = glm::normalize(vec2(chunkDir3D.x, chunkDir3D.z));
 
     float minDot = cos(glm::radians(fovX));
-    if(distance(chunk.first, chunkPos) < 2 || glm::dot(chunkDir, viewDir2D) > minDot) {
+    if(distance(chunk.first, cpos) < 2 || glm::dot(chunkDir, viewDir2D) > minDot) {
       chunk.second->update();
       chunk.second->drawSolid();
     }
@@ -260,7 +249,7 @@ void Terrain::render() {
     vec2 chunkDir = glm::normalize(vec2(chunkDir3D.x, chunkDir3D.z));
 
     float minDot = cos(glm::radians(fovX));
-    if(distance(chunk.first, chunkPos) < 2 || glm::dot(chunkDir, viewDir2D) > minDot) {
+    if(distance(chunk.first, cpos) < 2 || glm::dot(chunkDir, viewDir2D) > minDot) {
       chunk.second->drawTransparent();
     }
   }
@@ -268,27 +257,24 @@ void Terrain::render() {
 }
 
 Block* Terrain::getBlock(ivec3 pos) {
-  std::lock_guard<std::mutex> lck(chunksMutex);
   ivec3 cpos = floor(vec3(pos) / float(chunkSize));
 
-  if(chunks.find(cpos) == chunks.end())
-    return nullptr;
+  if(auto chunk = chunks.find(cpos)) {
+    ivec3 dpos = pos - cpos * chunkSize;
+    return chunk->at(dpos).get();
+  }
 
-  ivec3 dpos = pos - cpos * chunkSize;
-  return chunks.at(cpos)->at(dpos).get();
+  return nullptr;
 }
 
 void Terrain::setBlock(ivec3 pos, Block::unique_ptr_t block) {
-  std::lock_guard<std::mutex> lck(chunksMutex);
   ivec3 cpos = floor(vec3(pos) / float(chunkSize));
 
-  auto it = chunks.find(cpos);
-  if(it == chunks.end())
-    throw std::runtime_error("setBlock: chunk not found");
+  auto chunk = chunks.find(cpos);
+  if(!chunk) throw std::runtime_error("setBlock: chunk not found");
 
   ivec3 dpos = pos - cpos * chunkSize;
 
-  auto chunk = it->second;
   chunk->at(dpos) = std::move(block);
   chunk->compute();
 

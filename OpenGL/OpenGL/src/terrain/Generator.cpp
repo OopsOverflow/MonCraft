@@ -18,7 +18,7 @@ Generator::Generator(int chunkSize)
   noiseZ.seed(21554);
 }
 
-std::shared_ptr<Chunk> Generator::generate(ivec3 chunkPos) const {
+std::unique_ptr<Chunk> Generator::generate(ivec3 chunkPos) const {
 
   static const int maxHeight = 50;
 
@@ -29,7 +29,7 @@ std::shared_ptr<Chunk> Generator::generate(ivec3 chunkPos) const {
     {.00f, 0.100f},
   };
 
-  std::shared_ptr<Chunk> chunk(new Chunk(chunkPos, chunkSize));
+  std::unique_ptr<Chunk> chunk(new Chunk(chunkPos, chunkSize));
 
   ivec3 dpos(0);
 

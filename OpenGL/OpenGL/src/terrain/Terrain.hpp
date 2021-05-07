@@ -7,7 +7,7 @@
 #include <unordered_map>
 #include <glm/glm.hpp>
 
-#include "Chunk.hpp"
+#include "ChunkMap.hpp"
 #include "Generator.hpp"
 #include "../gl/Camera.hpp"
 #include "../gl/Loader.hpp"
@@ -67,13 +67,8 @@ private:
     }
   };
 
-  // types
-  template<class T>
-  using Grid3D = std::unordered_map<glm::ivec3, T, ivec3_hash, ivec3_hash>;
   // TODO: should we use runtime alloc instead of compile-time ?
   using WaitingList = AtomicCyclicList<glm::ivec3, (2*renderDistH+1)*(2*renderDistH+1)*(2*renderDistV+1)>;
-  using WorkInProgress = std::vector<std::pair<glm::ivec3, std::shared_future<std::shared_ptr<Chunk>>>>;
-  // using WorkInProgress = Grid3D<std::shared_future<std::shared_ptr<Chunk>>>;
 
   Generator generator; // the chunk generator
 
@@ -85,11 +80,25 @@ private:
 
   // threading
   std::thread mainWorkerThread; // manages the queue of chunks to generate
-  std::array<std::thread, 4> genWorkerThreads; // creates new chunks when it can
+  static const int N_THREADS = 4;
+  std::array<std::thread, N_THREADS> genWorkerThreads; // creates new chunks when it can
+  std::mutex workerMutex;
   void mainWorker();
   void genWorker();
+
+  // utilities for workers
+  bool sleepFor(std::chrono::milliseconds);
   void updateWaitingList();
-  std::vector<std::shared_ptr<Chunk>> getOrGenAllChunks(glm::ivec3 center, std::vector<glm::ivec3> const& offsets);
+
+  std::vector<glm::ivec3> busyList; // list of chunks beiing generated
+  std::mutex busyListMutex;
+  bool addInBusyList(glm::ivec3 cpos);
+  void remFromBusyList(glm::ivec3 cpos);
+
+  std::mutex posMutex;
+  glm::ivec3 getChunkPos();
+  void setChunkPos(glm::ivec3 cpos);
+  bool hasPosChanged();
 
   // signals to stop the threads
   bool stopFlag;
@@ -97,12 +106,8 @@ private:
   std::condition_variable stopSignal;
 
   // chunk storage
-  std::mutex chunksMutex; // serializes acces to the hashmap
-  Grid3D<std::shared_ptr<Chunk>> chunks; // hashmap to hold the chunks
+  ChunkMap chunks; // hashmap to hold the chunks
   WaitingList waitingChunks; // chunk positions yet to be loaded
-  std::mutex wipMutex;
-  WorkInProgress wip;
-
 
   // texture
   Loader loader;
