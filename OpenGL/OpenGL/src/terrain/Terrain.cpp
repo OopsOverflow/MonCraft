@@ -158,10 +158,11 @@ void Terrain::genWorker() {
     int count = 0;
     std::array<bool, 26> finished;
     std::array<std::weak_ptr<Chunk>, 26> neighbors;
+    for(int i = 0; i < 26; i++) finished[i] = false;
     int i = 0;
 
     while(count < 26) {
-     if(finished[i]) continue;
+      while(finished[i]) i = (i + 1) % 26;
       ivec3 thisPos = cpos + Chunk::neighborOffsets[i];
 
       if(auto neigh = chunks.find(thisPos)) {
@@ -169,16 +170,17 @@ void Terrain::genWorker() {
         finished[i] = true;
         count++;
       }
-      else if(addInBusyList(cpos)) {
-        chunks.insert(cpos, generator.generate(cpos));
-        remFromBusyList(cpos);
-        sleepFor(sleep);
-        neighbors[i] = chunks.find(cpos);
+      else if(addInBusyList(thisPos)) {
+        chunks.insert(thisPos, generator.generate(thisPos));
+        remFromBusyList(thisPos);
+        // sleepFor(sleep);
+        neighbors[i] = chunks.find(thisPos);
         finished[i] = true;
         count++;
       }
-      i = (i + 1) % 26;
     }
+
+    return neighbors;
   };
 
   do {
@@ -188,16 +190,12 @@ void Terrain::genWorker() {
 
       auto chunk = getOrGen(pos);
 
-      std::array<bool, 26> success;
-      std::array<std::weak_ptr<Chunk>, 26> neighbors;
-
+      chunk->neighbors = getOrGenN(pos);
       for(size_t i = 0; i < 26; i++) {
-        auto neigh = getOrGen(pos + Chunk::neighborOffsets[i]);
-        neigh->neighbors[Chunk::neighborOffsetsInverse[i]] = chunk;
-        neighbors[i] = neigh;
+        if(auto neigh = chunk->neighbors[i].lock()) {
+          neigh->neighbors[Chunk::neighborOffsetsInverse[i]] = chunk;
+        }
       }
-
-      chunk->neighbors = neighbors;
       chunk->compute();
 
       stop = sleepFor(sleep);
