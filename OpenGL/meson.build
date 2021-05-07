@@ -1,5 +1,9 @@
 project('MonCraft', 'cpp')
 
+if get_option('buildtype').startswith('debug')
+  add_project_arguments('-DDEBUG', language : 'cpp')
+endif
+
 srcs = files(
   'OpenGL/src/Application.cpp',
 

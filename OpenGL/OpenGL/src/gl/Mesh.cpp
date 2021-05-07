@@ -70,7 +70,10 @@ GLuint Mesh::getVertexCount() const {
   return myVertCount;
 }
 
+#include "debug/Debug.hpp"
+
 Mesh::~Mesh() {
+  ASSERT_GL_MAIN_THREAD();
   glDeleteVertexArrays(1, &myVAO);
   glDeleteBuffers(1, &myVBO);
   glDeleteBuffers(1, &myEBO);

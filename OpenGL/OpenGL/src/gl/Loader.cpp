@@ -3,9 +3,11 @@
 #include <SDL2/SDL_image.h>
 #include <iostream>
 #include <stdexcept>
+#include "debug/Debug.hpp"
 
 Loader::~Loader()
 {
+    ASSERT_GL_MAIN_THREAD();
     for (auto& i : this->textureList)
         glDeleteTextures(1, &i);
 }
