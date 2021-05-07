@@ -14,14 +14,19 @@ layout(location = 11) uniform float lightIntensity;
 
 uniform sampler2D textureSampler;
 uniform sampler2D shadowSampler[3];
+uniform float clipCascadeEndZ[3];
 out vec4 outputColor;
 
 float computeShadow(int i) {
   if(shadowCoords[i].z > 1.0)
     return 0.0;
 
-  // float bias = 0.0002;
-  float bias = 0.001;
+  vec3 normal = normalize(vertexNormal);
+  float dotNormal = dot(normalize(lightDirection), normal);
+
+  float bmin = 0.0000;
+  float bmax = 0.0005;
+  float bias = max(bmax * (1.0 - dotNormal), bmin);
   float currentDepth = shadowCoords[i].z * 0.5 + 0.5;
   vec2 texelSize = 1.0 / textureSize(shadowSampler[i], 0) / 2;
 
@@ -41,16 +46,39 @@ float computeShadow(int i) {
   return shadow;
 }
 
+float linearizeDepth(float depth) { // https://learnopengl.com/Advanced-OpenGL/Depth-testing
+    float near = 0.1;
+    float far = 200.0;
+    float z = depth * 2.0 - 1.0; // back to NDC
+    return (2.0 * near * far) / (far + near - z * (far - near)) / far;
+}
+
 void main() {
-  vec3 normal = normalize(-vertexNormal);
-  float lambertian = max(dot(normalize(lightDirection), normal), 0.0);
+  vec3 normal = normalize(vertexNormal);
+  float dotNormal = dot(normalize(lightDirection), normal);
+  float lambertian = max(-dotNormal, 0.0);
 
   // Textures
   outputColor = texture(textureSampler, txrCoords);
-  float shadow = 1 - min(computeShadow(0) + computeShadow(1) + computeShadow(2), 1.0);
-  outputColor = outputColor * .5 + outputColor * lambertian * lightIntensity * shadow * .5;
+
+  // shadow
+  vec4 shadow = vec4(0.0);
+  for (int i = 0 ; i < 3 ; i++) {
+    if (gl_FragCoord.z <= clipCascadeEndZ[i]) {
+      shadow.xyz = vec3(1.0 - computeShadow(i));
+      break;
+    }
+  }
+
+  outputColor = outputColor * .5 + outputColor * lightIntensity * .5 * shadow * lambertian;
 
   float occl = .7;
   outputColor *= 1.0 - (vertexOcclusion * vertexOcclusion / 9.0) * occl;
-  // outputColor = texture(shadowSampler[2], gl_FragCoord.xy / 300);
+
+  // show in which shadow cascade we are
+  // for (int i = 0 ; i < 3 ; i++) {
+  //   if (gl_FragCoord.z <= clipCascadeEndZ[i]) {
+  //     outputColor[i] += 0.2;
+  //   }
+  // }
 }

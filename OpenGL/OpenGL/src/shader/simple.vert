@@ -17,6 +17,7 @@ smooth out vec3 vertexNormal;
 smooth out vec2 txrCoords;
 smooth out vec3 shadowCoords[3];
 smooth out float vertexOcclusion;
+smooth out float clipEndZ;
 
 vec3 nsigmoid2(vec3 x, float k) {
   vec3 val = (-pow(x, vec3(3)) + x * 3.0) / 2.0;
@@ -44,6 +45,8 @@ void main() {
   // Occlusion
   vertexOcclusion = v_occlusion;
 
+  // shadows
+  clipEndZ = gl_Position.z;
   vec4 shadowCoords4;
   shadowCoords4 = m_shadows[0] * m_model * vec4(v_position, 1.0);
   shadowCoords[0] = vec3(shadowCoords4) / shadowCoords4.w;

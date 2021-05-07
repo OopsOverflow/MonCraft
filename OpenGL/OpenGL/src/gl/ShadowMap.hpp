@@ -7,7 +7,7 @@ class ShadowMap {
 
 public:
 
-  ShadowMap(float resolution);
+  ShadowMap(int size);
   ~ShadowMap();
 
   ShadowMap(ShadowMap const&) = delete;
@@ -21,12 +21,13 @@ public:
   GLuint getTextureID(Frustum frustum) const;
 
   Camera camera;
+  glm::mat4 shadowMatrices[3];
 private:
   GLuint fbo;
   GLuint depthTex[3];
-  unsigned int width, height;
+  GLfloat clipCascadeEndZ[3];
   float resolution;
   Shader shader;
   float distance;
-  glm::mat4 shadowMatrices[3];
+  int size;
 };

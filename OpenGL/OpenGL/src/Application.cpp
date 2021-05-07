@@ -30,7 +30,7 @@ int main(int argc, char* argv[]) {
     Terrain terrain;
     SkyBox sky;
     Character character({ 0.0f,100.0f,0.0f });
-    ShadowMap shadows(1);
+    ShadowMap shadows(4096);
     Loader loader;
     Raycast caster(100.f);
 
@@ -40,8 +40,6 @@ int main(int argc, char* argv[]) {
 
     int skyCamSize = 300;
     Camera skyCam(skyCamSize, skyCamSize, {1, 500, 1}, {0, 0, 0});
-
-    glEnable(GL_SCISSOR_TEST);
 
     float t = 0;
 
@@ -64,7 +62,7 @@ int main(int argc, char* argv[]) {
 
         // draw the shadow map
         float sunSpeed = 100.f;
-        float sunTime = pi<float>() * .20f;
+        float sunTime = pi<float>() * .25f;
         sunTime += t / 1000.f * sunSpeed;
         float distance = 100.f;
         float a = cos(sunTime);
@@ -77,9 +75,11 @@ int main(int argc, char* argv[]) {
 
         shadows.beginFrame(Frustum::NEAR);
         terrain.render();
+        character.render();
         shadows.endFrame();
         shadows.beginFrame(Frustum::MEDIUM);
         terrain.render();
+        character.render();
         shadows.endFrame();
         shadows.beginFrame(Frustum::FAR);
         terrain.render();
@@ -106,29 +106,36 @@ int main(int argc, char* argv[]) {
         terrain.render();
 
         // terrain sky view
-        glScissor(0, 0, skyCamSize + 5, skyCamSize + 5);
-        glClearColor(0, 0, 0, 0);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glEnable(GL_SCISSOR_TEST);
+        {
+          glScissor(0, 0, skyCamSize + 5, skyCamSize + 5);
+          glClearColor(0, 0, 0, 0);
+          glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // draw shadow view
-        shadows.camera.activate();
-        glViewport(0, 0, skyCamSize, skyCamSize),
-        terrain.render();
+          // draw shadow view
+          // shadows.camera.activate();
+          glUniformMatrix4fv(MATRIX_VIEW, 1, GL_FALSE, value_ptr(mat4(1.f)));
+          // glUniformMatrix4fv(MATRIX_NORMAL, 1, GL_FALSE, value_ptr());
+          glUniformMatrix4fv(MATRIX_PROJECTION, 1, GL_FALSE, value_ptr(shadows.shadowMatrices[1]));
+          glViewport(0, 0, skyCamSize, skyCamSize),
+          terrain.render();
 
-        glScissor(skyCamSize/2-1, skyCamSize/2-1, 2, 2);
-        glClearColor(1, 1, 1, 1);
-        glClear(GL_COLOR_BUFFER_BIT); // draw point
+          glScissor(skyCamSize/2-1, skyCamSize/2-1, 2, 2);
+          glClearColor(1, 1, 1, 1);
+          glClear(GL_COLOR_BUFFER_BIT); // draw point
 
-        // draw a dot in the middle of the screen
-        float pointSize = 8;
-        glScissor((window.width - pointSize) / 2, (window.height - pointSize) / 2, pointSize, pointSize);
-        glClearColor(1, 0, 0, 1);
-        glClear(GL_COLOR_BUFFER_BIT); // draw point
-        glScissor(0, 0, window.width, window.height);
+          // draw a dot in the middle of the screen
+          float pointSize = 8;
+          glScissor((window.width - pointSize) / 2, (window.height - pointSize) / 2, pointSize, pointSize);
+          glClearColor(1, 0, 0, 1);
+          glClear(GL_COLOR_BUFFER_BIT); // draw point
+          glScissor(0, 0, window.width, window.height);
+        }
+        glDisable(GL_SCISSOR_TEST);
 
         // draw the character
         window.camera.activate();
-        if (character.view == View::THIRD_PERSON)character.render();
+        if (character.view == View::THIRD_PERSON) character.render();
 
         // draw skybox at last
         sky.render(window.camera);

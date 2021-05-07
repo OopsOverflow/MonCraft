@@ -3,21 +3,21 @@
 
 using namespace glm;
 
-ShadowMap::ShadowMap(float resolution)
-  : resolution(resolution),
-    camera(10, 10, {10, 10, 10}, {0, 0, 0}, Projection::PROJECTION_ORTHOGRAPHIC),
+ShadowMap::ShadowMap(int size)
+  : camera(size, size, {10, 10, 10}, {0, 0, 0}, Projection::PROJECTION_ORTHOGRAPHIC),
     shader("src/shader/shadow.vert", "src/shader/shadow.frag"),
-    distance(100.f)
+    distance(100.f),
+    size(size)
 {
   glGenFramebuffers(1, &fbo);
   glGenTextures(3, depthTex);
 
   for (size_t i = 0; i < 3; i+=1) {
     glBindTexture(GL_TEXTURE_2D, depthTex[i]);
-    // glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 10, size, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, size, size, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };//Uncalculated shadows are white
+    float borderColor[] = { 1.0f, 1.0f, 1.0f, 0.0f };//Uncalculated shadows are white
     glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
@@ -31,21 +31,17 @@ ShadowMap::ShadowMap(float resolution)
 }
 
 void ShadowMap::update(vec3 sunPos, vec3 center) {
-  camera.setLookAt(sunPos, center);
+  camera.setLookAt(vec3(0), center - sunPos);
+}
+
+float linearizeDepth(float depth) { // https://learnopengl.com/Advanced-OpenGL/Depth-testing
+    float near = 0.1;
+    float far = 200.0;
+    float z = depth * 2.0 - 1.0; // back to NDC
+    return (2.0 * near * far) / (far + near - z * (far - near)) / far;
 }
 
 void ShadowMap::attach(Camera const& cam) {
-
-  unsigned int newW, newH;
-  cam.getSize(newW, newH);
-  if(newW != width || newH != height) {
-    width = newW; height = newH;
-    for (size_t i = 0; i < 3; i+=1) {
-      glBindTexture(GL_TEXTURE_2D, depthTex[i]);
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, newW * resolution, newH * resolution, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-    }
-    camera.setSize(newW * resolution, newH * resolution);
-  }
 
   std::vector<vec3> corners[] = {
     cam.getBoxCorners(Frustum::NEAR),
@@ -60,6 +56,7 @@ void ShadowMap::attach(Camera const& cam) {
     float maxY = -FLT_MAX;
     float minZ = FLT_MAX;
     float maxZ = -FLT_MAX;
+    float maxZ2 = -FLT_MAX;
 
     for (auto vec : corners[i]) {
       vec = vec3(camera.view * vec4(vec, 1.0f));
@@ -71,27 +68,39 @@ void ShadowMap::attach(Camera const& cam) {
       maxZ = max(-vec.z, maxZ);
     }
 
+    for (auto vec : corners[i]) {
+      vec = vec3(cam.view * vec4(vec, 1.0f));
+      maxZ2 = max(-vec.z, maxZ2);
+    }
+
     //render out of the view in case we have to cast shadows from a moutain
-    float box[6] = { minX,maxX,minY,maxY,2 * minZ - maxZ,maxZ };
+    float box[6] = { minX, maxX, minY, maxY, 2 * minZ - maxZ, maxZ };
     camera.setProjectionType(Projection::CUSTOM_PROJECTION, box);
     shadowMatrices[i] = camera.projection * camera.view;
+
+    auto maxZClipSpace = cam.projection * vec4(0, 0, -maxZ2, 1);
+    maxZClipSpace /= maxZClipSpace.w;
+    clipCascadeEndZ[i] = maxZClipSpace.z;
+    // std::cout << linearizeDepth(maxZClipSpace.z) << std::endl;
   }
 }
 
 void ShadowMap::beginFrame(Frustum frustum) {
+  glBindFramebuffer(GL_FRAMEBUFFER, fbo);
   shader.activate();
   camera.activate();
-  glBindFramebuffer(GL_FRAMEBUFFER, fbo);
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, getTextureID(frustum), 0);
   glUniformMatrix4fv(MATRIX_SHADOWS, 1, GL_FALSE, value_ptr(shadowMatrices[(size_t)frustum]));
   glClear(GL_DEPTH_BUFFER_BIT);
   glDisable(GL_CULL_FACE);
-  glViewport(0, 0, width * resolution, height * resolution);
+  glCullFace(GL_FRONT);
+  // glViewport(0, 0, size, size);
 }
 
 void ShadowMap::endFrame() {
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
   glEnable(GL_CULL_FACE);
+  glCullFace(GL_BACK);
 }
 
 void ShadowMap::activate(Shader const& shader) {
@@ -109,6 +118,15 @@ void ShadowMap::activate(Shader const& shader) {
   glUniform1i(shadowSampler, 3);
   glActiveTexture(GL_TEXTURE3);
   glBindTexture(GL_TEXTURE_2D, depthTex[2]);
+
+  GLint end = shader.getUniformLocation("clipCascadeEndZ[0]");
+  glUniform1f(end, clipCascadeEndZ[0]);
+
+  end = shader.getUniformLocation("clipCascadeEndZ[1]");
+  glUniform1f(end, clipCascadeEndZ[1]);
+
+  end = shader.getUniformLocation("clipCascadeEndZ[2]");
+  glUniform1f(end, clipCascadeEndZ[2]);
 
   glUniformMatrix4fv(MATRIX_SHADOWS, 3, GL_FALSE, (GLfloat*)shadowMatrices);
 }

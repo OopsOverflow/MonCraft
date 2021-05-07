@@ -168,7 +168,7 @@ void Camera::computeProjection(float box[6]) {
     projection = glm::perspective(glm::radians(fovY), aspect, near_, far_);
   }
   else {
-      projection = glm::ortho(box[0], box[1], box[2], box[3], box[4], box[5]);
+    projection = glm::ortho(box[0], box[1], box[2], box[3], box[4], box[5]);
   }
 }
 
@@ -189,7 +189,7 @@ std::vector<glm::vec3> Camera::getBoxCorners(Frustum frustum) const {
         break;
     case Frustum::NEAR:
         z1 = -near_;
-        z2 = -near_ - range / 5.0f;
+        z2 = -near_ - range / 3.0f;
         break;
     case Frustum::MEDIUM:
         z1 = -near_ - range / 3.0f;
