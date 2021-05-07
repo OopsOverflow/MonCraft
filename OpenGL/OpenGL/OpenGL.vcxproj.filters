@@ -18,22 +18,7 @@
     <ClCompile Include="src\audio\Music.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\blocks\Air_Block.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\blocks\Block.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\blocks\Debug_Block.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\blocks\Dirt_Block.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\blocks\Grass_Block.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\blocks\Stone_Block.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\controller\KeyboardController.cpp">
@@ -109,6 +94,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\entity\Node.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\terrain\ChunkMap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -294,6 +282,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\entity\Node.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\blocks\Leaf_Block.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\terrain\ChunkMap.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -166,12 +166,7 @@
   <ItemGroup>
     <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\audio\Music.cpp" />
-    <ClCompile Include="src\blocks\Air_Block.cpp" />
     <ClCompile Include="src\blocks\Block.cpp" />
-    <ClCompile Include="src\blocks\Debug_Block.cpp" />
-    <ClCompile Include="src\blocks\Dirt_Block.cpp" />
-    <ClCompile Include="src\blocks\Grass_Block.cpp" />
-    <ClCompile Include="src\blocks\Stone_Block.cpp" />
     <ClCompile Include="src\controller\KeyboardController.cpp" />
     <ClCompile Include="src\controller\MouseController.cpp" />
     <ClCompile Include="src\debug\Debug.cpp" />
@@ -191,6 +186,7 @@
     <ClCompile Include="src\noise\value.cpp" />
     <ClCompile Include="src\noise\voronoi.cpp" />
     <ClCompile Include="src\terrain\Chunk.cpp" />
+    <ClCompile Include="src\terrain\ChunkMap.cpp" />
     <ClCompile Include="src\terrain\Generator.cpp" />
     <ClCompile Include="src\terrain\SkyBox.cpp" />
     <ClCompile Include="src\terrain\Terrain.cpp" />
@@ -206,6 +202,7 @@
     <ClInclude Include="src\blocks\Debug_Block.hpp" />
     <ClInclude Include="src\blocks\Dirt_Block.hpp" />
     <ClInclude Include="src\blocks\Grass_Block.hpp" />
+    <ClInclude Include="src\blocks\Leaf_Block.hpp" />
     <ClInclude Include="src\blocks\Stone_Block.hpp" />
     <ClInclude Include="src\controller\KeyboardController.hpp" />
     <ClInclude Include="src\controller\MouseController.hpp" />
@@ -246,6 +243,7 @@
     <ClInclude Include="src\Noise.hpp" />
     <ClInclude Include="src\terrain\BlockGeom.hpp" />
     <ClInclude Include="src\terrain\Chunk.hpp" />
+    <ClInclude Include="src\terrain\ChunkMap.hpp" />
     <ClInclude Include="src\terrain\Generator.hpp" />
     <ClInclude Include="src\terrain\SkyBox.hpp" />
     <ClInclude Include="src\terrain\Terrain.hpp" />

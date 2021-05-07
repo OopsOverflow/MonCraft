@@ -29,8 +29,8 @@ int main(int argc, char* argv[]) {
     Shader shader("src/shader/simple.vert", "src/shader/simple.frag");
     Terrain terrain;
     SkyBox sky;
-    Character character({ 0.0f,100.0f,0.0f });
-    ShadowMap shadows(4096);
+    Character character({ 0.0f,300.0f,0.0f });
+    ShadowMap shadows(1024);
     Loader loader;
     Raycast caster(100.f);
 
