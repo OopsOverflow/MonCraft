@@ -189,6 +189,8 @@
     <ClCompile Include="src\terrain\ChunkMap.cpp" />
     <ClCompile Include="src\terrain\Generator.cpp" />
     <ClCompile Include="src\terrain\SkyBox.cpp" />
+    <ClCompile Include="src\terrain\SliceMap.cpp" />
+    <ClCompile Include="src\terrain\Structure.cpp" />
     <ClCompile Include="src\terrain\Terrain.cpp" />
     <ClCompile Include="src\util\Random.cpp" />
     <ClCompile Include="src\util\Raycast.cpp" />
@@ -198,12 +200,14 @@
     <ClInclude Include="src\audio\Music.hpp" />
     <ClInclude Include="src\audio\SoundEffect.hpp" />
     <ClInclude Include="src\blocks\Air_Block.hpp" />
+    <ClInclude Include="src\blocks\AllBlocks.hpp" />
     <ClInclude Include="src\blocks\Block.hpp" />
     <ClInclude Include="src\blocks\Debug_Block.hpp" />
     <ClInclude Include="src\blocks\Dirt_Block.hpp" />
     <ClInclude Include="src\blocks\Grass_Block.hpp" />
     <ClInclude Include="src\blocks\Leaf_Block.hpp" />
     <ClInclude Include="src\blocks\Stone_Block.hpp" />
+    <ClInclude Include="src\blocks\Wood_Block.hpp" />
     <ClInclude Include="src\controller\KeyboardController.hpp" />
     <ClInclude Include="src\controller\MouseController.hpp" />
     <ClInclude Include="src\debug\Debug.hpp" />
@@ -246,6 +250,8 @@
     <ClInclude Include="src\terrain\ChunkMap.hpp" />
     <ClInclude Include="src\terrain\Generator.hpp" />
     <ClInclude Include="src\terrain\SkyBox.hpp" />
+    <ClInclude Include="src\terrain\SliceMap.hpp" />
+    <ClInclude Include="src\terrain\Structure.hpp" />
     <ClInclude Include="src\terrain\Terrain.hpp" />
     <ClInclude Include="src\util\AtomicCyclicList.hpp" />
     <ClInclude Include="src\util\DataStore.hpp" />
