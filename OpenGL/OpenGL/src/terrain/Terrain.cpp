@@ -220,13 +220,14 @@ void Terrain::genWorker() {
 void Terrain::update(glm::vec3 pos, glm::vec3 dir, float fovX) {
   playerPos = pos;
   viewDir = glm::normalize(dir);
-  this->fovX = fovX;
+  this->fovX = glm::radians(fovX);
 
   ivec3 newChunkPos = floor(pos / float(chunkSize));
   setChunkPos(newChunkPos);
 
   // clear old chunks
-  chunkMap.eraseChunks(10, [newChunkPos](ivec3 cpos) {
+  int delCount = std::max<int>(chunkMap.size() - chunksMaxCount, 0);
+  chunkMap.eraseChunks(delCount, [newChunkPos](ivec3 cpos) {
     ivec3 dist = abs(newChunkPos - cpos);
     return dist.x > renderDistH + 1 || dist.z > renderDistH + 1 || dist.y > renderDistV + 1;
   });
@@ -242,7 +243,7 @@ void Terrain::render() {
     ivec3 chunkDir3D = chunk->chunkPos - startChunk;
     vec2 chunkDir = glm::normalize(vec2(chunkDir3D.x, chunkDir3D.z));
 
-    float minDot = cos(glm::radians(fovX));
+    float minDot = cos(fovX);
     if(distance(chunk->chunkPos, cpos) < 2 || glm::dot(chunkDir, viewDir2D) > minDot) {
       chunk->update();
       chunk->drawSolid();

@@ -18,6 +18,10 @@ std::shared_ptr<Chunk> ChunkMap::insert(glm::ivec3 cpos, std::unique_ptr<Chunk> 
   return res.first->second;
 }
 
+size_t ChunkMap::size() {
+  return chunks.size();
+}
+
 #include "debug/Debug.hpp"
 
 void ChunkMap::eraseChunks(int count, std::function<bool(glm::ivec3)> predicate) {

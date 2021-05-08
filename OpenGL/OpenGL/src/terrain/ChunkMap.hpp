@@ -18,6 +18,8 @@ public:
 
   void eraseChunks(int count, std::function<bool(glm::ivec3)> predicate);
 
+  size_t size();
+
   void for_each(std::function<void(std::shared_ptr<Chunk>)> callback);
 
 private:

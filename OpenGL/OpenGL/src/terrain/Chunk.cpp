@@ -267,6 +267,7 @@ void Chunk::update() {
 
     if(computed) {
       computed = false;
+      auto model = translate(mat4(1.0), vec3(size * chunkPos));
       solidMesh = std::unique_ptr<Mesh>(nullptr);
       if(solidData.indices.size() != 0) {
         solidMesh = std::make_unique<Mesh>(
@@ -275,7 +276,7 @@ void Chunk::update() {
           solidData.textureCoords,
           solidData.occlusion,
           solidData.indices);
-          solidMesh->model = translate(mat4(1.0), vec3(size * chunkPos));
+          solidMesh->model = model;
         solidData = {};
       }
 
@@ -287,7 +288,7 @@ void Chunk::update() {
           transparentData.textureCoords,
           transparentData.occlusion,
           transparentData.indices);
-          transparentMesh->model = translate(mat4(1.0), vec3(size * chunkPos));
+          transparentMesh->model = model;
         transparentData = {};
       }
     }
