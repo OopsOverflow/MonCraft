@@ -38,9 +38,6 @@ int main(int argc, char* argv[]) {
 
     Music MusicPlayer;
 
-    int skyCamSize = 300;
-    Camera skyCam(skyCamSize, skyCamSize, {1, 100, 1}, {0, 0, 0});
-
     float t = 0;
 
     // main loop
@@ -100,34 +97,6 @@ int main(int argc, char* argv[]) {
         window.camera.activate();
         shadows.activate(shader);
         terrain.render();
-
-        // terrain sky view
-        glEnable(GL_SCISSOR_TEST);
-        {
-          glScissor(0, 0, skyCamSize + 5, skyCamSize + 5);
-          glClearColor(0, 0, 0, 0);
-          glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-          // draw shadow view
-          // shadows.camera.activate();
-          glUniformMatrix4fv(MATRIX_VIEW, 1, GL_FALSE, value_ptr(mat4(1.f)));
-          // glUniformMatrix4fv(MATRIX_NORMAL, 1, GL_FALSE, value_ptr());
-          glUniformMatrix4fv(MATRIX_PROJECTION, 1, GL_FALSE, value_ptr(shadows.shadowMatrices[0]));
-          glViewport(0, 0, skyCamSize, skyCamSize),
-          terrain.render();
-
-          glScissor(skyCamSize/2-1, skyCamSize/2-1, 2, 2);
-          glClearColor(1, 1, 1, 1);
-          glClear(GL_COLOR_BUFFER_BIT); // draw point
-
-          // draw a dot in the middle of the screen
-          float pointSize = 8;
-          glScissor((window.width - pointSize) / 2, (window.height - pointSize) / 2, pointSize, pointSize);
-          glClearColor(1, 0, 0, 1);
-          glClear(GL_COLOR_BUFFER_BIT); // draw point
-          glScissor(0, 0, window.width, window.height);
-        }
-        glDisable(GL_SCISSOR_TEST);
 
         // draw the character
         window.camera.activate();
