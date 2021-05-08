@@ -29,17 +29,16 @@ int main(int argc, char* argv[]) {
     Shader shader("src/shader/simple.vert", "src/shader/simple.frag");
     Terrain terrain;
     SkyBox sky;
-    Character character({ 0.0f,300.0f,0.0f });
-    ShadowMap shadows(1024);
+
+    Character character({ 0.0f,100.0f,0.0f });
+    ShadowMap shadows(2048);
+  
     Loader loader;
     Raycast caster(100.f);
 
     GLuint textureID = loader.loadTexture("Texture_atlas");
 
     Music MusicPlayer;
-
-    int skyCamSize = 300;
-    Camera skyCam(skyCamSize, skyCamSize, {1, 500, 1}, {0, 0, 0});
 
     float t = 0;
 
@@ -61,16 +60,13 @@ int main(int argc, char* argv[]) {
         terrain.update(playerPos, viewDir, window.camera.getFovX());
 
         // draw the shadow map
-        float sunSpeed = 1.f;
+
+        float sunSpeed = 10.f;
         float sunTime = pi<float>() * .25f;
         sunTime += t / 1000.f * sunSpeed;
         float distance = 100.f;
-        float a = cos(sunTime);
-        float b = sin(sunTime);
-        if(b < 0) b = -b;
-        auto sunPos = normalize(vec3(a, b, a)) * distance;
-        auto sunTarget = vec3(0);
-        shadows.update(sunPos, sunTarget);
+        auto sunDir = -normalize(vec3(cos(sunTime), 1, sin(sunTime))) * distance;
+        shadows.update(sunDir);
         shadows.attach(window.camera);
 
         shadows.beginFrame(Frustum::NEAR);
@@ -96,8 +92,8 @@ int main(int argc, char* argv[]) {
 
         // set light position / intensity
         glUniform1f(shader.getUniformLocation("lightIntensity"), 1);
-        auto sunDir = window.camera.view * normalize(-vec4(a, b, a, 0.f));
-        glUniform3fv(shader.getUniformLocation("lightDirection"), 1, value_ptr(sunDir));
+        auto sunDirViewSpace = window.camera.view * vec4(sunDir, 0.0);
+        glUniform3fv(shader.getUniformLocation("lightDirection"), 1, value_ptr(sunDirViewSpace));
 
         // bind textures
         GLint texSampler = shader.getUniformLocation("textureSampler");
@@ -110,31 +106,13 @@ int main(int argc, char* argv[]) {
         shadows.activate(shader);
         terrain.render();
 
-        // terrain sky view
+        // dot in the middle of the screen
         glEnable(GL_SCISSOR_TEST);
         {
-          glScissor(0, 0, skyCamSize + 5, skyCamSize + 5);
-          glClearColor(0, 0, 0, 0);
-          glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-          // draw shadow view
-          // shadows.camera.activate();
-          glUniformMatrix4fv(MATRIX_VIEW, 1, GL_FALSE, value_ptr(mat4(1.f)));
-          // glUniformMatrix4fv(MATRIX_NORMAL, 1, GL_FALSE, value_ptr());
-          glUniformMatrix4fv(MATRIX_PROJECTION, 1, GL_FALSE, value_ptr(shadows.shadowMatrices[1]));
-          glViewport(0, 0, skyCamSize, skyCamSize),
-          terrain.render();
-
-          glScissor(skyCamSize/2-1, skyCamSize/2-1, 2, 2);
-          glClearColor(1, 1, 1, 1);
-          glClear(GL_COLOR_BUFFER_BIT); // draw point
-
-          // draw a dot in the middle of the screen
           float pointSize = 8;
           glScissor((window.width - pointSize) / 2, (window.height - pointSize) / 2, pointSize, pointSize);
           glClearColor(1, 0, 0, 1);
           glClear(GL_COLOR_BUFFER_BIT); // draw point
-          glScissor(0, 0, window.width, window.height);
         }
         glDisable(GL_SCISSOR_TEST);
 
