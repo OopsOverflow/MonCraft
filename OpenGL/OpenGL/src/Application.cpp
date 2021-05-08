@@ -98,6 +98,16 @@ int main(int argc, char* argv[]) {
         shadows.activate(shader);
         terrain.render();
 
+        // dot in the middle of the screen
+        glEnable(GL_SCISSOR_TEST);
+        {
+          float pointSize = 8;
+          glScissor((window.width - pointSize) / 2, (window.height - pointSize) / 2, pointSize, pointSize);
+          glClearColor(1, 0, 0, 1);
+          glClear(GL_COLOR_BUFFER_BIT); // draw point
+        }
+        glDisable(GL_SCISSOR_TEST);
+
         // draw the character
         window.camera.activate();
         if (character.view == View::THIRD_PERSON) character.render();
