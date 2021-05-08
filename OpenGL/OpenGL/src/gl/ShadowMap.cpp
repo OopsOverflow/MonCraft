@@ -17,7 +17,7 @@ ShadowMap::ShadowMap(int size)
     glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, size, size, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    float borderColor[] = { 1.0f, 1.0f, 1.0f, 0.0f };//Uncalculated shadows are white
+    float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };//Uncalculated shadows are white
     glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
@@ -30,8 +30,8 @@ ShadowMap::ShadowMap(int size)
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void ShadowMap::update(vec3 sunPos, vec3 center) {
-  camera.setLookAt(vec3(0), center - sunPos);
+void ShadowMap::update(vec3 sunDir) {
+  camera.setLookAt(vec3(0), sunDir);
 }
 
 float linearizeDepth(float depth) { // https://learnopengl.com/Advanced-OpenGL/Depth-testing
@@ -56,7 +56,6 @@ void ShadowMap::attach(Camera const& cam) {
     float maxY = -FLT_MAX;
     float minZ = FLT_MAX;
     float maxZ = -FLT_MAX;
-    float maxZ2 = -FLT_MAX;
 
     for (auto vec : corners[i]) {
       vec = vec3(camera.view * vec4(vec, 1.0f));
@@ -68,20 +67,10 @@ void ShadowMap::attach(Camera const& cam) {
       maxZ = max(-vec.z, maxZ);
     }
 
-    for (auto vec : corners[i]) {
-      vec = vec3(cam.view * vec4(vec, 1.0f));
-      maxZ2 = max(-vec.z, maxZ2);
-    }
-
     //render out of the view in case we have to cast shadows from a moutain
     float box[6] = { minX, maxX, minY, maxY, 2 * minZ - maxZ, maxZ };
     camera.setProjectionType(Projection::CUSTOM_PROJECTION, box);
     shadowMatrices[i] = camera.projection * camera.view;
-
-    auto maxZClipSpace = cam.projection * vec4(0, 0, -maxZ2, 1);
-    maxZClipSpace /= maxZClipSpace.w;
-    clipCascadeEndZ[i] = maxZClipSpace.z;
-    // std::cout << linearizeDepth(maxZClipSpace.z) << std::endl;
   }
 }
 
@@ -118,15 +107,6 @@ void ShadowMap::activate(Shader const& shader) {
   glUniform1i(shadowSampler, 3);
   glActiveTexture(GL_TEXTURE3);
   glBindTexture(GL_TEXTURE_2D, depthTex[2]);
-
-  GLint end = shader.getUniformLocation("clipCascadeEndZ[0]");
-  glUniform1f(end, clipCascadeEndZ[0]);
-
-  end = shader.getUniformLocation("clipCascadeEndZ[1]");
-  glUniform1f(end, clipCascadeEndZ[1]);
-
-  end = shader.getUniformLocation("clipCascadeEndZ[2]");
-  glUniform1f(end, clipCascadeEndZ[2]);
 
   glUniformMatrix4fv(MATRIX_SHADOWS, 3, GL_FALSE, (GLfloat*)shadowMatrices);
 }

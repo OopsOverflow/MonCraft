@@ -18,13 +18,11 @@ uniform float clipCascadeEndZ[3];
 out vec4 outputColor;
 
 float computeShadow(int i) {
-  if(shadowCoords[i].z > 1.0)
-    return 0.0;
-
   vec3 normal = normalize(vertexNormal);
   float dotNormal = dot(normalize(lightDirection), normal);
 
-  float bmin = 0.0000;
+  // float bias = 0.0;
+  float bmin = 0.0001;
   float bmax = 0.0005;
   float bias = max(bmax * (1.0 - dotNormal), bmin);
   float currentDepth = shadowCoords[i].z * 0.5 + 0.5;
@@ -62,15 +60,16 @@ void main() {
   outputColor = texture(textureSampler, txrCoords);
 
   // shadow
-  vec4 shadow = vec4(0.0);
-  for (int i = 0 ; i < 3 ; i++) {
-    if (gl_FragCoord.z <= clipCascadeEndZ[i]) {
-      shadow.xyz = vec3(1.0 - computeShadow(i));
+  float shadow = 0.0;
+
+  for (int i = 0 ; i < 3; i++) {
+    if (texture(shadowSampler[i], shadowCoords[i].xy * 0.5 + 0.5).r != 1.0) {
+      shadow = 1 - computeShadow(i);
       break;
     }
   }
 
-  outputColor = outputColor * .5 + outputColor * lightIntensity * .5 * shadow * lambertian;
+  outputColor.xyz = outputColor.xyz * .6 + outputColor.xyz * lightIntensity * lambertian * shadow * .4;
 
   float occl = .7;
   outputColor *= 1.0 - (vertexOcclusion * vertexOcclusion / 9.0) * occl;

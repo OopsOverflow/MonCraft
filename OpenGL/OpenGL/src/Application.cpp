@@ -30,7 +30,7 @@ int main(int argc, char* argv[]) {
     Terrain terrain;
     SkyBox sky;
     Character character({ 0.0f,100.0f,0.0f });
-    ShadowMap shadows(4096);
+    ShadowMap shadows(2048);
     Loader loader;
     Raycast caster(100.f);
 
@@ -39,7 +39,7 @@ int main(int argc, char* argv[]) {
     Music MusicPlayer;
 
     int skyCamSize = 300;
-    Camera skyCam(skyCamSize, skyCamSize, {1, 500, 1}, {0, 0, 0});
+    Camera skyCam(skyCamSize, skyCamSize, {1, 100, 1}, {0, 0, 0});
 
     float t = 0;
 
@@ -61,16 +61,12 @@ int main(int argc, char* argv[]) {
         terrain.update(playerPos, viewDir, window.camera.getFovX());
 
         // draw the shadow map
-        float sunSpeed = 100.f;
+        float sunSpeed = 10.f;
         float sunTime = pi<float>() * .25f;
         sunTime += t / 1000.f * sunSpeed;
         float distance = 100.f;
-        float a = cos(sunTime);
-        float b = sin(sunTime);
-        if(b < 0) b = -b;
-        auto sunPos = normalize(vec3(a, b, a)) * distance;
-        auto sunTarget = vec3(0);
-        shadows.update(sunPos, sunTarget);
+        auto sunDir = -normalize(vec3(cos(sunTime), 1, sin(sunTime))) * distance;
+        shadows.update(sunDir);
         shadows.attach(window.camera);
 
         shadows.beginFrame(Frustum::NEAR);
@@ -91,8 +87,8 @@ int main(int argc, char* argv[]) {
 
         // set light position / intensity
         glUniform1f(shader.getUniformLocation("lightIntensity"), 1);
-        auto sunDir = window.camera.view * normalize(-vec4(a, b, a, 0.f));
-        glUniform3fv(shader.getUniformLocation("lightDirection"), 1, value_ptr(sunDir));
+        auto sunDirViewSpace = window.camera.view * vec4(sunDir, 0.0);
+        glUniform3fv(shader.getUniformLocation("lightDirection"), 1, value_ptr(sunDirViewSpace));
 
         // bind textures
         GLint texSampler = shader.getUniformLocation("textureSampler");
@@ -116,7 +112,7 @@ int main(int argc, char* argv[]) {
           // shadows.camera.activate();
           glUniformMatrix4fv(MATRIX_VIEW, 1, GL_FALSE, value_ptr(mat4(1.f)));
           // glUniformMatrix4fv(MATRIX_NORMAL, 1, GL_FALSE, value_ptr());
-          glUniformMatrix4fv(MATRIX_PROJECTION, 1, GL_FALSE, value_ptr(shadows.shadowMatrices[1]));
+          glUniformMatrix4fv(MATRIX_PROJECTION, 1, GL_FALSE, value_ptr(shadows.shadowMatrices[0]));
           glViewport(0, 0, skyCamSize, skyCamSize),
           terrain.render();
 

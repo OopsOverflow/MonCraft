@@ -13,7 +13,7 @@ public:
   ShadowMap(ShadowMap const&) = delete;
   ShadowMap& operator=(ShadowMap&) = delete;
 
-  void update(glm::vec3 sunPos, glm::vec3 center);
+  void update(glm::vec3 sunDir);
   void attach(Camera const& cam);
   void beginFrame(Frustum frustum);
   void endFrame();
@@ -25,7 +25,6 @@ public:
 private:
   GLuint fbo;
   GLuint depthTex[3];
-  GLfloat clipCascadeEndZ[3];
   float resolution;
   Shader shader;
   float distance;
