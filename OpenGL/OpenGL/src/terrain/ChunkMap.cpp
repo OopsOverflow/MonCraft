@@ -12,9 +12,14 @@ std::shared_ptr<Chunk> ChunkMap::find(glm::ivec3 cpos) {
   return it->second;
 }
 
+#include "debug/Debug.hpp"
+
 std::shared_ptr<Chunk> ChunkMap::insert(glm::ivec3 cpos, std::unique_ptr<Chunk> chunk) {
   std::lock_guard<std::mutex> lck(chunksMutex);
   auto res = chunks.emplace(cpos, std::move(chunk));
+  if(!res.second) {
+    std::cout << "[WARN] ChunkMap insert: chunk already existed: " << cpos << std::endl;
+  }
   return res.first->second;
 }
 

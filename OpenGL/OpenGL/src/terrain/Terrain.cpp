@@ -180,8 +180,8 @@ void Terrain::genWorker() {
           finished[i] = true;
           count++;
         }
-        sleepFor(sleep);
       }
+      else sleepFor(sleep);
     }
 
     return neighbors;
@@ -255,7 +255,7 @@ void Terrain::render() {
     ivec3 chunkDir3D = chunk->chunkPos - startChunk;
     vec2 chunkDir = glm::normalize(vec2(chunkDir3D.x, chunkDir3D.z));
 
-    float minDot = cos(glm::radians(fovX));
+    float minDot = cos(fovX);
     if(distance(chunk->chunkPos, cpos) < 2 || glm::dot(chunkDir, viewDir2D) > minDot) {
       chunk->drawTransparent();
     }
