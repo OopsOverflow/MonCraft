@@ -96,6 +96,8 @@ bool Viewport::beginFrame(float& dt) {
   glClearColor(54/255.f, 199/255.f, 242/255.f, 1.0);
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   timeBegin = SDL_GetTicks();
   dt = (timeBegin - lastTime) / 1000.f;

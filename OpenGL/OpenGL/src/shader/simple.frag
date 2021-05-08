@@ -60,6 +60,7 @@ void main() {
   outputColor = texture(textureSampler, txrCoords);
 
   // shadow
+
   float shadow = 0.0;
 
   for (int i = 0 ; i < 3; i++) {
@@ -72,7 +73,7 @@ void main() {
   outputColor.xyz = outputColor.xyz * .6 + outputColor.xyz * lightIntensity * lambertian * shadow * .4;
 
   float occl = .7;
-  outputColor *= 1.0 - (vertexOcclusion * vertexOcclusion / 9.0) * occl;
+  outputColor.xyz *= 1.0 - (vertexOcclusion * vertexOcclusion / 9.0) * occl;
 
   // show in which shadow cascade we are
   // for (int i = 0 ; i < 3 ; i++) {
@@ -80,4 +81,8 @@ void main() {
   //     outputColor[i] += 0.2;
   //   }
   // }
+
+  if(outputColor.a < 0.1) {
+    discard;
+  }
 }

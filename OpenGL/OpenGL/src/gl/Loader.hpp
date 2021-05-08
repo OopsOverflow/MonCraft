@@ -16,17 +16,8 @@ class Loader
 public:
     ~Loader();
 
-    // TODO: see if we keep those or not. Currently the mesh ctor manages this.
-    // ptr2mesh loadToVAO(const std::vector<GLfloat>& positions,
-    //     const std::vector<GLuint>& indices,
-    //     const std::vector<GLfloat>& texture);
-    //
-    // ptr2mesh loadToVAO(const std::vector<GLfloat>& positions,
-    //     const std::vector<GLfloat>& texture);
-
     GLuint loadTexture(const std::string& fileName);
     GLuint loadCubeMap(std::vector<std::string> faces);
-
 
 private:
     void bindIndexBuffer(const std::vector<GLuint>& indices);

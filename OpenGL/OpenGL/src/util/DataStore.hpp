@@ -80,6 +80,17 @@ public:
     return map[index];
   }
 
+  T const&operator[](glm::vec<N, int> pos) const {
+    auto index = 0;
+    auto acc = 1;
+    for(auto i = 0; i < N - 1; i++) {
+      index += pos[i] * acc;
+      acc *= size[i];
+    }
+    index += pos[N-1] * acc;
+    return map[index];
+  }
+
   /**
    * Gets the raw pointer data
    */

@@ -38,6 +38,23 @@ public:
               << std::endl;                                                   \
   }
 
+#ifndef DEBUG
+#define ASSERT_GL_MAIN_THREAD()
+#else
+
+#include <thread>
+#include <csignal>
+
+#define ASSERT_GL_MAIN_THREAD() { \
+  static const std::thread::id mainThread = std::this_thread::get_id(); \
+  const std::thread::id thisThread = std::this_thread::get_id(); \
+  if(mainThread != thisThread) { \
+    std::cout << "[CRITICAL] " << "gl deleted on worker thread " << thisThread << " While main thread is " << mainThread << "." << std::endl; \
+    std::raise(SIGINT); \
+  } \
+}
+#endif
+
 template<typename T>
 void debug_bindump(T val) {
   for(int i = 8 * sizeof(T) -1; i >= 0; i--) {

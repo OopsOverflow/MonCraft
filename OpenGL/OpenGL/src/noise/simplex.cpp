@@ -161,7 +161,7 @@ float SimplexNoise::perlin3(vec3 pos)
       v);
 }
 
-float SimplexNoise::simplex2(vec2 pos)
+float SimplexNoise::simplex2(vec2 pos) const
 {
   float n0, n1, n2; // Noise contributions from the three corners
   // Skew the input space to determine which simplex cell we're in
@@ -383,7 +383,7 @@ float SimplexNoise::simplex3(vec3 pos)
   return 32 * (n0 + n1 + n2 + n3);
 }
 
-float SimplexNoise::fractal2(vec2 pos, octaves_t const& octaves)
+float SimplexNoise::fractal2(vec2 pos, octaves_t const& octaves) const
 {
   float val = 0;
   for (auto const& octave : octaves) {

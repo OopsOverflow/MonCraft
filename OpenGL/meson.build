@@ -1,5 +1,9 @@
 project('MonCraft', 'cpp')
 
+if get_option('buildtype').startswith('debug')
+  add_project_arguments('-DDEBUG', language : 'cpp')
+endif
+
 srcs = files(
   'OpenGL/src/Application.cpp',
 
@@ -32,15 +36,13 @@ srcs = files(
 
   'OpenGL/src/terrain/Terrain.cpp',
   'OpenGL/src/terrain/Chunk.cpp',
+  'OpenGL/src/terrain/ChunkMap.cpp',
+  'OpenGL/src/terrain/SliceMap.cpp',
   'OpenGL/src/terrain/Generator.cpp',
   'OpenGL/src/terrain/SkyBox.cpp',
+  'OpenGL/src/terrain/Structure.cpp',
 
-  'OpenGL/src/blocks/Block.cpp',
-  'OpenGL/src/blocks/Air_Block.cpp',
-  'OpenGL/src/blocks/Dirt_Block.cpp',
-  'OpenGL/src/blocks/Stone_Block.cpp',
-  'OpenGL/src/blocks/Grass_Block.cpp',
-  'OpenGL/src/blocks/Debug_Block.cpp',
+  'OpenGL/src/blocks/Block.cpp'
 )
 
 deps = [

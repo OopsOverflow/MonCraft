@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 #include "Chunk.hpp"
 #include "../noise/Noise.hpp"
+#include "Structure.hpp"
 
 /**
 * Generates new chunks.
@@ -15,7 +16,8 @@ public:
   /**
   * Generates a chunk at the given chunk index.
   */
-  std::shared_ptr<Chunk> generate(glm::ivec3 pos);
+  std::unique_ptr<Chunk> generate(glm::ivec3 cpos) const;
+  std::vector<Structure::Slice> generateStructures(glm::ivec3 cpos, Chunk& chunk) const;
 
 private:
   int chunkSize;
@@ -23,4 +25,6 @@ private:
   SimplexNoise noiseX;
   SimplexNoise noiseY;
   SimplexNoise noiseZ;
+  ValueNoise treeNoise;
+  Tree defaultTree;
 };

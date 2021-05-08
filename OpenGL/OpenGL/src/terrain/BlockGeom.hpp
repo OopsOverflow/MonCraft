@@ -4,7 +4,7 @@
 #include <array>
 #include <GL/glew.h>
 #include <glm/glm.hpp>
-#include "../blocks/Block.h"
+#include "../blocks/Block.hpp"
 
 template<size_t N>
 using face_t = std::array<GLfloat, 4 * N>;

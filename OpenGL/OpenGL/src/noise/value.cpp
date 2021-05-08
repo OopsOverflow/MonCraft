@@ -4,18 +4,18 @@ using glm::ivec2;
 
 // --------- a (probably very bad), but fast LCG.
 
-int ValueNoise::rand (unsigned long prn) const
+uint32_t ValueNoise::rand (uint64_t prn) const
 {
   prn = prn * 1103515245 + 12345;
-  return (unsigned int)(prn/65536) % INT_MAX;
+  return (uint32_t)(prn/65536) % INT32_MAX;
 }
 
-ValueNoise::ValueNoise(int seed) : seed(seed) {     
+ValueNoise::ValueNoise(uint32_t seed) : seed(rand(seed)) {
 }
 
-int ValueNoise::sample1D(const ivec2 &pos) const {
-  int a = rand(pos.x * seed + 54321);
-  int b = rand(pos.y + 12345);
+uint32_t ValueNoise::sample1D(const ivec2 &pos) const {
+  uint32_t a = rand(pos.x * seed + 54321);
+  uint32_t b = rand(pos.y + 12345);
   return rand(a ^ b);
 }
 

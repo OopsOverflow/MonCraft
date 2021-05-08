@@ -18,22 +18,7 @@
     <ClCompile Include="src\audio\Music.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\blocks\Air_Block.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\blocks\Block.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\blocks\Debug_Block.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\blocks\Dirt_Block.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\blocks\Grass_Block.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\blocks\Stone_Block.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\controller\KeyboardController.cpp">
@@ -111,6 +96,15 @@
     <ClCompile Include="src\entity\Node.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\terrain\ChunkMap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\terrain\SliceMap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\terrain\Structure.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\util\loader.hpp">
@@ -149,22 +143,22 @@
     <ClInclude Include="src\audio\SoundEffect.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\blocks\Air_Block.h">
+    <ClInclude Include="src\blocks\Air_Block.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\blocks\Block.h">
+    <ClInclude Include="src\blocks\Block.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\blocks\Debug_Block.h">
+    <ClInclude Include="src\blocks\Debug_Block.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\blocks\Dirt_Block.h">
+    <ClInclude Include="src\blocks\Dirt_Block.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\blocks\Grass_Block.h">
+    <ClInclude Include="src\blocks\Grass_Block.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\blocks\Stone_Block.h">
+    <ClInclude Include="src\blocks\Stone_Block.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\controller\KeyboardController.hpp">
@@ -294,6 +288,24 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\entity\Node.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\blocks\Leaf_Block.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\terrain\ChunkMap.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\blocks\AllBlocks.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\blocks\Wood_Block.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\terrain\SliceMap.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\terrain\Structure.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

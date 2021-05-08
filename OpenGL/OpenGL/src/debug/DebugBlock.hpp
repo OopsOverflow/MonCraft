@@ -5,7 +5,7 @@
 #include <memory>
 
 #include "../terrain/BlockGeom.hpp"
-#include "../blocks/Debug_Block.h"
+#include "../blocks/Debug_Block.hpp"
 #include "../terrain/Chunk.hpp"
 
 static std::unique_ptr<Mesh> makeDebugBlock() {

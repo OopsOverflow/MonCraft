@@ -29,8 +29,10 @@ int main(int argc, char* argv[]) {
     Shader shader("src/shader/simple.vert", "src/shader/simple.frag");
     Terrain terrain;
     SkyBox sky;
+
     Character character({ 0.0f,100.0f,0.0f });
     ShadowMap shadows(2048);
+  
     Loader loader;
     Raycast caster(100.f);
 
@@ -58,6 +60,7 @@ int main(int argc, char* argv[]) {
         terrain.update(playerPos, viewDir, window.camera.getFovX());
 
         // draw the shadow map
+
         float sunSpeed = 10.f;
         float sunTime = pi<float>() * .25f;
         sunTime += t / 1000.f * sunSpeed;
@@ -80,6 +83,11 @@ int main(int argc, char* argv[]) {
 
         // prepare render
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        // draw skybox at last
+        window.camera.activate();
+        sky.render(window.camera);
+
         shader.activate();
 
         // set light position / intensity
@@ -111,9 +119,6 @@ int main(int argc, char* argv[]) {
         // draw the character
         window.camera.activate();
         if (character.view == View::THIRD_PERSON) character.render();
-
-        // draw skybox at last
-        sky.render(window.camera);
     }
 
     return 0;

@@ -111,7 +111,10 @@ void ShadowMap::activate(Shader const& shader) {
   glUniformMatrix4fv(MATRIX_SHADOWS, 3, GL_FALSE, (GLfloat*)shadowMatrices);
 }
 
+#include "debug/Debug.hpp"
+
 ShadowMap::~ShadowMap() {
+  ASSERT_GL_MAIN_THREAD();
   glDeleteTextures(3, depthTex);
   glDeleteFramebuffers(1, &fbo);
 }
