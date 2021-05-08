@@ -108,7 +108,7 @@ int main(int argc, char* argv[]) {
         // draw the terrain
         window.camera.activate();
         shadows.activate(shader);
-        TIME(terrain.render();)
+        terrain.render();
 
         // terrain sky view
         glEnable(GL_SCISSOR_TEST);
