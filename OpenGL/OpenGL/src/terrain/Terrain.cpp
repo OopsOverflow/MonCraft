@@ -49,7 +49,7 @@ void Terrain::updateWaitingList() {
   auto insert = [&](ivec2 const& pos) {
     for(int i = -renderDistV; i <= renderDistV; i++) {
       ivec3 p = cpos + ivec3(pos.x, i, pos.y);
-      auto chunk = chunks.find(p);
+      auto chunk = chunkMap.find(p);
       if(!chunk || !chunk->isLoaded()) {
         waitingChunks.push(p);
       }
@@ -93,7 +93,7 @@ glm::ivec3 Terrain::getChunkPos() {
 }
 
 void Terrain::setChunkPos(glm::ivec3 cpos) {
-  std::lock_guard<std::mutex> lck(posMutex);
+  // std::lock_guard<std::mutex> lck(posMutex); // TODO: is this dangerous ?
   if(cpos != chunkPos) {
     chunkPos = cpos;
     chunkPosChanged = true;
@@ -140,43 +140,47 @@ void Terrain::genWorker() {
   bool stop;
 
   auto getOrGen = [&](ivec3 cpos) {
-    if(auto neigh = chunks.find(cpos)) {
+    if(auto neigh = chunkMap.find(cpos)) {
       return neigh;
     }
     else if(addInBusyList(cpos)) {
-      chunks.insert(cpos, generator.generate(cpos));
+      auto chunk = chunkMap.insert(cpos, generator.generate(cpos));
+      sliceMap.insert(generator.generateStructures(cpos, *chunk));
       remFromBusyList(cpos);
-      return chunks.find(cpos);
+      return chunk;
     }
     else while(1) {
       sleepFor(sleep);
-      if(auto neigh = chunks.find(cpos)) return neigh;
+      if(auto neigh = chunkMap.find(cpos)) return neigh;
     }
   };
 
   auto getOrGenN = [&](ivec3 cpos) {
     int count = 0;
-    std::array<bool, 26> finished;
-    std::array<std::weak_ptr<Chunk>, 26> neighbors;
+    std::array<bool, 26> finished{};
     for(int i = 0; i < 26; i++) finished[i] = false;
+    std::array<std::weak_ptr<Chunk>, 26> neighbors;
     int i = 0;
 
     while(count < 26) {
       while(finished[i]) i = (i + 1) % 26;
       ivec3 thisPos = cpos + Chunk::neighborOffsets[i];
 
-      if(auto neigh = chunks.find(thisPos)) {
+      if(auto neigh = chunkMap.find(thisPos)) {
         neighbors[i] = neigh;
         finished[i] = true;
         count++;
       }
       else if(addInBusyList(thisPos)) {
-        chunks.insert(thisPos, generator.generate(thisPos));
-        remFromBusyList(thisPos);
-        // sleepFor(sleep);
-        neighbors[i] = chunks.find(thisPos);
-        finished[i] = true;
-        count++;
+        {
+          auto chunk = chunkMap.insert(thisPos, generator.generate(thisPos));
+          sliceMap.insert(generator.generateStructures(cpos, *chunk));
+          remFromBusyList(thisPos);
+          neighbors[i] = chunk;
+          finished[i] = true;
+          count++;
+        }
+        sleepFor(sleep);
       }
     }
 
@@ -185,17 +189,23 @@ void Terrain::genWorker() {
 
   do {
 
-    ivec3 pos;
-    if(waitingChunks.pop(pos)) {
+    ivec3 cpos;
+    if(waitingChunks.pop(cpos)) {
 
-      auto chunk = getOrGen(pos);
+      auto chunk = getOrGen(cpos);
 
-      chunk->neighbors = getOrGenN(pos);
+      chunk->neighbors = getOrGenN(cpos);
       for(size_t i = 0; i < 26; i++) {
         if(auto neigh = chunk->neighbors[i].lock()) {
           neigh->neighbors[Chunk::neighborOffsetsInverse[i]] = chunk;
         }
       }
+
+      auto slices = sliceMap.pop(cpos);
+      for(auto const& slice : slices) {
+        Structure::applySlice(*chunk, slice);
+      }
+
       chunk->compute();
 
       stop = sleepFor(sleep);
@@ -216,48 +226,45 @@ void Terrain::update(glm::vec3 pos, glm::vec3 dir, float fovX) {
   setChunkPos(newChunkPos);
 
   // clear old chunks
-  chunks.eraseChunks(10, [newChunkPos](ivec3 cpos) {
-    ivec3 const& a = cpos;
-    ivec3 const& b = newChunkPos;
-    return abs(b.x - a.x) > renderDistH + 1 || abs(b.z - a.z) > renderDistH + 1 || abs(b.y - a.y) > renderDistV + 1;
+  chunkMap.eraseChunks(10, [newChunkPos](ivec3 cpos) {
+    ivec3 dist = abs(newChunkPos - cpos);
+    return dist.x > renderDistH + 1 || dist.z > renderDistH + 1 || dist.y > renderDistV + 1;
   });
 }
 
 void Terrain::render() {
-  ivec3 cpos = getChunkPos();
+  ivec3 cpos = chunkPos;
   vec2 viewDir2D = glm::normalize(vec2(viewDir.x, viewDir.z));
   ivec3 startChunk = cpos - ivec3(glm::sign(viewDir));
 
   // draw solid and update chunks
-  for(auto& chunk : chunks) {
-    ivec3 chunkDir3D = chunk.first - startChunk;
+  chunkMap.for_each([&](std::shared_ptr<Chunk> chunk) {
+    ivec3 chunkDir3D = chunk->chunkPos - startChunk;
     vec2 chunkDir = glm::normalize(vec2(chunkDir3D.x, chunkDir3D.z));
 
     float minDot = cos(glm::radians(fovX));
-    if(distance(chunk.first, cpos) < 2 || glm::dot(chunkDir, viewDir2D) > minDot) {
-      chunk.second->update();
-      chunk.second->drawSolid();
+    if(distance(chunk->chunkPos, cpos) < 2 || glm::dot(chunkDir, viewDir2D) > minDot) {
+      chunk->update();
+      chunk->drawSolid();
     }
-  }
+  });
 
-  // draw transparent
-  // glDisable(GL_CULL_FACE);
-  for(auto& chunk : chunks) {
-    ivec3 chunkDir3D = chunk.first - startChunk;
+  // draw transparent chunks
+  chunkMap.for_each([&](std::shared_ptr<Chunk> chunk) {
+    ivec3 chunkDir3D = chunk->chunkPos - startChunk;
     vec2 chunkDir = glm::normalize(vec2(chunkDir3D.x, chunkDir3D.z));
 
     float minDot = cos(glm::radians(fovX));
-    if(distance(chunk.first, cpos) < 2 || glm::dot(chunkDir, viewDir2D) > minDot) {
-      chunk.second->drawTransparent();
+    if(distance(chunk->chunkPos, cpos) < 2 || glm::dot(chunkDir, viewDir2D) > minDot) {
+      chunk->drawTransparent();
     }
-  }
-  // glEnable(GL_CULL_FACE);
+  });
 }
 
 Block* Terrain::getBlock(ivec3 pos) {
   ivec3 cpos = floor(vec3(pos) / float(chunkSize));
 
-  if(auto chunk = chunks.find(cpos)) {
+  if(auto chunk = chunkMap.find(cpos)) {
     ivec3 dpos = pos - cpos * chunkSize;
     return chunk->at(dpos).get();
   }
@@ -268,34 +275,9 @@ Block* Terrain::getBlock(ivec3 pos) {
 void Terrain::setBlock(ivec3 pos, Block::unique_ptr_t block) {
   ivec3 cpos = floor(vec3(pos) / float(chunkSize));
 
-  auto chunk = chunks.find(cpos);
+  auto chunk = chunkMap.find(cpos);
   if(!chunk) throw std::runtime_error("setBlock: chunk not found");
 
   ivec3 dpos = pos - cpos * chunkSize;
-
-  chunk->at(dpos) = std::move(block);
-  chunk->compute();
-
-  // now update neighbors if close to a border
-  // COMBAK: this seems overly compicated and may be moved to Chunk.
-  static const ivec3 mask(9, 3, 1);
-
-  auto greater = equal(dpos, ivec3(chunkSize - 1));
-  auto lesser = equal(dpos, ivec3(0));
-
-  if(any(greater) || any(lesser)) {
-    auto tmp = ivec3(greater) * mask + ivec3(lesser) * 2 * mask;
-
-    std::vector<int> updates;
-    for(int i = 0; i < 2*2*2; i++) {
-      int index = tmp.x * ((i&0b100)>>2) + tmp.y * ((i&0b010)>>1) + tmp.z * (i&0b001);
-      if(index == 0) continue;
-      if(std::find(updates.begin(), updates.end(), index) != updates.end()) continue;
-      updates.push_back(index);
-      if(auto neigh = chunk->neighbors[index - 1].lock()) {
-        neigh->compute();
-      }
-    }
-  }
-
+  chunk->setBlock(dpos, std::move(block));
 }

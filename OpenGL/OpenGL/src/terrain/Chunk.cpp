@@ -53,7 +53,7 @@ Chunk::Chunk(ivec3 chunkPos, int chunkSize)
   : DataStore<Block::unique_ptr_t, 3>(glm::ivec3(chunkSize)),
     chunkPos(chunkPos),
     solidMesh(nullptr), transparentMesh(nullptr),
-    loaded(false)
+    loaded(false), mustRecompute(false)
 {
   // std::cout << "created Chunk " << chunkPos << std::endl;
 }
@@ -62,53 +62,77 @@ Chunk::~Chunk() {
   // std::cout << "deleted Chunk " << chunkPos << std::endl;
 }
 
-// /!\ extra care must be taken here.
-//  - uses operator[] which is unsafe (no bounds checks)
-bool Chunk::isSolid(ivec3 pos) {
+std::weak_ptr<Chunk> Chunk::getNeighbor(glm::ivec3 off) {
   static const ivec3 mask(9, 3, 1);
+  auto greater = equal(off, ivec3(1));
+  auto lesser = equal(off, ivec3(-1));
 
+  auto tmp = ivec3(greater) * mask + ivec3(lesser) * 2 * mask;
+  int index = tmp.x + tmp.y + tmp.z - 1;
+  return neighbors[index];
+}
+
+Block* Chunk::getBlockAccrossChunks(ivec3 pos) {
+  static const ivec3 mask(9, 3, 1);
   auto greater = greaterThanEqual(pos, size);
   auto lesser = lessThan(pos, ivec3(0));
+
   if(any(greater) || any(lesser)) {
     auto tmp = ivec3(greater) * mask + ivec3(lesser) * 2 * mask;
     int index = tmp.x + tmp.y + tmp.z - 1;
 
     if(auto neigh = neighbors[index].lock()) {
-      return neigh->isSolidNoChecks(pos - size * (ivec3(greater) - ivec3(lesser)));
+      ivec3 otherChunkPos = pos - size * (ivec3(greater) - ivec3(lesser));
+      return neigh->getBlock(otherChunkPos);
     }
-    else return false;
+    else return nullptr;
   }
+  return (*this)[pos].get();
+}
+
+
+void Chunk::setBlockAccrossChunks(ivec3 pos, Block::unique_ptr_t block) {
+  static const ivec3 mask(9, 3, 1);
+  auto greater = greaterThanEqual(pos, size);
+  auto lesser = lessThan(pos, ivec3(0));
+
+  if(any(greater) || any(lesser)) {
+    auto tmp = ivec3(greater) * mask + ivec3(lesser) * 2 * mask;
+    int index = tmp.x + tmp.y + tmp.z - 1;
+
+    if(auto neigh = neighbors[index].lock()) {
+      ivec3 otherChunkPos = pos - size * (ivec3(greater) - ivec3(lesser));
+      return neigh->setBlock(otherChunkPos, std::move(block));
+    }
+  }
+  else setBlock(pos, std::move(block));
+}
+
+// /!\ extra care must be taken here.
+//  - uses operator[] which is unsafe (no bounds checks)
+bool Chunk::isSolidAccrossChunks(ivec3 pos) {
+  Block* block = getBlockAccrossChunks(pos);
+  if(!block) return false;
+  return block->type != BlockType::Air;
+}
+
+// /!\ extra care must be taken here.
+//  - uses operator[] which is unsafe (no bounds checks)
+bool Chunk::isSolid(ivec3 pos) {
   return (*this)[pos]->type != BlockType::Air;
 }
 
 // /!\ extra care must be taken here.
 //  - uses operator[] which is unsafe (no bounds checks)
-bool Chunk::isSolidNoChecks(ivec3 pos) {
-  return (*this)[pos]->type != BlockType::Air;
+bool Chunk::isTransparentAccrossChunks(ivec3 pos) {
+  Block* block = getBlockAccrossChunks(pos);
+  if(!block) return false;
+  return block->type == BlockType::Leaf;
 }
 
 // /!\ extra care must be taken here.
 //  - uses operator[] which is unsafe (no bounds checks)
 bool Chunk::isTransparent(ivec3 pos) {
-  static const ivec3 mask(9, 3, 1);
-
-  auto greater = greaterThanEqual(pos, size);
-  auto lesser = lessThan(pos, ivec3(0));
-  if(any(greater) || any(lesser)) {
-    auto tmp = ivec3(greater) * mask + ivec3(lesser) * 2 * mask;
-    int index = tmp.x + tmp.y + tmp.z - 1;
-
-    if(auto neigh = neighbors[index].lock()) {
-      return neigh->isTransparentNoChecks(pos - size * (ivec3(greater) - ivec3(lesser)));
-    }
-    else return false;
-  }
-  return (*this)[pos]->type == BlockType::Leaf;
-}
-
-// /!\ extra care must be taken here.
-//  - uses operator[] which is unsafe (no bounds checks)
-bool Chunk::isTransparentNoChecks(ivec3 pos) {
   return (*this)[pos]->type == BlockType::Leaf; // TODO: other blocks as well
 }
 
@@ -188,7 +212,7 @@ void Chunk::compute() {
   for(pos.x = 0; pos.x < size.x + 2; pos.x++) {
     for(pos.y = 0; pos.y < size.y + 2; pos.y++) {
       for(pos.z = 0; pos.z < size.z + 2; pos.z++) {
-        solidBlocks[pos] = isSolid(pos - 1);
+        solidBlocks[pos] = isSolidAccrossChunks(pos - 1);
       }
     }
   }
@@ -212,7 +236,7 @@ void Chunk::compute() {
 
         for(auto const& off : offsets) {
           bool offSolid = solidBlocks[pos + off.first + 1];
-          bool offTransp = isTransparent(pos + off.first);
+          bool offTransp = isTransparentAccrossChunks(pos + off.first);
           if(!offSolid || offTransp) {
             if(transp) genFace(pos, off.second, transparentData);
             else genFace(pos, off.second, solidData);
@@ -223,37 +247,51 @@ void Chunk::compute() {
     }
   }
 
-  if(solidMesh && solidData.indices.size() == 0) { // that chunk is filled with air, discard
-    solidMesh = std::unique_ptr<Mesh>(nullptr);
-  }
-  if(transparentMesh && transparentData.indices.size() == 0) { // that chunk is filled with air, discard
-    transparentMesh = std::unique_ptr<Mesh>(nullptr);
-  }
+  computed = true;
   loaded = true;
+  mustRecompute = false;
+}
+
+void Chunk::markToRecompute() {
+  mustRecompute = true;
 }
 
 void Chunk::update() {
   if(computeMutex.try_lock()) {
-    if(solidData.indices.size() != 0) {
-      solidMesh = std::make_unique<Mesh>(
-        solidData.positions,
-        solidData.normals,
-        solidData.textureCoords,
-        solidData.occlusion,
-        solidData.indices);
-      solidMesh->model = translate(mat4(1.0), vec3(size * chunkPos));
-      solidData = {};
+
+    if(loaded && mustRecompute) {
+      computeMutex.unlock();
+      compute();
+      return update();
     }
-    if(transparentData.indices.size() != 0) {
-      transparentMesh = std::make_unique<Mesh>(
-        transparentData.positions,
-        transparentData.normals,
-        transparentData.textureCoords,
-        transparentData.occlusion,
-        transparentData.indices);
-      transparentMesh->model = translate(mat4(1.0), vec3(size * chunkPos));
-      transparentData = {};
+
+    if(computed) {
+      computed = false;
+      solidMesh = std::unique_ptr<Mesh>(nullptr);
+      if(solidData.indices.size() != 0) {
+        solidMesh = std::make_unique<Mesh>(
+          solidData.positions,
+          solidData.normals,
+          solidData.textureCoords,
+          solidData.occlusion,
+          solidData.indices);
+          solidMesh->model = translate(mat4(1.0), vec3(size * chunkPos));
+        solidData = {};
+      }
+
+      transparentMesh = std::unique_ptr<Mesh>(nullptr);
+      if(transparentData.indices.size() != 0) {
+        transparentMesh = std::make_unique<Mesh>(
+          transparentData.positions,
+          transparentData.normals,
+          transparentData.textureCoords,
+          transparentData.occlusion,
+          transparentData.indices);
+          transparentMesh->model = translate(mat4(1.0), vec3(size * chunkPos));
+        transparentData = {};
+      }
     }
+
     computeMutex.unlock();
   }
 }
@@ -285,4 +323,25 @@ Block* Chunk::getBlock(ivec3 pos) {
 
 void Chunk::setBlock(ivec3 pos, Block::unique_ptr_t block) {
   at(pos) = std::move(block);
+  markToRecompute();
+
+  static const ivec3 mask(9, 3, 1);
+
+  auto greater = equal(pos, size - 1);
+  auto lesser = equal(pos, ivec3(0));
+
+  if(any(greater) || any(lesser)) {
+    auto tmp = ivec3(greater) * mask + ivec3(lesser) * 2 * mask;
+
+    std::vector<int> updates;
+    for(int i = 0; i < 2*2*2; i++) {
+      int index = tmp.x * ((i&0b100)>>2) + tmp.y * ((i&0b010)>>1) + tmp.z * (i&0b001);
+      if(index == 0) continue;
+      if(std::find(updates.begin(), updates.end(), index) != updates.end()) continue;
+      updates.push_back(index);
+      if(auto neigh = neighbors[index - 1].lock()) {
+        neigh->markToRecompute();
+      }
+    }
+  }
 }

@@ -12,9 +12,10 @@ std::shared_ptr<Chunk> ChunkMap::find(glm::ivec3 cpos) {
   return it->second;
 }
 
-void ChunkMap::insert(glm::ivec3 cpos, std::unique_ptr<Chunk> chunk) {
+std::shared_ptr<Chunk> ChunkMap::insert(glm::ivec3 cpos, std::unique_ptr<Chunk> chunk) {
   std::lock_guard<std::mutex> lck(chunksMutex);
-  chunks.emplace(cpos, std::move(chunk));
+  auto res = chunks.emplace(cpos, std::move(chunk));
+  return res.first->second;
 }
 
 #include "debug/Debug.hpp"
@@ -31,5 +32,13 @@ void ChunkMap::eraseChunks(int count, std::function<bool(glm::ivec3)> predicate)
       else it = chunks.erase(it);
     }
     else ++it;
+  }
+}
+
+void ChunkMap::for_each(std::function<void(std::shared_ptr<Chunk>)> callback) {
+  // std::lock_guard<std::mutex> lck(chunksMutex); // TODO: is this dangerous ?
+  for(auto const& pair : chunks) {
+    if(pair.second)
+      callback(pair.second);
   }
 }

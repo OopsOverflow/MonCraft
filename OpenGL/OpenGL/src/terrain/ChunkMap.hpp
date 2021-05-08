@@ -14,9 +14,11 @@ public:
 
   std::shared_ptr<Chunk> find(glm::ivec3 cpos);
 
-  void insert(glm::ivec3 cpos, std::unique_ptr<Chunk>);
+  std::shared_ptr<Chunk> insert(glm::ivec3 cpos, std::unique_ptr<Chunk>);
 
   void eraseChunks(int count, std::function<bool(glm::ivec3)> predicate);
+
+  void for_each(std::function<void(std::shared_ptr<Chunk>)> callback);
 
 private:
 
@@ -32,9 +34,4 @@ private:
 
   std::mutex chunksMutex; // serializes access to the hashmap
   std::unordered_map<glm::ivec3, std::shared_ptr<Chunk>, ivec3_hash, ivec3_hash> chunks;
-
-public:
-  // TODO: this is not thread safe !!!
-  decltype(chunks)::iterator begin() { return chunks.begin(); }
-  decltype(chunks)::iterator end() { return chunks.end(); }
 };

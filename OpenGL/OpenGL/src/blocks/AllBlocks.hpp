@@ -1,0 +1,41 @@
+#pragma once
+
+#include "Block.hpp"
+#include "Air_Block.hpp"
+#include "Grass_Block.hpp"
+#include "Dirt_Block.hpp"
+#include "Stone_Block.hpp"
+#include "Leaf_Block.hpp"
+#include "Wood_Block.hpp"
+
+#include <sstream>
+
+
+class AllBlocks {
+
+public:
+  AllBlocks() = delete;
+
+  /**
+  * convenience to create static blocks.
+  * /!\ Take care ! using this function demands that the block has been
+  * correctly inserted it the array.
+  */
+  static Block::unique_ptr_t create_static(BlockType type) {
+    static std::array<Block*(*)(), 6> factories {
+      (Block*(*)())Air_Block::get,
+      (Block*(*)())Grass_Block::get,
+      (Block*(*)())Dirt_Block::get,
+      (Block*(*)())Stone_Block::get,
+      (Block*(*)())Leaf_Block::get,
+      (Block*(*)())Wood_Block::get,
+    };
+    auto index = (size_t)type;
+    if(index > factories.size()) {
+      std::ostringstream err;
+      err << "create_static: BlockType not recognized: " << index;
+      throw std::runtime_error(err.str());
+    }
+    return Block::unique_ptr_t(factories[index]());
+  }
+};

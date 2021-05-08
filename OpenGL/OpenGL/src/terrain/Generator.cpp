@@ -1,10 +1,10 @@
 #include "Generator.hpp"
-#include "../blocks/Grass_Block.hpp"
-#include "../blocks/Dirt_Block.hpp"
-#include "../blocks/Air_Block.hpp"
-#include "../blocks/Stone_Block.hpp"
-#include "../blocks/Debug_Block.hpp"
-#include "../blocks/Leaf_Block.hpp"
+#include "blocks/Grass_Block.hpp"
+#include "blocks/Dirt_Block.hpp"
+#include "blocks/Air_Block.hpp"
+#include "blocks/Stone_Block.hpp"
+#include "blocks/Debug_Block.hpp"
+#include "blocks/Leaf_Block.hpp"
 
 using namespace glm;
 
@@ -18,7 +18,7 @@ Generator::Generator(int chunkSize)
   noiseZ.seed(21554);
 }
 
-std::unique_ptr<Chunk> Generator::generate(ivec3 chunkPos) const {
+std::unique_ptr<Chunk> Generator::generate(ivec3 cpos) const {
 
   static const int maxHeight = 50;
 
@@ -29,18 +29,17 @@ std::unique_ptr<Chunk> Generator::generate(ivec3 chunkPos) const {
     {.00f, 0.100f},
   };
 
-  std::unique_ptr<Chunk> chunk(new Chunk(chunkPos, chunkSize));
+  std::unique_ptr<Chunk> chunk(new Chunk(cpos, chunkSize));
 
   ivec3 dpos(0);
-
   for(dpos.x = 0; dpos.x < chunkSize; dpos.x++) {
     for(dpos.y = 0; dpos.y < chunkSize; dpos.y++) {
       for(dpos.z = 0; dpos.z < chunkSize; dpos.z++) {
 
-        ivec3 pos = chunkPos * chunkSize + dpos;
+        ivec3 pos = cpos * chunkSize + dpos;
 
         float height = noise.fractal2(ivec2(pos.x, pos.z), octaves) * .5f + .5f;
-        int blockHeight = (int)floor(height * maxHeight) - chunkPos.y * chunkSize;
+        int blockHeight = (int)floor(height * maxHeight) - cpos.y * chunkSize;
         auto& block = (*chunk)[dpos];
         float tree = treeNoise.sample1D(ivec2(pos.x, pos.z)) / (float)INT_MAX;
 
@@ -64,5 +63,30 @@ std::unique_ptr<Chunk> Generator::generate(ivec3 chunkPos) const {
     }
   }
 
+
   return chunk;
+}
+
+std::vector<Structure::Slice> Generator::generateStructures(ivec3 cpos, Chunk& chunk) const {
+  std::vector<Structure::Slice> slices;
+
+  ivec3 dpos(0);
+  for(dpos.x = 0; dpos.x < chunkSize; dpos.x++) {
+    for(dpos.y = 0; dpos.y < chunkSize; dpos.y++) {
+      for(dpos.z = 0; dpos.z < chunkSize; dpos.z++) {
+
+        if(chunk[dpos]->type == BlockType::Grass) {
+          ivec3 pos = cpos * chunkSize + dpos;
+          float tree = treeNoise.sample1D(ivec2(pos.x, pos.z)) / (float)INT_MAX;
+          if(tree > 0.995) {
+            auto treeSlices = defaultTree.spawn(chunk, dpos);
+            slices.insert(slices.end(), treeSlices.begin(), treeSlices.end());
+          }
+        }
+
+      }
+    }
+  }
+
+  return slices;
 }

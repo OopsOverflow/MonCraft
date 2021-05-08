@@ -87,6 +87,11 @@ int main(int argc, char* argv[]) {
 
         // prepare render
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        // draw skybox at last
+        window.camera.activate();
+        sky.render(window.camera);
+
         shader.activate();
 
         // set light position / intensity
@@ -136,9 +141,6 @@ int main(int argc, char* argv[]) {
         // draw the character
         window.camera.activate();
         if (character.view == View::THIRD_PERSON) character.render();
-
-        // draw skybox at last
-        sky.render(window.camera);
     }
 
     return 0;
