@@ -13,13 +13,13 @@ public:
    * Constructs a value noise generator.
    * samples are reproducible.
    */
-  ValueNoise(int seed);
+  ValueNoise(uint32_t seed);
 
   /**
    * Samples a point in 2D space and returns a pseudo-random
    * linearly distributed integer in the range [0, INT_MAX]
    */
-  int sample1D(const glm::ivec2 &pos) const;
+  uint32_t sample1D(const glm::ivec2 &pos) const;
 
   /**
    * Samples a point in 2D space and returns a pair of pseudo-random
@@ -39,6 +39,6 @@ public:
   // void generate(Bitmap &map);
 
 private:
-  int seed;
-  int rand(unsigned long prn) const;
+  uint32_t seed;
+  uint32_t rand(uint64_t prn) const;
 };

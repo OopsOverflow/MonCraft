@@ -41,9 +41,9 @@ std::unique_ptr<Chunk> Generator::generate(ivec3 cpos) const {
         float height = noise.fractal2(ivec2(pos.x, pos.z), octaves) * .5f + .5f;
         int blockHeight = (int)floor(height * maxHeight) - cpos.y * chunkSize;
         auto& block = (*chunk)[dpos];
-        float tree = treeNoise.sample1D(ivec2(pos.x, pos.z)) / (float)INT_MAX;
+        float tree = treeNoise.sample1D(ivec2(pos.x, pos.z)) / (float)UINT32_MAX;
 
-        if(dpos.y == blockHeight + 1 && tree > 0.995) {
+        if(dpos.y == blockHeight + 1 && tree < 0.005) {
           block = Block::create_static<Leaf_Block>();
         }
         else if(dpos.y > blockHeight) {
@@ -77,8 +77,8 @@ std::vector<Structure::Slice> Generator::generateStructures(ivec3 cpos, Chunk& c
 
         if(chunk[dpos]->type == BlockType::Grass) {
           ivec3 pos = cpos * chunkSize + dpos;
-          float tree = treeNoise.sample1D(ivec2(pos.x, pos.z)) / (float)INT_MAX;
-          if(tree > 0.995) {
+          float tree = treeNoise.sample1D(ivec2(pos.x, pos.z)) / (float)UINT32_MAX;
+          if(tree < 0.005) {
             auto treeSlices = defaultTree.spawn(chunk, dpos);
             slices.insert(slices.end(), treeSlices.begin(), treeSlices.end());
           }
