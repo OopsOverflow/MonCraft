@@ -30,6 +30,7 @@ public:
   void rotatePixels(int x, int y, bool localSpace = false);
   // void setRotation(const glm::vec3 &rotation);
 
+  void setFovY(float fovY) { this->fovY = fovY; }
   float getFovY() const { return fovY; }
   float getFovX() const { return glm::degrees(2 * atan(tan(glm::radians(fovY) * 0.5) * screenWidth / screenHeight)); } // see https://en.wikipedia.org/wiki/Field_of_view_in_video_games#Field_of_view_calculations
 

@@ -37,13 +37,12 @@ protected:
 	float gravity;
 	float jumpSpeed;
 	float maxFallSpeed;
+	float playerFovY;
 
 	glm::vec3 speed;
 	glm::vec3 accel;
 
 	bool onFloor;
-
-
 	Hitbox hitbox;
 	glm::vec3 direction;
 

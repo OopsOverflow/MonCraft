@@ -9,7 +9,8 @@ Entity::Entity(Hitbox hitbox)
 	speed(0), accel(0),
 	onFloor(false), god(false), sprint(false),
 	state(State::Idle),
-	hitbox(std::move(hitbox))
+	hitbox(std::move(hitbox)),
+	playerFovY(45.0f)
 {}
 
 Entity::~Entity() {}
@@ -72,6 +73,7 @@ void Entity::cameraToHead(Camera& camera) {
 		vec3 eyeTarget = headNode.model * vec4(0, 4, -100, 1);
 		camera.setLookAt(eyeTarget, eyePos);
 	}
+	camera.setFovY(playerFovY);
 }
 
 #include "../debug/Debug.hpp"
@@ -95,12 +97,12 @@ void Entity::update(Terrain& terrain, float dt) {
 		speed = speed + acc * dt - vec3(dragXZ.x, dragY, dragXZ.y) * dt;
 		vec2 speedXZ = vec2(speed.x, speed.z);
 		if (god) {
-			maxSpeed = 10.89f;
-			if (sprint) maxSpeed *= 2.0f;
+			maxSpeed = maxSpeed - (maxSpeed - 10.89f) * 3.0f * dt;
+			if (sprint) maxSpeed = 10.89f * 2.0f;
 		}
 		else {
-			maxSpeed = 4.317f;
-			if (sprint) maxSpeed *= 1.3f;
+			maxSpeed = maxSpeed - (maxSpeed - 4.317f) * 3.0f *dt;
+			if (sprint) maxSpeed = 4.317f * 1.3f;
 		}
 		if(length(speedXZ) >= maxSpeed) {
 			speedXZ = normalize(speedXZ) * maxSpeed;
@@ -116,7 +118,12 @@ void Entity::update(Terrain& terrain, float dt) {
 	// check collisions
 	{
 		// update position
-		vec3 newPos = hitbox.computeCollision(node.loc, posOffset, terrain);
+		float displ = trunc(length(posOffset));
+		vec3 newPos = node.loc;
+		for (size_t i = 0; i < displ; i += 1) {
+			newPos = hitbox.computeCollision(newPos, normalize(posOffset), terrain);
+		}
+		newPos = hitbox.computeCollision(newPos, posOffset - displ * normalize(posOffset), terrain);
 		vec3 off = newPos - (node.loc + posOffset);
 		node.loc = newPos;
 
@@ -154,6 +161,8 @@ void Entity::update(Terrain& terrain, float dt) {
 	  node.rot.y += delta;
 	  headNode.rot.y -= delta;
 	}
+
+	playerFovY = playerFovY - (playerFovY - (45.0f + length(speed) / 4.0f)) * 10.0f * dt;
 
 	node.update();
 }
