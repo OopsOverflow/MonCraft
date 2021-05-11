@@ -50,6 +50,11 @@ public:
   */
   void setBlock(glm::ivec3 pos, Block::unique_ptr_t block);
 
+  void startGeneration();
+  void stopGeneration();
+  void toggleGeneration();
+  bool generating;
+
 private:
   static const int chunkSize = 16;
   static const int renderDistH = 8; // horizontal render distance (2n+1 chunks)

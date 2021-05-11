@@ -50,7 +50,7 @@ int main(int argc, char* argv[]) {
         // updates
         MusicPlayer.update();
 
-        window.keyboardController.apply(character);
+        window.keyboardController.apply(character, terrain);
         window.mouseController.apply(character, terrain);
         character.update(terrain, dt);
         character.cameraToHead(window.camera);

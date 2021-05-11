@@ -13,31 +13,19 @@ int distance(ivec3 a, ivec3 b) {
 }
 
 Terrain::Terrain()
-  : chunksMaxCount((2*renderDistH+2)*(2*renderDistH+2)*(2*renderDistV+2)),
+  : generating(false),
+    chunksMaxCount((2*renderDistH+2)*(2*renderDistH+2)*(2*renderDistV+2)),
     generator(chunkSize),
     chunkPos(0),
     chunkPosChanged(false),
     loader(),
     texture(loader.loadTexture("Texture_atlas"))
 {
-  mainWorkerThread = std::thread(&Terrain::mainWorker, this);
-  for(auto& thread : genWorkerThreads) {
-    thread = std::thread(&Terrain::genWorker, this);
-  }
+  startGeneration();
 }
 
 Terrain::~Terrain() {
-  std::cout << "shutting down terrain thread..." << std::endl;
-  {
-    std::lock_guard<std::mutex> lk(stopMutex);
-    stopFlag = true;
-  }
-  stopSignal.notify_all();
-  mainWorkerThread.join();
-  for(auto& thread : genWorkerThreads) {
-    thread.join();
-  }
-  std::cout << "terrain thread terminated" << std::endl;
+  stopGeneration();
 }
 
 #include "debug/Debug.hpp"
@@ -281,4 +269,39 @@ void Terrain::setBlock(ivec3 pos, Block::unique_ptr_t block) {
 
   ivec3 dpos = pos - cpos * chunkSize;
   chunk->setBlock(dpos, std::move(block));
+}
+
+void Terrain::stopGeneration() {
+  if(!generating) return;
+  std::cout << "shutting down terrain thread..." << std::endl;
+  {
+    std::lock_guard<std::mutex> lk(stopMutex);
+    stopFlag = true;
+  }
+  stopSignal.notify_all();
+  mainWorkerThread.join();
+  for(auto& thread : genWorkerThreads) {
+    thread.join();
+  }
+  std::cout << "terrain thread terminated" << std::endl;
+  generating = false;
+}
+
+void Terrain::startGeneration() {
+  if(generating) return;
+  {
+    std::lock_guard<std::mutex> lk(stopMutex);
+    stopFlag = false;
+  }
+  std::cout << "starting generation" << std::endl;
+  mainWorkerThread = std::thread(&Terrain::mainWorker, this);
+  for(auto& thread : genWorkerThreads) {
+    thread = std::thread(&Terrain::genWorker, this);
+  }
+  generating = true;
+}
+
+void Terrain::toggleGeneration() {
+  if(generating) stopGeneration();
+  else startGeneration();
 }
