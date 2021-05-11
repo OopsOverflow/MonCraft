@@ -13,6 +13,10 @@ enum class BlockType
     Stone,
     Leaf,
     Wood,
+    Ice,
+    Sand,
+    Sandstone,
+    Snow,
 };
 
 enum class BlockFace { TOP, BOTTOM, FRONT, RIGHT, BACK, LEFT };
