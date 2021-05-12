@@ -1,5 +1,6 @@
 #include <iostream>
 #include <memory>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "SDL2/SDL_image.h"
 
@@ -14,7 +15,6 @@
 #include "audio/Music.hpp"
 
 #include "debug/Debug.hpp"
-#include "debug/DebugBlock.hpp"
 
 using namespace glm;
 
@@ -32,7 +32,7 @@ int main(int argc, char* argv[]) {
 
     Character character({ 0.0f,100.0f,0.0f });
     ShadowMap shadows(2048);
-  
+
     Loader loader;
     Raycast caster(100.f);
 

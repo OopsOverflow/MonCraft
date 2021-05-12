@@ -1,9 +1,10 @@
 #pragma once
 
-#include "GL/glew.h"
+#include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <vector>
 #include <memory>
+#include "geometry/DefaultGeometry.hpp"
 
 enum class BlockType
 {
@@ -17,6 +18,7 @@ enum class BlockType
     Sand,
     Sandstone,
     Snow,
+    Tallgrass,
 };
 
 enum class BlockFace { TOP, BOTTOM, FRONT, RIGHT, BACK, LEFT };
@@ -32,8 +34,10 @@ public:
 
     virtual glm::ivec2 getFaceUVs(BlockFace face) const = 0;
     virtual bool isStatic() const { return true; }
+    virtual bool isVisible() const { return true; }
     virtual bool isSolid() const { return true; }
     virtual bool isTransparent() const { return false; }
+    virtual BlockGeometry* getGeometry() const { return DefaultBlockGeometry::get(); }
 
 private:
     /**

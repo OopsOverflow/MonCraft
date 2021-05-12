@@ -43,6 +43,9 @@ srcs = files(
   'OpenGL/src/terrain/Structure.cpp',
 
   'OpenGL/src/blocks/Block.cpp'
+  'OpenGL/src/blocks/geometry/BlockGeometry.cpp',
+  'OpenGL/src/blocks/geometry/DefaultGeometry.cpp',
+  'OpenGL/src/blocks/geometry/TallgrassGeometry.cpp'
 )
 
 deps = [
