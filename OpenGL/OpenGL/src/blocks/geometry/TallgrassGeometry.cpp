@@ -51,26 +51,26 @@ static const float off = sqrt(2.f) / 4.f;
 
 const std::array<face_t<3>, 4> TallgrassGeometry::positions = {
   face_t<3>{ // face looking towards -x, +z
-    -off,  0.5f, -off,
-     off,  0.5f,  off,
+    -off,  0.f, -off,
+     off,  0.f,  off,
      off, -0.5f,  off,
     -off, -0.5f, -off,
   },
   face_t<3>{ // face looking towards -x, -z
-     off,  0.5f, -off,
-    -off,  0.5f,  off,
+     off,  0.f, -off,
+    -off,  0.f,  off,
     -off, -0.5f,  off,
      off, -0.5f, -off,
   },
   face_t<3>{ // face looking towards +x, -z
-     off,  0.5f,  off,
-    -off,  0.5f, -off,
+     off,  0.f,  off,
+    -off,  0.f, -off,
     -off, -0.5f, -off,
      off, -0.5f,  off,
   },
   face_t<3>{ // face looking towards +x, +z
-    -off,  0.5f,  off,
-     off,  0.5f, -off,
+    -off,  0.f,  off,
+     off,  0.f, -off,
      off, -0.5f, -off,
     -off, -0.5f,  off,
   },

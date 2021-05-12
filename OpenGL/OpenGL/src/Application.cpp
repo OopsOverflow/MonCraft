@@ -30,7 +30,7 @@ int main(int argc, char* argv[]) {
     Terrain terrain;
     SkyBox sky;
 
-    Character character({ 0.0f,400.0f,0.0f });
+    Character character({ 0.0f,200.0f,0.0f });
     ShadowMap shadows(2048);
 
     Loader loader;
@@ -63,7 +63,7 @@ int main(int argc, char* argv[]) {
 
         float sunSpeed = 10.f;
         float sunTime = pi<float>() * .25f;
-        sunTime += t / 1000.f * sunSpeed;
+        sunTime += t / 300.f * sunSpeed;
         float distance = 100.f;
         auto sunDir = -normalize(vec3(cos(sunTime), 1, sin(sunTime))) * distance;
         shadows.update(sunDir);
