@@ -14,7 +14,7 @@ glm::vec3 Hitbox::computeCollision(glm::vec3 pos, vec3 displ, Terrain& terrain) 
 
   auto isSolid = [&](ivec3 ipos) {
     Block* block = terrain.getBlock(ipos);
-    if(block && block->type != BlockType::Air) {
+    if(block && block->isSolid()) {
       return true;
     }
     return false;

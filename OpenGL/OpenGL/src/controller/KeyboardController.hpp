@@ -1,6 +1,7 @@
 #pragma once
 
-#include "../entity/Entity.hpp"
+#include "entity/Entity.hpp"
+#include "terrain/Terrain.hpp"
 
 #include <glm/glm.hpp>
 
@@ -22,11 +23,12 @@ public:
   void releasedDown();
   void pressedControl();
   void releasedControl();
+  void pressedPause();
 
   void pressedF5();
   void changedMod();
 
-  void apply(Entity& character);
+  void apply(Entity& character, Terrain& terrain);
 
 private:
   glm::vec3 direction;
@@ -35,4 +37,5 @@ private:
 
   bool sprint;
   bool change;
+  bool paused;
 };

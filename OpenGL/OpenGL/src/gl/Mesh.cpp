@@ -51,6 +51,10 @@ Mesh::Mesh(std::vector<GLfloat> const& positions,
   glBindVertexArray(0);
 }
 
+Mesh::Mesh(MeshData const& data)
+ : Mesh(data.positions, data.normals, data.textureCoords, data.occlusion, data.indices)
+{ }
+
 Mesh::Mesh(Mesh&& other) {
   myVAO = other.myVAO;
   myVBO = other.myVBO;

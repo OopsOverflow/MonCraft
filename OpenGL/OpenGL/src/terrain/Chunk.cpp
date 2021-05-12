@@ -3,7 +3,6 @@
 #include <algorithm>
 
 #include "Chunk.hpp"
-#include "BlockGeom.hpp"
 #include "gl/Shader.hpp"
 
 using namespace glm;
@@ -13,34 +12,34 @@ using std::move;
 
 const std::array<ivec3, 26> Chunk::neighborOffsets = {
   // ivec3{ 0, 0, 0 },
-  ivec3{ 0, 0, 1 },
-  ivec3{ 0, 0,-1 },
-  ivec3{ 0, 1, 0 },
-  ivec3{ 0, 1, 1 },
-  ivec3{ 0, 1,-1 },
-  ivec3{ 0,-1, 0 },
-  ivec3{ 0,-1, 1 },
-  ivec3{ 0,-1,-1 },
+  ivec3{ 0, 0, 1 }, // 0
+  ivec3{ 0, 0,-1 }, // 1
+  ivec3{ 0, 1, 0 }, // 2
+  ivec3{ 0, 1, 1 }, // 3
+  ivec3{ 0, 1,-1 }, // 4
+  ivec3{ 0,-1, 0 }, // 5
+  ivec3{ 0,-1, 1 }, // 6
+  ivec3{ 0,-1,-1 }, // 7
 
-  ivec3{ 1, 0, 0 },
-  ivec3{ 1, 0, 1 },
-  ivec3{ 1, 0,-1 },
-  ivec3{ 1, 1, 0 },
-  ivec3{ 1, 1, 1 },
-  ivec3{ 1, 1,-1 },
-  ivec3{ 1,-1, 0 },
-  ivec3{ 1,-1, 1 },
-  ivec3{ 1,-1,-1 },
+  ivec3{ 1, 0, 0 }, // 8
+  ivec3{ 1, 0, 1 }, // 9
+  ivec3{ 1, 0,-1 }, // 10
+  ivec3{ 1, 1, 0 }, // 11
+  ivec3{ 1, 1, 1 }, // 12
+  ivec3{ 1, 1,-1 }, // 13
+  ivec3{ 1,-1, 0 }, // 14
+  ivec3{ 1,-1, 1 }, // 15
+  ivec3{ 1,-1,-1 }, // 16
 
-  ivec3{-1, 0, 0 },
-  ivec3{-1, 0, 1 },
-  ivec3{-1, 0,-1 },
-  ivec3{-1, 1, 0 },
-  ivec3{-1, 1, 1 },
-  ivec3{-1, 1,-1 },
-  ivec3{-1,-1, 0 },
-  ivec3{-1,-1, 1 },
-  ivec3{-1,-1,-1 },
+  ivec3{-1, 0, 0 }, // 17
+  ivec3{-1, 0, 1 }, // 18
+  ivec3{-1, 0,-1 }, // 19
+  ivec3{-1, 1, 0 }, // 20
+  ivec3{-1, 1, 1 }, // 21
+  ivec3{-1, 1,-1 }, // 22
+  ivec3{-1,-1, 0 }, // 23
+  ivec3{-1,-1, 1 }, // 24
+  ivec3{-1,-1,-1 }, // 25
 };
 
 const std::array<int, 26> Chunk::neighborOffsetsInverse = { // https://oeis.org/A059249
@@ -90,7 +89,6 @@ Block* Chunk::getBlockAccrossChunks(ivec3 pos) {
   return (*this)[pos].get();
 }
 
-
 void Chunk::setBlockAccrossChunks(ivec3 pos, Block::unique_ptr_t block) {
   static const ivec3 mask(9, 3, 1);
   auto greater = greaterThanEqual(pos, size);
@@ -108,139 +106,39 @@ void Chunk::setBlockAccrossChunks(ivec3 pos, Block::unique_ptr_t block) {
   else setBlock(pos, std::move(block));
 }
 
-// /!\ extra care must be taken here.
-//  - uses operator[] which is unsafe (no bounds checks)
-bool Chunk::isSolidAccrossChunks(ivec3 pos) {
-  Block* block = getBlockAccrossChunks(pos);
-  if(!block) return false;
-  return block->type != BlockType::Air;
-}
-
-// /!\ extra care must be taken here.
-//  - uses operator[] which is unsafe (no bounds checks)
-bool Chunk::isSolid(ivec3 pos) {
-  return (*this)[pos]->type != BlockType::Air;
-}
-
-// /!\ extra care must be taken here.
-//  - uses operator[] which is unsafe (no bounds checks)
-bool Chunk::isTransparentAccrossChunks(ivec3 pos) {
-  Block* block = getBlockAccrossChunks(pos);
-  if(!block) return false;
-  return block->type == BlockType::Leaf;
-}
-
-// /!\ extra care must be taken here.
-//  - uses operator[] which is unsafe (no bounds checks)
-bool Chunk::isTransparent(ivec3 pos) {
-  return (*this)[pos]->type == BlockType::Leaf; // TODO: other blocks as well
-}
-
 void Chunk::compute() {
   std::lock_guard<std::mutex> lck(computeMutex);
-  // indices scheme
+  // indices scheme // TODO: remove from MeshData ?
   solidData.scheme = { 0, 1, 2, 0, 2, 3 };
   transparentData.scheme = { 0, 1, 2, 0, 2, 3 };
 
-  DataStore<bool, 3> solidBlocks(size + 2); // a cache to limit calls to isSolid()
-
-  auto genOcclusion = [&solidBlocks](ivec3 pos, BlockFace face) -> std::array<GLfloat, 4> {
-    std::array<GLfloat, 4> occl{};
-
-    auto const& offsets = blockOcclusionOffsets[static_cast<size_t>(face)];
-    std::array<bool, 8> b{};
-
-    for(int i = 0; i < 8; i++) {
-      b[i] = solidBlocks[pos + offsets[i] + 1];
-    }
-
-    occl[0] = b[0] + b[1] + b[2];
-    occl[1] = b[2] + b[3] + b[4];
-    occl[2] = b[4] + b[5] + b[6];
-    occl[3] = b[6] + b[7] + b[0];
-
-    return occl;
-  };
-
-  auto genFaceUV = [](glm::ivec2 index) {
-    static const int atlasSize = 8;
-
-    return face_t<2>{
-      (index.x + 1.f) / atlasSize, (index.y + 0.f) / atlasSize,
-      (index.x + 0.f) / atlasSize, (index.y + 0.f) / atlasSize,
-      (index.x + 0.f) / atlasSize, (index.y + 1.f) / atlasSize,
-      (index.x + 1.f) / atlasSize, (index.y + 1.f) / atlasSize,
-    };
-  };
-
-  auto genFace = [&](ivec3 pos, BlockFace face, MeshData& data) {
-    auto& _scheme = data.scheme;
-    auto& _ind  = data.indices;
-    auto& _pos  = data.positions;
-    auto& _norm = data.normals;
-    auto& _uvs  = data.textureCoords;
-    auto& _occl = data.occlusion;
-
-    // indices
-    _ind.insert(_ind.end(), _scheme.begin(), _scheme.end());
-    std::transform(_scheme.begin(), _scheme.end(), _scheme.begin(), [](int x) { return x+4; });
-
-    // positions
-    auto& posFace = blockPositions[(size_t)face];
-    _pos.insert(_pos.end(), posFace.begin(), posFace.end());
-    for(int i = 0, k = 0; i < 12; i++, k = (k+1) % 3) {
-      _pos[_pos.size() - 12 + i] += pos[k];
-    }
-
-    // normals
-    auto const& normFace = blockNormals[(size_t)face];
-    _norm.insert(_norm.end(), normFace.begin(), normFace.end());
-
-    // textureCoords
-    auto indexUV = getBlock(pos)->getFaceUVs(face);
-    auto uvFace = genFaceUV(indexUV);
-    _uvs.insert(_uvs.end(), uvFace.begin(), uvFace.end());
-
-    // occlusion
-    auto occl = genOcclusion(pos, face);
-    _occl.insert(_occl.end(), occl.begin(), occl.end());
-  };
-
+  // now generate all the blocks
   ivec3 pos{};
-
-  // cache the solid state of blocks
-  for(pos.x = 0; pos.x < size.x + 2; pos.x++) {
-    for(pos.y = 0; pos.y < size.y + 2; pos.y++) {
-      for(pos.z = 0; pos.z < size.z + 2; pos.z++) {
-        solidBlocks[pos] = isSolidAccrossChunks(pos - 1);
-      }
-    }
-  }
-
-  static const std::array<std::pair<ivec3, BlockFace>, 6> offsets = {
-    std::pair<ivec3, BlockFace>
-    {ivec3(1, 0, 0), BlockFace::RIGHT},
-    {ivec3(-1, 0, 0), BlockFace::LEFT},
-    {ivec3(0, 1, 0), BlockFace::TOP},
-    {ivec3(0, -1, 0), BlockFace::BOTTOM},
-    {ivec3(0, 0, 1), BlockFace::FRONT},
-    {ivec3(0, 0, -1), BlockFace::BACK},
-  };
-
-  // finally generate the face quads
   for(pos.x = 0; pos.x < size.x; pos.x++) {
     for(pos.y = 0; pos.y < size.y; pos.y++) {
       for(pos.z = 0; pos.z < size.z; pos.z++) {
-        if(!solidBlocks[pos + 1]) continue;
-        bool transp = isTransparent(pos);
 
-        for(auto const& off : offsets) {
-          bool offSolid = solidBlocks[pos + off.first + 1];
-          bool offTransp = isTransparentAccrossChunks(pos + off.first);
-          if(!offSolid || offTransp) {
-            if(transp) genFace(pos, off.second, transparentData);
-            else genFace(pos, off.second, solidData);
-          }
+        Block* block = getBlock(pos);
+        if(!block->isVisible()) continue;
+
+        // get the block neighbors
+        bool neighborsValid = true;
+        std::array<Block*, 26> neighbors;
+        for(size_t i = 0; i < 26; i++) {
+          ivec3 npos = pos + neighborOffsets[i];
+          auto neigh = getBlockAccrossChunks(npos);
+          if(!neigh) neighborsValid = false; // may happen that a neighbor is unloaded
+          neighbors[i] = neigh;
+        }
+
+        if(!neighborsValid) continue;
+
+        // generate this block's geometry
+        if(block->isTransparent()) {
+          block->getGeometry()->generateMesh(pos, block, neighbors, transparentData);
+        }
+        else {
+          block->getGeometry()->generateMesh(pos, block, neighbors, solidData);
         }
 
       }
@@ -270,24 +168,14 @@ void Chunk::update() {
       auto model = translate(mat4(1.0), vec3(size * chunkPos));
       solidMesh = std::unique_ptr<Mesh>(nullptr);
       if(solidData.indices.size() != 0) {
-        solidMesh = std::make_unique<Mesh>(
-          solidData.positions,
-          solidData.normals,
-          solidData.textureCoords,
-          solidData.occlusion,
-          solidData.indices);
+        solidMesh = std::make_unique<Mesh>(solidData);
           solidMesh->model = model;
         solidData = {};
       }
 
       transparentMesh = std::unique_ptr<Mesh>(nullptr);
       if(transparentData.indices.size() != 0) {
-        transparentMesh = std::make_unique<Mesh>(
-          transparentData.positions,
-          transparentData.normals,
-          transparentData.textureCoords,
-          transparentData.occlusion,
-          transparentData.indices);
+        transparentMesh = std::make_unique<Mesh>(transparentData);
           transparentMesh->model = model;
         transparentData = {};
       }

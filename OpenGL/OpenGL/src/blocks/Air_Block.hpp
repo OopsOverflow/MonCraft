@@ -13,6 +13,9 @@ public:
       return {0, 0};
     }
 
+    bool isSolid() const override { return false; }
+    bool isVisible() const override { return false; }
+
 private:
     Air_Block() : Block(BlockType::Air) {}
 };

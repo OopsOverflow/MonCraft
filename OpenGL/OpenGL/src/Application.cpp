@@ -1,5 +1,6 @@
 #include <iostream>
 #include <memory>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "SDL2/SDL_image.h"
 
@@ -14,7 +15,6 @@
 #include "audio/Music.hpp"
 
 #include "debug/Debug.hpp"
-#include "debug/DebugBlock.hpp"
 
 using namespace glm;
 
@@ -30,9 +30,9 @@ int main(int argc, char* argv[]) {
     Terrain terrain;
     SkyBox sky;
 
-    Character character({ 0.0f,100.0f,0.0f });
+    Character character({ 0.0f,400.0f,0.0f });
     ShadowMap shadows(2048);
-  
+
     Loader loader;
     Raycast caster(100.f);
 
@@ -50,7 +50,7 @@ int main(int argc, char* argv[]) {
         // updates
         MusicPlayer.update();
 
-        window.keyboardController.apply(character);
+        window.keyboardController.apply(character, terrain);
         window.mouseController.apply(character, terrain);
         character.update(terrain, dt);
         character.cameraToHead(window.camera);

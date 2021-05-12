@@ -107,20 +107,14 @@ public:
 
 private:
   Block* getBlockAccrossChunks(glm::ivec3 pos);
-  bool isTransparent(glm::ivec3 pos);
-  bool isTransparentAccrossChunks(glm::ivec3 pos);
-  bool isSolid(glm::ivec3 pos);
-  bool isSolidAccrossChunks(glm::ivec3 pos);
+  // bool isTransparent(glm::ivec3 pos);
+  // bool isTransparentAccrossChunks(glm::ivec3 pos);
+  // bool isSolid(glm::ivec3 pos);
+  // bool isSolidAccrossChunks(glm::ivec3 pos);
 
   // the gl mesh and corresponding data.
   std::unique_ptr<Mesh> solidMesh;
   std::unique_ptr<Mesh> transparentMesh;
-
-  struct MeshData {
-    std::vector<GLuint> scheme;
-    std::vector<GLuint> indices;
-    std::vector<GLfloat> positions, normals, textureCoords, occlusion;
-  };
 
   MeshData solidData;
   MeshData transparentData;

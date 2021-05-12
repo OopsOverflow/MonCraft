@@ -50,6 +50,11 @@ public:
   */
   void setBlock(glm::ivec3 pos, Block::unique_ptr_t block);
 
+  void startGeneration();
+  void stopGeneration();
+  void toggleGeneration();
+  bool generating;
+
 private:
   static const int chunkSize = 16;
   static const int renderDistH = 8; // horizontal render distance (2n+1 chunks)
@@ -81,7 +86,7 @@ private:
 
   // threading
   std::thread mainWorkerThread; // manages the queue of chunks to generate
-  static const int N_THREADS = 4;
+  static const int N_THREADS = 2;
   std::array<std::thread, N_THREADS> genWorkerThreads; // creates new chunks when it can
   std::mutex workerMutex;
   void mainWorker();

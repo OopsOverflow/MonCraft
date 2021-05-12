@@ -3,6 +3,7 @@
 #include "blocks/Air_Block.hpp"
 #include "blocks/Dirt_Block.hpp"
 #include "blocks/Leaf_Block.hpp"
+#include "blocks/Tallgrass_Block.hpp"
 
 using namespace glm;
 
@@ -50,7 +51,7 @@ void Character::placeBlock(Terrain& terrain) {
   if(cast.success) { // TODO: will crash in chunk is unloaded
     if(hitbox.collides(node.loc, cast.position + cast.normal)) return;
     if(terrain.getBlock(cast.position + cast.normal)->type != BlockType::Air) return;
-    terrain.setBlock(cast.position + cast.normal, Block::create_static<Leaf_Block>());
+    terrain.setBlock(cast.position + cast.normal, Block::create_static<Tallgrass_Block>());
   }
 }
 

@@ -6,6 +6,7 @@ KeyboardController::KeyboardController() {
   direction = glm::vec3(0.f);
   change = false;
   sprint = false;
+  paused = false;
 }
 
 void KeyboardController::pressedForward() {
@@ -77,14 +78,17 @@ void KeyboardController::changedMod() {
 
 void KeyboardController::pressedControl() {
     sprint = true;
-
 }
+
 void KeyboardController::releasedControl() {
     sprint = false;
-
 }
 
-void KeyboardController::apply(Entity& character) {
+void KeyboardController::pressedPause() {
+    paused = true;
+}
+
+void KeyboardController::apply(Entity& character, Terrain& terrain) {
   character.view = view;
   character.sprint = sprint;
   if (change) {
@@ -92,4 +96,9 @@ void KeyboardController::apply(Entity& character) {
       change = false;
   }
   character.walk(direction);
+
+  if(paused) {
+    terrain.toggleGeneration();
+    paused = false;
+  }
 }

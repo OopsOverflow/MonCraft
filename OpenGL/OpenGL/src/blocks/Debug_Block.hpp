@@ -25,5 +25,5 @@ public:
     }
 
 private:
-    Debug_Block() : Block(BlockType::Air) {}
+    Debug_Block() : Block(BlockType::Dirt) {}
 };

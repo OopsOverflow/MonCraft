@@ -19,7 +19,8 @@ Viewport::Viewport(size_t width, size_t height)
       height(height),
       window(nullptr),
       context(nullptr),
-      lastSpacePress(0), timeBegin(0), lastTime(0)
+      lastSpacePress(0), timeBegin(0), lastTime(0),
+      mouseCaptured(false), vsync(true)
 {
 
   //Initialize SDL2
@@ -113,8 +114,10 @@ void Viewport::endFrame() {
   uint32_t timeEnd = SDL_GetTicks();
   lastTime = timeBegin;
 
-  if (timeEnd - timeBegin < timePerFrame)
-      SDL_Delay(timePerFrame - (timeEnd - timeBegin));
+  if(!vsync) std::cout << "fps: " << 1000.f / (timeEnd - timeBegin) << std::endl;
+  if (timeEnd - timeBegin < timePerFrame) {
+    if(vsync) SDL_Delay(timePerFrame - (timeEnd - timeBegin));
+  }
   else if(timeEnd - timeBegin > 2 * timePerFrame) {
     std::cout << "can't keep up ! " << 1000.f / (timeEnd - timeBegin) << "fps" << std::endl;
   }
@@ -171,6 +174,14 @@ void Viewport::on_keydown(SDL_Keycode k) {
       SDL_GetMouseState(&x, &y);
       mouseController.rotateEnd(x, y);
       mouseCaptured = false;
+      break;
+  case SDLK_p:
+      keyboardController.pressedPause();
+      break;
+  case SDLK_f:
+    vsync = !vsync;
+      if(vsync) SDL_GL_SetSwapInterval(1);
+      else SDL_GL_SetSwapInterval(0);
       break;
   }
 }
