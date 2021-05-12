@@ -30,7 +30,7 @@ int main(int argc, char* argv[]) {
     Terrain terrain;
     SkyBox sky;
 
-    Character character({ 0.0f,100.0f,0.0f });
+    Character character({ 0.0f,400.0f,0.0f });
     ShadowMap shadows(2048);
 
     Loader loader;

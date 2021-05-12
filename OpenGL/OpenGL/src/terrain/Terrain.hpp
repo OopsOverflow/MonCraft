@@ -86,7 +86,7 @@ private:
 
   // threading
   std::thread mainWorkerThread; // manages the queue of chunks to generate
-  static const int N_THREADS = 4;
+  static const int N_THREADS = 2;
   std::array<std::thread, N_THREADS> genWorkerThreads; // creates new chunks when it can
   std::mutex workerMutex;
   void mainWorker();

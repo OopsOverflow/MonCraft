@@ -105,6 +105,15 @@
     <ClCompile Include="src\terrain\Structure.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\blocks\geometry\BlockGeometry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\blocks\geometry\DefaultGeometry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\blocks\geometry\TallgrassGeometry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\util\loader.hpp">
@@ -306,6 +315,30 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\terrain\Structure.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\blocks\geometry\BlockGeometry.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\blocks\geometry\DefaultGeometry.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\blocks\geometry\TallgrassGeometry.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\blocks\Ice_Block.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\blocks\Sand_Block.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\blocks\Sandstone_Block.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\blocks\Snow_Block.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\blocks\Tallgrass_Block.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
