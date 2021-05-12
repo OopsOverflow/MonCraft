@@ -122,13 +122,16 @@ void Chunk::compute() {
         if(!block->isVisible()) continue;
 
         // get the block neighbors
+        bool neighborsValid = true;
         std::array<Block*, 26> neighbors;
         for(size_t i = 0; i < 26; i++) {
           ivec3 npos = pos + neighborOffsets[i];
           auto neigh = getBlockAccrossChunks(npos);
-          if(!neigh) continue; // may happen that a neighbor is unloaded
+          if(!neigh) neighborsValid = false; // may happen that a neighbor is unloaded
           neighbors[i] = neigh;
         }
+
+        if(!neighborsValid) continue;
 
         // generate this block's geometry
         if(block->isTransparent()) {
