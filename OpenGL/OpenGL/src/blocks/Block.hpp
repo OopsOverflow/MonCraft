@@ -32,6 +32,8 @@ public:
 
     virtual glm::ivec2 getFaceUVs(BlockFace face) const = 0;
     virtual bool isStatic() const { return true; }
+    virtual bool isSolid() const { return true; }
+    virtual bool isTransparent() const { return false; }
 
 private:
     /**

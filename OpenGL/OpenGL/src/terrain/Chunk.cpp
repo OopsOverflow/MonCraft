@@ -113,13 +113,13 @@ void Chunk::setBlockAccrossChunks(ivec3 pos, Block::unique_ptr_t block) {
 bool Chunk::isSolidAccrossChunks(ivec3 pos) {
   Block* block = getBlockAccrossChunks(pos);
   if(!block) return false;
-  return block->type != BlockType::Air;
+  return block->isSolid();
 }
 
 // /!\ extra care must be taken here.
 //  - uses operator[] which is unsafe (no bounds checks)
 bool Chunk::isSolid(ivec3 pos) {
-  return (*this)[pos]->type != BlockType::Air;
+  return (*this)[pos]->isSolid();
 }
 
 // /!\ extra care must be taken here.
@@ -127,13 +127,13 @@ bool Chunk::isSolid(ivec3 pos) {
 bool Chunk::isTransparentAccrossChunks(ivec3 pos) {
   Block* block = getBlockAccrossChunks(pos);
   if(!block) return false;
-  return block->type == BlockType::Leaf;
+  return block->isTransparent();
 }
 
 // /!\ extra care must be taken here.
 //  - uses operator[] which is unsafe (no bounds checks)
 bool Chunk::isTransparent(ivec3 pos) {
-  return (*this)[pos]->type == BlockType::Leaf; // TODO: other blocks as well
+  return (*this)[pos]->isTransparent(); // TODO: other blocks as well
 }
 
 void Chunk::compute() {

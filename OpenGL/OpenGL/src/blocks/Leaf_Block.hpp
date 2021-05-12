@@ -13,6 +13,8 @@ public:
       return {7, 7};
     }
 
+    bool isTransparent() const override { return true; }
+
 private:
     Leaf_Block() : Block(BlockType::Leaf) {}
 };

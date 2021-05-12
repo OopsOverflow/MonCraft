@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Block.hpp"
+#include "Debug_Block.hpp"
+
 #include "Air_Block.hpp"
 #include "Grass_Block.hpp"
 #include "Dirt_Block.hpp"
@@ -11,6 +13,7 @@
 #include "Sand_Block.hpp"
 #include "Sandstone_Block.hpp"
 #include "Snow_Block.hpp"
+#include "Tallgrass_Block.hpp"
 
 #include <sstream>
 
