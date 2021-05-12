@@ -78,6 +78,10 @@ void Entity::cameraToHead(Camera& camera) {
 
 #include "../debug/Debug.hpp"
 
+vec3 normalizeOrZero(vec3 vec) {
+	return all(lessThan(abs(vec), vec3(0.0001f))) ? vec3(0) : normalize(vec);
+}
+
 void Entity::update(Terrain& terrain, float dt) {
 	// update forces
 	vec3 posOffset;
@@ -121,9 +125,9 @@ void Entity::update(Terrain& terrain, float dt) {
 		float displ = trunc(length(posOffset));
 		vec3 newPos = node.loc;
 		for (size_t i = 0; i < displ; i += 1) {
-			newPos = hitbox.computeCollision(newPos, normalize(posOffset), terrain);
+			newPos = hitbox.computeCollision(newPos, normalizeOrZero(posOffset), terrain);
 		}
-		newPos = hitbox.computeCollision(newPos, posOffset - displ * normalize(posOffset), terrain);
+		newPos = hitbox.computeCollision(newPos, posOffset - displ * normalizeOrZero(posOffset), terrain);
 		vec3 off = newPos - (node.loc + posOffset);
 		node.loc = newPos;
 
