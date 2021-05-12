@@ -1,7 +1,6 @@
-#include "BlockGeometry.hpp"
-
 #pragma once
 
+#include "BlockGeometry.hpp"
 
 class TallgrassGeometry : public BlockGeometry {
 

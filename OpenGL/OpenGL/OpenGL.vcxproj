@@ -170,6 +170,7 @@
     <ClCompile Include="src\blocks\geometry\BlockGeometry.cpp" />
     <ClCompile Include="src\blocks\geometry\DefaultGeometry.cpp" />
     <ClCompile Include="src\blocks\geometry\TallgrassGeometry.cpp" />
+    <ClCompile Include="src\blocks\geometry\WaterGeometry.cpp" />
     <ClCompile Include="src\controller\KeyboardController.cpp" />
     <ClCompile Include="src\controller\MouseController.cpp" />
     <ClCompile Include="src\debug\Debug.cpp" />
@@ -210,6 +211,7 @@
     <ClInclude Include="src\blocks\geometry\BlockGeometry.hpp" />
     <ClInclude Include="src\blocks\geometry\DefaultGeometry.hpp" />
     <ClInclude Include="src\blocks\geometry\TallgrassGeometry.hpp" />
+    <ClInclude Include="src\blocks\geometry\WaterGeometry.hpp" />
     <ClInclude Include="src\blocks\Grass_Block.hpp" />
     <ClInclude Include="src\blocks\Ice_Block.hpp" />
     <ClInclude Include="src\blocks\Leaf_Block.hpp" />
@@ -218,6 +220,7 @@
     <ClInclude Include="src\blocks\Snow_Block.hpp" />
     <ClInclude Include="src\blocks\Stone_Block.hpp" />
     <ClInclude Include="src\blocks\Tallgrass_Block.hpp" />
+    <ClInclude Include="src\blocks\Water_Block.hpp" />
     <ClInclude Include="src\blocks\Wood_Block.hpp" />
     <ClInclude Include="src\controller\KeyboardController.hpp" />
     <ClInclude Include="src\controller\MouseController.hpp" />
