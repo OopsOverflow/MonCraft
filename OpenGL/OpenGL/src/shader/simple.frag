@@ -8,6 +8,7 @@ smooth in float vertexOcclusion;
 smooth in vec2 txrCoords;
 smooth in vec2 normalCoords;
 smooth in vec3 shadowCoords[3];
+smooth in mat3 TBN;
 
 // COMBAK: for some reason on windows these require an explicit location once at least 1 uniform in the program is explicit
 layout(location = 10) uniform vec3 lightDirection;
@@ -55,11 +56,19 @@ float linearizeDepth(float depth) { // https://learnopengl.com/Advanced-OpenGL/D
 
 void main() {
 
-  vec3 normal = normalize(vertexNormal);
-  float dotNormal = dot(normalize(lightDirection), normal);
-  float lambertian = max(-dotNormal, 0.0);
+  vec3 normalizedLightDirection = normalize(-lightDirection);
 
-  //normal = texture(normalMap, fs_in.TexCoords).rgb;
+  vec3 normal = normalize(TBN * (texture(normalMap ,normalCoords).rgb *2.0 -1.0));
+  float dotNormal = dot(normalizedLightDirection, normal);
+  float lambertian = max(dotNormal, 0.0);
+
+   vec3 light = vec3(0.0f,0.0f,-1.0f);
+  vec3 viewDir = normalize(-vertexPosition);
+  // this is blinn phong
+
+  vec3 halfDir =  normalize(normalizedLightDirection + viewDir);
+  float specAngle = max(dot(halfDir, normal), 0.0);
+  float specular = pow(specAngle, 100);
 
   // Textures
   outputColor = texture(textureSampler, txrCoords);
@@ -75,8 +84,7 @@ void main() {
     }
   }
 
-  outputColor.xyz = outputColor.xyz * .6 + outputColor.xyz * lightIntensity * lambertian * shadow * .4;
-
+  outputColor.xyz = outputColor.xyz * .6 + outputColor.xyz * lightIntensity * lambertian * shadow *.4 + vec3(1.0f) * specular * shadow * 1.0;
   float occl = .7;
   outputColor.xyz *= 1.0 - (vertexOcclusion * vertexOcclusion / 9.0) * occl;
 

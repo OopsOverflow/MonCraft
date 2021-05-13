@@ -68,7 +68,7 @@ int main(int argc, char* argv[]) {
 
         // draw the shadow map
 
-        float sunSpeed = 10.f;
+        float sunSpeed = 50.f;
         float sunTime = pi<float>() * .25f;
         sunTime += t / 300.f * sunSpeed;
         float distance = 100.f;

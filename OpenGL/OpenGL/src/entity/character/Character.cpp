@@ -38,9 +38,11 @@ void Character::breakBlock(Terrain& terrain) {
   vec3 eyePos = headNode.model * vec4(0, 4, 4, 1);
   vec3 eyeTarget = headNode.model * vec4(0, 4, 5, 1);
   auto cast = caster.cast(eyePos + .5f, eyeTarget - eyePos, terrain);
-  BlockType block = cast.block->type;
-  if(cast.success && block != BlockType::Air && block != BlockType::Water) {
-    terrain.setBlock(cast.position, Block::create_static<Air_Block>());
+  if (cast.success) {
+      BlockType block = cast.block->type;
+      if (block != BlockType::Air && block != BlockType::Water) {
+          terrain.setBlock(cast.position, Block::create_static<Air_Block>());
+      }
   }
 }
 

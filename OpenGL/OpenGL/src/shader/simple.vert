@@ -18,6 +18,7 @@ smooth out vec3 vertexNormal;
 smooth out vec2 txrCoords;
 smooth out vec2 normalCoords;
 smooth out vec3 shadowCoords[3];
+smooth out mat3 TBN;
 smooth out float vertexOcclusion;
 smooth out float clipEndZ;
 
@@ -48,6 +49,13 @@ void main() {
   vertexOcclusion = v_occlusion;
   // NormalCoords
   normalCoords = v_normalMap;
+
+
+  //normalMatrix
+  vec3 T= vec3(m_normal * vec4(v_normal.zxy, 1.0));
+  vec3 B= vec3(m_normal * vec4(v_normal.yzx, 1.0));
+  vec3 N= vec3(m_normal * vec4(v_normal, 1.0));
+  TBN = mat3(T, B, N);
 
   // shadows
   clipEndZ = gl_Position.z;
