@@ -92,7 +92,7 @@ float lerp(float a, float b, float t)
   return (1 - t) * a + t * b;
 }
 
-float SimplexNoise::perlin2(vec2 pos)
+float SimplexNoise::perlin2(vec2 pos) const
 {
   // Find unit grid cell containing point
   int X = (int)floor(pos.x);
@@ -120,7 +120,7 @@ float SimplexNoise::perlin2(vec2 pos)
       fade(pos.y));
 }
 
-float SimplexNoise::perlin3(vec3 pos)
+float SimplexNoise::perlin3(vec3 pos) const
 {
   // Find unit grid cell containing point
   int X = (int)floor(pos.x);
@@ -233,7 +233,7 @@ float SimplexNoise::simplex2(vec2 pos) const
   return 70 * (n0 + n1 + n2);
 }
 
-float SimplexNoise::simplex3(vec3 pos)
+float SimplexNoise::simplex3(vec3 pos) const
 {
   float n0, n1, n2, n3; // Noise contributions from the four corners
 
