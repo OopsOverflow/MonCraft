@@ -84,8 +84,8 @@ void main() {
     }
   }
 
-  outputColor.xyz = outputColor.xyz * .6; 
-  outputColor.xyz += outputColor.xyz * lightIntensity * lambertian * shadow *.4 ;
+  outputColor.xyz = outputColor.xyz * .8;
+  outputColor.xyz += outputColor.xyz * lightIntensity * lambertian * shadow *.6 ;
   outputColor.xyz +=vec3(1.0f) * specular * shadow  * texture(normalMap ,normalCoords).b* 1.0;
 
 
