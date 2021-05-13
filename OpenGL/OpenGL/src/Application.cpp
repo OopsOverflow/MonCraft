@@ -36,7 +36,14 @@ int main(int argc, char* argv[]) {
     Loader loader;
     Raycast caster(100.f);
 
+    std::cout << "Chargement des Textures";
     GLuint textureID = loader.loadTexture("Texture_atlas");
+    GLuint normalMapID[30];
+    for (size_t i = 0; i < 30; i += 1) {
+        std::string filename = "water/water_normal_" + std::to_string(i+1)+"_frame";
+        normalMapID[i] = loader.loadTexture(filename);
+    }
+    std::cout << " --Termine" << std::endl;
 
     Music MusicPlayer;
 
@@ -100,6 +107,11 @@ int main(int argc, char* argv[]) {
         glUniform1i(texSampler, 0);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, textureID);
+
+        GLint normalMap = shader.getUniformLocation("normalMap");
+        glUniform1i(normalMap, 1);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, normalMapID[(size_t)(t*15)%30]);
 
         // draw the terrain
         window.camera.activate();

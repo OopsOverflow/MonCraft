@@ -6,6 +6,7 @@ smooth in vec3 vertexPosition;
 smooth in vec3 vertexNormal;
 smooth in float vertexOcclusion;
 smooth in vec2 txrCoords;
+smooth in vec2 normalCoords;
 smooth in vec3 shadowCoords[3];
 
 // COMBAK: for some reason on windows these require an explicit location once at least 1 uniform in the program is explicit
@@ -13,6 +14,7 @@ layout(location = 10) uniform vec3 lightDirection;
 layout(location = 11) uniform float lightIntensity;
 
 uniform sampler2D textureSampler;
+uniform sampler2D normalMap;
 uniform sampler2D shadowSampler[3];
 uniform float clipCascadeEndZ[3];
 out vec4 outputColor;
@@ -52,9 +54,12 @@ float linearizeDepth(float depth) { // https://learnopengl.com/Advanced-OpenGL/D
 }
 
 void main() {
+
   vec3 normal = normalize(vertexNormal);
   float dotNormal = dot(normalize(lightDirection), normal);
   float lambertian = max(-dotNormal, 0.0);
+
+  //normal = texture(normalMap, fs_in.TexCoords).rgb;
 
   // Textures
   outputColor = texture(textureSampler, txrCoords);
@@ -85,4 +90,6 @@ void main() {
   if(outputColor.a < 0.1) {
     discard;
   }
+
+  //outputColor = texture(normalMap ,normalCoords);
 }
