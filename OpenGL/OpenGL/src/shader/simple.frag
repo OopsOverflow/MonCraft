@@ -56,7 +56,7 @@ float linearizeDepth(float depth) { // https://learnopengl.com/Advanced-OpenGL/D
 
 void main() {
 
-  vec3 normalizedLightDirection = normalize(-lightDirection);
+  vec3 normalizedLightDirection = normalize(lightDirection);
 
   vec3 normal = normalize(TBN * (texture(normalMap ,normalCoords).rgb *2.0 -1.0));
   float dotNormal = dot(normalizedLightDirection, normal);
@@ -66,7 +66,7 @@ void main() {
   vec3 viewDir = normalize(-vertexPosition);
   // this is blinn phong
 
-  vec3 halfDir =  normalize(normalizedLightDirection + viewDir);
+  vec3 halfDir =  normalize(-normalizedLightDirection + viewDir);
   float specAngle = max(dot(halfDir, normal), 0.0);
   float specular = pow(specAngle, 100);
 
@@ -84,7 +84,11 @@ void main() {
     }
   }
 
-  outputColor.xyz = outputColor.xyz * .6 + outputColor.xyz * lightIntensity * lambertian * shadow *.4 + vec3(1.0f) * specular * shadow * 1.0;
+  outputColor.xyz = outputColor.xyz * .6; 
+  outputColor.xyz += outputColor.xyz * lightIntensity * lambertian * shadow *.4 ;
+  outputColor.xyz +=vec3(1.0f) * specular * shadow  * texture(normalMap ,normalCoords).b* 1.0;
+
+
   float occl = .7;
   outputColor.xyz *= 1.0 - (vertexOcclusion * vertexOcclusion / 9.0) * occl;
 
