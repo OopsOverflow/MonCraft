@@ -40,7 +40,7 @@ class LeftArm : public Member {
 
 public:
   LeftArm()
-   : Member(Mesh(Cube::vertices, Cube::normals, leftArmUVs, Cube::occlusions, Cube::indices))
+   : Member(Mesh(Cube::vertices, Cube::normals, leftArmUVs, Cube::occlusions, Cube::indices, Cube::normalMap))
   {
     glm::mat4 I(1.f);
 

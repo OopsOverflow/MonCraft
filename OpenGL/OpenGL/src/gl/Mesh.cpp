@@ -11,7 +11,8 @@ Mesh::Mesh(std::vector<GLfloat> const& positions,
      std::vector<GLfloat> const& normals,
      std::vector<GLfloat> const& textureCoords,
      std::vector<GLfloat> const& occlusion,
-     std::vector<GLuint>  const& indices)
+     std::vector<GLuint>  const& indices,
+     std::vector<GLfloat> const& normalMapCoords)
 {
   myVertCount = (GLuint)indices.size();
 
@@ -25,7 +26,7 @@ Mesh::Mesh(std::vector<GLfloat> const& positions,
 
   size_t size = positions.size() / 3 * sizeof(GLfloat);
 
-  glBufferData(GL_ARRAY_BUFFER, size * 9, nullptr, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, size * 11, nullptr, GL_STATIC_DRAW);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, myVertCount * sizeof(GLuint), indices.data(), GL_STATIC_DRAW);
 
   // positions
@@ -48,11 +49,16 @@ Mesh::Mesh(std::vector<GLfloat> const& positions,
   glVertexAttribPointer(VERTEX_OCCLUSION, 1, GL_FLOAT, GL_FALSE, 0, (GLvoid*)(size * 8)); // TODO: smaller type
   glEnableVertexAttribArray(VERTEX_OCCLUSION);
 
+  // normalMapCoords
+  glBufferSubData(GL_ARRAY_BUFFER, size * 9, size * 2, normalMapCoords.data());
+  glVertexAttribPointer(VERTEX_NORMALTEXTURE, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)(size * 9));
+  glEnableVertexAttribArray(VERTEX_NORMALTEXTURE);
+
   glBindVertexArray(0);
 }
 
 Mesh::Mesh(MeshData const& data)
- : Mesh(data.positions, data.normals, data.textureCoords, data.occlusion, data.indices)
+ : Mesh(data.positions, data.normals, data.textureCoords, data.occlusion, data.indices, data.normalMapCoords)
 { }
 
 Mesh::Mesh(Mesh&& other) {
