@@ -37,6 +37,7 @@ void DefaultBlockGeometry::genFace(glm::ivec3 pos, BlockFace face, Block* block,
   auto& _norm = data.normals;
   auto& _uvs  = data.textureCoords;
   auto& _occl = data.occlusion;
+  auto& _normm = data.normalMapCoords;
 
   // indices
   _ind.insert(_ind.end(), _scheme.begin(), _scheme.end());
@@ -61,6 +62,10 @@ void DefaultBlockGeometry::genFace(glm::ivec3 pos, BlockFace face, Block* block,
   // occlusion
   auto occl = genOcclusion(pos, neighbors, face);
   _occl.insert(_occl.end(), occl.begin(), occl.end());
+
+  // normalMapCoords
+  _normm.insert(_normm.end(), faceNormalMap.begin(), faceNormalMap.end());
+
 }
 
 void DefaultBlockGeometry::generateMesh(ivec3 pos, Block* block, std::array<Block*, 26> const& neighbors, MeshData& data) const {
@@ -175,4 +180,11 @@ const std::array<std::pair<int, BlockFace>, 6> DefaultBlockGeometry::blockFaceOf
   {5, BlockFace::BOTTOM},
   {0, BlockFace::FRONT},
   {1, BlockFace::BACK},
+};
+
+const face_t<2> DefaultBlockGeometry::faceNormalMap = {
+    -1.0f, -1.0f,
+    -1.0f, -1.0f,
+    -1.0f, -1.0f,
+    -1.0f, -1.0f,
 };

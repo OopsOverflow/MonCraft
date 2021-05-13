@@ -37,6 +37,7 @@ void WaterGeometry::genFace(glm::ivec3 pos, BlockFace face, Block* block, std::a
     auto& _norm = data.normals;
     auto& _uvs = data.textureCoords;
     auto& _occl = data.occlusion;
+    auto& _normm = data.normalMapCoords;
 
     // indices
     _ind.insert(_ind.end(), _scheme.begin(), _scheme.end());
@@ -68,6 +69,10 @@ void WaterGeometry::genFace(glm::ivec3 pos, BlockFace face, Block* block, std::a
     // occlusion
     auto occl = genOcclusion(pos, neighbors, face);
     _occl.insert(_occl.end(), occl.begin(), occl.end());
+
+    // normalMapCoords
+    _normm.insert(_normm.end(), faceNormalMap.begin(), faceNormalMap.end());
+
 }
 
 void WaterGeometry::generateMesh(ivec3 pos, Block* block, std::array<Block*, 26> const& neighbors, MeshData& data) const {
@@ -225,4 +230,12 @@ const std::array<std::array<int, 2>, 4> WaterGeometry::checkNeighbors = {
   {7, 5}, //BlockFace::BACK
   {23, 5}// BlockFace::LEFT
 
+};
+
+//TODO
+const face_t<2> WaterGeometry::faceNormalMap = {
+    1.f, 0.f,
+    0.f, 0.f,
+    0.f, 1.f,
+    1.f, 1.f,
 };

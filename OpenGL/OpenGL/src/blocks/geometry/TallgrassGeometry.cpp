@@ -16,6 +16,7 @@ void TallgrassGeometry::generateMesh(glm::ivec3 pos, Block* block, std::array<Bl
   auto& _norm = data.normals;
   auto& _uvs  = data.textureCoords;
   auto& _occl = data.occlusion;
+  auto& _normm = data.normalMapCoords;
 
   for(size_t i = 0; i < 4; i++) {
     // indices
@@ -41,6 +42,10 @@ void TallgrassGeometry::generateMesh(glm::ivec3 pos, Block* block, std::array<Bl
     // occlusion
     auto const& occl = occlusions[i];
     _occl.insert(_occl.end(), occl.begin(), occl.end());
+
+    // normalMapCoords
+    _normm.insert(_normm.end(), faceNormalMap.begin(), faceNormalMap.end());
+
   }
 }
 
@@ -118,4 +123,11 @@ const std::array<std::array<GLfloat, 4>, 4> TallgrassGeometry::occlusions {
   std::array<GLfloat, 4>{
     0.f, 0.f, occl, occl
   },
+};
+
+const face_t<2> TallgrassGeometry::faceNormalMap = {
+    -1.0f, -1.0f,
+    -1.0f, -1.0f,
+    -1.0f, -1.0f,
+    -1.0f, -1.0f,
 };
