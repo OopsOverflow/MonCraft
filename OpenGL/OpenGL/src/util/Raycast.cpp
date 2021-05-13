@@ -29,9 +29,12 @@ Raycast::CastResult Raycast::cast(vec3 pos, vec3 direction, Terrain& terrain) co
 
     // check current block
     res.block = terrain.getBlock(res.position);
-    if(res.block && res.block->type != BlockType::Air) {
-      res.success = true;
-      return res;
+    if (res.block){
+        BlockType block = res.block->type;
+        if(block != BlockType::Air && block != BlockType::Water) {
+        res.success = true;
+        return res;
+      }
     }
 
     // update position

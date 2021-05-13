@@ -38,8 +38,8 @@ void Character::breakBlock(Terrain& terrain) {
   vec3 eyePos = headNode.model * vec4(0, 4, 4, 1);
   vec3 eyeTarget = headNode.model * vec4(0, 4, 5, 1);
   auto cast = caster.cast(eyePos + .5f, eyeTarget - eyePos, terrain);
-
-  if(cast.success && cast.block->type != BlockType::Air) {
+  BlockType block = cast.block->type;
+  if(cast.success && block != BlockType::Air && block != BlockType::Water) {
     terrain.setBlock(cast.position, Block::create_static<Air_Block>());
   }
 }
@@ -51,7 +51,8 @@ void Character::placeBlock(Terrain& terrain) {
 
   if(cast.success) { // TODO: will crash in chunk is unloaded
     if(hitbox.collides(node.loc, cast.position + cast.normal)) return;
-    if(terrain.getBlock(cast.position + cast.normal)->type != BlockType::Air) return;
+    BlockType block = terrain.getBlock(cast.position + cast.normal)->type;
+    if(block != BlockType::Air && block != BlockType::Water) return;
     terrain.setBlock(cast.position + cast.normal, Block::create_static<Water_Block>());
   }
 }

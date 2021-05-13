@@ -5,6 +5,7 @@
 #include "blocks/Stone_Block.hpp"
 #include "blocks/Debug_Block.hpp"
 #include "blocks/Leaf_Block.hpp"
+#include "blocks/Water_Block.hpp"
 
 using namespace glm;
 
@@ -47,7 +48,12 @@ std::unique_ptr<Chunk> Generator::generate(ivec3 cpos) const {
           block = Block::create_static<Leaf_Block>();
         }
         else if(dpos.y > blockHeight) {
-          block = Block::create_static<Air_Block>();
+            if (pos.y < 5) {
+                block = Block::create_static<Water_Block>();
+            }
+            else {
+                block = Block::create_static<Air_Block>();
+            }
         }
         else if(dpos.y == blockHeight) {
           block = Block::create_static<Grass_Block>();
