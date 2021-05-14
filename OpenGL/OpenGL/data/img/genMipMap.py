@@ -7,6 +7,7 @@ from gimpfu import *
 def hello_world(img, drawable, tileCountX, tileCountY, level):
 
     pdb.gimp_undo_push_group_start(img)
+    pdb.gimp_context_set_interpolation(INTERPOLATION_LINEAR)
 
     tileCountX = int(tileCountX)
     tileCountY = int(tileCountY)
