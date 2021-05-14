@@ -12,4 +12,5 @@ private:
   static const std::array<face_t<3>, 4> positions;
   static const std::array<face_t<3>, 4> normals;
   static const std::array<std::array<GLfloat, 4>, 4> occlusions;
+  static const face_t<2> faceNormalMap;
 };

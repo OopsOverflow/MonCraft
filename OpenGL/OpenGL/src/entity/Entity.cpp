@@ -7,7 +7,7 @@ Entity::Entity(Hitbox hitbox)
 : maxSpeed(4.3f), maxAccel(10.f), verticalFriction(5.5f), horizontalFriction(5.f),
 	gravity(32.f), jumpSpeed(10.5f), maxFallSpeed(78.4f),
 	speed(0), accel(0),
-	onFloor(false), god(false), sprint(false),
+	onFloor(false), god(true), sprint(false),
 	state(State::Idle),
 	hitbox(std::move(hitbox)),
 	playerFovY(45.0f)

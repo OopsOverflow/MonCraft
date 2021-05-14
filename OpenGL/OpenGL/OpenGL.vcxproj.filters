@@ -373,6 +373,96 @@
     <Image Include="data\img\icon.ico">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="data\img\water\water_normal_10_frame.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\img\water\water_normal_11_frame.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\img\water\water_normal_12_frame.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\img\water\water_normal_13_frame.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\img\water\water_normal_14_frame.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\img\water\water_normal_15_frame.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\img\water\water_normal_16_frame.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\img\water\water_normal_17_frame.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\img\water\water_normal_18_frame.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\img\water\water_normal_19_frame.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\img\water\water_normal_20_frame.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\img\water\water_normal_21_frame.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\img\water\water_normal_22_frame.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\img\water\water_normal_23_frame.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\img\water\water_normal_24_frame.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\img\water\water_normal_25_frame.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\img\water\water_normal_26_frame.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\img\water\water_normal_27_frame.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\img\water\water_normal_28_frame.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\img\water\water_normal_29_frame.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\img\water\water_normal_30_frame.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\img\water\water_normal_1_frame.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\img\water\water_normal_2_frame.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\img\water\water_normal_3_frame.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\img\water\water_normal_4_frame.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\img\water\water_normal_5_frame.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\img\water\water_normal_6_frame.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\img\water\water_normal_7_frame.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\img\water\water_normal_8_frame.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\img\water\water_normal_9_frame.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="OpenGL.rc">

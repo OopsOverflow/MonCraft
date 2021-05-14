@@ -40,6 +40,7 @@ void Shader::initLocations() {
             << "v_normal: " << ATTRLOC("v_normal") << std::endl
             << "v_texture: " << ATTRLOC("v_texture") << std::endl
             << "v_occlusion: " << ATTRLOC("v_occlusion") << std::endl
+            << "v_normalMap: " << ATTRLOC("v_normalMap") << std::endl
             << "m_model: " << UNILOC("m_model") << std::endl
             << "m_view: " << UNILOC("m_view") << std::endl
             << "m_projection: " << UNILOC("m_projection") << std::endl

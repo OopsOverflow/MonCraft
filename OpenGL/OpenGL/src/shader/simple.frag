@@ -6,13 +6,16 @@ smooth in vec3 vertexPosition;
 smooth in vec3 vertexNormal;
 smooth in float vertexOcclusion;
 smooth in vec2 txrCoords;
+smooth in vec2 normalCoords;
 smooth in vec3 shadowCoords[3];
+smooth in mat3 TBN;
 
 // COMBAK: for some reason on windows these require an explicit location once at least 1 uniform in the program is explicit
 layout(location = 10) uniform vec3 lightDirection;
 layout(location = 11) uniform float lightIntensity;
 
 uniform sampler2D textureSampler;
+uniform sampler2D normalMap;
 uniform sampler2D shadowSampler[3];
 uniform float clipCascadeEndZ[3];
 out vec4 outputColor;
@@ -52,9 +55,20 @@ float linearizeDepth(float depth) { // https://learnopengl.com/Advanced-OpenGL/D
 }
 
 void main() {
-  vec3 normal = normalize(vertexNormal);
-  float dotNormal = dot(normalize(lightDirection), normal);
-  float lambertian = max(-dotNormal, 0.0);
+
+  vec3 normalizedLightDirection = normalize(lightDirection);
+
+  vec3 normal = normalize(TBN * (texture(normalMap ,normalCoords).rgb *2.0 -1.0));
+  float dotNormal = dot(normalizedLightDirection, normal);
+  float lambertian = max(dotNormal, 0.0);
+
+   vec3 light = vec3(0.0f,0.0f,-1.0f);
+  vec3 viewDir = normalize(-vertexPosition);
+  // this is blinn phong
+
+  vec3 halfDir =  normalize(-normalizedLightDirection + viewDir);
+  float specAngle = max(dot(halfDir, normal), 0.0);
+  float specular = pow(specAngle, 100);
 
   // Textures
   outputColor = texture(textureSampler, txrCoords);
@@ -69,8 +83,12 @@ void main() {
       break;
     }
   }
+  
+  vec4 color = outputColor;
+  outputColor.xyz = color.xyz * .5;
+  outputColor.xyz += color.xyz * lightIntensity * lambertian * shadow *.4 ;
+  outputColor.xyz +=vec3(1.0f) * specular * shadow  * texture(normalMap ,normalCoords).b* 1.0;
 
-  outputColor.xyz = outputColor.xyz * .6 + outputColor.xyz * lightIntensity * lambertian * shadow * .4;
 
   float occl = .7;
   outputColor.xyz *= 1.0 - (vertexOcclusion * vertexOcclusion / 9.0) * occl;
@@ -85,4 +103,6 @@ void main() {
   if(outputColor.a < 0.1) {
     discard;
   }
+
+  //outputColor = texture(normalMap ,normalCoords);
 }
