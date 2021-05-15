@@ -181,6 +181,7 @@ void Camera::computeProjection(float box[6]) {
     custumProjBox[3] = box[3];
     custumProjBox[4] = box[4];
     custumProjBox[5] = box[5];
+
   }
 }
 
@@ -201,14 +202,14 @@ std::vector<glm::vec3> Camera::getBoxCorners(Frustum frustum) const {
         break;
     case Frustum::NEAR:
         z1 = -near_;
-        z2 = -near_ - range / 3.0f;
+        z2 = -near_ - range / 8.0f;
         break;
     case Frustum::MEDIUM:
-        z1 = -near_ - range / 3.0f;
-        z2 = -near_ - 2.0f * range / 3.0f;
+        z1 = -near_ - range / 8.0f;
+        z2 = -near_ - 3.0f * range / 8.0f;
         break;
     case Frustum::FAR:
-        z1 = -near_ - 2.0f * range / 3.0f;
+        z1 = -near_ - 3.0f * range / 8.0f;
         z2 = -far_;
         break;
     default:
@@ -283,14 +284,14 @@ bool Camera::chunkInView(glm::vec3 posCamSpace, float tolerance) const {
     }
     else if (projType == Projection::CUSTOM_PROJECTION) {
         bool inFrustum = true;
-        auto farChunkZ = posCamSpace.z - tolerance;
 
-        inFrustum &= posCamSpace.x - tolerance < custumProjBox[0];
-        inFrustum &= posCamSpace.x + tolerance > custumProjBox[1];
-        inFrustum &= posCamSpace.y - tolerance < custumProjBox[2];
-        inFrustum &= posCamSpace.y + tolerance > custumProjBox[3];
-        inFrustum &= posCamSpace.z - tolerance < custumProjBox[4];
-        inFrustum &= posCamSpace.z + tolerance > custumProjBox[5];
+
+        inFrustum &= posCamSpace.x + tolerance > custumProjBox[0];
+        inFrustum &= posCamSpace.x - tolerance < custumProjBox[1];
+        inFrustum &= posCamSpace.y + tolerance > custumProjBox[2];
+        inFrustum &= posCamSpace.y - tolerance < custumProjBox[3];
+        inFrustum &= posCamSpace.z + tolerance > custumProjBox[4];
+        inFrustum &= posCamSpace.z - tolerance < custumProjBox[5];
 
         return inFrustum;
     }

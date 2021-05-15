@@ -45,6 +45,8 @@ void WaterGeometry::genFace(glm::ivec3 pos, BlockFace face, Block* block, std::a
     // indices
     _ind.insert(_ind.end(), _scheme.begin(), _scheme.end());
     std::transform(_scheme.begin(), _scheme.end(), _scheme.begin(), [](int x) { return x + 4; });
+    _ind.insert(_ind.end(), _scheme.rbegin(), _scheme.rend());
+    std::transform(_scheme.begin(), _scheme.end(), _scheme.begin(), [](int x) { return x + 4; });
 
     // positions
     const face_t<3>* posFace = &blockPositions[(size_t)face];
@@ -59,21 +61,30 @@ void WaterGeometry::genFace(glm::ivec3 pos, BlockFace face, Block* block, std::a
     for (int i = 0, k = 0; i < 12; i++, k = (k + 1) % 3) {
         _pos[_pos.size() - 12 + i] += pos[k];
     }
+    _pos.insert(_pos.end(), posFace->begin(), posFace->end());
+    for (int i = 0, k = 0; i < 12; i++, k = (k + 1) % 3) {
+        _pos[_pos.size() - 12 + i] += pos[k];
+    }
 
     // normals
     auto const& normFace = blockNormals[(size_t)face];
     _norm.insert(_norm.end(), normFace.begin(), normFace.end());
+    auto const& invertedNormFace = blockNormals[(size_t)face];
+    _norm.insert(_norm.end(), invertedNormFace.begin(), invertedNormFace.end());
 
     // textureCoords
     auto indexUV = block->getFaceUVs(face);
     auto uvFace = genFaceUV(indexUV);
     _uvs.insert(_uvs.end(), uvFace.begin(), uvFace.end());
+    _uvs.insert(_uvs.end(), uvFace.begin(), uvFace.end());
 
     // occlusion
     auto occl = genOcclusion(pos, neighbors, face);
     _occl.insert(_occl.end(), occl.begin(), occl.end());
+    _occl.insert(_occl.end(), occl.begin(), occl.end());
 
     // normalMapCoords
+    _normm.insert(_normm.end(), faceNormalMap.begin(), faceNormalMap.end());
     _normm.insert(_normm.end(), faceNormalMap.begin(), faceNormalMap.end());
 
 }
@@ -191,6 +202,40 @@ const BlockData<3> WaterGeometry::blockNormals{
   }
 };
 
+const BlockData<3> WaterGeometry::invertBlockNormals{
+  face_t<3>{ // TOP
+    0.0f, -1.0f, 0.0f,
+    0.0f, -1.0f, 0.0f,
+    0.0f, -1.0f, 0.0f,
+    0.0f, -1.0f, 0.0f,
+  }, { // BOTTOM
+    0.0f, 1.0f, 0.0f,
+    0.0f, 1.0f, 0.0f,
+    0.0f, 1.0f, 0.0f,
+    0.0f, 1.0f, 0.0f,
+  }, { // FRONT
+    0.0f, 0.0f, -1.0f,
+    0.0f, 0.0f, -1.0f,
+    0.0f, 0.0f, -1.0f,
+    0.0f, 0.0f, -1.0f,
+  }, { // RIGHT
+    -1.0f, 0.0f, 0.0f,
+    -1.0f, 0.0f, 0.0f,
+    -1.0f, 0.0f, 0.0f,
+    -1.0f, 0.0f, 0.0f,
+  }, { // BACK
+    0.0f, 0.0f, 1.0f,
+    0.0f, 0.0f, 1.0f,
+    0.0f, 0.0f, 1.0f,
+    0.0f, 0.0f, 1.0f,
+  }, { // LEFT
+    1.0f, 0.0f, 0.0f,
+    1.0f, 0.0f, 0.0f,
+    1.0f, 0.0f, 0.0f,
+    1.0f, 0.0f, 0.0f,
+  }
+};
+
 // tells which neighbors to look at when computing a block occlusion
 // the ints stored are indices to a neighbor in a neighbor array (see Chunk.hpp neighbors)
 const std::array<std::array<int, 8>, 6> WaterGeometry::blockOcclusionOffsets = {
@@ -235,7 +280,7 @@ const std::array<std::array<int, 2>, 4> WaterGeometry::checkNeighbors = {
 
 };
 
-//TODO
+//TODO post release maybe
 const face_t<2> WaterGeometry::faceNormalMap = {
     1.f, 0.f,
     0.f, 0.f,

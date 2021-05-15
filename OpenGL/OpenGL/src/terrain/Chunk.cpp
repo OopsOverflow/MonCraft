@@ -111,21 +111,32 @@ void Chunk::compute() {
   // indices scheme // TODO: remove from MeshData ?
   meshData.scheme = { 0, 1, 2, 0, 2, 3 };
 
-  // now generate all the blocks
+  DataStore<Block*, 3> blocksCache(size + 2); // a cache to limit calls to getBlockAccrossChunks
+
   ivec3 pos{};
+  for(pos.x = 0; pos.x < size.x + 2; pos.x++) {
+    for(pos.y = 0; pos.y < size.y + 2; pos.y++) {
+      for(pos.z = 0; pos.z < size.z + 2; pos.z++) {
+        blocksCache[pos] = getBlockAccrossChunks(pos - 1);
+      }
+    }
+  }
+
+  std::array<Block*, 26> neighbors;
+
+  // now generate all the blocks
   for(pos.x = 0; pos.x < size.x; pos.x++) {
     for(pos.y = 0; pos.y < size.y; pos.y++) {
       for(pos.z = 0; pos.z < size.z; pos.z++) {
 
-        Block* block = getBlock(pos);
+        Block* block = blocksCache[pos + 1];
         if(!block->isVisible()) continue;
 
         // get the block neighbors
         bool neighborsValid = true;
-        std::array<Block*, 26> neighbors;
         for(size_t i = 0; i < 26; i++) {
           ivec3 npos = pos + neighborOffsets[i];
-          auto neigh = getBlockAccrossChunks(npos);
+          auto neigh = blocksCache[npos + 1];
           if(!neigh) neighborsValid = false; // may happen that a neighbor is unloaded
           neighbors[i] = neigh;
         }

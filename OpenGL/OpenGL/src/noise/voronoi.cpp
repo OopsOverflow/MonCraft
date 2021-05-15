@@ -51,11 +51,12 @@ void VoronoiNoise::generate(ivec2 pos, Grid<glm::vec2>& map) const {
     ivec2 res = ipos;
     float min_dist = 10.f * gridSize; // bigger than possible
 
-    for (int di = -1; di <= 1; di++) {
-      for (int dj = -1; dj <= 1; dj++) {
+    ivec2 dpos{};
+    for (dpos.x = -1; dpos.x <= 1; dpos.x++) {
+      for (dpos.y = -1; dpos.y <= 1; dpos.y++) {
 
-        ivec2 ipos2 = ipos + ivec2(di, dj);
-        vec2 rpos2 = vec2(ipos2) + grid.at(ipos2 + ivec2(1));
+        ivec2 ipos2 = ipos + dpos;
+        vec2 rpos2 = vec2(ipos2) + grid.at(ipos2 + 1);
         vec2 pos2 = rpos2 * fGridSize;
         float dist = distance(pos2, pos);
 
@@ -67,5 +68,67 @@ void VoronoiNoise::generate(ivec2 pos, Grid<glm::vec2>& map) const {
     }
 
     val = res;
+  });
+}
+
+#include "debug/Debug.hpp"
+
+void VoronoiNoise::generateWeighted(ivec2 pos, Grid<weightedSample_t>& map) const {
+  float fGridSize = (float)gridSize;
+  ivec2 istart = floor(vec2(pos) / fGridSize);
+  istart -= 1;
+  ivec2 iend = ceil(vec2(pos + map.size) / fGridSize);
+  iend += 1;
+  ivec2 isize = iend - istart;
+  vec2 offset = pos % gridSize;
+
+  Grid<glm::vec2> grid(isize);
+  grid.for_each([&](ivec2 ipos, vec2& val) {
+    val = vec2(noise.sample2D(istart + ipos)) / vec2(UINT16_MAX);
+  });
+
+  map.for_each_parallel([&](vec2 pos, weightedSample_t& val) {
+    pos += offset;
+    val.pos = floor(pos / fGridSize);
+
+    // find center cell
+    ivec2 centerIPos;
+    vec2 centerPos;
+    float min_dist = 10.f * gridSize; // bigger than possible
+
+    ivec2 dpos{};
+    for (dpos.x = -1; dpos.x <= 1; dpos.x++) {
+      for (dpos.y = -1; dpos.y <= 1; dpos.y++) {
+
+        ivec2 ipos2 = val.pos + dpos;
+        vec2 rpos2 = vec2(ipos2) + grid.at(ipos2 + 1);
+        vec2 pos2 = rpos2 * fGridSize;
+        float dist = distance(pos2, pos);
+
+        if (dist < min_dist) {
+          min_dist = dist;
+          centerIPos = ipos2;
+          centerPos = pos2;
+        }
+      }
+    }
+
+
+    int i = 0;
+    for (dpos.x = -1; dpos.x <= 1; dpos.x++) {
+      for (dpos.y = -1; dpos.y <= 1; dpos.y++) {
+        ivec2 ipos2 = val.pos + dpos;
+        vec2 rpos2 = vec2(ipos2) + grid.at(ipos2 + ivec2(1));
+        vec2 pos2 = rpos2 * fGridSize;
+
+        float dist = distance(pos2, pos);
+        if(ipos2 != centerIPos && false) {
+          dist *= fabs(dot(normalize(pos2 - centerPos), normalize(pos2 - pos)));
+          // dist *= 1.1;
+        }
+        val.weights[i++] = dist;
+      }
+    }
+
   });
 }

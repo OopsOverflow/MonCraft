@@ -12,6 +12,8 @@ layout (location = 2) uniform mat4 m_projection;
 layout (location = 3) uniform mat4 m_normal;
 layout (location = 4) uniform mat4 m_shadows[3];
 
+layout(location = 10) uniform vec3 lightDirection;
+
 smooth out vec3 vertexPosition;
 smooth out vec4 vertexColor;
 smooth out vec3 vertexNormal;
@@ -21,6 +23,7 @@ smooth out vec3 shadowCoords[3];
 smooth out mat3 TBN;
 smooth out float vertexOcclusion;
 smooth out float clipEndZ;
+smooth out vec3 fogColor;
 
 vec3 nsigmoid2(vec3 x, float k) {
   vec3 val = (-pow(x, vec3(3)) + x * 3.0) / 2.0;
@@ -52,8 +55,8 @@ void main() {
 
 
   //normalMatrix
-  vec3 T= vec3(m_normal * vec4(v_normal.yzx, 1.0));
-  vec3 B= vec3(m_normal * vec4(v_normal.zxy, 1.0));
+  vec3 T= vec3(m_normal * vec4(v_normal.zxy, 1.0));
+  vec3 B= vec3(m_normal * vec4(v_normal.yzx, 1.0));
   vec3 N= vec3(m_normal * vec4(v_normal, 1.0));
   TBN = mat3(T, B, N);
 
@@ -66,4 +69,11 @@ void main() {
   shadowCoords[1] = vec3(shadowCoords4) / shadowCoords4.w;
   shadowCoords4 = m_shadows[2] * m_model * vec4(v_position, 1.0);
   shadowCoords[2] = vec3(shadowCoords4) / shadowCoords4.w;
+
+  // fog
+   float sunAmount = max( dot(vec3(m_view), lightDirection), 0.0 );
+   vec3  fogColor  = mix( vec3(0.5,0.6,0.7), // bluish
+                           vec3(1.0,0.9,0.7), // yellowish
+                           pow(sunAmount,8.0) );
+
 }

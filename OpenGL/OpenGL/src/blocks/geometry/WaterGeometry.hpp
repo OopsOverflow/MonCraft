@@ -22,6 +22,7 @@ private:
 	static const BlockData<3> blockPositions;
 	static const BlockData<3> filledBlockPositions;
 	static const BlockData<3> blockNormals;
+	static const BlockData<3> invertBlockNormals;
 	static const face_t<2> faceNormalMap;
 	static const std::array<std::array<int, 8>, 6> blockOcclusionOffsets;
 	static const std::array<std::pair<int, BlockFace>, 6> blockFaceOffsets;

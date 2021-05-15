@@ -47,7 +47,7 @@ Mesh::Mesh(std::vector<GLfloat> const& positions,
 
   // occlusion
   glBufferSubData(GL_ARRAY_BUFFER, size * 8, size * 1, occlusion.data());
-  glVertexAttribPointer(VERTEX_OCCLUSION, 1, GL_FLOAT, GL_FALSE, 0, (GLvoid*)(size * 8)); // TODO: smaller type
+  glVertexAttribPointer(VERTEX_OCCLUSION, 1, GL_FLOAT, GL_FALSE, 0, (GLvoid*)(size * 8));
   glEnableVertexAttribArray(VERTEX_OCCLUSION);
 
   // normalMapCoords

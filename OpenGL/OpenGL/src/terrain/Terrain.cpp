@@ -78,7 +78,7 @@ glm::ivec3 Terrain::getChunkPos() {
 }
 
 void Terrain::setChunkPos(glm::ivec3 cpos) {
-  // std::lock_guard<std::mutex> lck(posMutex); // TODO: is this dangerous ?
+  // std::lock_guard<std::mutex> lck(posMutex);
   if(cpos != chunkPos) {
     chunkPos = cpos;
     chunkPosChanged = true;
@@ -222,7 +222,7 @@ void Terrain::render(Camera const& camera) {
     vec3 chunkCenter = worldChunkPos + vec3(chunkSize) / 2.f;
 
     vec4 posCamSpace = camera.view * vec4(chunkCenter, 1.0f);
-    static const float tolerance = 8.f * sqrt(3.f);
+    static const float tolerance = chunkSize * .5f * sqrt(3.f);
     if(camera.chunkInView(posCamSpace,tolerance)) {
       toRender.emplace_back(-posCamSpace.z, chunk);
     }

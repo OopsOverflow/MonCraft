@@ -114,6 +114,9 @@
     <ClCompile Include="src\blocks\geometry\TallgrassGeometry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\terrain\biomes\BiomeMap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="src\blocks\geometry\WaterGeometry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -344,6 +347,12 @@
     <ClInclude Include="src\blocks\Tallgrass_Block.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\terrain\biomes\Biome.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\terrain\biomes\BiomeMap.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="src\blocks\Water_Block.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -468,5 +477,9 @@
     <ResourceCompile Include="OpenGL.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\shader\simple.vert" />
+    <None Include="src\shader\simple.frag" />
   </ItemGroup>
 </Project>

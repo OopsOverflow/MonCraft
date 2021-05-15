@@ -25,13 +25,15 @@ using namespace glm;
 int main(int argc, char* argv[]) {
     std::cout << "----Main------\n";
 
+    std::srand(420);
+
     Viewport window(WIDTH, HEIGHT);
     Shader shader("src/shader/simple.vert", "src/shader/simple.frag");
     Terrain terrain;
     SkyBox sky;
 
-    Character character({ 0.0f,200.0f,0.0f });
-    ShadowMap shadows(2048);
+    ShadowMap shadows(4096);
+    Character character({ 0.0f, 40.0f, 0.0f });
 
     Loader loader;
     Raycast caster(100.f);
@@ -68,24 +70,30 @@ int main(int argc, char* argv[]) {
 
         // draw the shadow map
 
-        float sunSpeed = 50.f;
+        float sunSpeed = 5.f;
         float sunTime = pi<float>() * .25f;
         sunTime += t / 300.f * sunSpeed;
+        glUniform1f(shader.getUniformLocation("sunTime"), sunTime * 400); // Fog Sampling Time
+        // This is used instead to avoid Win/Linux conflicts
+        
         float distance = 100.f;
         auto sunDir = -normalize(vec3(cos(sunTime), 1, sin(sunTime))) * distance;
         shadows.update(sunDir);
-        shadows.attach(window.camera);
 
+        shadows.attach(window.camera, Frustum::NEAR);
         shadows.beginFrame(Frustum::NEAR);
-        terrain.render(window.camera);
+        terrain.render(shadows.camera);
         character.render();
         shadows.endFrame();
+
+        shadows.attach(window.camera, Frustum::MEDIUM);
         shadows.beginFrame(Frustum::MEDIUM);
-        terrain.render(window.camera);
-        character.render();
+        terrain.render(shadows.camera);
         shadows.endFrame();
+
+        shadows.attach(window.camera, Frustum::FAR);
         shadows.beginFrame(Frustum::FAR);
-        terrain.render(window.camera);
+        terrain.render(shadows.camera);
         shadows.endFrame();
 
         // prepare render
@@ -112,6 +120,20 @@ int main(int argc, char* argv[]) {
         glUniform1i(normalMap, 1);
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, normalMapID[(size_t)(t*15)%30]);
+
+
+        Block* block = terrain.getBlock(ivec3(window.camera.position + vec3(-0.5f,0.6f,-0.5f)));
+        if (block) {
+            bool isUnderWater = block->type == BlockType::Water;
+            GLint underWater = shader.getUniformLocation("underWater");
+            glUniform1i(underWater, isUnderWater);
+
+            sky.skyBoxShader.activate();
+            underWater = sky.skyBoxShader.getUniformLocation("underWater");
+            glUniform1i(underWater, isUnderWater);
+
+            shader.activate();
+        }
 
         // draw the terrain
         window.camera.activate();

@@ -14,7 +14,7 @@ public:
   ShadowMap& operator=(ShadowMap&) = delete;
 
   void update(glm::vec3 sunDir);
-  void attach(Camera const& cam);
+  void attach(Camera const& cam, Frustum frustum);
   void beginFrame(Frustum frustum);
   void endFrame();
   void activate(Shader const& shader);

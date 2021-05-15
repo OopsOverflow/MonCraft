@@ -57,8 +57,8 @@ public:
 
 private:
   static const int chunkSize = 16;
-  static const int renderDistH = 16; // horizontal render distance (2n+1 chunks)
-  static const int renderDistV = 5; // vertical render distance (2n+1 chunks)
+  static const int renderDistH = 10; // horizontal render distance (2n+1 chunks)
+  static const int renderDistV = 8; // vertical render distance (2n+1 chunks)
   const int chunksMaxCount;
 
   // dirty hash function for the chunks hashmap
@@ -73,7 +73,7 @@ private:
     }
   };
 
-  // TODO: should we use runtime alloc instead of compile-time ?
+  // TODO: should we use runtime alloc instead of compile-time ? Post release
   using WaitingList = AtomicCyclicList<glm::ivec3, (2*renderDistH+1)*(2*renderDistH+1)*(2*renderDistV+1)>;
 
   Generator generator; // the chunk generator
