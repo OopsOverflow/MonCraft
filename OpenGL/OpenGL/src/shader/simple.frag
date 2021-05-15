@@ -183,12 +183,12 @@ void main() {
     outputColor.rgb *=vec3(127.0f/255, 148.0f/255, 1.0f) ;
   }
   // show in which shadow cascade we are
- for (int i = 0 ; i < 3; i++) {
-    if (texture(shadowSampler[i], shadowCoords[i].xy * 0.5 + 0.5).r != 1.0) {
-      outputColor[i] += 0.2;
-      break;
-    }
-  }
+// for (int i = 0 ; i < 3; i++) {
+//    if (texture(shadowSampler[i], shadowCoords[i].xy * 0.5 + 0.5).r != 1.0) {
+//      outputColor[i] += 0.2;
+//      break;
+//    }
+//  }
 
   if(outputColor.a < 0.1) {
     discard;

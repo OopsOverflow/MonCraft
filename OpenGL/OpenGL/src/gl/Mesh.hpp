@@ -32,7 +32,7 @@ public:
     /**
      * Creates using the given vectors of vertex data.
      */
-    Mesh(MeshData const& data);
+    Mesh(MeshData& data);
 
 
     /**
