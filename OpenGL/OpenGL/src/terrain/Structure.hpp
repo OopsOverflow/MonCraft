@@ -16,8 +16,10 @@ public:
     glm::ivec3 off, start, end;
   };
 
+  using slices_t = std::vector<Slice>;
+
   virtual ~Structure() = default;
-  virtual std::vector<Slice> spawn(Chunk& chunk, glm::ivec3 pos) const = 0;
+  virtual slices_t spawn(Chunk& chunk, glm::ivec3 pos) const = 0;
   static void applySlice(Chunk& chunk, Slice const& slice);
 };
 
@@ -26,6 +28,6 @@ class Tree : public Structure {
 
 public:
   Tree();
-  std::vector<Slice> spawn(Chunk& chunk, glm::ivec3 pos) const override;
+  slices_t spawn(Chunk& chunk, glm::ivec3 pos) const override;
   std::shared_ptr<BlockStore> store;
 };

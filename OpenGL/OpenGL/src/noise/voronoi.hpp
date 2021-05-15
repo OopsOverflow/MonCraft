@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include "bitmap.hpp"
 #include "value.hpp"
 
@@ -26,9 +27,24 @@ public:
 
 
   /**
-   * Convenience method to generate a bitmap out of the voronoi diagram.
+   * Generates the grid voronoi diagram.
    */
   void generate(glm::ivec2 pos, Grid<glm::vec2> &map) const;
+
+
+  struct weightedSample_t {
+    glm::ivec2 pos;
+    std::array<float, 9> weights; // see operator[]
+    float operator[](glm::ivec2 off) { // off is between (-1, -1) and (1, 1) (offset from pos)
+      return weights[(off.x + 1) * 3 + off.y + 1];
+    }
+  };
+
+  /**
+   * Generates the grid voronoi, giving the weights of the four closest cells
+   * based on distance from the cell's center to the sampling point.
+   */
+  void generateWeighted(glm::ivec2 pos, Grid<weightedSample_t> &map) const;
 
 private:
   ValueNoise noise;

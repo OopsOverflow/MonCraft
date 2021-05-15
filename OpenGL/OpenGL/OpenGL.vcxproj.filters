@@ -114,6 +114,9 @@
     <ClCompile Include="src\blocks\geometry\TallgrassGeometry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\terrain\biomes\BiomeMap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="src\blocks\geometry\WaterGeometry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -342,6 +345,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\blocks\Tallgrass_Block.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\terrain\biomes\Biome.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\terrain\biomes\BiomeMap.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\blocks\Water_Block.hpp">

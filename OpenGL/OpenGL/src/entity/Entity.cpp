@@ -102,7 +102,7 @@ void Entity::update(Terrain& terrain, float dt) {
 		vec2 speedXZ = vec2(speed.x, speed.z);
 		if (god) {
 			maxSpeed = maxSpeed - (maxSpeed - 10.89f) * 3.0f * dt;
-			if (sprint) maxSpeed = 10.89f * 2.0f;
+			if (sprint) maxSpeed = 10.89f * 20.0f;
 		}
 		else {
 			maxSpeed = maxSpeed - (maxSpeed - 4.317f) * 3.0f *dt;
@@ -122,12 +122,12 @@ void Entity::update(Terrain& terrain, float dt) {
 	// check collisions
 	{
 		// update position
-		float displ = trunc(length(posOffset));
-		vec3 newPos = node.loc;
-		for (size_t i = 0; i < displ; i += 1) {
-			newPos = hitbox.computeCollision(newPos, normalizeOrZero(posOffset), terrain);
-		}
-		newPos = hitbox.computeCollision(newPos, posOffset - displ * normalizeOrZero(posOffset), terrain);
+		// float displ = trunc(length(posOffset));
+		vec3 newPos = node.loc + posOffset;
+		// for (size_t i = 0; i < displ; i += 1) {
+		// 	newPos = hitbox.computeCollision(newPos, normalizeOrZero(posOffset), terrain);
+		// }
+		// newPos = hitbox.computeCollision(newPos, posOffset - displ * normalizeOrZero(posOffset), terrain);
 		vec3 off = newPos - (node.loc + posOffset);
 		node.loc = newPos;
 

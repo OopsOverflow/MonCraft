@@ -10,7 +10,7 @@ public:
     }
 
     glm::ivec2 getFaceUVs(BlockFace face) const override {
-      return {1, 2};
+      return {0, 2};
     }
 
 private:

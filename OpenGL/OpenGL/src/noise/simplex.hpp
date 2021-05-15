@@ -25,9 +25,9 @@ public:
 
   void seed(int s);
   float simplex2(glm::vec2 pos) const;
-  float simplex3(glm::vec3 pos);
-  float perlin2(glm::vec2 pos);
-  float perlin3(glm::vec3 pos);
+  float simplex3(glm::vec3 pos) const;
+  float perlin2(glm::vec2 pos) const;
+  float perlin3(glm::vec3 pos) const;
   float fractal2(glm::vec2 pos, octaves_t const& octaves) const;
 
 private:
@@ -35,11 +35,11 @@ private:
   {
     int x, y, z;
 
-    float dot2(float x, float y)
+    float dot2(float x, float y) const
     {
       return this->x * x + this->y * y;
     }
-    float dot3(float x, float y, float z)
+    float dot3(float x, float y, float z) const
     {
       return this->x * x + this->y * y + this->z * z;
     }
