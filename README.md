@@ -1,10 +1,42 @@
 
 # MonCraft
 
-Sandbox game developed using C++ &amp; OpenGL 
-***
+<p align=center>
+Sandbox game developed using C++ 14 &amp; OpenGL 3.3 🕹
+</p>
+<p align=center>
 Why Buy Minecraft When You Can Code it Yourself? 💹
+</p>
+
 ***
+
+## Compiling
+***Supports Windows and Linux. (Should work on mac but not tested)***
+### Dependencies
+ 1. SDL2
+ 2. SFML
+ 3. GLEW
+
+****
+
+### World Interactions
+
+ 1. [x] Moving Around --- WASD
+ 2. [x] Look Around --- Move Mouse
+ 3. [x] Detach Mouse --- Esc
+ 4. [x] Block Placing --- RMB
+ 5. [x] Selective Block Removal --- LMB
+ 6. [x] Sprinting --- CTRL
+ 7. [x] Filed of View (**FOV**) changes while sprinting ✅
+ 8. [x] Chang View --- F5
+ 9. [x] God Mode --- Double Space
+ 10. [x] Ascend (In God Mode Only) --- Space
+ 11. [x] Descend (In God Mode Only) --- Shift
+ 12. [ ] Crouch -- Coming Soon!
+ 13. [ ] Place on Edge -- Coming Soon!
+ 
+****
+
 ## Features 🔥
 ### Solid Integration 
 MonCraft supports optimizations on both AMD and NVIDIA cards
@@ -73,8 +105,78 @@ f(p) = fbm( p + fbm( p + fbm( p ) ) )
 
 This gives fog a **crisp realistic effect**.
 
-## The Team Behid MonCraft
+### Ambient Occlusion 🌗
+Ambient occlusion is a shading and rendering method used for global background or indirect shading of objects.
+This method is used to add more realism to the render because it creates soft global shadows that contribute to the visual separation of objects.
+This is a global method, i.e., the brightness value of every point of the object depends on other objects in the scene.
+Shadows do not remain black, they dissipate, creating halftones and obscuring those places in space that get less light.
 
+/*IMAGE*/
+
+*****
+
+### Beautiful Terrain
+#### High Definition texture pack 🎨
+Unique artistic textures with vivid colors. Made-In-House by the one & only @PinoulMarcel
+Mojang don't DMCA us. 
+#### Procedurally Generated World 🌐
+`Simplex Noise` under `src/noise/noise.cpp` is used to create the world map.
+It's finely tuned to give different terrain heights and features, such as hills, mountains and oceans.
+/*IMAGE HERE*/
+#### Superb Terrain Blending 🌲
+`src/noise/voronoi.cpp` is used for a seamless biome blending ⚡
+/*IMAGE*/
+#### Biomes 🌍
+***Seven unique*** biomes with different features and characteristics.  
+
+****
+### Dynamic Blocks 
+***
+### Wide Texture Atlas 🧭
+***
+### SkyBox 🌌
+High Definition skybox using cubemaps.
+***
+### Transparency 🔎
+Moncraft implements transparent blocks such as `Water_Block` and more are to come!
+***
+### 3D Chunks
+It's not a big it's ***literally a feature***.
+/*IMAGE HERE*/
+***
+### Eargasmic Music 🎶
+Royalty-free high definition music that fits the game's atmosphere. 🥚
+|  Track Name|Artist © |
+|--|--|
+| A New Sleep |Arden Forest  |
+| Mays |Van Sandano  |
+| Reconstruct |Amaranth Cove  |
+| Minecraft Happy Music |	 --- |
+***
+### Sound Effects
+Literal bovine excrement 🙂 
+💘Memory leaks
+***
+
+### Normal Map
+***
+###  Multithreading 👷‍♂️
+Allows for huge performance gains by using multiple `worker_threads` to generate the environment.
+Under `src/terrain/terrain.hpp`.
+***
+### No OS Specific dependencies 🐧
+***
+### 3D AABB Collision detection 💥
+***
+### Player and World Animations
+#### Block Breaking ⛏
+/*Imlage*/
+### Player Movement Animations
+/*Image*/
+****
+
+
+# The Team Behid MonCraft
 
 
 |    Name            |GitHub|Email|
@@ -82,4 +184,3 @@ This gives fog a **crisp realistic effect**.
 |Brossier Mathis|@k2d222            |      |
 |Mahmoud Houssem|@OopsOverflow            |contact@houssem.com            |
 |Surer Pierre|@Marcel||
-
