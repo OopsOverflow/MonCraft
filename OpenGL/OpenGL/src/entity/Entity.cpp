@@ -105,7 +105,7 @@ void Entity::update(Terrain& terrain, float dt) {
 			if (sprint) maxSpeed = maxSpeed * 2.0f;
 		}
 		else {
-			maxSpeed = 4.317f * 3.0f;
+			maxSpeed = 4.317f;
 			if (sprint) maxSpeed = maxSpeed * 1.3f;
 		}
 		if(length(speedXZ) >= maxSpeed) {
