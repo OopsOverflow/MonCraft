@@ -4,7 +4,7 @@
   <img src="https://raw.githubusercontent.com/OopsOverflow/MonCraft/main/screeshots/monjang-logo.png?token=ARYPWFCI53SSJADIC4J6IBTAVFSMW" alt="3d"/>
 </p>
 
-# Minecraft 
+# MonCraft 
 
 <p align=center>
 Sandbox game developed using C++ 14 &amp; OpenGL 3.3 🕹
