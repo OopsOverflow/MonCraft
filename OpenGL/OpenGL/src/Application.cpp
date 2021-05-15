@@ -134,7 +134,7 @@ int main(int argc, char* argv[]) {
 
         // draw the terrain
         window.camera.activate();
-        // shadows.activate(shader);
+        shadows.activate(shader);
         terrain.render();
 
         // dot in the middle of the screen

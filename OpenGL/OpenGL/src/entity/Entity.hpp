@@ -75,10 +75,10 @@ protected:
 
 	glm::vec3 speed;
 	glm::vec3 accel;
+	glm::vec3 direction;
 
 	bool onFloor;
 	Hitbox hitbox;
-	glm::vec3 direction;
 
 	Node node;
 	Node headNode;
