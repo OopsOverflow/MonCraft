@@ -64,7 +64,7 @@ void Entity::turn(vec2 rot) {
 
 void Entity::cameraToHead(Camera& camera) {
 	if(view == View::FIRST_PERSON) {
-		vec3 eyePos = headNode.model * vec4(0, 4, 4, 1);
+		vec3 eyePos = headNode.model * vec4(0, 4, 0, 1);
 		vec3 eyeTarget = headNode.model * vec4(0, 4, 54, 1);
 		camera.setLookAt(eyePos, eyeTarget);
 	}
