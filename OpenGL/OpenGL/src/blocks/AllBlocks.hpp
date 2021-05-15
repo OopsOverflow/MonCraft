@@ -14,6 +14,7 @@
 #include "Sandstone_Block.hpp"
 #include "Snow_Block.hpp"
 #include "Tallgrass_Block.hpp"
+#include "Water_Block.hpp"
 
 #include <sstream>
 

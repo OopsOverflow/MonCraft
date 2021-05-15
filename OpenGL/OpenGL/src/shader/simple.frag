@@ -18,6 +18,7 @@ uniform sampler2D textureSampler;
 uniform sampler2D normalMap;
 uniform sampler2D shadowSampler[3];
 uniform float clipCascadeEndZ[3];
+uniform int underWater; //glUniform1b :(
 out vec4 outputColor;
 
 float computeShadow(int i) {
@@ -60,15 +61,14 @@ void main() {
 
   vec3 normal = normalize(TBN * (texture(normalMap ,normalCoords).rgb *2.0 -1.0));
   float dotNormal = dot(normalizedLightDirection, normal);
-  float lambertian = max(dotNormal, 0.0);
+  float lambertian = max(-dotNormal, 0.0);
 
-   vec3 light = vec3(0.0f,0.0f,-1.0f);
   vec3 viewDir = normalize(-vertexPosition);
   // this is blinn phong
 
   vec3 halfDir =  normalize(-normalizedLightDirection + viewDir);
   float specAngle = max(dot(halfDir, normal), 0.0);
-  float specular = pow(specAngle, 100);
+  float specular = pow(specAngle, 200);
 
   // Textures
   outputColor = texture(textureSampler, txrCoords);
@@ -86,13 +86,16 @@ void main() {
   
   vec4 color = outputColor;
   outputColor.xyz = color.xyz * .5;
-  outputColor.xyz += color.xyz * lightIntensity * lambertian * shadow *.4 ;
-  outputColor.xyz +=vec3(1.0f) * specular * shadow  * texture(normalMap ,normalCoords).b* 1.0;
+  outputColor.xyz += color.xyz * lightIntensity * lambertian * shadow *.5 ;
+  outputColor.xyz +=vec3(1.0f) * specular * shadow  * texture(normalMap ,normalCoords).a* 1.0;
 
 
   float occl = .7;
   outputColor.xyz *= 1.0 - (vertexOcclusion * vertexOcclusion / 9.0) * occl;
 
+  if(underWater == 1){
+    outputColor.rgb *=vec3(127.0f/255, 148.0f/255, 1.0f) ;
+  }
   // show in which shadow cascade we are
   // for (int i = 0 ; i < 3 ; i++) {
   //   if (gl_FragCoord.z <= clipCascadeEndZ[i]) {
@@ -103,6 +106,4 @@ void main() {
   if(outputColor.a < 0.1) {
     discard;
   }
-
-  //outputColor = texture(normalMap ,normalCoords);
 }

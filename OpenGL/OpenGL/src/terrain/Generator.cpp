@@ -48,7 +48,13 @@ Block::unique_ptr_t Generator::createBlock(ivec3 pos, Biome const& biome) const 
     block = Block::create_static<Tallgrass_Block>();
   }
   else if(pos.y > blockHeight) {
-    block = Block::create_static<Air_Block>();
+      if (pos.y < 0.0f) {
+          block = Block::create_static<Water_Block>();
+      }else
+      {
+          block = Block::create_static<Air_Block>();
+      }
+
   }
   else if(pos.y == blockHeight) {
     block = AllBlocks::create_static(biome.surface);

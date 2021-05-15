@@ -38,7 +38,7 @@ BiomeMap::BiomeMap()
   simplexY.seed(20);
   simplexBiome.seed(30);
 
-  biomePlains.elevation = 0;
+  biomePlains.elevation = 11;
   biomePlains.distortion = {};
   biomePlains.frequencies = {
     {6.0f, 0.004f}, // {magnitude, frequency}
@@ -60,20 +60,20 @@ BiomeMap::BiomeMap()
     {0.0f, 0.050f},
     {0.0f, 0.100f},
   };
-  biomeDesert.elevation = 5;
+  biomeDesert.elevation = 15;
   biomeDesert.tallgrass = 0;
 
   biomeSea = biomePlains;
   biomeSea.surface = BlockType::Sandstone;
   biomeSea.underLayers = BlockType::Sandstone;
-  biomeSea.elevation = -20;
+  biomeSea.elevation = -10;
   biomeSea.tallgrass = 0;
 
   biomeToundra = biomePlains;
   biomeToundra.surface = BlockType::Snow;
   biomeToundra.underLayers = BlockType::Dirt;
   biomeToundra.tallgrass = 0;
-  biomeToundra.elevation = 5;
+  biomeToundra.elevation = 14;
 
   biomeHills = biomePlains;
   biomeHills.surface = BlockType::Grass;
@@ -85,7 +85,7 @@ BiomeMap::BiomeMap()
     {0.0f, 0.100f},
   };
   // biomeHills.tallgrass = 0;
-  biomeHills.elevation = 10;
+  biomeHills.elevation = 21;
 
   biomeMountains = biomePlains;
   biomeMountains.surface = BlockType::Ice;
@@ -96,7 +96,8 @@ BiomeMap::BiomeMap()
     {2.0f, 0.050f},
     {1.5f, 0.100f},
   };
-  biomeMountains.elevation = 15;
+  biomeMountains.elevation = 30;
+  biomeMountains.tallgrass = 0;
 }
 
 
@@ -118,7 +119,8 @@ void BiomeMap::generate() {
 }
 
 Biome const& BiomeMap::sampleWeighted(glm::ivec2 pos) const {
-  pos = abs(pos) % size;
+  
+    pos = abs(pos) % size;
   return map[pos];
 }
 

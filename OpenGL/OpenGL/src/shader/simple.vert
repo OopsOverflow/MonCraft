@@ -52,8 +52,8 @@ void main() {
 
 
   //normalMatrix
-  vec3 T= vec3(m_normal * vec4(v_normal.yzx, 1.0));
-  vec3 B= vec3(m_normal * vec4(v_normal.zxy, 1.0));
+  vec3 T= vec3(m_normal * vec4(v_normal.zxy, 1.0));
+  vec3 B= vec3(m_normal * vec4(v_normal.yzx, 1.0));
   vec3 N= vec3(m_normal * vec4(v_normal, 1.0));
   TBN = mat3(T, B, N);
 

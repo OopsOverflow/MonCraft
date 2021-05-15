@@ -113,6 +113,20 @@ int main(int argc, char* argv[]) {
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, normalMapID[(size_t)(t*15)%30]);
 
+
+        Block* block = terrain.getBlock(ivec3(window.camera.position - vec3(0.0f,0.4f,0.0f)));
+        if (block) {
+            bool isUnderWater = block->type == BlockType::Water;
+            GLint underWater = shader.getUniformLocation("underWater");
+            glUniform1i(underWater, isUnderWater);
+
+            sky.skyBoxShader.activate();
+            underWater = sky.skyBoxShader.getUniformLocation("underWater");
+            glUniform1i(underWater, isUnderWater);
+
+            shader.activate();
+        }
+
         // draw the terrain
         window.camera.activate();
         shadows.activate(shader);
