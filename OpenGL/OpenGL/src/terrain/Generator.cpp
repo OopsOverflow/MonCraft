@@ -8,7 +8,7 @@ using namespace glm;
 
 Generator::Generator(int chunkSize)
   : chunkSize(chunkSize),
-    treeNoise(rand())
+    valueNoise(rand())
 {
   noise.seed(rand());
   biomeSampler.generate();
@@ -36,34 +36,43 @@ std::unique_ptr<Chunk> Generator::generate(ivec3 cpos) const {
   return chunk;
 }
 
+Block::unique_ptr_t Generator::computeSurfaceBlock(ivec3 const& pos, Biome const& biome, int const& blockHeight) const {
+    if (abs(pos.y) < 3 && biome.type == BiomeType::SEA) return Block::create_static<Sand_Block>();
+    if (abs(pos.y) < 2) return Block::create_static<Sand_Block>();
+    if (pos.y <= 0) return AllBlocks::create_static(biome.underWaterBlock);
+    if (pos.y > 35 + valueNoise.sample1D(ivec2(pos.x, pos.z) + ivec2(67, 102)) % 5 && biome.surface != BlockType::Ice) return Block::create_static<Snow_Block>();
+    if(pos.y > 8 + valueNoise.sample1D(ivec2(pos.x, pos.z) + ivec2(-12, 0)) % 2 && biome.surface == BlockType::Sand) return Block::create_static<Snow_Block>();
+    if (pos.y != blockHeight && biome.surface == BlockType::Grass)return Block::create_static<Dirt_Block>();
+
+    return AllBlocks::create_static(biome.surface);
+}
+
+
+
+
 Block::unique_ptr_t Generator::createBlock(ivec3 pos, Biome const& biome) const {
   Block::unique_ptr_t block;
   float height = noise.fractal2(ivec2(pos.x, pos.z), biome.frequencies);
   int blockHeight = (int)floor(height + biome.elevation);
 
-  if(pos.y == blockHeight + 1 && noise.simplex3(pos) * 0.5 + 0.5 < biome.tallgrass) {
-    block = Block::create_static<Tallgrass_Block>();
-  }
-  else if(pos.y > blockHeight) {
-      if (pos.y < 0.0f) {
-          block = Block::create_static<Water_Block>();
+  if(pos.y == blockHeight + 1 && noise.simplex3(pos) * 0.5 + 0.5 < biome.tallgrass && pos.y>0)
+    return Block::create_static<Tallgrass_Block>();
+  if(pos.y > blockHeight) {
+      if (pos.y <= 0) {
+          return Block::create_static<Water_Block>();
       }else
       {
-          block = Block::create_static<Air_Block>();
+          return Block::create_static<Air_Block>();
       }
-
   }
-  else if(pos.y == blockHeight) {
-    block = AllBlocks::create_static(biome.surface);
-  }
-  else if(pos.y >= blockHeight - 3) {
+  if(pos.y >= blockHeight - (valueNoise.sample1D(ivec2(pos.x, pos.z) + ivec2(-91, 859)) % 3))
+      return computeSurfaceBlock(pos, biome, blockHeight);
+  
+  if(pos.y >= blockHeight - (2+ valueNoise.sample1D(ivec2(pos.x,pos.z) + ivec2(2,-59)) % 3))
     block = AllBlocks::create_static(biome.underLayers);
-  }
-  else {
-    block = Block::create_static<Stone_Block>();
-  }
-
-  return block;
+  
+  
+  return Block::create_static<Stone_Block>();
 }
 
 std::vector<Structure::Slice> Generator::generateStructures(ivec3 cpos, Chunk& chunk) const {
@@ -80,7 +89,7 @@ std::vector<Structure::Slice> Generator::generateStructures(ivec3 cpos, Chunk& c
 
         if(chunk[dpos]->type == BlockType::Grass) {
           ivec3 pos = orig + dpos;
-          float tree = treeNoise.sample1D(ivec2(pos.x, pos.z)) / (float)UINT32_MAX;
+          float tree = valueNoise.sample1D(ivec2(pos.x, pos.z)) / (float)UINT32_MAX;
           if(tree < 0.0005f) {
             auto treeSlices = defaultTree.spawn(chunk, dpos);
             slices.insert(slices.end(), treeSlices.begin(), treeSlices.end());

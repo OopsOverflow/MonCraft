@@ -157,7 +157,7 @@ void main() {
   outputColor = texture(textureSampler, txrCoords);
 
   // Fog
-  outputColor = mix( outputColor, fbmColor, fogAmountz + fogAmounty);
+  //outputColor = mix( outputColor, fbmColor, fogAmountz + fogAmounty);
 
   // shadow
 

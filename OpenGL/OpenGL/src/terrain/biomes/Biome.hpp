@@ -6,14 +6,19 @@
 #include "terrain/Structure.hpp"
 
 
+enum class BiomeType { ICE, SEA, BEACH, TOUNDRA, PLAINS, DESERT, HILLS, MOUNTAINS };
+
 struct Biome {
   float elevation; // vertical biome offset
   octaves_t frequencies;
   octaves_t distortion;
   BlockType surface;
   BlockType underLayers;
+  BlockType underWaterBlock;
   float trees;
   float tallgrass;
+  BiomeType type;
+
 
   BlockType generate(); // first pass:
   void decorate(); // ran after generation to add decorations and such

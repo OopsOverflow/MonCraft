@@ -25,7 +25,7 @@ using namespace glm;
 int main(int argc, char* argv[]) {
     std::cout << "----Main------\n";
 
-    std::srand(42);
+    std::srand(420);
 
     Viewport window(WIDTH, HEIGHT);
     Shader shader("src/shader/simple.vert", "src/shader/simple.frag");
@@ -119,7 +119,7 @@ int main(int argc, char* argv[]) {
         glBindTexture(GL_TEXTURE_2D, normalMapID[(size_t)(t*15)%30]);
 
 
-        Block* block = terrain.getBlock(ivec3(window.camera.position - vec3(0.0f,0.4f,0.0f)));
+        Block* block = terrain.getBlock(ivec3(window.camera.position + vec3(-0.5f,0.6f,-0.5f)));
         if (block) {
             bool isUnderWater = block->type == BlockType::Water;
             GLint underWater = shader.getUniformLocation("underWater");

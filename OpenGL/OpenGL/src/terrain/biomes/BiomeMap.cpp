@@ -38,25 +38,29 @@ BiomeMap::BiomeMap()
   simplexY.seed(rand());
   simplexBiome.seed(rand());
 
+  biomePlains.type = BiomeType::PLAINS;
   biomePlains.elevation = 11;
   biomePlains.distortion = {};
   biomePlains.frequencies = {
-    {6.0f, 0.004f}, // {magnitude, frequency}
-    {4.5f, 0.008f},
+    {8.0f, 0.002f}, // {magnitude, frequency}
+    {2.5f, 0.007f},
     {1.0f, 0.050f},
     {0.5f, 0.100f},
   };
   biomePlains.surface = BlockType::Grass;
   biomePlains.underLayers = BlockType::Dirt;
+  biomePlains.underWaterBlock = BlockType::Dirt;
   biomePlains.trees = 0.05f;
   biomePlains.tallgrass = 0.2f;
 
   biomeDesert = biomePlains;
+  biomeDesert.type = BiomeType::DESERT;
   biomeDesert.surface = BlockType::Sand;
   biomeDesert.underLayers = BlockType::Sand;
+  biomeDesert.underWaterBlock = BlockType::Sand;
   biomeDesert.frequencies = {
-    {6.0f, 0.004f}, // {magnitude, frequency}
-    {3.5f, 0.008f},
+    {8.0f, 0.002f}, // {magnitude, frequency}
+    {3.5f, 0.007f},
     {0.0f, 0.050f},
     {0.0f, 0.100f},
   };
@@ -64,23 +68,29 @@ BiomeMap::BiomeMap()
   biomeDesert.tallgrass = 0;
 
   biomeSea = biomePlains;
-  biomeSea.surface = BlockType::Sandstone;
-  biomeSea.underLayers = BlockType::Sandstone;
+  biomeSea.type = BiomeType::SEA;
+  biomeSea.surface = BlockType::Sand;
+  biomeSea.underLayers = BlockType::Sand;
+  biomeSea.underWaterBlock = BlockType::Sandstone;
   biomeSea.elevation = -10;
   biomeSea.tallgrass = 0;
 
   biomeToundra = biomePlains;
+  biomeToundra.type = BiomeType::TOUNDRA;
   biomeToundra.surface = BlockType::Snow;
   biomeToundra.underLayers = BlockType::Dirt;
+  biomeToundra.underWaterBlock = BlockType::Dirt;
   biomeToundra.tallgrass = 0;
-  biomeToundra.elevation = 14;
+  biomeToundra.elevation = 12;
 
   biomeHills = biomePlains;
+  biomeHills.type = BiomeType::HILLS;
   biomeHills.surface = BlockType::Grass;
   biomeHills.underLayers = BlockType::Dirt;
+  biomeHills.underWaterBlock = BlockType::Dirt;
   biomeDesert.frequencies = {
-    {6.0f, 0.004f}, // {magnitude, frequency}
-    {3.5f, 0.008f},
+    {6.0f, 0.002f}, // {magnitude, frequency}
+    {3.5f, 0.007f},
     {0.0f, 0.050f},
     {0.0f, 0.100f},
   };
@@ -88,15 +98,17 @@ BiomeMap::BiomeMap()
   biomeHills.elevation = 21;
 
   biomeMountains = biomePlains;
+  biomeMountains.type = BiomeType::MOUNTAINS;
   biomeMountains.surface = BlockType::Ice;
   biomeMountains.underLayers = BlockType::Stone;
+  biomeMountains.underWaterBlock = BlockType::Stone;
   biomeMountains.frequencies = {
-    {0.0f, 0.004f}, // {magnitude, frequency}
-    {30.0f, 0.006f},
+    {60.0f, 0.002f}, // {magnitude, frequency}
+    {15.0f, 0.007f},
     {2.0f, 0.050f},
     {1.5f, 0.100f},
   };
-  biomeMountains.elevation = 30;
+  biomeMountains.elevation = 100;
   biomeMountains.tallgrass = 0;
 }
 

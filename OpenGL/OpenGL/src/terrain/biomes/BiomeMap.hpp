@@ -9,7 +9,6 @@
 // #include "Sea.hpp"
 // #include "Desert.hpp"
 
-enum class BiomeType { ICE, SEA, BEACH, TOUNDRA, PLAINS, DESERT, HILLS, MOUNTAINS };
 
 class BiomeMap {
 

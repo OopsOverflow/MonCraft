@@ -25,12 +25,14 @@ public:
 private:
   Block::unique_ptr_t createBlock(glm::ivec3 pos, Biome const& biome) const;
 
+  Block::unique_ptr_t computeSurfaceBlock(glm::ivec3 const& pos, Biome const& biome, int const& blockHeight) const;
+
   int chunkSize;
   SimplexNoise noise;
   SimplexNoise noiseX;
   SimplexNoise noiseY;
   SimplexNoise noiseZ;
-  ValueNoise treeNoise;
+  ValueNoise valueNoise;
   Tree defaultTree;
 
   BiomeMap biomeSampler;
