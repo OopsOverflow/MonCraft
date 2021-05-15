@@ -25,6 +25,8 @@ using namespace glm;
 int main(int argc, char* argv[]) {
     std::cout << "----Main------\n";
 
+    std::srand(42);
+
     Viewport window(WIDTH, HEIGHT);
     Shader shader("src/shader/simple.vert", "src/shader/simple.frag");
     Terrain terrain;
