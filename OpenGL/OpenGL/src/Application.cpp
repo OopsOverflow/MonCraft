@@ -135,6 +135,9 @@ int main(int argc, char* argv[]) {
             shader.activate();
         }
 
+        GLint fog = shader.getUniformLocation("fog");
+        glUniform1i(fog, (int)window.enableFog);
+
         // draw the terrain
         window.camera.activate();
         shadows.activate(shader);

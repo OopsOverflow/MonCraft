@@ -28,7 +28,8 @@ Viewport::Viewport(size_t width, size_t height)
       window(nullptr),
       context(nullptr),
       lastSpacePress(0), timeBegin(0), lastTime(0),
-      mouseCaptured(false), vsync(true)
+      mouseCaptured(false), vsync(true),
+      enableFog(0)
 {
 
   //Initialize SDL2
@@ -58,6 +59,8 @@ Viewport::Viewport(size_t width, size_t height)
   std::cout << "Vendor  :" << glGetString(GL_VENDOR) << std::endl;
   std::cout << "Renderer:" << glGetString(GL_RENDERER) << std::endl;
   std::cout << "---------" << std::endl;
+
+
 }
 
 Viewport::~Viewport() {
@@ -190,6 +193,9 @@ void Viewport::on_keydown(SDL_Keycode k) {
     vsync = !vsync;
       if(vsync) SDL_GL_SetSwapInterval(1);
       else SDL_GL_SetSwapInterval(0);
+      break;
+  case SDLK_h:
+      enableFog = 1 - enableFog;
       break;
   }
 }

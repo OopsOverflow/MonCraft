@@ -20,6 +20,7 @@ uniform sampler2D normalMap;
 uniform sampler2D shadowSampler[3];
 uniform float clipCascadeEndZ[3];
 uniform int underWater; //glUniform1b :(
+uniform int fog;
 uniform float sunTime;
 
 out vec4 outputColor;
@@ -157,7 +158,7 @@ void main() {
   outputColor = texture(textureSampler, txrCoords);
 
   // Fog
-  //outputColor = mix( outputColor, fbmColor, fogAmountz + fogAmounty);
+  if(fog!=0) outputColor = mix( outputColor, fbmColor, fogAmountz + fogAmounty);
 
   // shadow
 
