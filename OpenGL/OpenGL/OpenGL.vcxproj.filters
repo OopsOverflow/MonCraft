@@ -478,4 +478,8 @@
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="src\shader\simple.vert" />
+    <None Include="src\shader\simple.frag" />
+  </ItemGroup>
 </Project>
