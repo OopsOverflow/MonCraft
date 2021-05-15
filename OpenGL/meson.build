@@ -42,6 +42,7 @@ srcs = files(
   'OpenGL/src/terrain/SkyBox.cpp',
   'OpenGL/src/terrain/Structure.cpp',
 
+  'OpenGL/src/terrain/biomes/BiomeMap.cpp',
   'OpenGL/src/blocks/Block.cpp',
   'OpenGL/src/blocks/geometry/BlockGeometry.cpp',
   'OpenGL/src/blocks/geometry/DefaultGeometry.cpp',
