@@ -1,5 +1,10 @@
+[![license](https://img.shields.io/github/license/mashape/apistatus.svg?style=flat-square "License")](https://github.com/OopsOverflow/MonCraft/blob/main/LICENSE)
 
-# MonCraft
+<p align="center">
+  <img src="https://raw.githubusercontent.com/OopsOverflow/MonCraft/main/screeshots/monjang-logo.png?token=ARYPWFCI53SSJADIC4J6IBTAVFSMW" alt="3d"/>
+</p>
+
+# Minecraft 
 
 <p align=center>
 Sandbox game developed using C++ 14 &amp; OpenGL 3.3 🕹
@@ -111,7 +116,9 @@ This method is used to add more realism to the render because it creates soft gl
 This is a global method, i.e., the brightness value of every point of the object depends on other objects in the scene.
 Shadows do not remain black, they dissipate, creating halftones and obscuring those places in space that get less light.
 
-/*IMAGE*/
+<p align="center">
+  <img src="https://raw.githubusercontent.com/OopsOverflow/MonCraft/main/screeshots/aoc.png?token=ARYPWFHQPZ7RW2Q7XBTA5ETAVFQDY" alt="aoc"/>
+</p>
 
 *****
 
@@ -119,13 +126,26 @@ Shadows do not remain black, they dissipate, creating halftones and obscuring th
 #### High Definition texture pack 🎨
 Unique artistic textures with vivid colors. Made-In-House by the one & only @PinoulMarcel
 Mojang don't DMCA us. 
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/OopsOverflow/MonCraft/main/screeshots/beautiful.png?token=ARYPWFCHH36PJURBJ4MMZLLAVFQNS" alt="world"/>
+</p>
+
 #### Procedurally Generated World 🌐
 `Simplex Noise` under `src/noise/noise.cpp` is used to create the world map.
 It's finely tuned to give different terrain heights and features, such as hills, mountains and oceans.
-/*IMAGE HERE*/
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/OopsOverflow/MonCraft/main/screeshots/collage.png?token=ARYPWFEMU3IK7YJ4UOXHA3TAVFQGW" alt="noise"/>
+</p>
+
 #### Superb Terrain Blending 🌲
 `src/noise/voronoi.cpp` is used for a seamless biome blending ⚡
-/*IMAGE*/
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/OopsOverflow/MonCraft/main/screeshots/voronoi.png?token=ARYPWFBCTVMAG63IGZ42AZLAVFQIU" alt="vor"/>
+</p>
+
 #### Biomes 🌍
 ***Seven unique*** biomes with different features and characteristics.  
 
@@ -142,7 +162,11 @@ Moncraft implements transparent blocks such as `Water_Block` and more are to com
 ***
 ### 3D Chunks
 It's not a big it's ***literally a feature***.
-/*IMAGE HERE*/
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/OopsOverflow/MonCraft/main/screeshots/chunk3d.png?token=ARYPWFGFYCVNEZMXHKKIH5LAVFQTA" alt="3d"/>
+</p>
+
 ***
 ### Eargasmic Music 🎶
 Royalty-free high definition music that fits the game's atmosphere. 🥚
@@ -170,9 +194,24 @@ Under `src/terrain/terrain.hpp`.
 ***
 ### Player and World Animations
 #### Block Breaking ⛏
-/*Imlage*/
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/OopsOverflow/MonCraft/main/screeshots/chunk3d.png?token=ARYPWFGFYCVNEZMXHKKIH5LAVFQTA" alt="3d"/>
+</p>
+
 ### Player Movement Animations
-/*Image*/
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/OopsOverflow/MonCraft/main/screeshots/wood.gif?token=ARYPWFGSN6C3OB3ZIBVNCRDAVFRHU" alt="wood"/>
+</p>
+
+### Water Surface Animation
+Using a custom made looping noise map.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/OopsOverflow/MonCraft/main/screeshots/water_normal.gif?token=ARYPWFEUZS4IN2LH5XUKGKDAVFRNG" alt="water"/>
+</p>
+
 ****
 
 
