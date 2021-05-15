@@ -18,9 +18,4 @@ struct Biome {
   float trees;
   float tallgrass;
   BiomeType type;
-
-
-  BlockType generate(); // first pass:
-  void decorate(); // ran after generation to add decorations and such
-  Structure::slices_t generateStructures(); // spawn structures
 };

@@ -14,22 +14,32 @@ class BiomeMap {
 
 public:
   BiomeMap();
+
+
+  /**
+   * Generates the whole biome map.
+   * This is to be called once. It is expensive.
+   */
   void generate();
 
+  /**
+   * Samples a position in the biome map and returns a Biome description that
+   * possibly blends multiple biomes if near an edge.
+   */
   Biome const& sampleWeighted(glm::ivec2 pos) const;
 private:
     // biome gen tuning
     int size = 1000;           // generated texture size
     int gridSize = 100;        // voronoi single cell size
     int displacement = 10;     // spatial displacement (distortion)
-    float biomeBlend = 15.f;     // distance to smooth biomes borders
+    float biomeBlend = 15.f;   // distance to smooth biomes borders
 
     // noises
-    SimplexNoise simplexX;                // samples space in x direction
-    SimplexNoise simplexY;                // samples space in y direction
-    SimplexNoise simplexBiome;            // samples biome type
-    VoronoiNoise voronoi;                 // voronoi cells
-    ValueNoise value;                     // simple random noise
+    SimplexNoise simplexX;       // samples space in x direction
+    SimplexNoise simplexY;       // samples space in y direction
+    SimplexNoise simplexBiome;   // samples biome type
+    VoronoiNoise voronoi;        // voronoi cells
+    ValueNoise value;            // simple random noise
 
     // helper types
     struct weightedBiome_t {

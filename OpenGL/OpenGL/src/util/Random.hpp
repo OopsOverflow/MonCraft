@@ -1,6 +1,4 @@
 #pragma once
-#ifndef RANDOM_HPP_INCLUDED
-#define RANDOM_HPP_INCLUDED
 
 #include <cstdint>
 #include <random>
@@ -35,5 +33,3 @@ namespace Random
         RandomEngine m_device;
     };
 }
-
-#endif // RANDOM_HPP_INCLUDED

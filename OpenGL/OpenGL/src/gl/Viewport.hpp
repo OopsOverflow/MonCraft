@@ -8,15 +8,33 @@
 
 #include <SDL2/SDL.h>
 
+/**
+ * The viewport is an abstration layer for the whole opengl context.
+ * Internally, it creates a SDL window and prepares the gl context.
+ * It handles all keyboard / mouse events through controllers.
+ * All SDL behavior is abstracted in the Viewport. Hence, the rest of the
+ * program is gui-independent.
+ */
+
 class Viewport
 {
 public:
+
+  /**
+   * Creates the SDL window with the given dimensions.
+   */
   Viewport(size_t width, size_t height);
   ~Viewport();
 
   static const int framerate; // fps in seconds
   static const int timePerFrame; // time per frame in millis
 
+  /**
+   * A frame update / draw must happen between a beginFrame() and endFrame().
+   * beginFrame returns true if the program must quit.
+   * a usual draw loop looks like the following:
+   * for(vp.beginFrame(dt);;vp.endFrame()) { // update & draw // }
+   */
   bool beginFrame(float& dt);
   void endFrame();
 

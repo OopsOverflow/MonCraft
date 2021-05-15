@@ -10,8 +10,8 @@
 #include <thread>
 using namespace std::chrono;
 
-#include "Shader.hpp"
-#include "Viewport.hpp"
+#include "gl/Shader.hpp"
+#include "gl/Viewport.hpp"
 #include "Noise.hpp"
 
 using namespace std::placeholders;
@@ -19,6 +19,15 @@ using glm::ivec2;
 using glm::vec2;
 using glm::vec3;
 using glm::vec4;
+
+
+/**
+ * /!\ LEGACY FILE /!\
+ * -------------------
+ * This file used to display a 2D biome map to demonstrate use of noise
+ * functions.
+ * It is kept for reference.
+ */
 
 class DisplayNoise {
 

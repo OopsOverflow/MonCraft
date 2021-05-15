@@ -21,16 +21,25 @@ public:
   using std::list<T>::end;
   using std::list<T>::size;
 
+  /**
+   * Adds a new element to the list.
+   */
   iter_t push(T const& val) {
     return list_t::insert(list_t::end(), val);
   }
 
+  /**
+   * Promote the element pointer to by the iterator it to the head.
+   */
   iter_t promote(iter_t it) {
     T val = *it;
     list_t::erase(it);
     return push(std::move(val));
   }
 
+  /**
+   * Removes the last element.
+   */
   void pop() {
     list_t::pop_front();
   }

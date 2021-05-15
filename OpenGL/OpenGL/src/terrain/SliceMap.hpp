@@ -4,15 +4,23 @@
 
 #include "Structure.hpp"
 
+/**
+ * Stores all the slices to be later applied to chunks.
+ */
 class SliceMap {
 
 public:
-  // ~SliceMap();
   SliceMap();
 
+  /**
+   * Inserts slices in the map.
+   */
   void insert(std::vector<Structure::Slice> const& slices);
 
-  std::vector<Structure::Slice> pop(glm::ivec3 cpos);
+  /**
+   * Gives all the slices stored for a given chunk index and removes the entry.
+   */
+  Structure::slices_t pop(glm::ivec3 cpos);
 
 private:
 

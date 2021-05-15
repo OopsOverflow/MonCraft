@@ -75,7 +75,7 @@ int main(int argc, char* argv[]) {
         sunTime += t / 300.f * sunSpeed;
         glUniform1f(shader.getUniformLocation("sunTime"), sunTime * 400); // Fog Sampling Time
         // This is used instead to avoid Win/Linux conflicts
-        
+
         float distance = 100.f;
         auto sunDir = -normalize(vec3(cos(sunTime), 1, sin(sunTime))) * distance;
         shadows.update(sunDir);
@@ -134,7 +134,7 @@ int main(int argc, char* argv[]) {
 
         // draw the terrain
         window.camera.activate();
-        shadows.activate(shader);
+        // shadows.activate(shader);
         terrain.render();
 
         // dot in the middle of the screen

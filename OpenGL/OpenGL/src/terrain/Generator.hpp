@@ -20,6 +20,11 @@ public:
   * Generates a chunk at the given chunk index.
   */
   std::unique_ptr<Chunk> generate(glm::ivec3 cpos) const;
+
+  /**
+  * Generates the structures inside the given chunk.
+  * returns a list of slices to be applied to the chunks. 
+  */
   Structure::slices_t generateStructures(glm::ivec3 cpos, Chunk& chunk) const;
 
 private:

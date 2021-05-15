@@ -10,7 +10,7 @@ void SliceMap::insert(std::vector<Structure::Slice> const& slices) {
   }
 }
 
-std::vector<Structure::Slice> SliceMap::pop(glm::ivec3 cpos) {
+Structure::slices_t SliceMap::pop(glm::ivec3 cpos) {
   std::lock_guard<std::mutex> lck(slicesMutex);
   std::vector<Structure::Slice> slices = {};
   auto it = map.find(cpos);

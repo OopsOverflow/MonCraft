@@ -77,7 +77,7 @@ GLuint Loader::loadTexture(const std::string& fileName) {
     return textureID;
 }
 
-GLuint Loader::loadCubeMap(std::vector<std::string> faces)
+GLuint Loader::loadCubeMap(const std::vector<std::string>& faces)
 {
     GLuint textureID;
     glGenTextures(1, &textureID);
@@ -85,7 +85,7 @@ GLuint Loader::loadCubeMap(std::vector<std::string> faces)
 
     for (unsigned int i = 0; i < faces.size(); i++)
     {
-        std::string path = "data/img/" + faces[i];
+        std::string path = "data/img/" + faces.at(i);
         SDL_Surface* img = IMG_Load(path.c_str());
         SDL_Surface* rgbImg = SDL_ConvertSurfaceFormat(img, SDL_PIXELFORMAT_RGBA32, 0);
         if (rgbImg)
