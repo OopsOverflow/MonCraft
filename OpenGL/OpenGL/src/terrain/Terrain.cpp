@@ -2,10 +2,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <algorithm>
 
-using glm::ivec2;
-using glm::ivec3;
-using glm::vec3;
-using glm::vec2;
+using namespace glm;
 using namespace std::chrono_literals;
 
 int distance(ivec3 a, ivec3 b) {
@@ -206,10 +203,6 @@ void Terrain::genWorker() {
 }
 
 void Terrain::update(glm::vec3 pos, glm::vec3 dir, float fovX) {
-  playerPos = pos;
-  viewDir = glm::normalize(dir);
-  this->fovX = glm::radians(fovX);
-
   ivec3 newChunkPos = floor(pos / float(chunkSize));
   setChunkPos(newChunkPos);
 
@@ -221,33 +214,32 @@ void Terrain::update(glm::vec3 pos, glm::vec3 dir, float fovX) {
   });
 }
 
-void Terrain::render() {
-  ivec3 cpos = chunkPos;
-  vec2 viewDir2D = glm::normalize(vec2(viewDir.x, viewDir.z));
-  ivec3 startChunk = cpos - ivec3(glm::sign(viewDir));
+void Terrain::render(Camera const& camera) {
+  std::vector<std::pair<float, std::shared_ptr<Chunk>>> toRender;
 
-  // draw solid and update chunks
   chunkMap.for_each([&](std::shared_ptr<Chunk> chunk) {
-    ivec3 chunkDir3D = chunk->chunkPos - startChunk;
-    vec2 chunkDir = glm::normalize(vec2(chunkDir3D.x, chunkDir3D.z));
+    vec3 worldChunkPos = vec3(chunk->chunkPos * chunkSize);
+    vec3 chunkCenter = worldChunkPos + vec3(chunkSize) / 2.f;
 
-    float minDot = cos(fovX);
-    if(distance(chunk->chunkPos, cpos) < 2 || glm::dot(chunkDir, viewDir2D) > minDot) {
-      chunk->update();
-      chunk->drawSolid();
+    vec4 posCamSpace = camera.view * vec4(chunkCenter, 1.0f);
+    static const float tolerance = chunkSize * .5f * sqrt(3.f);
+    if(camera.chunkInView(posCamSpace,tolerance)) {
+      toRender.emplace_back(-posCamSpace.z, chunk);
     }
   });
 
-  // draw transparent chunks
-  chunkMap.for_each([&](std::shared_ptr<Chunk> chunk) {
-    ivec3 chunkDir3D = chunk->chunkPos - startChunk;
-    vec2 chunkDir = glm::normalize(vec2(chunkDir3D.x, chunkDir3D.z));
-
-    float minDot = cos(fovX);
-    if(distance(chunk->chunkPos, cpos) < 2 || glm::dot(chunkDir, viewDir2D) > minDot) {
-      chunk->drawTransparent();
-    }
+  std::sort(toRender.begin(), toRender.end(), [](auto& a, auto& b) {
+    return a.first > b.first; // sort back-to-front (far chunks first)
   });
+
+  for(auto& pair : toRender) {
+    pair.second->update();
+    pair.second->drawSolid();
+  }
+  auto viewDir = camera.center - camera.position;
+  for(auto& pair : toRender) {
+    pair.second->drawTransparent(viewDir);
+  }
 }
 
 Block* Terrain::getBlock(ivec3 pos) {

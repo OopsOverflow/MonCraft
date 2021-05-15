@@ -29,8 +29,8 @@ float computeShadow(int i) {
   float dotNormal = dot(normalize(lightDirection), normal);
 
   // float bias = 0.0;
-  float bmin = 0.0001;
-  float bmax = 0.0005;
+  float bmin = 0.00001;
+  float bmax = 0.00005;
   float bias = max(bmax * (1.0 - dotNormal), bmin);
   float currentDepth = shadowCoords[i].z * 0.5 + 0.5;
   vec2 texelSize = 1.0 / textureSize(shadowSampler[i], 0) / 2;
@@ -183,11 +183,12 @@ void main() {
     outputColor.rgb *=vec3(127.0f/255, 148.0f/255, 1.0f) ;
   }
   // show in which shadow cascade we are
-  // for (int i = 0 ; i < 3 ; i++) {
-  //   if (gl_FragCoord.z <= clipCascadeEndZ[i]) {
-  //     outputColor[i] += 0.2;
-  //   }
-  // }
+ for (int i = 0 ; i < 3; i++) {
+    if (texture(shadowSampler[i], shadowCoords[i].xy * 0.5 + 0.5).r != 1.0) {
+      outputColor[i] += 0.2;
+      break;
+    }
+  }
 
   if(outputColor.a < 0.1) {
     discard;

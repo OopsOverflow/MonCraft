@@ -41,15 +41,10 @@ float linearizeDepth(float depth) { // https://learnopengl.com/Advanced-OpenGL/D
     return (2.0 * near * far) / (far + near - z * (far - near)) / far;
 }
 
-void ShadowMap::attach(Camera const& cam) {
+void ShadowMap::attach(Camera const& cam, Frustum frustum) {
 
-  std::vector<vec3> corners[] = {
-    cam.getBoxCorners(Frustum::NEAR),
-    cam.getBoxCorners(Frustum::MEDIUM),
-    cam.getBoxCorners(Frustum::FAR),
-  };
+    std::vector<vec3> corners = cam.getBoxCorners(frustum);
 
-  for (size_t i = 0; i < 3; i++) {
     float minX = FLT_MAX;
     float maxX = -FLT_MAX;
     float minY = FLT_MAX;
@@ -57,7 +52,7 @@ void ShadowMap::attach(Camera const& cam) {
     float minZ = FLT_MAX;
     float maxZ = -FLT_MAX;
 
-    for (auto vec : corners[i]) {
+    for (auto vec : corners) {
       vec = vec3(camera.view * vec4(vec, 1.0f));
       minX = min(vec.x, minX);
       maxX = max(vec.x, maxX);
@@ -68,10 +63,9 @@ void ShadowMap::attach(Camera const& cam) {
     }
 
     //render out of the view in case we have to cast shadows from a moutain
-    float box[6] = { minX, maxX, minY, maxY, 2 * minZ - maxZ, maxZ };
+    float box[6] = { minX, maxX, minY, maxY, 5 * minZ - 4 * maxZ, maxZ };
     camera.setProjectionType(Projection::CUSTOM_PROJECTION, box);
-    shadowMatrices[i] = camera.projection * camera.view;
-  }
+    if(frustum != Frustum::ALL)shadowMatrices[(size_t)frustum] = camera.projection * camera.view;
 }
 
 void ShadowMap::beginFrame(Frustum frustum) {

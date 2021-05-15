@@ -10,8 +10,8 @@ TallgrassGeometry* TallgrassGeometry::get() {
 
 
 void TallgrassGeometry::generateMesh(glm::ivec3 pos, Block* block, std::array<Block*, 26> const& neighbors, MeshData& data) const {
+  auto& _ind = data.indicesTranspX; // COMBAK: does this have importance ?
   auto& _scheme = data.scheme;
-  auto& _ind  = data.indices;
   auto& _pos  = data.positions;
   auto& _norm = data.normals;
   auto& _uvs  = data.textureCoords;

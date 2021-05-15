@@ -31,8 +31,12 @@ std::array<GLfloat, 4> DefaultBlockGeometry::genOcclusion(glm::ivec3 pos, std::a
 }
 
 void DefaultBlockGeometry::genFace(glm::ivec3 pos, BlockFace face, Block* block, std::array<Block*, 26> const& neighbors, MeshData& data) const {
+  auto& _ind =
+    !block->isTransparent() ? data.indicesSolid :
+    face == BlockFace::LEFT || face == BlockFace::RIGHT ? data.indicesTranspX :
+    face == BlockFace::TOP || face == BlockFace::BOTTOM ? data.indicesTranspY :
+    data.indicesTranspZ;
   auto& _scheme = data.scheme;
-  auto& _ind  = data.indices;
   auto& _pos  = data.positions;
   auto& _norm = data.normals;
   auto& _uvs  = data.textureCoords;
@@ -174,12 +178,12 @@ const std::array<std::array<int, 8>, 6> DefaultBlockGeometry::blockOcclusionOffs
 // the ints stored are indices to a neighbor in a neighbor array (see Chunk.hpp neighbors)
 const std::array<std::pair<int, BlockFace>, 6> DefaultBlockGeometry::blockFaceOffsets = {
   std::pair<int, BlockFace>
-  {8, BlockFace::RIGHT},
   {17, BlockFace::LEFT},
-  {2, BlockFace::TOP},
+  {8, BlockFace::RIGHT},
   {5, BlockFace::BOTTOM},
-  {0, BlockFace::FRONT},
+  {2, BlockFace::TOP},
   {1, BlockFace::BACK},
+  {0, BlockFace::FRONT},
 };
 
 const face_t<2> DefaultBlockGeometry::faceNormalMap = {

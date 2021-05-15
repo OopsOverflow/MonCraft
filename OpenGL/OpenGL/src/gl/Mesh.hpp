@@ -7,7 +7,7 @@
 
 struct MeshData {
   std::vector<GLuint> scheme;
-  std::vector<GLuint> indices;
+  std::vector<GLuint> indicesSolid, indicesTranspX, indicesTranspY, indicesTranspZ;
   std::vector<GLfloat> positions, normals, textureCoords, occlusion, normalMapCoords;
 };
 
@@ -33,6 +33,7 @@ public:
      * Creates using the given vectors of vertex data.
      */
     Mesh(MeshData const& data);
+
 
     /**
      * Creates a mesh from a vao / vbo / ebo and vertex count.

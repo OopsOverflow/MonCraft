@@ -79,18 +79,21 @@ int main(int argc, char* argv[]) {
         float distance = 100.f;
         auto sunDir = -normalize(vec3(cos(sunTime), 1, sin(sunTime))) * distance;
         shadows.update(sunDir);
-        shadows.attach(window.camera);
 
+        shadows.attach(window.camera, Frustum::NEAR);
         shadows.beginFrame(Frustum::NEAR);
-        terrain.render();
+        terrain.render(shadows.camera);
         character.render();
         shadows.endFrame();
+
+        shadows.attach(window.camera, Frustum::MEDIUM);
         shadows.beginFrame(Frustum::MEDIUM);
-        terrain.render();
-        character.render();
+        terrain.render(shadows.camera);
         shadows.endFrame();
+
+        shadows.attach(window.camera, Frustum::FAR);
         shadows.beginFrame(Frustum::FAR);
-        terrain.render();
+        terrain.render(shadows.camera);
         shadows.endFrame();
 
         // prepare render
@@ -135,7 +138,7 @@ int main(int argc, char* argv[]) {
         // draw the terrain
         window.camera.activate();
         shadows.activate(shader);
-        terrain.render();
+        terrain.render(window.camera);
 
         // dot in the middle of the screen
         glEnable(GL_SCISSOR_TEST);

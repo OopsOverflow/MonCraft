@@ -28,8 +28,8 @@ public:
   /**
    * Updates the shadow matrices using a sun direction.
    */
-  void attach(Camera const& cam);
-
+  void attach(Camera const& cam, Frustum frustum);
+  
   /**
    * Render of a given view frustum must be done between a beginFrame() /
    * endframe().

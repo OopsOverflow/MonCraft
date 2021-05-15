@@ -36,7 +36,7 @@ public:
   /**
   * Renders the visible chunks.
   */
-  void render();
+  void render(Camera const& camera);
 
   /**
   * Gets a block in the world.
@@ -78,11 +78,8 @@ private:
 
   Generator generator; // the chunk generator
 
-  glm::vec3 viewDir;   // player position
-  glm::vec3 playerPos; // player view direction
   glm::ivec3 chunkPos; // in which chunk the player is
   bool chunkPosChanged;
-  float fovX;
 
   // threading
   std::thread mainWorkerThread; // manages the queue of chunks to generate
