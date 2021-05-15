@@ -323,6 +323,10 @@
   <ItemGroup>
     <ResourceCompile Include="OpenGL.rc" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="src\shader\simple.frag" />
+    <None Include="src\shader\simple.vert" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

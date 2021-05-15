@@ -29,14 +29,14 @@ const octaves_t waterOctaves = {
 };
 
 BiomeMap::BiomeMap()
- : voronoi(20, gridSize),
-   value(10),
+ : voronoi(rand(), gridSize),
+   value(rand()),
    grid(size + 2 * displacement),
    map(size)
 {
-  simplexX.seed(10);
-  simplexY.seed(20);
-  simplexBiome.seed(30);
+  simplexX.seed(rand());
+  simplexY.seed(rand());
+  simplexBiome.seed(rand());
 
   biomePlains.elevation = 11;
   biomePlains.distortion = {};
@@ -118,9 +118,13 @@ void BiomeMap::generate() {
   });
 }
 
+#include "debug/Debug.hpp"
+
 Biome const& BiomeMap::sampleWeighted(glm::ivec2 pos) const {
-  
-    pos = abs(pos) % size;
+  pos += size / 2;
+  auto inversion = (abs(pos / size) % 2);
+  pos = (size-1) * inversion - abs(pos % size);
+  pos = abs(-pos);
   return map[pos];
 }
 

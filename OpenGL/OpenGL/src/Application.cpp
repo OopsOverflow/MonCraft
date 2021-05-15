@@ -25,6 +25,8 @@ using namespace glm;
 int main(int argc, char* argv[]) {
     std::cout << "----Main------\n";
 
+    std::srand(42);
+
     Viewport window(WIDTH, HEIGHT);
     Shader shader("src/shader/simple.vert", "src/shader/simple.frag");
     Terrain terrain;
@@ -68,9 +70,12 @@ int main(int argc, char* argv[]) {
 
         // draw the shadow map
 
-        float sunSpeed = 50.f;
+        float sunSpeed = 5.f;
         float sunTime = pi<float>() * .25f;
         sunTime += t / 300.f * sunSpeed;
+        glUniform1f(shader.getUniformLocation("sunTime"), sunTime * 400); // Fog Sampling Time
+        // This is used instead to avoid Win/Linux conflicts
+        
         float distance = 100.f;
         auto sunDir = -normalize(vec3(cos(sunTime), 1, sin(sunTime))) * distance;
         shadows.update(sunDir);

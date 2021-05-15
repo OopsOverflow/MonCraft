@@ -8,12 +8,9 @@ using namespace glm;
 
 Generator::Generator(int chunkSize)
   : chunkSize(chunkSize),
-    treeNoise(92847)
+    treeNoise(rand())
 {
-  noise.seed(27);
-  noiseX.seed(1156);
-  noiseY.seed(9848);
-  noiseZ.seed(21554);
+  noise.seed(rand());
   biomeSampler.generate();
 }
 

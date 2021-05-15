@@ -21,7 +21,7 @@ public:
 private:
     // biome gen tuning
     int size = 1000;           // generated texture size
-    int gridSize = 40;        // voronoi single cell size
+    int gridSize = 100;        // voronoi single cell size
     int displacement = 10;     // spatial displacement (distortion)
     float biomeBlend = 15.f;     // distance to smooth biomes borders
 
