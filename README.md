@@ -22,7 +22,9 @@ Talk about it here, how it works
 ### Shadow Engine 🌑
 MonCraft has a fully fledged shadow engine that makes the terrain look more beautiful and crisp.
 Shadows also give the terrain some realism and highlight its features. 
-/*SCREEN HERE*/
+
+![Shadows](https://raw.githubusercontent.com/OopsOverflow/MonCraft/main/screeshots/shadows.png?token=ARYPWFB65TAS54BXX3AXBTDAVFAKK)
+
 ***
 ### 3D Fog
 
@@ -33,7 +35,10 @@ The fog implementation **augments** the terrain features like depth and curve it
 
 The fog density depends on the direction of the sun, and the amount of global illumination in the area.
 The areas with less lighting have a more dense fog.
-/*PICTURE HERE*/
+
+
+![Compare](https://raw.githubusercontent.com/OopsOverflow/MonCraft/main/screeshots/fog.png?token=ARYPWFFCNL3AWIZRAZC7A5TAVFCBE)
+Same place, different direction
 
 ❓ How it works?
 ```glsl
@@ -42,10 +47,19 @@ The areas with less lighting have a more dense fog.
                               vec3(1.0,0.9,0.7), // yellowish
                               pow(sunAmount,8.0) );
 ```
+`Fractal Brownian Motion` also makes the fog depend on the day/night cycle. 
+
+![Compare](https://raw.githubusercontent.com/OopsOverflow/MonCraft/main/screeshots/fogmoving.gif?token=ARYPWFBSOC6AN7BMOOJFLILAVFCEE)
+Fog moving
+
 #### But Wait There's More 💣
 *`Fractal Brownian Motion`* was also implemented to give fog some procedurally generated animation.
 
-<img src="https://latex.codecogs.com/gif.latex?f(p) = fbm( p + fbm( p + fbm( p ) ) ) " /> 
+![FBM](https://raw.githubusercontent.com/OopsOverflow/MonCraft/main/screeshots/fbm.gif?token=ARYPWFADLFC6NW7ZYAHMLDTAVFACK)
+
+```math
+f(p) = fbm( p + fbm( p + fbm( p ) ) ) 
+```
 
 This gives fog a **crisp realistic effect**.
 
