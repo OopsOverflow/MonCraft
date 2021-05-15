@@ -7,7 +7,7 @@ Entity::Entity(Hitbox hitbox)
 : maxSpeed(4.3f), maxAccel(10.f), verticalFriction(5.5f), horizontalFriction(5.f),
 	gravity(32.f), jumpSpeed(10.5f), maxFallSpeed(78.4f),
 	speed(0), accel(0),
-	onFloor(false), god(false), sprint(false),
+	onFloor(false), god(true), sprint(false),
 	state(State::Idle),
 	hitbox(std::move(hitbox)),
 	playerFovY(45.0f)
@@ -102,7 +102,7 @@ void Entity::update(Terrain& terrain, float dt) {
 		vec2 speedXZ = vec2(speed.x, speed.z);
 		if (god) {
 			maxSpeed = maxSpeed - (maxSpeed - 10.89f) * 3.0f * dt;
-			if (sprint) maxSpeed = 10.89f * 2.0f;
+			if (sprint) maxSpeed = 10.89f * 20.0f;
 		}
 		else {
 			maxSpeed = maxSpeed - (maxSpeed - 4.317f) * 3.0f *dt;
@@ -122,12 +122,12 @@ void Entity::update(Terrain& terrain, float dt) {
 	// check collisions
 	{
 		// update position
-		float displ = trunc(length(posOffset));
-		vec3 newPos = node.loc;
-		for (size_t i = 0; i < displ; i += 1) {
-			newPos = hitbox.computeCollision(newPos, normalizeOrZero(posOffset), terrain);
-		}
-		newPos = hitbox.computeCollision(newPos, posOffset - displ * normalizeOrZero(posOffset), terrain);
+		// float displ = trunc(length(posOffset));
+		vec3 newPos = node.loc + posOffset;
+		// for (size_t i = 0; i < displ; i += 1) {
+		// 	newPos = hitbox.computeCollision(newPos, normalizeOrZero(posOffset), terrain);
+		// }
+		// newPos = hitbox.computeCollision(newPos, posOffset - displ * normalizeOrZero(posOffset), terrain);
 		vec3 off = newPos - (node.loc + posOffset);
 		node.loc = newPos;
 
