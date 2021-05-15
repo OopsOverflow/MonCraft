@@ -285,15 +285,14 @@ bool Camera::chunkInView(glm::vec3 posCamSpace, float tolerance) const {
     else if (projType == Projection::CUSTOM_PROJECTION) {
         bool inFrustum = true;
 
+        inFrustum &= posCamSpace.x - tolerance > custumProjBox[0];
+        inFrustum &= posCamSpace.x + tolerance < custumProjBox[1];
+        inFrustum &= posCamSpace.y - tolerance > custumProjBox[2];
+        inFrustum &= posCamSpace.y + tolerance < custumProjBox[3];
+        inFrustum &= posCamSpace.z - tolerance > custumProjBox[4];
+        inFrustum &= posCamSpace.z + tolerance < custumProjBox[5];
 
-        inFrustum &= posCamSpace.x + tolerance > custumProjBox[0];
-        inFrustum &= posCamSpace.x - tolerance < custumProjBox[1];
-        inFrustum &= posCamSpace.y + tolerance > custumProjBox[2];
-        inFrustum &= posCamSpace.y - tolerance < custumProjBox[3];
-        inFrustum &= posCamSpace.z + tolerance > custumProjBox[4];
-        inFrustum &= posCamSpace.z - tolerance < custumProjBox[5];
-
-        return inFrustum;
+        return 1; //TODO we don't manage to make it work
     }
     bool inFrustum = true;
     auto farChunkZ = posCamSpace.z - tolerance;
