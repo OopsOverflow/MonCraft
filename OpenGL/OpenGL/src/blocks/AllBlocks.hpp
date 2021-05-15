@@ -29,7 +29,7 @@ public:
   * correctly inserted it the array.
   */
   static Block::unique_ptr_t create_static(BlockType type) {
-    static std::array<Block*(*)(), 10> factories {
+    static std::array<Block*(*)(), 12> factories {
       (Block*(*)())Air_Block::get,
       (Block*(*)())Grass_Block::get,
       (Block*(*)())Dirt_Block::get,
@@ -40,6 +40,8 @@ public:
       (Block*(*)())Sand_Block::get,
       (Block*(*)())Sandstone_Block::get,
       (Block*(*)())Snow_Block::get,
+      (Block*(*)())Tallgrass_Block::get,
+      (Block*(*)())Water_Block::get,
     };
     auto index = (size_t)type;
     if(index > factories.size()) {
