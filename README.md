@@ -196,13 +196,13 @@ Under `src/terrain/terrain.hpp`.
 #### Block Breaking ⛏
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/OopsOverflow/MonCraft/main/screeshots/chunk3d.png?token=ARYPWFGFYCVNEZMXHKKIH5LAVFQTA" alt="3d"/>
+  <img src="https://raw.githubusercontent.com/OopsOverflow/MonCraft/main/screeshots/wood.gif?token=ARYPWFFMXHXCPIFVXHD4D3DAVFTEW" alt="3d"/>
 </p>
 
 ### Player Movement Animations
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/OopsOverflow/MonCraft/main/screeshots/wood.gif?token=ARYPWFGSN6C3OB3ZIBVNCRDAVFRHU" alt="wood"/>
+  <img src="https://raw.githubusercontent.com/OopsOverflow/MonCraft/main/screeshots/animat.png?token=ARYPWFB7IIPDB2L2MY4VEO3AVFTCY" alt="wood"/>
 </p>
 
 ### Water Surface Animation
