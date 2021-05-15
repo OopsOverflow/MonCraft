@@ -10,14 +10,29 @@
 
 typedef std::unique_ptr<Mesh> ptr2mesh;
 
+/**
+ * A texture loader.
+ */
 
 class Loader
 {
 public:
     ~Loader();
 
+    /**
+     * Loads the texture with the given filename (must be a .png file and
+     * filename must NOT include the file extension).
+     * The generated texture will load the custom mipmaps if they exist, or
+     * generate them by default.
+     * (files <filename>1.png -- <filename>N.png are the N mipmap levels)
+     */
     GLuint loadTexture(const std::string& fileName);
-    GLuint loadCubeMap(std::vector<std::string> faces);
+
+    /**
+     * Loads the cube map texture. faces holds a list of the filenames for the
+     * cubemap.
+     */
+    GLuint loadCubeMap(const std::vector<std::string>& faces);
 
 private:
     void bindIndexBuffer(const std::vector<GLuint>& indices);

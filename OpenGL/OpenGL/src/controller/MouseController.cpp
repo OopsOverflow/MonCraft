@@ -60,7 +60,11 @@ void MouseController::apply(Character& character, Terrain& terrain) {
     case Action::DESTROY:
       character.breakBlock(terrain);
       break;
+    case Action::PICK:
+      character.pickBlock(terrain);
+      break;
     default:
+      std::cout << "MouseController: Action not supported." << std::endl;
       break;
   };
   actions = {};

@@ -4,13 +4,13 @@ using namespace glm;
 static const mat4 I(1.f);
 
 Entity::Entity(Hitbox hitbox)
-: maxSpeed(4.3f), maxAccel(10.f), verticalFriction(5.5f), horizontalFriction(5.f),
+: view(View::FIRST_PERSON), state(State::Idle), god(true), sprint(false),
+	maxSpeed(4.3f), maxAccel(10.f), verticalFriction(5.5f), horizontalFriction(5.f),
 	gravity(32.f), jumpSpeed(10.5f), maxFallSpeed(78.4f),
-	speed(0), accel(0),
-	onFloor(false), god(true), sprint(false),
-	state(State::Idle),
-	hitbox(std::move(hitbox)),
-	playerFovY(45.0f)
+	playerFovY(45.0f),
+	speed(0), accel(0), direction(0),
+  onFloor(false),
+	hitbox(std::move(hitbox))
 {}
 
 Entity::~Entity() {}

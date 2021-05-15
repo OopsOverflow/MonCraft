@@ -9,16 +9,16 @@
 /**
  * A 2D data store.
  *
- * Stores data of type T in a 2D array of given dimensions.
- * Manages memory and allows iterating the stored points.
- * Defines Bitmap that holds an RGB8 image.
+ * Stores data of type T in a N-dimentional array of fixed size.
+ * Manages memory and allows iterating the stored elements.
  */
 
 template<typename T, int N>
 class DataStore {
 public:
+
   /**
-   * An unitialized 2D data store.
+   * An unitialized 2D data store of given size.
    */
   DataStore(glm::vec<N, int> size)
       : size(size), map(nullptr)
@@ -29,6 +29,10 @@ public:
     map = new T[mapSize];
   }
 
+
+  /**
+   * Constructs a DataStore of given size along all dimensions.
+   */
   DataStore(int size) : DataStore(glm::vec<N, int>(size))
   { }
 
@@ -80,7 +84,10 @@ public:
     return map[index];
   }
 
-  T const&operator[](glm::vec<N, int> pos) const {
+  /**
+   * Gets the data stored at pos. (unsafe)
+   */
+  T const& operator[](glm::vec<N, int> pos) const {
     auto index = 0;
     auto acc = 1;
     for(auto i = 0; i < N - 1; i++) {
@@ -98,6 +105,10 @@ public:
     return map;
   }
 
+  /**
+   * Gets the raw pointer data (motable)
+   * /!\ proceed with care when manipulating the internal memory.
+   */
   T* mut_c_ptr() {
     return map;
   }
