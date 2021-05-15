@@ -39,6 +39,8 @@ public:
 
   std::vector<glm::vec3> getBoxCorners(Frustum frustum) const;
 
+  bool chunkInView(glm::vec3 posCamSpace, float tolerance) const;
+
 public:
   glm::mat4 view;
   glm::mat4 projection;
@@ -54,6 +56,11 @@ protected:
   Projection projType;
 
 private:
+    float tanFovY;
+    float tanFovX;
+    float custumProjBox[6];
+
+
   void computeProjection(float box[6]);
   void computeProjection();
   void computeView();

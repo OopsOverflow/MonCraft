@@ -14,6 +14,7 @@ Camera::Camera(unsigned int width, unsigned int height, const glm::vec3 &positio
    projType(projType)
 {
 
+
   computeView();
   computeProjection();
 }
@@ -159,16 +160,27 @@ void Camera::computeProjection(float box[6]) {
 
   if (projType == Projection::PROJECTION_ORTHOGRAPHIC) {
     // kind of perspective division... To switch between persp & ortho.
-    float y = glm::length(center - position) * tan(glm::radians(fovY / 2.f));
+    tanFovY = tan(glm::radians(getFovY()) * 0.5);
+    tanFovX = tan(glm::radians(getFovX()) * 0.5);
+    float y = glm::length(center - position) * tanFovY;
     float x = y * aspect;
     projection = glm::ortho(-x, x, -y, y, 0.f, 1000.f);
   }
 
   else if (projType == Projection::PROJECTION_PERSPECTIVE) {
     projection = glm::perspective(glm::radians(fovY), aspect, near_, far_);
+    tanFovY = tan(glm::radians(getFovY()) * 0.5);
+    tanFovX = tan(glm::radians(getFovX()) * 0.5);
+
   }
   else {
     projection = glm::ortho(box[0], box[1], box[2], box[3], box[4], box[5]);
+    custumProjBox[0] = box[0];
+    custumProjBox[1] = box[1];
+    custumProjBox[2] = box[2];
+    custumProjBox[3] = box[3];
+    custumProjBox[4] = box[4];
+    custumProjBox[5] = box[5];
   }
 }
 
@@ -209,16 +221,16 @@ std::vector<glm::vec3> Camera::getBoxCorners(Frustum frustum) const {
     float x2;
 
     if (projType == Projection::PROJECTION_PERSPECTIVE) {
-        y1 = z1 * tan(glm::radians(fovY) * 0.5);
-        y2 = z2 * tan(glm::radians(fovY) * 0.5);
+        y1 = z1 * tanFovY;
+        y2 = z2 * tanFovY;
 
-        x1 = z1 * tan(glm::radians(getFovX()) * 0.5);
-        x2 = z2 * tan(glm::radians(getFovX()) * 0.5);
+        x1 = z1 * tanFovX;
+        x2 = z2 * tanFovX;
 
     }
     else if(projType == Projection::PROJECTION_ORTHOGRAPHIC) {
         float aspect = (float)screenWidth / (float)screenHeight;
-        float y = glm::length(center - position) * tan(glm::radians(fovY * 0.5f));
+        float y = glm::length(center - position) * tanFovY;
         float x = y * aspect;
 
         z1 = 0.0f;
@@ -251,3 +263,53 @@ std::vector<glm::vec3> Camera::getBoxCorners(Frustum frustum) const {
 
     return pos;
 }
+
+
+
+bool Camera::chunkInView(glm::vec3 posCamSpace, float tolerance) const {
+    if (projType == Projection::PROJECTION_PERSPECTIVE) {
+        bool inFrustum = true;
+        auto farChunkZ = posCamSpace.z - tolerance;
+        auto frustumXDelta = farChunkZ * tanFovX;
+        auto frustumYDelta = farChunkZ * tanFovY;
+        inFrustum &= posCamSpace.z - tolerance < -near_;
+        inFrustum &= posCamSpace.z + tolerance > -far_;
+        inFrustum &= posCamSpace.x - tolerance < -frustumXDelta;
+        inFrustum &= posCamSpace.x + tolerance > frustumXDelta;
+        inFrustum &= posCamSpace.y - tolerance < -frustumYDelta;
+        inFrustum &= posCamSpace.y + tolerance > frustumYDelta;
+
+        return inFrustum;
+    }
+    else if (projType == Projection::CUSTOM_PROJECTION) {
+        bool inFrustum = true;
+        auto farChunkZ = posCamSpace.z - tolerance;
+
+        inFrustum &= posCamSpace.x - tolerance < custumProjBox[0];
+        inFrustum &= posCamSpace.x + tolerance > custumProjBox[1];
+        inFrustum &= posCamSpace.y - tolerance < custumProjBox[2];
+        inFrustum &= posCamSpace.y + tolerance > custumProjBox[3];
+        inFrustum &= posCamSpace.z - tolerance < custumProjBox[4];
+        inFrustum &= posCamSpace.z + tolerance > custumProjBox[5];
+
+        return inFrustum;
+    }
+    bool inFrustum = true;
+    auto farChunkZ = posCamSpace.z - tolerance;
+    float aspect = (float)screenWidth / (float)screenHeight;
+    float y = glm::length(center - position) * tanFovY;
+    float x = y * aspect;
+
+    inFrustum &= posCamSpace.x - tolerance < -x;
+    inFrustum &= posCamSpace.x + tolerance > x;
+    inFrustum &= posCamSpace.y - tolerance < -y;
+    inFrustum &= posCamSpace.y + tolerance > y;
+    inFrustum &= posCamSpace.z - tolerance < 0.0f;
+    inFrustum &= posCamSpace.z + tolerance > 1000.0f;
+
+    return inFrustum;
+
+
+}
+
+

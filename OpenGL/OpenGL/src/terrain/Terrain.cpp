@@ -222,20 +222,8 @@ void Terrain::render(Camera const& camera) {
     vec3 chunkCenter = worldChunkPos + vec3(chunkSize) / 2.f;
 
     vec4 posCamSpace = camera.view * vec4(chunkCenter, 1.0f);
-
     static const float tolerance = 8.f * sqrt(3.f);
-    bool inFrustum = true;
-    auto farChunkZ = posCamSpace.z - tolerance;
-    auto frustumXDelta = farChunkZ * tan(radians(camera.getFovX()) / 2.f);
-    auto frustumYDelta = farChunkZ * tan(radians(camera.getFovY()) / 2.f);
-    inFrustum &= posCamSpace.z - tolerance < -camera.near_;
-    inFrustum &= posCamSpace.z + tolerance > -camera.far_;
-    inFrustum &= posCamSpace.x - tolerance < -frustumXDelta;
-    inFrustum &= posCamSpace.x + tolerance >  frustumXDelta;
-    inFrustum &= posCamSpace.y - tolerance < -frustumYDelta;
-    inFrustum &= posCamSpace.y + tolerance >  frustumYDelta;
-
-    if(inFrustum) {
+    if(camera.chunkInView(posCamSpace,tolerance)) {
       toRender.emplace_back(-posCamSpace.z, chunk);
     }
   });
