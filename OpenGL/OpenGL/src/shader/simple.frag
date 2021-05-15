@@ -9,6 +9,7 @@ smooth in vec2 txrCoords;
 smooth in vec2 normalCoords;
 smooth in vec3 shadowCoords[3];
 smooth in mat3 TBN;
+smooth in vec3 fogColor;
 
 // COMBAK: for some reason on windows these require an explicit location once at least 1 uniform in the program is explicit
 layout(location = 10) uniform vec3 lightDirection;
@@ -56,6 +57,15 @@ float linearizeDepth(float depth) { // https://learnopengl.com/Advanced-OpenGL/D
 
 void main() {
 
+  // Fog Calc
+    float b = 0.0009f;  // fallof of the fog density
+    float c = 0.5f;     // integration constant, varies distance of fallof
+    float distance = (vertexPosition.y);
+    float fogAmounty = c * exp(vertexPosition.z*b) * (1.0f-exp( vertexPosition.z*lightDirection.y*b ))/lightDirection.y;
+    c =1.0f;
+    b = 0.0019f;
+    float fogAmountz = c * exp(-vertexPosition.z*b) * (1.0-exp( -vertexPosition.z*lightDirection.z*b ))/lightDirection.y;
+
   vec3 normalizedLightDirection = normalize(lightDirection);
 
   vec3 normal = normalize(TBN * (texture(normalMap ,normalCoords).rgb *2.0 -1.0));
@@ -72,6 +82,9 @@ void main() {
 
   // Textures
   outputColor = texture(textureSampler, txrCoords);
+
+  // Fog
+  outputColor = mix( outputColor, vec4(fogColor, 0.0f), fogAmountz + fogAmounty);
 
   // shadow
 
