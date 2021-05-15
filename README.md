@@ -23,7 +23,11 @@ Talk about it here, how it works
 MonCraft has a fully fledged shadow engine that makes the terrain look more beautiful and crisp.
 Shadows also give the terrain some realism and highlight its features. 
 
-![Shadows](https://raw.githubusercontent.com/OopsOverflow/MonCraft/main/screeshots/shadows.png?token=ARYPWFB65TAS54BXX3AXBTDAVFAKK)
+<p align="center">
+  <img src="https://raw.githubusercontent.com/OopsOverflow/MonCraft/main/screeshots/shadows.png?token=ARYPWFB65TAS54BXX3AXBTDAVFAKK" alt="shadows"/>
+</p>
+
+
 
 ***
 ### 3D Fog
@@ -36,9 +40,11 @@ The fog implementation **augments** the terrain features like depth and curve it
 The fog density depends on the direction of the sun, and the amount of global illumination in the area.
 The areas with less lighting have a more dense fog.
 
+***Same place, different direction :***
+<p align="center">
+  <img src="https://raw.githubusercontent.com/OopsOverflow/MonCraft/main/screeshots/fog.png?token=ARYPWFFCNL3AWIZRAZC7A5TAVFCBE" alt="fog"/>
+</p>
 
-![Compare](https://raw.githubusercontent.com/OopsOverflow/MonCraft/main/screeshots/fog.png?token=ARYPWFFCNL3AWIZRAZC7A5TAVFCBE)
-Same place, different direction
 
 ❓ How it works?
 ```glsl
@@ -49,13 +55,17 @@ Same place, different direction
 ```
 `Fractal Brownian Motion` also makes the fog depend on the day/night cycle. 
 
-![Compare](https://raw.githubusercontent.com/OopsOverflow/MonCraft/main/screeshots/fogmoving.gif?token=ARYPWFBSOC6AN7BMOOJFLILAVFCEE)
-Fog moving
+***Fog moving :*** 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/OopsOverflow/MonCraft/main/screeshots/fogmoving.gif?token=ARYPWFBSOC6AN7BMOOJFLILAVFCEE" alt="shadows"/>
+</p>
 
 #### But Wait There's More 💣
 *`Fractal Brownian Motion`* was also implemented to give fog some procedurally generated animation.
 
-![FBM](https://raw.githubusercontent.com/OopsOverflow/MonCraft/main/screeshots/fbm.gif?token=ARYPWFADLFC6NW7ZYAHMLDTAVFACK)
+<p align="center">
+  <img src="https://raw.githubusercontent.com/OopsOverflow/MonCraft/main/screeshots/fbm.gif?token=ARYPWFADLFC6NW7ZYAHMLDTAVFACK" alt="fbm"/>
+</p>
 
 ```math
 f(p) = fbm( p + fbm( p + fbm( p ) ) ) 
