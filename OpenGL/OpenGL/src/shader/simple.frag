@@ -11,9 +11,9 @@ smooth in vec3 shadowCoords[3];
 smooth in mat3 TBN;
 smooth in vec3 fogColor;
 
-// COMBAK: for some reason on windows these require an explicit location once at least 1 uniform in the program is explicit
-layout(location = 10) uniform vec3 lightDirection;
-layout(location = 11) uniform float lightIntensity;
+
+uniform vec3 lightDirection;
+uniform float lightIntensity;
 
 uniform sampler2D textureSampler;
 uniform sampler2D normalMap;

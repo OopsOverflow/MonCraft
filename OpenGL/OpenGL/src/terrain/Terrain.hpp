@@ -73,7 +73,7 @@ private:
     }
   };
 
-  // TODO: should we use runtime alloc instead of compile-time ?
+  // TODO: should we use runtime alloc instead of compile-time ? Post release
   using WaitingList = AtomicCyclicList<glm::ivec3, (2*renderDistH+1)*(2*renderDistH+1)*(2*renderDistV+1)>;
 
   Generator generator; // the chunk generator

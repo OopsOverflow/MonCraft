@@ -81,7 +81,7 @@ glm::ivec3 Terrain::getChunkPos() {
 }
 
 void Terrain::setChunkPos(glm::ivec3 cpos) {
-  // std::lock_guard<std::mutex> lck(posMutex); // TODO: is this dangerous ?
+  // std::lock_guard<std::mutex> lck(posMutex);
   if(cpos != chunkPos) {
     chunkPos = cpos;
     chunkPosChanged = true;

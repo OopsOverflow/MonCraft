@@ -25,7 +25,7 @@ public:
 
   /**
    * Calls Fn for each data point stored.
-   * @param fn() //  TODO
+   * @param fn() function which takes position and value for each element
    */
   template <class Fn>
   Fn for_each(Fn f) {
@@ -41,7 +41,7 @@ public:
 
   /**
    * Calls Fn for each data point stored asynchronously (multithreaded).
-   * @param fn()
+   * @param fn() function which takes position and value for each element
    */
   template <class Fn>
   void for_each_parallel(Fn f) {

@@ -75,7 +75,6 @@ std::vector<Structure::Slice> Generator::generateStructures(ivec3 cpos, Chunk& c
     for(dpos.z = 0; dpos.z < chunkSize; dpos.z++) {
 
       ivec2 posXZ(orig.x + dpos.x, orig.z + dpos.z);
-      // auto biome = biomeSampler.at(posXZ); // TODO
 
       for(dpos.y = 0; dpos.y < chunkSize; dpos.y++) {
 

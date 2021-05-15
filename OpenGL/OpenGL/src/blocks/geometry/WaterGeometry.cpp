@@ -277,7 +277,7 @@ const std::array<std::array<int, 2>, 4> WaterGeometry::checkNeighbors = {
 
 };
 
-//TODO
+//TODO post release maybe
 const face_t<2> WaterGeometry::faceNormalMap = {
     1.f, 0.f,
     0.f, 0.f,
