@@ -93,19 +93,20 @@ void ShadowMap::endFrame() {
 }
 
 void ShadowMap::activate(Shader const& shader) {
+  //GL_TEXTURE0 is block texture, GL_TEXTURE1 is normalMap texture
   GLint shadowSampler = shader.getUniformLocation("shadowSampler[0]");
-  glUniform1i(shadowSampler, 1);
-  glActiveTexture(GL_TEXTURE1);
+  glUniform1i(shadowSampler, 2);
+  glActiveTexture(GL_TEXTURE2);
   glBindTexture(GL_TEXTURE_2D, depthTex[0]);
 
   shadowSampler = shader.getUniformLocation("shadowSampler[1]");
-  glUniform1i(shadowSampler, 2);
-  glActiveTexture(GL_TEXTURE2);
+  glUniform1i(shadowSampler, 3);
+  glActiveTexture(GL_TEXTURE3);
   glBindTexture(GL_TEXTURE_2D, depthTex[1]);
 
   shadowSampler = shader.getUniformLocation("shadowSampler[2]");
-  glUniform1i(shadowSampler, 3);
-  glActiveTexture(GL_TEXTURE3);
+  glUniform1i(shadowSampler, 4);
+  glActiveTexture(GL_TEXTURE4);
   glBindTexture(GL_TEXTURE_2D, depthTex[2]);
 
   glUniformMatrix4fv(MATRIX_SHADOWS, 3, GL_FALSE, (GLfloat*)shadowMatrices);

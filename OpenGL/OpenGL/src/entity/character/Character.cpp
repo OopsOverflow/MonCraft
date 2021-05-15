@@ -4,6 +4,7 @@
 #include "blocks/Dirt_Block.hpp"
 #include "blocks/Leaf_Block.hpp"
 #include "blocks/Tallgrass_Block.hpp"
+#include "blocks/Water_Block.hpp"
 
 using namespace glm;
 
@@ -37,9 +38,11 @@ void Character::breakBlock(Terrain& terrain) {
   vec3 eyePos = headNode.model * vec4(0, 4, 4, 1);
   vec3 eyeTarget = headNode.model * vec4(0, 4, 5, 1);
   auto cast = caster.cast(eyePos + .5f, eyeTarget - eyePos, terrain);
-
-  if(cast.success && cast.block->type != BlockType::Air) {
-    terrain.setBlock(cast.position, Block::create_static<Air_Block>());
+  if (cast.success) {
+      BlockType block = cast.block->type;
+      if (block != BlockType::Air && block != BlockType::Water) {
+          terrain.setBlock(cast.position, Block::create_static<Air_Block>());
+      }
   }
 }
 
@@ -48,10 +51,12 @@ void Character::placeBlock(Terrain& terrain) {
   vec3 eyeTarget = headNode.model * vec4(0, 4, 5, 1);
   auto cast = caster.cast(eyePos + .5f, eyeTarget - eyePos, terrain);
 
-  if(cast.success) { // TODO: will crash in chunk is unloaded
+  if(cast.success) {
     if(hitbox.collides(node.loc, cast.position + cast.normal)) return;
-    if(terrain.getBlock(cast.position + cast.normal)->type != BlockType::Air) return;
-    terrain.setBlock(cast.position + cast.normal, Block::create_static<Tallgrass_Block>());
+    Block* block = terrain.getBlock(cast.position + cast.normal);
+    if(!block) return;
+    if(block->type != BlockType::Air && block->type != BlockType::Water) return;
+    terrain.setBlock(cast.position + cast.normal, Block::create_static<Water_Block>());
   }
 }
 

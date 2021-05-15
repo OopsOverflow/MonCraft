@@ -19,6 +19,7 @@ enum class BlockType
     Sandstone,
     Snow,
     Tallgrass,
+    Water
 };
 
 enum class BlockFace { TOP, BOTTOM, FRONT, RIGHT, BACK, LEFT };

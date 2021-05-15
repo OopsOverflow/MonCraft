@@ -170,6 +170,7 @@
     <ClCompile Include="src\blocks\geometry\BlockGeometry.cpp" />
     <ClCompile Include="src\blocks\geometry\DefaultGeometry.cpp" />
     <ClCompile Include="src\blocks\geometry\TallgrassGeometry.cpp" />
+    <ClCompile Include="src\blocks\geometry\WaterGeometry.cpp" />
     <ClCompile Include="src\controller\KeyboardController.cpp" />
     <ClCompile Include="src\controller\MouseController.cpp" />
     <ClCompile Include="src\debug\Debug.cpp" />
@@ -211,6 +212,7 @@
     <ClInclude Include="src\blocks\geometry\BlockGeometry.hpp" />
     <ClInclude Include="src\blocks\geometry\DefaultGeometry.hpp" />
     <ClInclude Include="src\blocks\geometry\TallgrassGeometry.hpp" />
+    <ClInclude Include="src\blocks\geometry\WaterGeometry.hpp" />
     <ClInclude Include="src\blocks\Grass_Block.hpp" />
     <ClInclude Include="src\blocks\Ice_Block.hpp" />
     <ClInclude Include="src\blocks\Leaf_Block.hpp" />
@@ -219,6 +221,7 @@
     <ClInclude Include="src\blocks\Snow_Block.hpp" />
     <ClInclude Include="src\blocks\Stone_Block.hpp" />
     <ClInclude Include="src\blocks\Tallgrass_Block.hpp" />
+    <ClInclude Include="src\blocks\Water_Block.hpp" />
     <ClInclude Include="src\blocks\Wood_Block.hpp" />
     <ClInclude Include="src\controller\KeyboardController.hpp" />
     <ClInclude Include="src\controller\MouseController.hpp" />
@@ -285,6 +288,36 @@
     <Image Include="data\img\starting_atlas.png" />
     <Image Include="data\img\Testxture.png" />
     <Image Include="data\img\Texture_atlas.png" />
+    <Image Include="data\img\water\water_normal_1_frame.png" />
+    <Image Include="data\img\water\water_normal_10_frame.png" />
+    <Image Include="data\img\water\water_normal_11_frame.png" />
+    <Image Include="data\img\water\water_normal_12_frame.png" />
+    <Image Include="data\img\water\water_normal_13_frame.png" />
+    <Image Include="data\img\water\water_normal_14_frame.png" />
+    <Image Include="data\img\water\water_normal_15_frame.png" />
+    <Image Include="data\img\water\water_normal_16_frame.png" />
+    <Image Include="data\img\water\water_normal_17_frame.png" />
+    <Image Include="data\img\water\water_normal_18_frame.png" />
+    <Image Include="data\img\water\water_normal_19_frame.png" />
+    <Image Include="data\img\water\water_normal_2_frame.png" />
+    <Image Include="data\img\water\water_normal_20_frame.png" />
+    <Image Include="data\img\water\water_normal_21_frame.png" />
+    <Image Include="data\img\water\water_normal_22_frame.png" />
+    <Image Include="data\img\water\water_normal_23_frame.png" />
+    <Image Include="data\img\water\water_normal_24_frame.png" />
+    <Image Include="data\img\water\water_normal_25_frame.png" />
+    <Image Include="data\img\water\water_normal_26_frame.png" />
+    <Image Include="data\img\water\water_normal_27_frame.png" />
+    <Image Include="data\img\water\water_normal_28_frame.png" />
+    <Image Include="data\img\water\water_normal_29_frame.png" />
+    <Image Include="data\img\water\water_normal_3_frame.png" />
+    <Image Include="data\img\water\water_normal_30_frame.png" />
+    <Image Include="data\img\water\water_normal_4_frame.png" />
+    <Image Include="data\img\water\water_normal_5_frame.png" />
+    <Image Include="data\img\water\water_normal_6_frame.png" />
+    <Image Include="data\img\water\water_normal_7_frame.png" />
+    <Image Include="data\img\water\water_normal_8_frame.png" />
+    <Image Include="data\img\water\water_normal_9_frame.png" />
     <Image Include="src\blocks\Textures\Testxture.png" />
   </ItemGroup>
   <ItemGroup>

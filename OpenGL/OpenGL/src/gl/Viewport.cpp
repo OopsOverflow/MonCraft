@@ -13,6 +13,14 @@
 const int Viewport::framerate = 60;
 const int Viewport::timePerFrame = 1000 / framerate;
 
+// force use of dedicated gpu on Nvidia optimus laptops / Amd laptops
+#ifdef _WIN32
+extern "C" {
+  __declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001;
+  __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
+}
+#endif
+
 Viewport::Viewport(size_t width, size_t height)
     : camera(width, height, {0, 32, 10}, {0, 32, 0}),
       width(width),

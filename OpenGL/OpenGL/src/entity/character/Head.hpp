@@ -40,7 +40,7 @@ class Head : public Member {
 
 public:
   Head()
-   : Member(Mesh(Cube::vertices, Cube::normals, headUVs, Cube::occlusions, Cube::indices))
+   : Member(Mesh(Cube::vertices, Cube::normals, headUVs, Cube::occlusions, Cube::indices, Cube::normalMap))
   {
     glm::mat4 I(1.f);
 
