@@ -7,7 +7,7 @@
 
 struct MeshData {
   std::vector<GLuint> scheme;
-  std::vector<GLuint> indices;
+  std::vector<GLuint> indicesSolid, indicesTranspX, indicesTranspY, indicesTranspZ;
   std::vector<GLfloat> positions, normals, textureCoords, occlusion, normalMapCoords;
 };
 
@@ -20,7 +20,7 @@ public:
         std::vector<GLfloat> const& occlusion,
         std::vector<GLuint>  const& indices,
         std::vector<GLfloat> const& normalMapCoords);
-    Mesh(MeshData const& data);
+    Mesh(MeshData& data);
 
     Mesh(GLuint vao, GLuint vbo, GLuint ebo, GLuint vertCount);
     ~Mesh();

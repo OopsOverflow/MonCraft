@@ -73,9 +73,11 @@ public:
 
   /**
   * Gl draw the transparent block mesh.
-  * It will avoid draw calls for empty chunks.
+  * Avoids draw calls for empty chunks.
+  * it will draw back to front in the order given by dir, i.e. if dir.x > 0,
+  * draws the left-most quad first and the right-most quad last.
   */
-  void drawTransparent();
+  void drawTransparent(glm::vec3 dir);
 
 
   /// Some lookups for efficient code execution ///
@@ -113,11 +115,11 @@ private:
   // bool isSolidAccrossChunks(glm::ivec3 pos);
 
   // the gl mesh and corresponding data.
-  std::unique_ptr<Mesh> solidMesh;
-  std::unique_ptr<Mesh> transparentMesh;
+  std::unique_ptr<Mesh> mesh;
+  GLuint solidOffset = 0;
+  glm::ivec3 transpOffset = glm::ivec3(0);
 
-  MeshData solidData;
-  MeshData transparentData;
+  MeshData meshData;
   bool loaded;
   bool computed;
   bool mustRecompute;

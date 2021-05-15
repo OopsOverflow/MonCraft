@@ -44,11 +44,11 @@ public:
   glm::mat4 projection;
   glm::vec3 position;
   glm::vec3 center;
+  float near_;
+  float far_;
 
 protected:
   float fovY;
-  float near_;
-  float far_;
   unsigned int screenWidth;
   unsigned int screenHeight;
   Projection projType;

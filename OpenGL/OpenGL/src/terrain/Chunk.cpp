@@ -51,7 +51,7 @@ const std::array<int, 26> Chunk::neighborOffsetsInverse = { // https://oeis.org/
 Chunk::Chunk(ivec3 chunkPos, int chunkSize)
   : DataStore<Block::unique_ptr_t, 3>(glm::ivec3(chunkSize)),
     chunkPos(chunkPos),
-    solidMesh(nullptr), transparentMesh(nullptr),
+    mesh(nullptr),
     loaded(false), mustRecompute(false)
 {
   // std::cout << "created Chunk " << chunkPos << std::endl;
@@ -109,8 +109,7 @@ void Chunk::setBlockAccrossChunks(ivec3 pos, Block::unique_ptr_t block) {
 void Chunk::compute() {
   std::lock_guard<std::mutex> lck(computeMutex);
   // indices scheme // TODO: remove from MeshData ?
-  solidData.scheme = { 0, 1, 2, 0, 2, 3 };
-  transparentData.scheme = { 0, 1, 2, 0, 2, 3 };
+  meshData.scheme = { 0, 1, 2, 0, 2, 3 };
 
   // now generate all the blocks
   ivec3 pos{};
@@ -134,13 +133,7 @@ void Chunk::compute() {
         if(!neighborsValid) continue;
 
         // generate this block's geometry
-        if(block->isTransparent()) {
-          block->getGeometry()->generateMesh(pos, block, neighbors, transparentData);
-        }
-        else {
-          block->getGeometry()->generateMesh(pos, block, neighbors, solidData);
-        }
-
+        block->getGeometry()->generateMesh(pos, block, neighbors, meshData);
       }
     }
   }
@@ -166,18 +159,15 @@ void Chunk::update() {
     if(computed) {
       computed = false;
       auto model = translate(mat4(1.0), vec3(size * chunkPos));
-      solidMesh = std::unique_ptr<Mesh>(nullptr);
-      if(solidData.indices.size() != 0) {
-        solidMesh = std::make_unique<Mesh>(solidData);
-          solidMesh->model = model;
-        solidData = {};
-      }
-
-      transparentMesh = std::unique_ptr<Mesh>(nullptr);
-      if(transparentData.indices.size() != 0) {
-        transparentMesh = std::make_unique<Mesh>(transparentData);
-          transparentMesh->model = model;
-        transparentData = {};
+      mesh = std::unique_ptr<Mesh>(nullptr);
+      solidOffset = meshData.indicesSolid.size();
+      transpOffset.x = solidOffset + meshData.indicesTranspX.size();
+      transpOffset.y = transpOffset.x + meshData.indicesTranspY.size();
+      transpOffset.z  = transpOffset.y + meshData.indicesTranspZ.size();
+      if(transpOffset.z != 0) {
+        mesh = std::make_unique<Mesh>(meshData);
+        mesh->model = model;
+        meshData = {};
       }
     }
 
@@ -186,18 +176,67 @@ void Chunk::update() {
 }
 
 void Chunk::drawSolid() {
-  if(solidMesh) {
-    glBindVertexArray(solidMesh->getVAO());
-    glUniformMatrix4fv(MATRIX_MODEL, 1, GL_FALSE, glm::value_ptr(solidMesh->model));
-    glDrawElements(GL_TRIANGLES, solidMesh->getVertexCount(), GL_UNSIGNED_INT, nullptr);
+  if(mesh && solidOffset != 0) {
+    glBindVertexArray(mesh->getVAO());
+    glUniformMatrix4fv(MATRIX_MODEL, 1, GL_FALSE, glm::value_ptr(mesh->model));
+    glDrawElements(GL_TRIANGLES, solidOffset, GL_UNSIGNED_INT, nullptr);
   }
 }
 
-void Chunk::drawTransparent() {
-  if(transparentMesh) {
-    glBindVertexArray(transparentMesh->getVAO());
-    glUniformMatrix4fv(MATRIX_MODEL, 1, GL_FALSE, glm::value_ptr(transparentMesh->model));
-    glDrawElements(GL_TRIANGLES, transparentMesh->getVertexCount(), GL_UNSIGNED_INT, nullptr);
+void Chunk::drawTransparent(vec3 dir) {
+  if(mesh) {
+    auto signOffset = transpOffset.z - solidOffset;
+
+    // find in which order of x/y/z components to draw
+    // COMBAK: this is not perfect because the geometry is not generated in
+    // exact order (back to front).
+    vec3 absDir = abs(dir);
+    ivec3 order;
+    if(absDir.x > absDir.y)
+      if(absDir.x > absDir.z)
+        if(absDir.y > absDir.z)
+          order = ivec3(0, 1, 2);
+        else
+          order = ivec3(0, 2, 1);
+      else
+        order = ivec3(2, 0, 1);
+    else
+      if(absDir.y > absDir.z)
+        if(absDir.x > absDir.z)
+          order = ivec3(1, 0, 2);
+        else
+          order = ivec3(1, 2, 0);
+      else
+        order = ivec3(2, 1, 0);
+    // order = 2 - order;
+
+    for(int i = 0; i < 3; i++) {
+
+      if(order[i] == 0 && transpOffset.x != solidOffset) {
+        glBindVertexArray(mesh->getVAO());
+        glUniformMatrix4fv(MATRIX_MODEL, 1, GL_FALSE, glm::value_ptr(mesh->model));
+        auto offset = solidOffset;
+        if(dir.x > 0) offset += signOffset;
+        glDrawElements(GL_TRIANGLES, transpOffset.x - solidOffset, GL_UNSIGNED_INT, reinterpret_cast<void*>(offset * sizeof(GLuint)));
+      }
+      if(order[i] == 1 && transpOffset.y != transpOffset.x) {
+        glBindVertexArray(mesh->getVAO());
+        glUniformMatrix4fv(MATRIX_MODEL, 1, GL_FALSE, glm::value_ptr(mesh->model));
+        auto offset = transpOffset.x;
+        if(dir.y > 0) offset += signOffset;
+        glDrawElements(GL_TRIANGLES, transpOffset.y - transpOffset.x, GL_UNSIGNED_INT, reinterpret_cast<void*>(offset * sizeof(GLuint)));
+      }
+      if(order[i] == 2 && transpOffset.z != transpOffset.y) {
+        glBindVertexArray(mesh->getVAO());
+        glUniformMatrix4fv(MATRIX_MODEL, 1, GL_FALSE, glm::value_ptr(mesh->model));
+        auto offset = transpOffset.y;
+        if(dir.z > 0) offset += signOffset;
+        glDrawElements(GL_TRIANGLES, transpOffset.z - transpOffset.y, GL_UNSIGNED_INT, reinterpret_cast<void*>(offset * sizeof(GLuint)));
+      }
+
+    }
+
+
   }
 }
 

@@ -77,15 +77,15 @@ int main(int argc, char* argv[]) {
         shadows.attach(window.camera);
 
         shadows.beginFrame(Frustum::NEAR);
-        terrain.render();
+        terrain.render(window.camera);
         character.render();
         shadows.endFrame();
         shadows.beginFrame(Frustum::MEDIUM);
-        terrain.render();
+        terrain.render(window.camera);
         character.render();
         shadows.endFrame();
         shadows.beginFrame(Frustum::FAR);
-        terrain.render();
+        terrain.render(window.camera);
         shadows.endFrame();
 
         // prepare render
@@ -116,7 +116,7 @@ int main(int argc, char* argv[]) {
         // draw the terrain
         window.camera.activate();
         shadows.activate(shader);
-        terrain.render();
+        terrain.render(window.camera);
 
         // dot in the middle of the screen
         glEnable(GL_SCISSOR_TEST);
