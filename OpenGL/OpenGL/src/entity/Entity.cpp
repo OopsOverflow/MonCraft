@@ -102,11 +102,11 @@ void Entity::update(Terrain& terrain, float dt) {
 		vec2 speedXZ = vec2(speed.x, speed.z);
 		if (god) {
 			maxSpeed = 10.89f * 3.0f;
-			if (sprint) maxSpeed = 10.89f * 2.0f;
+			if (sprint) maxSpeed = maxSpeed * 2.0f;
 		}
 		else {
 			maxSpeed = 4.317f * 3.0f;
-			if (sprint) maxSpeed = 4.317f * 1.3f;
+			if (sprint) maxSpeed = maxSpeed * 1.3f;
 		}
 		if(length(speedXZ) >= maxSpeed) {
 			speedXZ = normalize(speedXZ) * maxSpeed;
