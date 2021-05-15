@@ -101,11 +101,11 @@ void Entity::update(Terrain& terrain, float dt) {
 		speed = speed + acc * dt - vec3(dragXZ.x, dragY, dragXZ.y) * dt;
 		vec2 speedXZ = vec2(speed.x, speed.z);
 		if (god) {
-			maxSpeed = maxSpeed - (maxSpeed - 10.89f) * 3.0f * dt;
-			if (sprint) maxSpeed = 10.89f * 20.0f;
+			maxSpeed = 10.89f * 3.0f;
+			if (sprint) maxSpeed = 10.89f * 2.0f;
 		}
 		else {
-			maxSpeed = maxSpeed - (maxSpeed - 4.317f) * 3.0f *dt;
+			maxSpeed = 4.317f * 3.0f;
 			if (sprint) maxSpeed = 4.317f * 1.3f;
 		}
 		if(length(speedXZ) >= maxSpeed) {
@@ -121,27 +121,30 @@ void Entity::update(Terrain& terrain, float dt) {
 
 	// check collisions
 	{
-		// update position
-		// float displ = trunc(length(posOffset));
-		vec3 newPos = node.loc + posOffset;
-		// for (size_t i = 0; i < displ; i += 1) {
-		// 	newPos = hitbox.computeCollision(newPos, normalizeOrZero(posOffset), terrain);
-		// }
-		// newPos = hitbox.computeCollision(newPos, posOffset - displ * normalizeOrZero(posOffset), terrain);
-		vec3 off = newPos - (node.loc + posOffset);
+		// check collisions one block at a time (usually posOffset is < 1 so only 1 check)
+		vec3 newPos = node.loc;
+		float totalOffset = length(posOffset);
+		size_t steps = (size_t)ceil(totalOffset);
+		for (size_t i = 0; i < steps; i++) {
+			vec3 thisOffset = posOffset * 1.f / (float)steps;
+			newPos = hitbox.computeCollision(newPos, thisOffset, terrain);
+		}
+
+		// the final entity displacement for this frame.
+		vec3 finalOffset = newPos - (node.loc + posOffset);
 		node.loc = newPos;
 
 		// on ground
-		if(off.y > 0) {
+		if(finalOffset.y > 0.0001) {
 			onFloor = true;
 			god = false;
 		}
 
 		// cancel speed in collision direction
-		if(off != vec3(0)) {
+		if(length(finalOffset) > 0.0001) {
 			auto rotMatrix = rotate(I, -node.rot.y - headNode.rot.y, {0, 1, 0});
-			vec3 worldOffDir = normalize(vec3(rotMatrix * vec4(off, 1.f)));
-			if(off != vec3(0)) speed -= worldOffDir * dot(speed, worldOffDir); // substract component in collision direction from speed
+			vec3 worldOffDir = normalize(vec3(rotMatrix * vec4(finalOffset, 1.f)));
+			if(finalOffset != vec3(0)) speed -= worldOffDir * dot(speed, worldOffDir); // substract component in collision direction from speed
 		}
 	}
 
