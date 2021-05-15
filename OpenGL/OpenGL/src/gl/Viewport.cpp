@@ -237,6 +237,11 @@ void Viewport::on_mousedown(SDL_MouseButtonEvent const& e) {
       mouseController.triggerAction(MouseController::Action::PLACE);
     }
     break;
+  case SDL_BUTTON_MIDDLE:
+    if(mouseCaptured) {
+      mouseController.triggerAction(MouseController::Action::PICK);
+    }
+    break;
   default:
     break;
   }

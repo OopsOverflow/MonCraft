@@ -14,7 +14,7 @@ public:
 
 	// for now only two actions a player can achieve with the mouse: placing and destroying blocks.
 	enum class Action {
-		PLACE, DESTROY
+		PLACE, DESTROY, PICK
 	};
 
 	void triggerAction(Action action);

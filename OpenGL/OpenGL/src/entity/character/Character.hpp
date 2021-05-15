@@ -50,6 +50,11 @@ public:
    */
   void placeBlock(Terrain& terrain);
 
+  /**
+   * Choose the block in line of sight to be placed.
+   */
+  void pickBlock(Terrain& terrain);
+
 private:
   Node rootNode;
   Head head;
@@ -65,4 +70,5 @@ private:
   float animState;
 
   Raycast caster;
+  BlockType currentBlock;
 };
