@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/OopsOverflow/MonCraft/main/screeshots/Moncraft.png?token=ARYPWFD3IPBVK5UK4XE232LAVKDFA" alt="3d"/>
+  <img src="https://raw.githubusercontent.com/OopsOverflow/MonCraft/main/screeshots/Moncraft.png?token=ARYPWFGCLONOBK3FGOCJEGDAVKEJI" alt="3d"/>
 </p>
 
 
