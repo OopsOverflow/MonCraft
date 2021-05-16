@@ -58,7 +58,7 @@ public:
 private:
   static const int chunkSize = 16;
   static const int renderDistH = 10; // horizontal render distance (2n+1 chunks)
-  static const int renderDistV = 8; // vertical render distance (2n+1 chunks)
+  static const int renderDistV = 5; // vertical render distance (2n+1 chunks)
   const int chunksMaxCount;
 
   // dirty hash function for the chunks hashmap
@@ -83,7 +83,7 @@ private:
 
   // threading
   std::thread mainWorkerThread; // manages the queue of chunks to generate
-  static const int N_THREADS = 2;
+  static const int N_THREADS = 4;
   std::array<std::thread, N_THREADS> genWorkerThreads; // creates new chunks when it can
   std::mutex workerMutex;
   void mainWorker();

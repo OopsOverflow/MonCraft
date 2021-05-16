@@ -39,10 +39,10 @@ BiomeMap::BiomeMap()
   simplexBiome.seed(rand());
 
   biomePlains.type = BiomeType::PLAINS;
-  biomePlains.elevation = 11;
+  biomePlains.elevation = 7;
   biomePlains.distortion = {};
   biomePlains.frequencies = {
-    {8.0f, 0.002f}, // {magnitude, frequency}
+    {2.0f, 0.002f}, // {magnitude, frequency}
     {2.5f, 0.007f},
     {1.0f, 0.050f},
     {0.5f, 0.100f},
@@ -51,7 +51,7 @@ BiomeMap::BiomeMap()
   biomePlains.underLayers = BlockType::Dirt;
   biomePlains.underWaterBlock = BlockType::Dirt;
   biomePlains.trees = 0.05f;
-  biomePlains.tallgrass = 0.2f;
+  biomePlains.tallgrass = 0.15f;
 
   biomeDesert = biomePlains;
   biomeDesert.type = BiomeType::DESERT;
@@ -59,12 +59,12 @@ BiomeMap::BiomeMap()
   biomeDesert.underLayers = BlockType::Sand;
   biomeDesert.underWaterBlock = BlockType::Sand;
   biomeDesert.frequencies = {
-    {8.0f, 0.002f}, // {magnitude, frequency}
+    {5.0f, 0.002f}, // {magnitude, frequency}
     {3.5f, 0.007f},
     {0.0f, 0.050f},
     {0.0f, 0.100f},
   };
-  biomeDesert.elevation = 15;
+  biomeDesert.elevation = 10;
   biomeDesert.tallgrass = 0;
 
   biomeSea = biomePlains;
@@ -72,7 +72,13 @@ BiomeMap::BiomeMap()
   biomeSea.surface = BlockType::Sand;
   biomeSea.underLayers = BlockType::Sand;
   biomeSea.underWaterBlock = BlockType::Sandstone;
-  biomeSea.elevation = -10;
+  biomeSea.frequencies = {
+  {3.0f, 0.002f}, // {magnitude, frequency}
+  {2.5f, 0.007f},
+  {1.0f, 0.050f},
+  {0.5f, 0.100f},
+  };
+  biomeSea.elevation = -15;
   biomeSea.tallgrass = 0;
 
   biomeToundra = biomePlains;
@@ -80,7 +86,7 @@ BiomeMap::BiomeMap()
   biomeToundra.surface = BlockType::Snow;
   biomeToundra.underLayers = BlockType::Dirt;
   biomeToundra.underWaterBlock = BlockType::Dirt;
-  biomeToundra.tallgrass = 0;
+  biomeToundra.tallgrass = 0.03f;
   biomeToundra.elevation = 12;
 
   biomeHills = biomePlains;
@@ -95,20 +101,20 @@ BiomeMap::BiomeMap()
     {0.0f, 0.100f},
   };
   // biomeHills.tallgrass = 0;
-  biomeHills.elevation = 21;
+  biomeHills.elevation = 15;
 
   biomeMountains = biomePlains;
   biomeMountains.type = BiomeType::MOUNTAINS;
-  biomeMountains.surface = BlockType::Ice;
+  biomeMountains.surface = BlockType::Stone;
   biomeMountains.underLayers = BlockType::Stone;
   biomeMountains.underWaterBlock = BlockType::Stone;
   biomeMountains.frequencies = {
-    {60.0f, 0.002f}, // {magnitude, frequency}
+    {45.0f, 0.002f}, // {magnitude, frequency}
     {15.0f, 0.007f},
     {2.0f, 0.050f},
     {1.5f, 0.100f},
   };
-  biomeMountains.elevation = 100;
+  biomeMountains.elevation = 60;
   biomeMountains.tallgrass = 0;
 }
 
@@ -226,7 +232,7 @@ BiomeMap::weightedBiomes_t BiomeMap::sampleBiomes(BiomeMap::weightedBiomes_t bio
     // }
     else {
       if (height < .6) {
-        if (temperature < .3) {
+        if (temperature < .2) {
           biome.biome = &biomeToundra;
         }
         else if (temperature < .6) {
@@ -261,11 +267,11 @@ Biome BiomeMap::blendBiomes(BiomeMap::weightedBiomes_t biomes) {
     for(size_t i = 0; i < weighted.biome->frequencies.size(); i++) {
       auto const& freq = weighted.biome->frequencies.at(i);
       if(res.frequencies.size() < i + 1) {
-        res.frequencies.push_back({ freq.magnitude * weighted.weight, freq.frequency * weighted.weight });
+        res.frequencies.push_back({ freq.magnitude * weighted.weight * 3.2f, freq.frequency * weighted.weight * 0.5f });
       }
       else {
-        res.frequencies.at(i).magnitude += freq.magnitude * weighted.weight;
-        res.frequencies.at(i).frequency += freq.frequency * weighted.weight;
+        res.frequencies.at(i).magnitude += freq.magnitude * weighted.weight * 3.2f;
+        res.frequencies.at(i).frequency += freq.frequency * weighted.weight * 0.5f;
       }
     }
 

@@ -38,9 +38,11 @@ std::unique_ptr<Chunk> Generator::generate(ivec3 cpos) const {
 
 Block::unique_ptr_t Generator::computeSurfaceBlock(ivec3 const& pos, Biome const& biome, int const& blockHeight) const {
     if (abs(pos.y) < 3.f && biome.type == BiomeType::SEA) return Block::create_static<Sand_Block>();
+    if(biome.type == BiomeType::MOUNTAINS && abs(abs(pos.y) < 2.f))return Block::create_static<Ice_Block>();
     if (abs(pos.y) < 2.f) return Block::create_static<Sand_Block>();
     if (pos.y <= 0.f) return AllBlocks::create_static(biome.underWaterBlock);
-    if (pos.y > 35.f + valueNoise.sample1D(ivec2(pos.x, pos.z) + ivec2(67, 102)) % 5 && biome.surface != BlockType::Ice) return Block::create_static<Snow_Block>();
+    if (pos.y >= 27.f + valueNoise.sample1D(ivec2(pos.x, pos.z) + ivec2(72, -402)) % 9) return Block::create_static<Snow_Block>();
+    if (pos.y > 25.f + valueNoise.sample1D(ivec2(pos.x, pos.z) + ivec2(67, 102)) % 5 && biome.surface != BlockType::Ice) return Block::create_static<Stone_Block>();
     if(pos.y > 8.f + valueNoise.sample1D(ivec2(pos.x, pos.z) + ivec2(-12, 0)) % 2 && biome.surface == BlockType::Sand) return Block::create_static<Snow_Block>();
     if (pos.y != blockHeight && biome.surface == BlockType::Grass)return Block::create_static<Dirt_Block>();
 
@@ -67,8 +69,10 @@ Block::unique_ptr_t Generator::createBlock(ivec3 pos, Biome const& biome) const 
 
   if(pos.y >= blockHeight - (int)(2+ valueNoise.sample1D(ivec2(pos.x,pos.z) + ivec2(2,-59)) % 3))
     block = AllBlocks::create_static(biome.underLayers);
-
-
+  //if you want cave update :)
+  if(pos.y>= blockHeight -5 - valueNoise.sample1D(ivec2(pos.x,pos.z) + ivec2(158,-804)) % 5)return Block::create_static<Stone_Block>();
+  if(noise.perlin3((vec3)(pos + ivec3(55, 8, -95)) * 0.08f) >0.45)return Block::create_static<Air_Block>();
+  if (noise.perlin3((vec3)(pos + ivec3(-614, 120, 745)) * 0.1f) > 0.35)return Block::create_static<Sandstone_Block>();
   return Block::create_static<Stone_Block>();
 }
 
