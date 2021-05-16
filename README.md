@@ -197,12 +197,13 @@ It might look like a bug but it's ***definetly a feature***.
 ***
 ### Eargasmic Music 🎶
 Royalty-free high definition music that fits the game's atmosphere. 🥚
-|  Track Name|Artist © |
-|---		|----------|
-| A New Sleep |Arden Forest  |
-| Mays |Van Sandano  |
-| Reconstruct |Amaranth Cove|
-| Minecraft Happy Music |	|
+|  Track Name|Artist ©     |
+|------------|-------------|
+| A New Sleep|Arden Forest |
+| Mays 	     |Van Sandano  |
+| Reconstruct|Amaranth Cove|
+| Minecraft Happy Music|   |
+
 ***
 ### Sound Effects
 Literal bovine excrement 🙂 
