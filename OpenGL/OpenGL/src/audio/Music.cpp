@@ -16,8 +16,8 @@ std::vector<std::string> songList =
      "ES_Reconstruct-AmaranthCove.ogg",
      "ES_Mays-VanSandano.ogg",
      "ES_ANewSleep-ArdenForest.ogg",
-     "FreeMinecraftMusicHappyBackground.ogg",
-     "dev.ogg"
+     "FreeMinecraftMusicHappyBackground.ogg"
+     //,"dev.ogg" insane music to implement
 };
 
 Music::Music()

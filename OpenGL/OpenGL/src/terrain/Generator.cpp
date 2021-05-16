@@ -71,8 +71,9 @@ Block::unique_ptr_t Generator::createBlock(ivec3 pos, Biome const& biome) const 
     block = AllBlocks::create_static(biome.underLayers);
   //if you want cave update :)
   if(pos.y>= blockHeight -5 - valueNoise.sample1D(ivec2(pos.x,pos.z) + ivec2(158,-804)) % 5)return Block::create_static<Stone_Block>();
-  if(noise.perlin3((vec3)(pos + ivec3(55, 8, -95)) * 0.08f) >0.45)return Block::create_static<Air_Block>();
-  if (noise.perlin3((vec3)(pos + ivec3(-614, 120, 745)) * 0.1f) > 0.35)return Block::create_static<Sandstone_Block>();
+  float caveNoise = noise.perlin3((vec3)(pos + ivec3(55, 8, -95)) * 0.08f);
+  if(caveNoise >0.4 && caveNoise<0.65)return Block::create_static<Air_Block>();
+  if (noise.perlin3((vec3)(pos + ivec3(-614, 120, 745)) * 0.1f) > 0.3)return Block::create_static<Sandstone_Block>();
   return Block::create_static<Stone_Block>();
 }
 
