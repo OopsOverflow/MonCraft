@@ -232,7 +232,8 @@ void Terrain::render(Camera const& camera) {
     return a.first > b.first; // sort back-to-front (far chunks first)
   });
 
-  for(auto& pair : toRender) {
+  for (auto iter = toRender.rbegin(); iter != toRender.rend(); ++iter) {
+    auto& pair = *iter;
     pair.second->update();
     pair.second->drawSolid();
   }

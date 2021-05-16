@@ -38,12 +38,12 @@ std::unique_ptr<Chunk> Generator::generate(ivec3 cpos) const {
 
 Block::unique_ptr_t Generator::computeSurfaceBlock(ivec3 const& pos, Biome const& biome, int const& blockHeight) const {
     if (abs(pos.y) < 3.f && biome.type == BiomeType::SEA) return Block::create_static<Sand_Block>();
-    if(biome.type == BiomeType::MOUNTAINS && abs(abs(pos.y) < 2.f))return Block::create_static<Ice_Block>();
+    if (biome.type == BiomeType::MOUNTAINS && abs(abs(pos.y) < 2.f))return Block::create_static<Ice_Block>();
     if (abs(pos.y) < 2.f) return Block::create_static<Sand_Block>();
     if (pos.y <= 0.f) return AllBlocks::create_static(biome.underWaterBlock);
     if (pos.y >= 27.f + valueNoise.sample1D(ivec2(pos.x, pos.z) + ivec2(72, -402)) % 9) return Block::create_static<Snow_Block>();
     if (pos.y > 25.f + valueNoise.sample1D(ivec2(pos.x, pos.z) + ivec2(67, 102)) % 5 && biome.surface != BlockType::Ice) return Block::create_static<Stone_Block>();
-    if(pos.y > 8.f + valueNoise.sample1D(ivec2(pos.x, pos.z) + ivec2(-12, 0)) % 2 && biome.surface == BlockType::Sand) return Block::create_static<Snow_Block>();
+    if (pos.y > 8.f + valueNoise.sample1D(ivec2(pos.x, pos.z) + ivec2(-12, 0)) % 2 && biome.surface == BlockType::Sand && biome.type != BiomeType::DESERT) return Block::create_static<Snow_Block>();
     if (pos.y != blockHeight && biome.surface == BlockType::Grass)return Block::create_static<Dirt_Block>();
 
     return AllBlocks::create_static(biome.surface);

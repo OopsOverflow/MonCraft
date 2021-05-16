@@ -43,8 +43,8 @@ BiomeMap::BiomeMap()
   biomePlains.distortion = {};
   biomePlains.frequencies = {
     {2.0f, 0.002f}, // {magnitude, frequency}
-    {2.5f, 0.007f},
-    {1.0f, 0.050f},
+    {1.5f, 0.007f},
+    {0.0f, 0.050f},
     {0.5f, 0.100f},
   };
   biomePlains.surface = BlockType::Grass;
@@ -59,9 +59,9 @@ BiomeMap::BiomeMap()
   biomeDesert.underLayers = BlockType::Sand;
   biomeDesert.underWaterBlock = BlockType::Sand;
   biomeDesert.frequencies = {
-    {5.0f, 0.002f}, // {magnitude, frequency}
-    {3.5f, 0.007f},
-    {0.0f, 0.050f},
+    {2.0f, 0.002f}, // {magnitude, frequency}
+    {1.5f, 0.007f},
+    {1.0f, 0.050f},
     {0.0f, 0.100f},
   };
   biomeDesert.elevation = 10;
@@ -74,11 +74,11 @@ BiomeMap::BiomeMap()
   biomeSea.underWaterBlock = BlockType::Sandstone;
   biomeSea.frequencies = {
   {3.0f, 0.002f}, // {magnitude, frequency}
-  {2.5f, 0.007f},
-  {1.0f, 0.050f},
+  {1.5f, 0.007f},
+  {0.5f, 0.050f},
   {0.5f, 0.100f},
   };
-  biomeSea.elevation = -15;
+  biomeSea.elevation = -10;
   biomeSea.tallgrass = 0;
 
   biomeToundra = biomePlains;
@@ -94,9 +94,9 @@ BiomeMap::BiomeMap()
   biomeHills.surface = BlockType::Grass;
   biomeHills.underLayers = BlockType::Dirt;
   biomeHills.underWaterBlock = BlockType::Dirt;
-  biomeDesert.frequencies = {
+  biomeHills.frequencies = {
     {6.0f, 0.002f}, // {magnitude, frequency}
-    {3.5f, 0.007f},
+    {2.5f, 0.007f},
     {0.0f, 0.050f},
     {0.0f, 0.100f},
   };
@@ -109,12 +109,12 @@ BiomeMap::BiomeMap()
   biomeMountains.underLayers = BlockType::Stone;
   biomeMountains.underWaterBlock = BlockType::Stone;
   biomeMountains.frequencies = {
-    {45.0f, 0.002f}, // {magnitude, frequency}
-    {15.0f, 0.007f},
+    {20.0f, 0.002f}, // {magnitude, frequency}
+    {18.0f, 0.007f},
     {2.0f, 0.050f},
     {1.5f, 0.100f},
   };
-  biomeMountains.elevation = 60;
+  biomeMountains.elevation = 20;
   biomeMountains.tallgrass = 0;
 }
 
@@ -235,7 +235,7 @@ BiomeMap::weightedBiomes_t BiomeMap::sampleBiomes(BiomeMap::weightedBiomes_t bio
         if (temperature < .2) {
           biome.biome = &biomeToundra;
         }
-        else if (temperature < .6) {
+        else if (temperature < .57) {
           biome.biome = &biomePlains;
         }
         else {
