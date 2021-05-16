@@ -248,6 +248,10 @@ We only calculate specular light on water blocks, so in order to differentiate i
 
 |    Name            |GitHub|Email|
 |----------------|-------------------------------|-----------------------------|
-|Brossier Mathis|@k2d222            |      |
-|Mahmoud Houssem|@OopsOverflow            |contact@houssem.com            |
-|Surer Pierre|@Marcel||
+|Brossier Mathis|@k2d222            | mathis.brossier@universite-paris-saclay.fr     |
+|Mahmoud Houssem|@OopsOverflow            |houssemmahmoudswe@gmail.com            |
+|Surer Pierre|@PignoulMarcel|pierre.surer@universite-paris-saclay.fr			|
+
+
+# Refrences
+* [Crytek Engine : Atmosphric Effects in Games](https://developer.amd.com/wordpress/media/2012/10/Wenzel-Real-time_Atmospheric_Effects_in_Games.pdf) 
