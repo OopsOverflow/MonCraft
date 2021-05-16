@@ -30,8 +30,8 @@ float computeShadow(int i) {
   float dotNormal = dot(normalize(lightDirection), normal);
 
   // float bias = 0.0;
-  float bmin = 0.00001;
-  float bmax = 0.00005;
+  float bmin = 0.00035;
+  float bmax = 0.0002;
   float bias = max(bmax * (1.0 - dotNormal), bmin);
   float currentDepth = shadowCoords[i].z * 0.5 + 0.5;
   vec2 texelSize = 1.0 / textureSize(shadowSampler[i], 0) / 2;
