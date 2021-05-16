@@ -1,4 +1,4 @@
-[![license](https://img.shields.io/github/license/mashape/apistatus.svg?style=flat-square "License")](https://github.com/OopsOverflow/MonCraft/blob/main/LICENSE)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://github.com/OopsOverflow/MonCraft/blob/main/LICENSE)
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/OopsOverflow/MonCraft/main/screeshots/monjang-logo.png?token=ARYPWFCI53SSJADIC4J6IBTAVFSMW" alt="3d"/>
@@ -21,6 +21,7 @@ Why Buy Minecraft When You Can Code it Yourself? 💹
  1. SDL2
  2. SFML
  3. GLEW
+ 4. GLM
 
 ****
 
@@ -31,14 +32,15 @@ Why Buy Minecraft When You Can Code it Yourself? 💹
  3. [x] Detach Mouse --- Esc
  4. [x] Block Placing --- RMB
  5. [x] Selective Block Removal --- LMB
- 6. [x] Sprinting --- CTRL
- 7. [x] Filed of View (**FOV**) changes while sprinting ✅
- 8. [x] Chang View --- F5
- 9. [x] God Mode --- Double Space
- 10. [x] Ascend (In God Mode Only) --- Space
- 11. [x] Descend (In God Mode Only) --- Shift
- 12. [ ] Crouch -- Coming Soon!
- 13. [ ] Place on Edge -- Coming Soon!
+ 6. [x] Select Block --- Taget Block & Press Mouse Wheel Button
+ 7. [x] Sprinting --- CTRL
+ 8. [x] Filed of View (**FOV**) changes while sprinting ✅
+ 9. [x] Chang View --- F5
+ 10. [x] God Mode --- Double Space
+ 11. [x] Ascend (In God Mode Only) --- Space
+ 12. [x] Descend (In God Mode Only) --- Shift
+ 13. [ ] Crouch -- Coming Soon!
+ 14. [ ] Place on Edge -- Coming Soon!
  
 ****
 
@@ -47,11 +49,12 @@ Why Buy Minecraft When You Can Code it Yourself? 💹
 MonCraft supports optimizations on both AMD and NVIDIA cards
 	
 
- - [x] Nvidia `extern "C" {  _declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001;}` 
+✅ Nvidia `extern "C" {  _declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001;}` 
 
 > [http://developer.download.nvidia.com/devzone/devcenter/gamegraphics/files/OptimusRenderingPolicies.pdf](http://developer.download.nvidia.com/devzone/devcenter/gamegraphics/files/OptimusRenderingPolicies.pdf "http://developer.download.nvidia.com/devzone/devcenter/gamegraphics/files/OptimusRenderingPolicies.pdf")
 
- - [x] AMD `__declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;`
+✅ AMD `__declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;`
+
 ***
 ### Frsutrum Culling
 Talk about it here, how it works
@@ -83,7 +86,7 @@ The areas with less lighting have a more dense fog.
 </p>
 
 
-❓ How it works?
+How does it work❓ 
 ```glsl
        float sunAmount = max( dot(vec3(m_view), lightDirection), 0.0 );
        vec3  fogColor  = mix( vec3(0.5,0.6,0.7), // bluish
@@ -158,10 +161,26 @@ It's finely tuned to give different terrain heights and features, such as hills,
 High Definition skybox using cubemaps.
 ***
 ### Transparency 🔎
-Moncraft implements transparent blocks such as `Water_Block` and more are to come!
+Moncraft implements transparent blocks such as `Water_Block` & `Leaf_Block` and more are to come!
+
+How does it work ❓
+
+Before each frame draw, we compute the position of the chunks in the camera space. that way, we can:
+- check that they are visible in the frustum -> only render visible chunks
+- compute their z-distance to the camera.
+
+That way, we can sort the chunks back-to-front to render them in that order. The sort has a cost of nlogn : it would not be possible to sort each block ! but because blocks are grouped in chunks, and there are about 1000 chunks loaded at a time, the cost is not too high.
+inside each chunk, there is only one mesh. the EBO of the mesh is constructed that way :
+1. First, the solid blocks which require no sorting as long as they are rendered first
+2. Then, the transparent faces in ±x direction, then n ±y direction, then in ±z direction. those faces are stored from negative to positive (more or less)
+3. Finally, the same transparent faces as before, but in reverse order.
+
+
+That way, we render first solid blocks, then transparent blocks in the direction we are looking at, back to front (choosing if we draw using the normal or reverse indices).
+
 ***
 ### 3D Chunks
-It's not a big it's ***literally a feature***.
+It might look like a bug but it's ***definetly a feature***.
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/OopsOverflow/MonCraft/main/screeshots/chunk3d.png?token=ARYPWFGFYCVNEZMXHKKIH5LAVFQTA" alt="3d"/>
@@ -187,6 +206,11 @@ Literal bovine excrement 🙂
 ###  Multithreading 👷‍♂️
 Allows for huge performance gains by using multiple `worker_threads` to generate the environment.
 Under `src/terrain/terrain.hpp`.
+
+Uses worker threads to generate chunks and precompute the opengl data. Because opengl is single-threaded, the vbos need to be created on the main thread. The workers do as much work as possible to make the task easier for the poor main thread. 
+This allows for huge performance upgrades and a better playing experience as chunks are generated in a faster and a seamless way. 
+We are proud to say that our game is well optimized so far, on medium budget cards the engine can easily output over 200fps (the fps counter is accessed by pressing the F key to pay respect)
+
 ***
 ### No OS Specific dependencies 🐧
 ***
@@ -206,7 +230,11 @@ Under `src/terrain/terrain.hpp`.
 </p>
 
 ### Water Surface Animation
-Using a custom made looping noise map.
+
+We made a custom normal map in blender and used the fact that blocks are aligned with the x/y/z axis to our advantage : we didn’t need to send the tangent and bitangent, we could guess them from the faces alignment.
+We haven’t found an effective way to calculate reflection as the water is not a plane but a block that can be placed anywhere in the world. So we couldn’t calculate a reflection on each block without raytrace light.
+We only calculate specular light on water blocks, so in order to differentiate it from a mesh, we put the alpha component to 0 for the other normals.
+
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/OopsOverflow/MonCraft/main/screeshots/water_normal.gif?token=ARYPWFEUZS4IN2LH5XUKGKDAVFRNG" alt="water"/>
