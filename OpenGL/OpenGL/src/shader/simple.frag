@@ -118,7 +118,7 @@ void main() {
 
     float f = fbm(st+r);
 
-       fcolor = mix(fogColor,
+    fcolor = mix(fogColor,
                 vec3(0.711,0.707,0.730),
                 clamp((f*f)*4.408,0.0,1.0));
 
@@ -133,12 +133,12 @@ void main() {
     vec4 fbmColor = vec4((f*f*f+.6*f*f+.5*f)*fcolor,0.);
 
   // Fog Calc
-    float b = 0.0009f;  // fallof of the fog density
+    float b = 0.0004f;  // fallof of the fog density
     float c = 0.5f;     // integration constant, varies distance of fallof
     float distance = (vertexPosition.y);
     float fogAmounty = c * exp(vertexPosition.z*b) * (1.0f-exp( vertexPosition.z*lightDirection.y*b ))/lightDirection.y;
     c =1.0f;
-    b = 0.0019f;
+    b = 0.0009f;
     float fogAmountz = c * exp(-vertexPosition.z*b) * (1.0-exp( -vertexPosition.z*lightDirection.z*b ))/lightDirection.y;
 
   vec3 normalizedLightDirection = normalize(lightDirection);
