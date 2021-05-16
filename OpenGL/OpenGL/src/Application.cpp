@@ -16,6 +16,7 @@
 
 #include "debug/Debug.hpp"
 
+#include <functional>
 using namespace glm;
 
 // WINDOW DIMENSIONS
@@ -25,7 +26,9 @@ using namespace glm;
 int main(int argc, char* argv[]) {
     std::cout << "----Main------\n";
 
-    std::srand(420);
+    std::hash<std::string> hashString;
+    std::srand(hashString("Moncraft"));
+
 
     Viewport window(WIDTH, HEIGHT);
     Shader shader("src/shader/simple.vert", "src/shader/simple.frag");
