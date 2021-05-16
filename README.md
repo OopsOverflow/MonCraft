@@ -1,5 +1,10 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://github.com/OopsOverflow/MonCraft/blob/main/LICENSE)
-[![discord](https://img.shields.io/discord/746366936937660527.svg?logo=discord "Discord")](https://discord.gg/3DTjFNgQ)
+
+
+[![Support Server](https://img.shields.io/discord/591914197219016707.svg?label=Discord&logo=Discord&colorB=7289da&style=for-the-badge)](https://discord.gg/3DTjFNgQ)
+
+
+
 <p align="center">
   <img src="https://raw.githubusercontent.com/OopsOverflow/MonCraft/main/screeshots/monjang-logo.png?token=ARYPWFCI53SSJADIC4J6IBTAVFSMW" alt="3d"/>
 </p>
