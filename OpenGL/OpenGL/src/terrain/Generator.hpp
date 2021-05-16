@@ -39,6 +39,7 @@ private:
   SimplexNoise noiseZ;
   ValueNoise valueNoise;
   Tree defaultTree;
+  Cactus defaultCactus;
 
   BiomeMap biomeSampler;
 };

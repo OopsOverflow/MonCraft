@@ -45,3 +45,11 @@ public:
   slices_t spawn(Chunk& chunk, glm::ivec3 pos) const override;
   std::shared_ptr<BlockStore> store;
 };
+
+class Cactus : public Structure {
+
+public:
+    Cactus();
+    slices_t spawn(Chunk& chunk, glm::ivec3 pos) const override;
+    std::shared_ptr<BlockStore> store;
+};

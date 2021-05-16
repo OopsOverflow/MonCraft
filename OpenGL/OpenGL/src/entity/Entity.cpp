@@ -135,13 +135,13 @@ void Entity::update(Terrain& terrain, float dt) {
 		node.loc = newPos;
 
 		// on ground
-		if(finalOffset.y > 0.0001) {
+		if(finalOffset.y > 0.001) {
 			onFloor = true;
 			god = false;
 		}
 
 		// cancel speed in collision direction
-		if(length(finalOffset) > 0.0001) {
+		if(length(finalOffset) > 0.001) {
 			auto rotMatrix = rotate(I, -node.rot.y - headNode.rot.y, {0, 1, 0});
 			vec3 worldOffDir = normalize(vec3(rotMatrix * vec4(finalOffset, 1.f)));
 			if(finalOffset != vec3(0)) speed -= worldOffDir * dot(speed, worldOffDir); // substract component in collision direction from speed

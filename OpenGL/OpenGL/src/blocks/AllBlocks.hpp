@@ -15,6 +15,7 @@
 #include "Snow_Block.hpp"
 #include "Tallgrass_Block.hpp"
 #include "Water_Block.hpp"
+#include "Cactus_Block.hpp"
 
 #include <sstream>
 
@@ -29,7 +30,7 @@ public:
   * correctly inserted it the array.
   */
   static Block::unique_ptr_t create_static(BlockType type) {
-    static std::array<Block*(*)(), 12> factories {
+    static std::array<Block*(*)(), 13> factories {
       (Block*(*)())Air_Block::get,
       (Block*(*)())Grass_Block::get,
       (Block*(*)())Dirt_Block::get,
@@ -42,6 +43,7 @@ public:
       (Block*(*)())Snow_Block::get,
       (Block*(*)())Tallgrass_Block::get,
       (Block*(*)())Water_Block::get,
+      (Block*(*)())Cactus_Block::get,
     };
     auto index = (size_t)type;
     if(index > factories.size()) {

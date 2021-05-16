@@ -207,6 +207,7 @@
     <ClInclude Include="src\blocks\Air_Block.hpp" />
     <ClInclude Include="src\blocks\AllBlocks.hpp" />
     <ClInclude Include="src\blocks\Block.hpp" />
+    <ClInclude Include="src\blocks\Cactus_Block.hpp" />
     <ClInclude Include="src\blocks\Debug_Block.hpp" />
     <ClInclude Include="src\blocks\Dirt_Block.hpp" />
     <ClInclude Include="src\blocks\geometry\BlockGeometry.hpp" />

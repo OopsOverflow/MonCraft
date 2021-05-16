@@ -54,7 +54,7 @@ Block::unique_ptr_t Generator::createBlock(ivec3 pos, Biome const& biome) const 
   float height = noise.fractal2(ivec2(pos.x, pos.z), biome.frequencies);
   int blockHeight = (int)floor(height + biome.elevation);
 
-  if(pos.y == blockHeight + 1 && noise.simplex3(pos) * 0.5 + 0.5 < biome.tallgrass && pos.y>0)
+  if(pos.y == blockHeight + 1 && noise.simplex3(pos) * 0.5 + 0.5 < biome.tallgrass && pos.y> valueNoise.sample1D(ivec2(pos.x, pos.z) + ivec2(3, -7)) % 4)
     return Block::create_static<Tallgrass_Block>();
   if(pos.y > blockHeight) {
       if (pos.y <= 0) {
@@ -79,14 +79,13 @@ Block::unique_ptr_t Generator::createBlock(ivec3 pos, Biome const& biome) const 
 
 std::vector<Structure::Slice> Generator::generateStructures(ivec3 cpos, Chunk& chunk) const {
   std::vector<Structure::Slice> slices;
-
   ivec3 dpos(0);
   ivec3 orig = cpos * chunkSize;
   for(dpos.x = 0; dpos.x < chunkSize; dpos.x++) {
     for(dpos.z = 0; dpos.z < chunkSize; dpos.z++) {
 
       ivec2 posXZ(orig.x + dpos.x, orig.z + dpos.z);
-
+      auto const& biome = biomeSampler.sampleWeighted(posXZ);
       for(dpos.y = 0; dpos.y < chunkSize; dpos.y++) {
 
         if(chunk[dpos]->type == BlockType::Grass) {
@@ -96,6 +95,14 @@ std::vector<Structure::Slice> Generator::generateStructures(ivec3 cpos, Chunk& c
             auto treeSlices = defaultTree.spawn(chunk, dpos);
             slices.insert(slices.end(), treeSlices.begin(), treeSlices.end());
           }
+        }
+        if (chunk[dpos]->type == BlockType::Sand && biome.type==BiomeType::DESERT) {
+            ivec3 pos = orig + dpos;
+            float cactus = valueNoise.sample1D(ivec2(pos.x, pos.z)) / (float)UINT32_MAX;
+            if (cactus < 0.0010f) {
+                auto cactusSlice = defaultCactus.spawn(chunk, dpos);
+                slices.insert(slices.end(), cactusSlice.begin(), cactusSlice.end());
+            }
         }
 
       }
