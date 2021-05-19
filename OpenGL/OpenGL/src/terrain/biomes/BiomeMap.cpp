@@ -149,8 +149,9 @@ Biome const& BiomeMap::sampleWeighted(glm::ivec2 pos) const {
 
 // pipeline step 1: spatial distortion
 ivec2 BiomeMap::offsetSimplex(ivec2 pos) {
-  vec2 sample(simplexX.simplex2(vec2(pos) / 50.f),
-              simplexY.simplex2(vec2(pos) / 50.f));
+  // return pos; // to disable distortion, uncomment this ;)
+  vec2 sample(simplexX.simplex2(vec2(pos) * frequency),
+              simplexY.simplex2(vec2(pos) * frequency));
   sample += 1.0;
   sample *= displacement;
 
@@ -182,7 +183,9 @@ BiomeMap::weightedBiomes_t BiomeMap::offsetVoronoi(ivec2 pos) {
   for(int i = 0; i < 9; i++) if(i != centerCell) {
     float dist = sample.weights[i] - centerDist;
     if(dist < biomeBlend) {
-      float weight = 1.f - dist / biomeBlend;
+      float weight = (biomeBlend - dist) / biomeBlend;
+      weight *= weight;
+      weight *= weight;
       totalWeight += weight;
       res.push_back(weightedBiome_t{
         sample.pos + posLookup[i],
@@ -267,11 +270,14 @@ Biome BiomeMap::blendBiomes(BiomeMap::weightedBiomes_t biomes) {
     for(size_t i = 0; i < weighted.biome->frequencies.size(); i++) {
       auto const& freq = weighted.biome->frequencies.at(i);
       if(res.frequencies.size() < i + 1) {
-        res.frequencies.push_back({ freq.magnitude * weighted.weight * 3.2f, freq.frequency * weighted.weight * 0.5f });
+        res.frequencies.push_back({
+          freq.magnitude * weighted.weight * globalAmplitude,
+          freq.frequency * weighted.weight  * globalFrequency
+        });
       }
       else {
-        res.frequencies.at(i).magnitude += freq.magnitude * weighted.weight * 3.2f;
-        res.frequencies.at(i).frequency += freq.frequency * weighted.weight * 0.5f;
+        res.frequencies.at(i).magnitude += freq.magnitude * weighted.weight * globalAmplitude;
+        res.frequencies.at(i).frequency += freq.frequency * weighted.weight * globalFrequency;
       }
     }
 

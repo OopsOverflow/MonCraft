@@ -29,10 +29,13 @@ public:
   Biome const& sampleWeighted(glm::ivec2 pos) const;
 private:
     // biome gen tuning
-    int size = 1000;           // generated texture size
-    int gridSize = 100;        // voronoi single cell size
-    int displacement = 10;     // spatial displacement (distortion)
-    float biomeBlend = 15.f;   // distance to smooth biomes borders
+    int size = 1000;               // generated texture size
+    int gridSize = 100;            // voronoi single cell size
+    float frequency = 0.01f;       // spatial displacement (distortion)
+    float displacement = 50.f;     // spatial displacement (distortion)
+    float biomeBlend = 25.f;       // distance to smooth biomes borders
+    float globalFrequency = .5f;   // adjust the frequencies overall (high values gives)
+    float globalAmplitude = 3.2f;  // adjust the amplitude overall (high values gives AMPLIFIED terrain)
 
     // noises
     SimplexNoise simplexX;       // samples space in x direction

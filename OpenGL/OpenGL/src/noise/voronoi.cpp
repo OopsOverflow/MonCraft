@@ -91,11 +91,8 @@ void VoronoiNoise::generateWeighted(ivec2 pos, Grid<weightedSample_t>& map) cons
     pos += offset;
     val.pos = floor(pos / fGridSize);
 
-    // find center cell
-    ivec2 centerIPos;
-    vec2 centerPos;
-    float min_dist = 10.f * gridSize; // bigger than possible
-
+    // compute all weights
+    int i = 0;
     ivec2 dpos{};
     for (dpos.x = -1; dpos.x <= 1; dpos.x++) {
       for (dpos.y = -1; dpos.y <= 1; dpos.y++) {
@@ -104,28 +101,6 @@ void VoronoiNoise::generateWeighted(ivec2 pos, Grid<weightedSample_t>& map) cons
         vec2 rpos2 = vec2(ipos2) + grid.at(ipos2 + 1);
         vec2 pos2 = rpos2 * fGridSize;
         float dist = distance(pos2, pos);
-
-        if (dist < min_dist) {
-          min_dist = dist;
-          centerIPos = ipos2;
-          centerPos = pos2;
-        }
-      }
-    }
-
-
-    int i = 0;
-    for (dpos.x = -1; dpos.x <= 1; dpos.x++) {
-      for (dpos.y = -1; dpos.y <= 1; dpos.y++) {
-        ivec2 ipos2 = val.pos + dpos;
-        vec2 rpos2 = vec2(ipos2) + grid.at(ipos2 + ivec2(1));
-        vec2 pos2 = rpos2 * fGridSize;
-
-        float dist = distance(pos2, pos);
-        if(ipos2 != centerIPos && false) {
-          dist *= fabs(dot(normalize(pos2 - centerPos), normalize(pos2 - pos)));
-          // dist *= 1.1;
-        }
         val.weights[i++] = dist;
       }
     }

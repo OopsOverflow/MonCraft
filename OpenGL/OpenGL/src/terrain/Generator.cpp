@@ -50,7 +50,6 @@ Block::unique_ptr_t Generator::computeSurfaceBlock(ivec3 const& pos, Biome const
 }
 
 Block::unique_ptr_t Generator::createBlock(ivec3 pos, Biome const& biome) const {
-  Block::unique_ptr_t block;
   float height = noise.fractal2(ivec2(pos.x, pos.z), biome.frequencies);
   int blockHeight = (int)floor(height + biome.elevation);
 
@@ -66,11 +65,12 @@ Block::unique_ptr_t Generator::createBlock(ivec3 pos, Biome const& biome) const 
   }
   if(pos.y >= blockHeight - (int)(valueNoise.sample1D(ivec2(pos.x, pos.z) + ivec2(-91, 859)) % 3))
       return computeSurfaceBlock(pos, biome, blockHeight);
+  // COMBAK: are we not using this anymore ? That piece of code was useless 
+  // if(pos.y >= blockHeight - (int)(2+ valueNoise.sample1D(ivec2(pos.x,pos.z) + ivec2(2,-59)) % 3))
+  //   block = AllBlocks::create_static(biome.underLayers);
 
-  if(pos.y >= blockHeight - (int)(2+ valueNoise.sample1D(ivec2(pos.x,pos.z) + ivec2(2,-59)) % 3))
-    block = AllBlocks::create_static(biome.underLayers);
   //if you want cave update :)
-  if(pos.y>= blockHeight -5 - valueNoise.sample1D(ivec2(pos.x,pos.z) + ivec2(158,-804)) % 5)return Block::create_static<Stone_Block>();
+  if(pos.y>= blockHeight -5 - valueNoise.sample1D(ivec2(pos.x,pos.z) + ivec2(158,-804)) % 5) return Block::create_static<Stone_Block>();
   float caveNoise = noise.perlin3((vec3)(pos + ivec3(55, 8, -95)) * 0.08f);
   if(caveNoise >0.4 && caveNoise<0.65)return Block::create_static<Air_Block>();
   if (noise.perlin3((vec3)(pos + ivec3(-614, 120, 745)) * 0.1f) > 0.3)return Block::create_static<Sandstone_Block>();
