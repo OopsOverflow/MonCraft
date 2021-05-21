@@ -1,6 +1,6 @@
 # Contributing Guidelines
 
-Be sure to refer to the ```readme.md```` file to understand the implementation 
+Be sure to refer to the ```readme.md``` file to understand the implementation 
 of different features.
 
 ## Project Organization
