@@ -3,6 +3,8 @@
 #include <stdexcept>
 #include <array>
 
+using namespace glm;
+
 Font::Font(std::string const& filename) {
   if (FT_Init_FreeType(&ft)) {
     throw std::runtime_error("failed to initialize Freetype");
@@ -60,30 +62,31 @@ void Font::loadAllGlyphs() {
     // set texture options
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
     // now store character for later use
     Character character = {
       texture,
-      glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
-      glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
+      ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
+      ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
       face->glyph->advance.x
     };
-    Characters.emplace(c, character);
+    characters.emplace(c, character);
   }
 }
 
-void Font::render(std::string text, glm::vec3 pos, float scale, glm::vec3 color) {
+void Font::draw(std::string text, vec3 pos, float scale, vec3 color) const {
   Shader* shader = Shader::getActive();
   glUniform3f(shader->getUniformLocation("textColor"), color.x, color.y, color.z);
 
-  // iterate through all characters
   for(auto c : text) {
-    Character ch = Characters[c];
+    Character const& ch = characters.at(c);
 
     float xpos = pos.x + ch.bearing.x * scale;
     float ypos = pos.y - (ch.size.y - ch.bearing.y) * scale;
+
+    // if(anchorX == TextAnchor::END) xpos +=
 
     float w = ch.size.x * scale;
     float h = ch.size.y * scale;

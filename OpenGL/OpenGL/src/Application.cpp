@@ -14,6 +14,7 @@
 #include "util/Raycast.hpp"
 #include "entity/character/Character.hpp"
 #include "audio/Music.hpp"
+#include "ui/ui.hpp"
 
 #include "debug/Debug.hpp"
 
@@ -40,8 +41,15 @@ int main(int argc, char* argv[]) {
     Character character({ 0.0f, 40.0f, 0.0f });
 
     // UI stuff
+    auto font = std::make_shared<const Font>("VT323-Regular");
+    ui::Root interface({ WIDTH, HEIGHT });
+    ui::Text text_fps(&interface, "hello", font);
+    text_fps.setFontSize(1.f);
+    text_fps.setAnchorX(ui::Anchor::CENTER);
+    text_fps.setAnchorY(ui::Anchor::END);
+    text_fps.setPosition({ 0, -10 });
+    text_fps.setColor({ 0.8, 0.7, 0 });
     Shader fontShader("src/shader/font.vert", "src/shader/font.frag");
-    Font font("Roboto-Regular");
 
     TextureLoader loader;
     Raycast caster(100.f);
@@ -165,18 +173,15 @@ int main(int argc, char* argv[]) {
         window.camera.activate();
         if (character.view == View::THIRD_PERSON) character.render();
 
-        // draw font
+        // draw / update ui
         {
           fontShader.activate();
+          interface.setSize({ window.width, window.height });
 
-          auto proj = glm::ortho(0.0f, (float)window.width, 0.0f, (float)window.height);
-          auto I = glm::mat4(1.f);
+          std::string text = "FPS : " + std::to_string((int)(1.f / dt));
+          text_fps.setText(text);
 
-          glUniformMatrix4fv(MATRIX_MODEL, 1, GL_FALSE, glm::value_ptr(I));
-          glUniformMatrix4fv(MATRIX_VIEW, 1, GL_FALSE, glm::value_ptr(I));
-          glUniformMatrix4fv(MATRIX_PROJECTION, 1, GL_FALSE, glm::value_ptr(proj));
-
-          font.render("Hello, World!", {10, 10, 0}, 1.f, {0, 0, 0});
+          interface.render();
         }
     }
 
