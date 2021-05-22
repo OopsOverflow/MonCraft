@@ -84,26 +84,50 @@ void VoronoiNoise::generateWeighted(ivec2 pos, Grid<weightedSample_t>& map) cons
 
   Grid<glm::vec2> grid(isize);
   grid.for_each([&](ivec2 ipos, vec2& val) {
-    val = vec2(noise.sample2D(istart + ipos)) / vec2(UINT16_MAX);
+      val = vec2(noise.sample2D(istart + ipos)) / vec2(UINT16_MAX);
   });
 
   map.for_each_parallel([&](vec2 pos, weightedSample_t& val) {
-    pos += offset;
-    val.pos = floor(pos / fGridSize);
+      pos += offset;
+      vec2 rpos1 = pos / fGridSize;
+      val.pos = floor(rpos1);
 
-    // compute all weights
-    int i = 0;
-    ivec2 dpos{};
-    for (dpos.x = -1; dpos.x <= 1; dpos.x++) {
-      for (dpos.y = -1; dpos.y <= 1; dpos.y++) {
+      // find cell we are in
+      float min_dist = 10.f * gridSize; // bigger than possible
+      vec2 min_rpos{};
+      ivec2 min_dpos{};
+      ivec2 dpos{};
+      for (dpos.x = -1; dpos.x <= 1; dpos.x++) {
+          for (dpos.y = -1; dpos.y <= 1; dpos.y++) {
 
-        ivec2 ipos2 = val.pos + dpos;
-        vec2 rpos2 = vec2(ipos2) + grid.at(ipos2 + 1);
-        vec2 pos2 = rpos2 * fGridSize;
-        float dist = distance(pos2, pos);
-        val.weights[i++] = dist;
+              ivec2 ipos2 = val.pos + dpos;
+              vec2 rpos2 = vec2(ipos2) + grid.at(ipos2 + 1);
+              float dist = distance(rpos2, rpos1);
+
+              if (dist < min_dist) {
+                  min_dist = dist;
+                  min_rpos = rpos2;
+                  min_dpos = dpos;
+              }
+
+          }
       }
-    }
 
-  });
+      // compute weights
+      int i = 0;
+      for (dpos.x = -1; dpos.x <= 1; dpos.x++) {
+          for (dpos.y = -1; dpos.y <= 1; dpos.y++) {
+
+              ivec2 ipos2 = val.pos + dpos;
+              vec2 rpos2 = vec2(ipos2) + grid.at(ipos2 + 1);
+
+              float dist;
+              if (dpos == min_dpos) dist = 0;
+              else dist = dot((min_rpos + rpos2) / 2.f - rpos1, normalize(rpos2 - min_rpos));
+              val.weights[i++] = dist * gridSize;
+
+          }
+      }
+
+      });
 }

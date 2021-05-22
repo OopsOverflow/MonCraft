@@ -302,8 +302,6 @@ Biome BiomeMap::blendBiomes(BiomeMap::weightedBiomes_t biomes) {
     res.elevation += weighted.biome->elevation * weighted.weight * 4;
   }
 
-  res.elevation -= 50;
-  res.frequencies = {};
 
   return res;
 };
