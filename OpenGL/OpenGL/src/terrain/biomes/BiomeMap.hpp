@@ -33,7 +33,8 @@ private:
     int gridSize = 100;            // voronoi single cell size
     float frequency = 0.01f;       // spatial displacement (distortion)
     float displacement = 50.f;     // spatial displacement (distortion)
-    float biomeBlend = 25.f;       // distance to smooth biomes borders
+    float blendSmoothness = 0.0f;   // amount of smoothing to apply 
+    float biomeBlend = 30.f; // distance to smooth biomes borders
     float globalFrequency = .5f;   // adjust the frequencies overall (high values gives)
     float globalAmplitude = 3.2f;  // adjust the amplitude overall (high values gives AMPLIFIED terrain)
 

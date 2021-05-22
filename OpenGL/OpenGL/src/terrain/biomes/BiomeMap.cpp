@@ -149,13 +149,23 @@ Biome const& BiomeMap::sampleWeighted(glm::ivec2 pos) const {
 
 // pipeline step 1: spatial distortion
 ivec2 BiomeMap::offsetSimplex(ivec2 pos) {
-  // return pos; // to disable distortion, uncomment this ;)
+  return pos; // to disable distortion, uncomment this ;)
   vec2 sample(simplexX.simplex2(vec2(pos) * frequency),
               simplexY.simplex2(vec2(pos) * frequency));
   sample += 1.0;
   sample *= displacement;
 
   return pos + ivec2(sample);
+}
+
+float f(float x, float a) {
+  // return x;
+  return -(((2*a-2)*sqrt((1-2*a)*x+a*a)+(1-2*a)*x-2*a*a+2*a)/(4*a*a-4*a+1));
+}
+
+float smooth(float x, float a) {
+  return -f(-x+1.f, a) + 1.f;
+  // return f(x, a);
 }
 
 // pipeline step 2: voronoi splitting (this approximate the distance to chunks borders)
@@ -184,8 +194,7 @@ BiomeMap::weightedBiomes_t BiomeMap::offsetVoronoi(ivec2 pos) {
     float dist = sample.weights[i] - centerDist;
     if(dist < biomeBlend) {
       float weight = (biomeBlend - dist) / biomeBlend;
-      weight *= weight;
-      weight *= weight;
+      weight *= weight; // make weight linear between 0 and 1
       totalWeight += weight;
       res.push_back(weightedBiome_t{
         sample.pos + posLookup[i],
@@ -199,6 +208,14 @@ BiomeMap::weightedBiomes_t BiomeMap::offsetVoronoi(ivec2 pos) {
   for(auto& biome : res) {
     biome.weight /= totalWeight;
   }
+  totalWeight = 0.f;
+  for(auto& biome : res) {
+    biome.weight = smooth(biome.weight, blendSmoothness);
+    totalWeight += biome.weight;
+  }
+  for(auto& biome : res) {
+    biome.weight /= totalWeight;
+  }
 
   return res;
 };
@@ -206,17 +223,17 @@ BiomeMap::weightedBiomes_t BiomeMap::offsetVoronoi(ivec2 pos) {
 // pipeline step 3: sample biome color
 BiomeMap::weightedBiomes_t BiomeMap::sampleBiomes(BiomeMap::weightedBiomes_t biomes) {
   // randomized biomes, debugging purposes
-  // for(auto& biome : biomes) {
-  //   int r = value.sample1D(biome.cellPos);
-  //   if(r < INT_MAX * .1) biome.biome = &biomePlains;
-  //   else if(r < INT_MAX * .2) biome.biome = &biomeSea;
-  //   else if(r < INT_MAX * .4) biome.biome = &biomeDesert;
-  //   else if(r < INT_MAX * .6) biome.biome = &biomeToundra;
-  //   else if(r < INT_MAX * .8) biome.biome = &biomeHills;
-  //   else if(r < INT_MAX     ) biome.biome = &biomeMountains;
-  // }
-  //
-  // return biomes;
+  for(auto& biome : biomes) {
+    int r = value.sample1D(biome.cellPos);
+    if(r < INT_MAX * .1) biome.biome = &biomePlains;
+    else if(r < INT_MAX * .2) biome.biome = &biomeSea;
+    else if(r < INT_MAX * .4) biome.biome = &biomeDesert;
+    else if(r < INT_MAX * .6) biome.biome = &biomeToundra;
+    else if(r < INT_MAX * .8) biome.biome = &biomeHills;
+    else if(r < INT_MAX     ) biome.biome = &biomeMountains;
+  }
+
+  return biomes;
 
   for(auto& biome : biomes) {
     float height = simplexBiome.fractal2(biome.cellPos, heightOctaves);
@@ -282,8 +299,11 @@ Biome BiomeMap::blendBiomes(BiomeMap::weightedBiomes_t biomes) {
     }
 
     // blend elevation
-    res.elevation += weighted.biome->elevation * weighted.weight;
+    res.elevation += weighted.biome->elevation * weighted.weight * 4;
   }
+
+  res.elevation -= 50;
+  res.frequencies = {};
 
   return res;
 };
