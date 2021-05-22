@@ -1,5 +1,4 @@
-#ifndef LOADER_H
-#define LOADER_H
+#pragma once
 
 #include <vector>
 #include <memory>
@@ -14,10 +13,10 @@ typedef std::unique_ptr<Mesh> ptr2mesh;
  * A texture loader.
  */
 
-class Loader
+class TextureLoader
 {
 public:
-    ~Loader();
+    ~TextureLoader();
 
     /**
      * Loads the texture with the given filename (must be a .png file and
@@ -26,7 +25,7 @@ public:
      * generate them by default.
      * (files <filename>1.png -- <filename>N.png are the N mipmap levels)
      */
-    GLuint loadTexture(const std::string& fileName);
+    GLuint loadTexture(const std::string& filename);
 
     /**
      * Loads the cube map texture. faces holds a list of the filenames for the
@@ -53,10 +52,7 @@ private:
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         return vbo;
-
     }
 
     std::vector<GLuint> textureList;
 };
-
-#endif // LOADER_H

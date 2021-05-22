@@ -71,7 +71,7 @@ GLuint SkyBox::initSky(Shader& shader) {
 // Easy swap SkyBox
 // Tool : https://jaxry.github.io/panorama-to-cubemap/
 GLuint SkyBox::loadTxr() {
-    Loader skyTxr;
+    TextureLoader skyTxr;
     std::vector<std::string> faces
     {
         "skybox/px.png",            // right

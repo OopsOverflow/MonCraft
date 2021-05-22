@@ -1,5 +1,5 @@
 #pragma once
-#include "../gl/Loader.hpp"
+#include "../gl/TextureLoader.hpp"
 #include "../gl/Shader.hpp"
 #include "../gl/Camera.hpp"
 

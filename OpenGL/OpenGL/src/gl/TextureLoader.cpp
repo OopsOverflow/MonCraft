@@ -1,23 +1,23 @@
-﻿#include "Loader.hpp"
+﻿#include "TextureLoader.hpp"
 
 #include <SDL2/SDL_image.h>
 #include <iostream>
 #include <stdexcept>
 #include "debug/Debug.hpp"
 
-Loader::~Loader()
+TextureLoader::~TextureLoader()
 {
     ASSERT_GL_MAIN_THREAD();
     for (auto& i : this->textureList)
         glDeleteTextures(1, &i);
 }
 
-GLuint Loader::loadTexture(const std::string& fileName) {
+GLuint TextureLoader::loadTexture(const std::string& filename) {
     if(!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)) {
       throw std::runtime_error("could not load SDL2_image with PNG files");
     }
 
-    std::string path = "data/img/" + fileName + ".png";
+    std::string path = "data/img/" + filename + ".png";
     SDL_Surface* img = IMG_Load(path.c_str());
 
     if(!img) {
@@ -29,7 +29,7 @@ GLuint Loader::loadTexture(const std::string& fileName) {
 
     std::vector<SDL_Surface*> mipmaps;
     for(int i = 1; img; i++) {
-      std::string path = "data/img/" + fileName + std::to_string(i) + ".png";
+      std::string path = "data/img/" + filename + std::to_string(i) + ".png";
       img = IMG_Load(path.c_str());
       if(img) {
         SDL_Surface* surf = SDL_ConvertSurfaceFormat(img, SDL_PIXELFORMAT_RGBA32, 0);
@@ -77,7 +77,7 @@ GLuint Loader::loadTexture(const std::string& fileName) {
     return textureID;
 }
 
-GLuint Loader::loadCubeMap(const std::vector<std::string>& faces)
+GLuint TextureLoader::loadCubeMap(const std::vector<std::string>& faces)
 {
     GLuint textureID;
     glGenTextures(1, &textureID);
@@ -111,7 +111,7 @@ GLuint Loader::loadCubeMap(const std::vector<std::string>& faces)
 
 
 
-void Loader::bindIndexBuffer(const std::vector<GLuint>& indices)
+void TextureLoader::bindIndexBuffer(const std::vector<GLuint>& indices)
 {
     createVBO(GL_ELEMENT_ARRAY_BUFFER);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(indices.at(0)), indices.data(), GL_STATIC_DRAW);
@@ -119,7 +119,7 @@ void Loader::bindIndexBuffer(const std::vector<GLuint>& indices)
 
 
 //Vertex ARRAY object
-GLuint Loader::createVAO()
+GLuint TextureLoader::createVAO()
 {
     GLuint id;
     glGenVertexArrays(1, &id);
@@ -128,7 +128,7 @@ GLuint Loader::createVAO()
 }
 
 //Vertex BUFFER object
-GLuint Loader::createVBO(GLenum type)
+GLuint TextureLoader::createVBO(GLenum type)
 {
     GLuint vbo;
     glGenBuffers(1, &vbo);
@@ -136,7 +136,7 @@ GLuint Loader::createVBO(GLenum type)
     return vbo;
 }
 
-void Loader::unbindVAO()
+void TextureLoader::unbindVAO()
 {
     glBindVertexArray(0);
 }

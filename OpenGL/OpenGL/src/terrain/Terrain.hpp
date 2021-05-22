@@ -11,7 +11,7 @@
 #include "SliceMap.hpp"
 #include "Generator.hpp"
 #include "../gl/Camera.hpp"
-#include "../gl/Loader.hpp"
+#include "../gl/TextureLoader.hpp"
 #include "../util/PriorityList.hpp"
 #include "../util/AtomicCyclicList.hpp"
 
@@ -114,6 +114,6 @@ private:
   WaitingList waitingChunks; // chunk positions yet to be loaded
 
   // texture
-  Loader loader;
+  TextureLoader loader;
   GLuint texture;
 };

@@ -9,7 +9,7 @@
 #include "gl/Viewport.hpp"
 #include "terrain/Terrain.hpp"
 #include "terrain/SkyBox.hpp"
-#include "gl/Loader.hpp"
+#include "gl/TextureLoader.hpp"
 #include "util/Raycast.hpp"
 #include "entity/character/Character.hpp"
 #include "audio/Music.hpp"
@@ -38,7 +38,7 @@ int main(int argc, char* argv[]) {
     ShadowMap shadows(4096);
     Character character({ 0.0f, 40.0f, 0.0f });
 
-    Loader loader;
+    TextureLoader loader;
     Raycast caster(100.f);
 
     std::cout << "Chargement des Textures";

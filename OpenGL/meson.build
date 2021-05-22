@@ -23,7 +23,7 @@ srcs = files(
   'OpenGL/src/gl/Camera.cpp',
   'OpenGL/src/gl/Viewport.cpp',
   'OpenGL/src/gl/Mesh.cpp',
-  'OpenGL/src/gl/Loader.cpp',
+  'OpenGL/src/gl/TextureLoader.cpp',
 
   'OpenGL/src/util/Raycast.cpp',
   'OpenGL/src/util/Random.cpp',
