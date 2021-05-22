@@ -10,6 +10,7 @@
 #include "terrain/Terrain.hpp"
 #include "terrain/SkyBox.hpp"
 #include "gl/TextureLoader.hpp"
+#include "gl/Font.hpp"
 #include "util/Raycast.hpp"
 #include "entity/character/Character.hpp"
 #include "audio/Music.hpp"
@@ -37,6 +38,10 @@ int main(int argc, char* argv[]) {
 
     ShadowMap shadows(4096);
     Character character({ 0.0f, 40.0f, 0.0f });
+
+    // UI stuff
+    Shader fontShader("src/shader/font.vert", "src/shader/font.frag");
+    Font font("Roboto-Regular");
 
     TextureLoader loader;
     Raycast caster(100.f);
@@ -159,6 +164,20 @@ int main(int argc, char* argv[]) {
         // draw the character
         window.camera.activate();
         if (character.view == View::THIRD_PERSON) character.render();
+
+        // draw font
+        {
+          fontShader.activate();
+
+          auto proj = glm::ortho(0.0f, (float)window.width, 0.0f, (float)window.height);
+          auto I = glm::mat4(1.f);
+
+          glUniformMatrix4fv(MATRIX_MODEL, 1, GL_FALSE, glm::value_ptr(I));
+          glUniformMatrix4fv(MATRIX_VIEW, 1, GL_FALSE, glm::value_ptr(I));
+          glUniformMatrix4fv(MATRIX_PROJECTION, 1, GL_FALSE, glm::value_ptr(proj));
+
+          font.render("Hello, World!", {10, 10, 0}, 1.f, {0, 0, 0});
+        }
     }
 
     return 0;

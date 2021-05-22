@@ -23,6 +23,7 @@ srcs = files(
   'OpenGL/src/gl/Camera.cpp',
   'OpenGL/src/gl/Viewport.cpp',
   'OpenGL/src/gl/Mesh.cpp',
+  'OpenGL/src/gl/Font.cpp',
   'OpenGL/src/gl/TextureLoader.cpp',
 
   'OpenGL/src/util/Raycast.cpp',
@@ -61,6 +62,7 @@ deps = [
   dependency('threads'),
   dependency('openmp'),
   dependency('sfml-audio'),
+  dependency('freetype2'),
 ]
 
 incs = include_directories('OpenGL/src')
