@@ -5,6 +5,7 @@
 #include "blocks/Leaf_Block.hpp"
 #include "blocks/Tallgrass_Block.hpp"
 #include "blocks/Water_Block.hpp"
+#include "gl/ResourceManager.hpp"
 
 using namespace glm;
 
@@ -26,8 +27,6 @@ Character::Character(vec3 pos)
   chest.node.addChild(&r_arm.node);
   chest.node.addChild(&l_leg.node);
   chest.node.addChild(&r_leg.node);
-
-  tex = texLoader.loadTexture("Character");
   animState = 0;
 }
 
@@ -124,13 +123,10 @@ void Character::update(Terrain& terrain, float dt) {
 }
 
 void Character::render() {
-  glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, tex);
   chest.draw();
   head.draw();
   l_arm.draw();
   r_arm.draw();
   l_leg.draw();
   r_leg.draw();
-  glBindTexture(GL_TEXTURE_2D, 0);
 }

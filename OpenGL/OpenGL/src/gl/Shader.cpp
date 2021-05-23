@@ -26,11 +26,26 @@ GLint Shader::getUniformLocation(const std::string &location) const {
   return glGetUniformLocation(program, location.c_str());
 }
 
+void Shader::bindTexture(ShaderLocation textureLocation, GLuint texture) const {
+  glActiveTexture(GL_TEXTURE0 + textureLocation);
+  glBindTexture(GL_TEXTURE_2D, texture);
+}
 
 // --------------- private ---------------
 
 void Shader::initLocations() {
   glUseProgram(program);
+
+  GLint t_color = getUniformLocation("t_color");
+  GLint t_normal = getUniformLocation("t_normal");
+  GLint t_shadow0 = getUniformLocation("t_shadow[0]");
+  GLint t_shadow1 = getUniformLocation("t_shadow[1]");
+  GLint t_shadow2 = getUniformLocation("t_shadow[2]");
+  glUniform1i(t_color, 0);
+  glUniform1i(t_normal, 1);
+  glUniform1i(t_shadow0, 2);
+  glUniform1i(t_shadow1, 3);
+  glUniform1i(t_shadow2, 4);
 
 #define ATTRLOC(str) glGetAttribLocation(program, str)
 #define UNILOC(str) glGetUniformLocation(program, str)
@@ -46,7 +61,11 @@ void Shader::initLocations() {
             << "m_projection: " << UNILOC("m_projection") << std::endl
             << "m_normal: " << UNILOC("m_normal") << std::endl
             << "m_shadows: " << UNILOC("m_shadows") << std::endl
-            << "c_center: " << UNILOC("c_center") << std::endl;
+            << "t_color: " << t_color << std::endl
+            << "t_normal: " << t_normal << std::endl
+            << "t_shadow0: " << t_shadow0 << std::endl
+            << "t_shadow1: " << t_shadow1 << std::endl
+            << "t_shadow2: " << t_shadow2 << std::endl;
   #undef ATTRLOC
   #undef UNILOC
 }

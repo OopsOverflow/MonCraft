@@ -1,6 +1,7 @@
 #include "SkyBox.hpp"
-#include "../gl/Camera.hpp"
-#include "../gl/Viewport.hpp"
+#include "gl/Camera.hpp"
+#include "gl/Viewport.hpp"
+#include "gl/ResourceManager.hpp"
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -68,29 +69,11 @@ GLuint SkyBox::initSky(Shader& shader) {
     return vao;
 }
 
-// Easy swap SkyBox
-// Tool : https://jaxry.github.io/panorama-to-cubemap/
-GLuint SkyBox::loadTxr() {
-    TextureLoader skyTxr;
-    std::vector<std::string> faces
-    {
-        "skybox/px.png",            // right
-        "skybox/nx.png",            // left
-        "skybox/py.png",            // top
-        "skybox/ny.png",            // bottom
-        "skybox/pz.png",            // front
-        "skybox/nz.png"             // back
-    };
-
-    return skyTxr.loadCubeMap(faces);
-}
-
 SkyBox::SkyBox() :
     skyBoxShader("src/shader/skyBox.vert", "src/shader/skyBox.frag"),
-    buffer(initSky(skyBoxShader)),
-    skyTxr(loadTxr())
+    buffer(initSky(skyBoxShader))
 {
-
+  skyTxr = ResourceManager::getTexture("skybox");
 }
 
 void SkyBox::render(Camera& camera)

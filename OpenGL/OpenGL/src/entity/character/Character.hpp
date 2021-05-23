@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../Entity.hpp"
-#include "gl/TextureLoader.hpp"
 #include "terrain/Terrain.hpp"
 #include "util/Raycast.hpp"
 
@@ -63,9 +62,6 @@ private:
   RightArm r_arm;
   LeftLeg l_leg;
   RightLeg r_leg;
-
-  GLuint tex;
-  TextureLoader texLoader;
 
   float animState;
 
