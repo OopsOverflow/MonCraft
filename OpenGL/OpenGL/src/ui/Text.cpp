@@ -20,10 +20,8 @@ void Text::draw() {
   auto orig = getAbsoluteOrigin();
   vec3 pos(orig.x, orig.y, 0.f);
   shader->activate();
-
-  vec3 startPos = pos;
-  startPos.x -= font->characters.at(text.at(0)).bearing.x * 2; // COMBAK: why * 2 ?
-  font->draw(text, startPos, fontSize, color);
+  pos.x -= font->characters.at(text.at(0)).bearing.x * fontSize;
+  font->draw(text, pos, fontSize, color);
   Component::draw();
 }
 
@@ -40,8 +38,8 @@ void Text::computeSize() {
 
     auto const& first = font->characters.at(*text.begin());
     auto const& last = font->characters.at(*--text.end());
-    size.x -= first.bearing.x * 2; // COMBAK: why * 2 ?
-    size.x -= last.advance - first.size.x - first.bearing.x;
+    size.x -= first.bearing.x * fontSize;
+    size.x -= (last.advance - last.size.x - last.bearing.x) * fontSize;
   }
 
   setSize(size);
