@@ -98,7 +98,7 @@
       <PreprocessorDefinitions>GLEW_STATIC;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <OpenMPSupport>true</OpenMPSupport>
-      <AdditionalIncludeDirectories>$(ProjectDir)src\;$(SolutionDir)Dependencies;$(SolutionDir)Dependencies\SFML\include;$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)Dependencies\SDL2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src\;$(SolutionDir)Dependencies;$(SolutionDir)Dependencies\SFML\include;$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)Dependencies\SDL2\include;$(SolutionDir)Dependencies\FreeType\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -132,7 +132,7 @@
       <PreprocessorDefinitions>GLEW_STATIC;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <OpenMPSupport>true</OpenMPSupport>
-      <AdditionalIncludeDirectories>$(ProjectDir)src\;$(SolutionDir)Dependencies;$(SolutionDir)Dependencies\SFML\include;$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)Dependencies\SDL2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src\;$(SolutionDir)Dependencies;$(SolutionDir)Dependencies\SFML\include;$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)Dependencies\SDL2\include;$(SolutionDir)Dependencies\FreeType\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -182,9 +182,9 @@
     <ClCompile Include="src\gl\Camera.cpp" />
     <ClCompile Include="src\gl\Font.cpp" />
     <ClCompile Include="src\gl\Mesh.cpp" />
+    <ClCompile Include="src\gl\ResourceManager.cpp" />
     <ClCompile Include="src\gl\Shader.cpp" />
     <ClCompile Include="src\gl\ShadowMap.cpp" />
-    <ClCompile Include="src\gl\TextureLoader.cpp" />
     <ClCompile Include="src\gl\Viewport.cpp" />
     <ClCompile Include="src\noise\bitmapTex.cpp" />
     <ClCompile Include="src\noise\simplex.cpp" />
@@ -199,6 +199,7 @@
     <ClCompile Include="src\terrain\Structure.cpp" />
     <ClCompile Include="src\terrain\Terrain.cpp" />
     <ClCompile Include="src\ui\Component.cpp" />
+    <ClCompile Include="src\ui\Pane.cpp" />
     <ClCompile Include="src\ui\Root.cpp" />
     <ClCompile Include="src\ui\Text.cpp" />
     <ClCompile Include="src\util\Random.cpp" />
@@ -252,9 +253,9 @@
     <ClInclude Include="src\gl\Camera.hpp" />
     <ClInclude Include="src\gl\Font.hpp" />
     <ClInclude Include="src\gl\Mesh.hpp" />
+    <ClInclude Include="src\gl\ResourceManager.hpp" />
     <ClInclude Include="src\gl\Shader.hpp" />
     <ClInclude Include="src\gl\ShadowMap.hpp" />
-    <ClInclude Include="src\gl\TextureLoader.hpp" />
     <ClInclude Include="src\gl\Viewport.hpp" />
     <ClInclude Include="src\noise\bitmap.hpp" />
     <ClInclude Include="src\noise\bitmapTex.hpp" />
@@ -277,6 +278,7 @@
     <ClInclude Include="src\terrain\Structure.hpp" />
     <ClInclude Include="src\terrain\Terrain.hpp" />
     <ClInclude Include="src\ui\Component.hpp" />
+    <ClInclude Include="src\ui\Pane.hpp" />
     <ClInclude Include="src\ui\Root.hpp" />
     <ClInclude Include="src\ui\Text.hpp" />
     <ClInclude Include="src\ui\ui.hpp" />

@@ -129,7 +129,10 @@
     <ClCompile Include="src\gl\Font.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\gl\TextureLoader.cpp">
+    <ClCompile Include="src\gl\ResourceManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\Pane.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -383,7 +386,10 @@
     <ClInclude Include="src\gl\Font.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\gl\TextureLoader.hpp">
+    <ClInclude Include="src\gl\ResourceManager.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\Pane.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
