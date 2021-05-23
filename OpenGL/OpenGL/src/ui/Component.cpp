@@ -47,10 +47,11 @@ ivec2 Component::getOrigin() const {
   if(!parent) return position;
   ivec2 orig = position;
   ivec2 size = computedSize;
-  ivec2 parentSize = parent->computedSize;
-  if(anchorX == Anchor::END)         orig.x += parentSize.x - size.x;
+  ivec2 parentSize = parent->computedSize - parent->padding * 2;
+
+  if(anchorX == Anchor::END)         orig.x +=  parentSize.x - size.x;
   else if(anchorX == Anchor::CENTER) orig.x += (parentSize.x - size.x) / 2.f;
-  if(anchorY == Anchor::END)         orig.y += parentSize.y - size.y;
+  if(anchorY == Anchor::END)         orig.y +=  parentSize.y - size.y;
   else if(anchorY == Anchor::CENTER) orig.y += (parentSize.y - size.y) / 2.f;
 
   return orig;
@@ -58,7 +59,7 @@ ivec2 Component::getOrigin() const {
 
 ivec2 Component::getAbsoluteOrigin() const {
   if(!parent) return computedOrigin;
-  return parent->getAbsoluteOrigin() + computedOrigin;
+  return parent->getAbsoluteOrigin() + parent->padding + computedOrigin;
 }
 
 #include "debug/Debug.hpp"
@@ -100,10 +101,10 @@ void Component::computeSize() {
   for(Component* child : children) child->computeSize();
 
   if(recomputeQueued) {
-    ivec2 newCompSize = size;
+    ivec2 newCompSize = size + 2 * padding;
 
     for(Component* child : children) {
-      newCompSize = max(newCompSize, abs(child->position) + child->computedSize);
+      newCompSize = max(newCompSize, abs(child->position) + child->computedSize + 2 * padding);
     }
 
     if(parent && newCompSize != computedSize) parent->queueRecompute(false);
@@ -118,6 +119,15 @@ void Component::setPosition(glm::ivec2 position) {
 
 glm::ivec2 Component::getPosition() const {
   return position;
+}
+
+void Component::setPadding(glm::ivec2 padding) {
+  this->padding = padding;
+  queueRecompute(true);
+}
+
+glm::ivec2 Component::getPadding() const {
+  return padding;
 }
 
 void Component::setAnchorX(Anchor anchor) {

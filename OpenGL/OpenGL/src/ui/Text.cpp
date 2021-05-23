@@ -16,7 +16,6 @@ Text::Text(Component* parent, std::string text, std::shared_ptr<const Font> font
 }
 
 void Text::draw() {
-  computeSize();
   auto orig = getAbsoluteOrigin();
   vec3 pos(orig.x, orig.y, 0.f);
   shader->activate();
@@ -29,7 +28,7 @@ void Text::computeSize() {
   ivec2 size{ 0, 0 };
 
   if(text.size() != 0) {
-
+    
     for(auto c : text) {
       auto const& ch = font->characters.at(c);
       size.x += ch.advance * fontSize;
@@ -56,6 +55,7 @@ glm::vec4 Text::getColor() const {
 
 void Text::setText(std::string text) {
   this->text = text;
+  computeSize();
   queueDraw();
 }
 

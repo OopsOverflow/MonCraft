@@ -58,6 +58,7 @@ int main(int argc, char* argv[]) {
     pane.setPosition({ 10, 10 });
     pane.setAnchorX(ui::Anchor::CENTER);
     pane.setColor({ 1.f, 1.f, 1.f, 1.f });
+    pane.setPadding({ 10, 10 });
     ui::Text text_fps(&pane, "hello", font);
     text_fps.setFontSize(2.f);
     // text_fps.setAnchorX(ui::Anchor::CENTER);

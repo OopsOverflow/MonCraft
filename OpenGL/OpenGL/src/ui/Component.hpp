@@ -28,6 +28,9 @@ public:
   void setPosition(glm::ivec2 position);
   glm::ivec2 getPosition() const;
 
+  void setPadding(glm::ivec2 padding);
+  glm::ivec2 getPadding() const;
+
   void setAnchorX(Anchor anchor);
   Anchor getAnchorX() const;
 
@@ -50,11 +53,11 @@ private:
   void computeOrigin();
 
   glm::ivec2 size;
-  glm::ivec2 absoluteOrigin;
   glm::ivec2 absoluteSize;
-  glm::ivec2 computedOrigin;
   glm::ivec2 computedSize;
+  glm::ivec2 computedOrigin;
   glm::ivec2 position;
+  glm::ivec2 padding;
   Anchor anchorX;
   Anchor anchorY;
 };
