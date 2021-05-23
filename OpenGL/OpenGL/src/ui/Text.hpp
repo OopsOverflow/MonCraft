@@ -20,8 +20,8 @@ public:
   void setText(std::string text);
   std::string getText() const;
 
-  void setColor(glm::vec3 color);
-  glm::vec3 getColor() const;
+  void setColor(glm::vec4 color);
+  glm::vec4 getColor() const;
 
   void setFontSize(float fontSize);
   float getFontSize() const;
@@ -31,9 +31,10 @@ public:
 
 private:
   std::string text;
-  glm::vec3 color;
+  glm::vec4 color;
   float fontSize;
   std::shared_ptr<const Font> font;
+  Shader* shader;
 };
 
 }; // namespace ui

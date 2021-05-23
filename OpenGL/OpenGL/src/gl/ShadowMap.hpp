@@ -29,7 +29,7 @@ public:
    * Updates the shadow matrices using a sun direction.
    */
   void attach(Camera const& cam, Frustum frustum);
-  
+
   /**
    * Render of a given view frustum must be done between a beginFrame() /
    * endframe().
@@ -39,9 +39,9 @@ public:
 
   /**
    * Activates the shadowmap to render shadows.
-   * basically binds the shadow matrices to the given shader.
+   * basically binds the shadow matrices to the activated shader.
    */
-  void activate(Shader const& shader);
+  void activate();
 
   /**
    * Gets the texture associated to a given frustum - near, middle or far.

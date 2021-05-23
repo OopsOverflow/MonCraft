@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Component.hpp"
+#include "gl/Shader.hpp"
 
 namespace ui {
 
@@ -16,6 +17,7 @@ public:
 
 private:
   glm::ivec2 size;
+  std::vector<Shader*> shaders;
 
 };
 

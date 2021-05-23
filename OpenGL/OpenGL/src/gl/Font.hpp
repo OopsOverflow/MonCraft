@@ -15,7 +15,7 @@ public:
   Font(std::string const& filename);
   virtual ~Font();
 
-  void draw(std::string text, glm::vec3 pos, float scale, glm::vec3 color) const;
+  void draw(std::string text, glm::vec3 pos, float scale, glm::vec4 color) const;
 
   struct Character {
     GLuint tex;

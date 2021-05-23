@@ -11,6 +11,7 @@
 #include "terrain/SkyBox.hpp"
 #include "gl/TextureLoader.hpp"
 #include "gl/Font.hpp"
+#include "gl/ResourceManager.hpp"
 #include "util/Raycast.hpp"
 #include "entity/character/Character.hpp"
 #include "audio/Music.hpp"
@@ -25,15 +26,24 @@ using namespace glm;
 #define WIDTH     800
 #define HEIGHT    800
 
+void loadResources() {
+  ResourceManager::addShader("simple", "src/shader/simple.vert", "src/shader/simple.frag");
+  ResourceManager::addShader("font",   "src/shader/font.vert",   "src/shader/font.frag");
+  ResourceManager::addShader("pane",   "src/shader/pane.vert",   "src/shader/pane.frag");
+}
+
 int main(int argc, char* argv[]) {
     std::cout << "----Main------\n";
 
+    // game seed
     std::hash<std::string> hashString;
     std::srand(hashString("Moncraft"));
 
 
     Viewport window(WIDTH, HEIGHT);
-    Shader shader("src/shader/simple.vert", "src/shader/simple.frag");
+    loadResources();
+    Shader* shader = ResourceManager::getShader("simple");
+
     Terrain terrain;
     SkyBox sky;
 
@@ -48,8 +58,8 @@ int main(int argc, char* argv[]) {
     text_fps.setAnchorX(ui::Anchor::CENTER);
     text_fps.setAnchorY(ui::Anchor::END);
     text_fps.setPosition({ 0, -10 });
-    text_fps.setColor({ 0.8, 0.7, 0 });
-    Shader fontShader("src/shader/font.vert", "src/shader/font.frag");
+    ui::Pane pane(&interface);
+    text_fps.setColor({ 0.8f, 0.7f, 0.0f, 0.5f });
 
     TextureLoader loader;
     Raycast caster(100.f);
@@ -89,7 +99,7 @@ int main(int argc, char* argv[]) {
         float sunSpeed = 5.f;
         float sunTime = pi<float>() * .25f;
         sunTime += t / 300.f * sunSpeed;
-        glUniform1f(shader.getUniformLocation("sunTime"), sunTime * 400); // Fog Sampling Time
+        glUniform1f(shader->getUniformLocation("sunTime"), sunTime * 400); // Fog Sampling Time
         // This is used instead to avoid Win/Linux conflicts
 
         float distance = 100.f;
@@ -119,20 +129,20 @@ int main(int argc, char* argv[]) {
         window.camera.activate();
         sky.render(window.camera);
 
-        shader.activate();
+        shader->activate();
 
         // set light position / intensity
-        glUniform1f(shader.getUniformLocation("lightIntensity"), 1);
+        glUniform1f(shader->getUniformLocation("lightIntensity"), 1);
         auto sunDirViewSpace = window.camera.view * vec4(sunDir, 0.0);
-        glUniform3fv(shader.getUniformLocation("lightDirection"), 1, value_ptr(sunDirViewSpace));
+        glUniform3fv(shader->getUniformLocation("lightDirection"), 1, value_ptr(sunDirViewSpace));
 
         // bind textures
-        GLint texSampler = shader.getUniformLocation("textureSampler");
+        GLint texSampler = shader->getUniformLocation("textureSampler");
         glUniform1i(texSampler, 0);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, textureID);
 
-        GLint normalMap = shader.getUniformLocation("normalMap");
+        GLint normalMap = shader->getUniformLocation("normalMap");
         glUniform1i(normalMap, 1);
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, normalMapID[(size_t)(t*15)%30]);
@@ -141,22 +151,22 @@ int main(int argc, char* argv[]) {
         Block* block = terrain.getBlock(ivec3(window.camera.position + vec3(-0.5f,0.6f,-0.5f)));
         if (block) {
             bool isUnderWater = block->type == BlockType::Water;
-            GLint underWater = shader.getUniformLocation("underWater");
+            GLint underWater = shader->getUniformLocation("underWater");
             glUniform1i(underWater, isUnderWater);
 
             sky.skyBoxShader.activate();
             underWater = sky.skyBoxShader.getUniformLocation("underWater");
             glUniform1i(underWater, isUnderWater);
 
-            shader.activate();
+            shader->activate();
         }
 
-        GLint fog = shader.getUniformLocation("fog");
+        GLint fog = shader->getUniformLocation("fog");
         glUniform1i(fog, (int)window.enableFog);
 
         // draw the terrain
         window.camera.activate();
-        shadows.activate(shader);
+        shadows.activate();
         terrain.render(window.camera);
 
         // dot in the middle of the screen
@@ -174,15 +184,10 @@ int main(int argc, char* argv[]) {
         if (character.view == View::THIRD_PERSON) character.render();
 
         // draw / update ui
-        {
-          fontShader.activate();
-          interface.setSize({ window.width, window.height });
-
-          std::string text = "FPS : " + std::to_string((int)(1.f / dt));
-          text_fps.setText(text);
-
-          interface.render();
-        }
+        interface.setSize({ window.width, window.height });
+        std::string text = "FPS : " + std::to_string((int)(1.f / dt));
+        text_fps.setText(text);
+        interface.render();
     }
 
     return 0;

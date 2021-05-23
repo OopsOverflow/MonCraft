@@ -25,6 +25,7 @@ srcs = files(
   'OpenGL/src/gl/Mesh.cpp',
   'OpenGL/src/gl/Font.cpp',
   'OpenGL/src/gl/TextureLoader.cpp',
+  'OpenGL/src/gl/ResourceManager.cpp',
 
   'OpenGL/src/util/Raycast.cpp',
   'OpenGL/src/util/Random.cpp',

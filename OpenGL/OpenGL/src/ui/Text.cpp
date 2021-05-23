@@ -1,5 +1,5 @@
 #include "Text.hpp"
-
+#include "gl/ResourceManager.hpp"
 
 using namespace ui;
 using namespace glm;
@@ -8,17 +8,21 @@ using namespace glm;
 Text::Text(Component* parent, std::string text, std::shared_ptr<const Font> font)
   : Component(parent),
     text(std::move(text)),
-    color(0.f, 0.f, 0.f),
+    color(0.f, 0.f, 0.f, 1.f),
     fontSize(1.f),
     font(std::move(font))
 {
-
+  shader = ResourceManager::getShader("font");
 }
 
 void Text::draw() {
   auto orig = getAbsoluteOrigin();
   vec3 pos(orig.x, orig.y, 0.f);
-  font->draw(text, pos, fontSize, color);
+  shader->activate();
+
+  vec3 startPos = pos;
+  startPos.x -= font->characters.at(text.at(0)).bearing.x * 2; // COMBAK: why * 2 ?
+  font->draw(text, startPos, fontSize, color);
   Component::draw();
 }
 
@@ -32,12 +36,12 @@ ivec2 Text::getSize() const {
   return size;
 }
 
-void Text::setColor(glm::vec3 color) {
+void Text::setColor(glm::vec4 color) {
   this->color = color;
   queueDraw();
 }
 
-glm::vec3 Text::getColor() const {
+glm::vec4 Text::getColor() const {
   return color;
 }
 
