@@ -15,7 +15,6 @@ public:
 
   void draw() override;
 
-  glm::ivec2 getSize() const override;
 
   void setText(std::string text);
   std::string getText() const;
@@ -30,6 +29,7 @@ public:
   std::shared_ptr<const Font> getFont() const;
 
 private:
+  void computeSize();
   std::string text;
   glm::vec4 color;
   float fontSize;

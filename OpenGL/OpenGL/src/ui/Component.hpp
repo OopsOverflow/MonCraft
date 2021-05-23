@@ -18,7 +18,10 @@ public:
   // avoid unecessary draw calls
   void queueDraw();
 
-  virtual glm::ivec2 getSize() const = 0;
+  void setSize(glm::ivec2 size);
+  glm::ivec2 getSize() const;
+  glm::ivec2 getAbsoluteSize() const;
+
   glm::ivec2 getOrigin() const;
   glm::ivec2 getAbsoluteOrigin() const;
 
@@ -27,19 +30,30 @@ public:
 
   void setAnchorX(Anchor anchor);
   Anchor getAnchorX() const;
-  
+
   void setAnchorY(Anchor anchor);
   Anchor getAnchorY() const;
 
 protected:
   void addChild(Component* child);
   void removeChild(Component* child);
+  void recompute();
 
   bool drawQueued;
+  bool recomputeQueued;
   Component* parent;
   std::vector<Component*> children;
 
 private:
+  void queueRecompute(bool propagate = true);
+  void computeSize();
+  void computeOrigin();
+
+  glm::ivec2 size;
+  glm::ivec2 absoluteOrigin;
+  glm::ivec2 absoluteSize;
+  glm::ivec2 computedOrigin;
+  glm::ivec2 computedSize;
   glm::ivec2 position;
   Anchor anchorX;
   Anchor anchorY;

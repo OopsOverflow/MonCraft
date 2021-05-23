@@ -16,6 +16,7 @@ Text::Text(Component* parent, std::string text, std::shared_ptr<const Font> font
 }
 
 void Text::draw() {
+  computeSize();
   auto orig = getAbsoluteOrigin();
   vec3 pos(orig.x, orig.y, 0.f);
   shader->activate();
@@ -26,14 +27,24 @@ void Text::draw() {
   Component::draw();
 }
 
-ivec2 Text::getSize() const {
+void Text::computeSize() {
   ivec2 size{ 0, 0 };
-  for(auto c : text) {
-    auto const& ch = font->characters.at(c);
-    size.x += (ch.advance >> 6) * fontSize;
-    size.y = max(size.y, (int)(ch.size.y * fontSize));
+
+  if(text.size() != 0) {
+
+    for(auto c : text) {
+      auto const& ch = font->characters.at(c);
+      size.x += ch.advance * fontSize;
+      size.y = max(size.y, (int)(ch.size.y * fontSize));
+    }
+
+    auto const& first = font->characters.at(*text.begin());
+    auto const& last = font->characters.at(*--text.end());
+    size.x -= first.bearing.x * 2; // COMBAK: why * 2 ?
+    size.x -= last.advance - first.size.x - first.bearing.x;
   }
-  return size;
+
+  setSize(size);
 }
 
 void Text::setColor(glm::vec4 color) {
@@ -56,7 +67,7 @@ std::string Text::getText() const {
 
 void Text::setFontSize(float fontSize) {
   this->fontSize = fontSize;
-  queueDraw();
+  computeSize();
 }
 
 float Text::getFontSize() const {
@@ -65,7 +76,7 @@ float Text::getFontSize() const {
 
 void Text::setFont(std::shared_ptr<const Font> font) {
   this->font = font;
-  queueDraw();
+  computeSize();
 }
 
 std::shared_ptr<const Font> Text::getFont() const {

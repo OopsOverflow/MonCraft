@@ -51,14 +51,17 @@ int main(int argc, char* argv[]) {
     Character character({ 0.0f, 40.0f, 0.0f });
 
     // UI stuff
-    auto font = std::make_shared<const Font>("VT323-Regular");
+    auto font = std::make_shared<const Font>("Roboto-Regular");
+    // auto font = std::make_shared<const Font>("VT323-Regular");
     ui::Root interface({ WIDTH, HEIGHT });
-    ui::Text text_fps(&interface, "hello", font);
-    text_fps.setFontSize(1.f);
-    text_fps.setAnchorX(ui::Anchor::CENTER);
-    text_fps.setAnchorY(ui::Anchor::END);
-    text_fps.setPosition({ 0, -10 });
     ui::Pane pane(&interface);
+    pane.setPosition({ 10, 10 });
+    pane.setAnchorX(ui::Anchor::CENTER);
+    pane.setColor({ 1.f, 1.f, 1.f, 1.f });
+    ui::Text text_fps(&pane, "hello", font);
+    text_fps.setFontSize(2.f);
+    // text_fps.setAnchorX(ui::Anchor::CENTER);
+    // text_fps.setAnchorY(ui::Anchor::END);
     text_fps.setColor({ 0.8f, 0.7f, 0.0f, 0.5f });
 
     TextureLoader loader;
