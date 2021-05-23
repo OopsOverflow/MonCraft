@@ -8,7 +8,6 @@ std::unordered_map<std::string, GLuint> ResourceManager::textures;
 ResourceManager::ResourceManager() {}
 
 ResourceManager::~ResourceManager() {
-  std::cout << "freeing resources..." << std::endl;
   free();
 }
 
@@ -19,6 +18,7 @@ void ResourceManager::init() {
 }
 
 void ResourceManager::free() {
+  std::cout << "freeing resources..." << std::endl;
   shaders.clear();
 
   for(auto pair : textures)

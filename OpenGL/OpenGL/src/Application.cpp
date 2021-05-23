@@ -203,5 +203,7 @@ int main(int argc, char* argv[]) {
         text_fps.setText(text);
         interface.render();
     }
+
+    ResourceManager::free();
     return 0;
 }
