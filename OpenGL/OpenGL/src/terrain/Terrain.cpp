@@ -1,6 +1,7 @@
-#include "Terrain.hpp"
 #include <glm/gtc/type_ptr.hpp>
 #include <algorithm>
+
+#include "Terrain.hpp"
 
 using namespace glm;
 using namespace std::chrono_literals;
@@ -14,9 +15,7 @@ Terrain::Terrain()
     chunksMaxCount((2*renderDistH+2)*(2*renderDistH+2)*(2*renderDistV+2)),
     generator(chunkSize),
     chunkPos(0),
-    chunkPosChanged(false),
-    loader(),
-    texture(loader.loadTexture("Texture_atlas"))
+    chunkPosChanged(false)
 {
   startGeneration();
 }
@@ -202,7 +201,7 @@ void Terrain::genWorker() {
   } while(!stop);
 }
 
-void Terrain::update(glm::vec3 pos, glm::vec3 dir, float fovX) {
+void Terrain::update(glm::vec3 pos) {
   ivec3 newChunkPos = floor(pos / float(chunkSize));
   setChunkPos(newChunkPos);
 
@@ -216,7 +215,6 @@ void Terrain::update(glm::vec3 pos, glm::vec3 dir, float fovX) {
 
 void Terrain::render(Camera const& camera) {
   std::vector<std::pair<float, std::shared_ptr<Chunk>>> toRender;
-
   chunkMap.for_each([&](std::shared_ptr<Chunk> chunk) {
     vec3 worldChunkPos = vec3(chunk->chunkPos * chunkSize);
     vec3 chunkCenter = worldChunkPos + vec3(chunkSize) / 2.f;

@@ -15,10 +15,9 @@ smooth in vec3 fogColor;
 uniform vec3 lightDirection;
 uniform float lightIntensity;
 
-uniform sampler2D textureSampler;
-uniform sampler2D normalMap;
-uniform sampler2D shadowSampler[3];
-uniform float clipCascadeEndZ[3];
+uniform sampler2D t_color;
+uniform sampler2D t_normal;
+uniform sampler2D t_shadow[3];
 uniform int underWater; //glUniform1b :(
 uniform int fog;
 uniform float sunTime;
@@ -34,17 +33,17 @@ float computeShadow(int i) {
   float bmax = 0.0002;
   float bias = max(bmax * (1.0 - dotNormal), bmin);
   float currentDepth = shadowCoords[i].z * 0.5 + 0.5;
-  vec2 texelSize = 1.0 / textureSize(shadowSampler[i], 0) / 2;
+  vec2 texelSize = 1.0 / textureSize(t_shadow[i], 0) / 2;
 
   // no pcf
-  // float pcfDepth = texture(shadowSampler[i], shadowCoords[i].xy * 0.5 + 0.5).r;
+  // float pcfDepth = texture(t_shadow[i], shadowCoords[i].xy * 0.5 + 0.5).r;
   // return currentDepth - bias > pcfDepth ? 1.0 : 0.0;
 
   // pcf
   float shadow = 0.0;
   for(float x = -1.5; x <= 1.5; ++x) {
       for(float y = -1.5; y <= 1.5; ++y) {
-          float pcfDepth = texture(shadowSampler[i], shadowCoords[i].xy * 0.5 + 0.5 + vec2(x, y) * texelSize).r;
+          float pcfDepth = texture(t_shadow[i], shadowCoords[i].xy * 0.5 + 0.5 + vec2(x, y) * texelSize).r;
           shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
       }
   }
@@ -102,7 +101,7 @@ float fbm ( in vec2 _st) {
 }
 
 void main() {
-    
+
     // Noise Sampling Bovine Excrement
     vec2 st = gl_FragCoord.xy/100.840f;
     // st += st * abs(sin(sunTime*0.1)*3.0);
@@ -143,7 +142,7 @@ void main() {
 
   vec3 normalizedLightDirection = normalize(lightDirection);
 
-  vec3 normal = normalize(TBN * (texture(normalMap ,normalCoords).rgb *2.0 -1.0));
+  vec3 normal = normalize(TBN * (texture(t_normal ,normalCoords).rgb *2.0 -1.0));
   float dotNormal = dot(normalizedLightDirection, normal);
   float lambertian = max(-dotNormal, 0.0);
 
@@ -155,7 +154,7 @@ void main() {
   float specular = pow(specAngle, 200);
 
   // Textures
-  outputColor = texture(textureSampler, txrCoords);
+  outputColor = texture(t_color, txrCoords);
 
   // Fog
   if(fog!=0) outputColor = mix( outputColor, fbmColor, fogAmountz + fogAmounty);
@@ -165,16 +164,16 @@ void main() {
   float shadow = 0.0;
 
   for (int i = 0 ; i < 3; i++) {
-    if (texture(shadowSampler[i], shadowCoords[i].xy * 0.5 + 0.5).r != 1.0) {
+    if (texture(t_shadow[i], shadowCoords[i].xy * 0.5 + 0.5).r != 1.0) {
       shadow = 1 - computeShadow(i);
       break;
     }
   }
-  
+
   vec4 color = outputColor;
   outputColor.xyz = color.xyz * .5;
   outputColor.xyz += color.xyz * lightIntensity * lambertian * shadow *.5 ;
-  outputColor.xyz +=vec3(1.0f) * specular * shadow  * texture(normalMap ,normalCoords).a* 1.0;
+  outputColor.xyz +=vec3(1.0f) * specular * shadow  * texture(t_normal ,normalCoords).a* 1.0;
 
 
   float occl = .7;
@@ -185,7 +184,7 @@ void main() {
   }
   // show in which shadow cascade we are
 // for (int i = 0 ; i < 3; i++) {
-//    if (texture(shadowSampler[i], shadowCoords[i].xy * 0.5 + 0.5).r != 1.0) {
+//    if (texture(t_shadow[i], shadowCoords[i].xy * 0.5 + 0.5).r != 1.0) {
 //      outputColor[i] += 0.2;
 //      break;
 //    }
