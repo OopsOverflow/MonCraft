@@ -124,10 +124,10 @@ int main(int argc, char* argv[]) {
         // update sun
         float sunSpeed = 5.f;
         float sunTime = pi<float>() * .25f;
+        sunTime += t / 300.f * sunSpeed;
         float sunDist = 100.f;
         auto sunDir = -normalize(vec3(cos(sunTime), 1, sin(sunTime))) * sunDist;
         auto sunDirViewSpace = window.camera.view * vec4(sunDir, 0.0);
-        sunTime += t / 300.f * sunSpeed;
 
 
         // draw the shadow map
