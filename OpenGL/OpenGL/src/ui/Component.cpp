@@ -35,7 +35,7 @@ void Component::queueRecompute(bool propagate) {
 
 void Component::addChild(Component* child) {
   children.push_back(child);
-  queueRecompute();
+  queueRecompute(true);
   if(parent) parent->queueRecompute();
 }
 
@@ -69,6 +69,7 @@ ivec2 Component::getAbsoluteSize() const {
 }
 
 void Component::setSize(glm::ivec2 size) {
+  if(size == this->size) return;
   this->size = size;
   queueRecompute(true); // needs to recompute children (size changed)
 }
@@ -113,6 +114,7 @@ void Component::computeSize() {
 }
 
 void Component::setPosition(glm::ivec2 position) {
+  if(position == this->position) return;
   this->position = position;
   queueRecompute(false); // no need to recompute children
 }
@@ -122,6 +124,7 @@ glm::ivec2 Component::getPosition() const {
 }
 
 void Component::setPadding(glm::ivec2 padding) {
+  if(padding == this->padding) return;
   this->padding = padding;
   queueRecompute(true);
 }
@@ -131,6 +134,7 @@ glm::ivec2 Component::getPadding() const {
 }
 
 void Component::setAnchorX(Anchor anchor) {
+  if(anchor == this->anchorX) return;
   this->anchorX = anchor;
   queueRecompute(false); // no need to recompute children
 }
@@ -140,6 +144,7 @@ Anchor Component::getAnchorX() const {
 }
 
 void Component::setAnchorY(Anchor anchor) {
+  if(anchor == this->anchorY) return;
   this->anchorY = anchor;
   queueRecompute(false); // no need to recompute children
 }

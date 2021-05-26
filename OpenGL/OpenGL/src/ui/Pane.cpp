@@ -57,6 +57,7 @@ void Pane::computeModel() {
 }
 
 void Pane::setColor(glm::vec4 color) {
+  if(color == this->color) return;
   this->color = color;
   queueDraw();
 }

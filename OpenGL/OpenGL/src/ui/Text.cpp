@@ -28,7 +28,7 @@ void Text::computeSize() {
   ivec2 size{ 0, 0 };
 
   if(text.size() != 0) {
-    
+
     for(auto c : text) {
       auto const& ch = font->characters.at(c);
       size.x += ch.advance * fontSize;
@@ -45,6 +45,7 @@ void Text::computeSize() {
 }
 
 void Text::setColor(glm::vec4 color) {
+  if(color == this->color) return;
   this->color = color;
   queueDraw();
 }
@@ -64,6 +65,7 @@ std::string Text::getText() const {
 }
 
 void Text::setFontSize(float fontSize) {
+  if(fontSize == this->fontSize) return;
   this->fontSize = fontSize;
   computeSize();
 }
