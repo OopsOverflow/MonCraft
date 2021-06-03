@@ -2,10 +2,10 @@
 
 #include "Block.hpp"
 
-class Wood_Block : public Block {
+class Oak_Wood_Block : public Block {
 public:
-    static Wood_Block* get() {
-      static Wood_Block inst;
+    static Oak_Wood_Block* get() {
+      static Oak_Wood_Block inst;
       return &inst;
     }
 
@@ -16,5 +16,5 @@ public:
     }
 
 private:
-    Wood_Block() : Block(BlockType::Wood) {}
+    Oak_Wood_Block() : Block(BlockType::Oak_Wood) {}
 };

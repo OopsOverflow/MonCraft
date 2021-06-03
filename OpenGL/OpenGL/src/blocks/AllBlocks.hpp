@@ -7,8 +7,8 @@
 #include "Grass_Block.hpp"
 #include "Dirt_Block.hpp"
 #include "Stone_Block.hpp"
-#include "Leaf_Block.hpp"
-#include "Wood_Block.hpp"
+#include "Oak_Leaf_Block.hpp"
+#include "Oak_Wood_Block.hpp"
 #include "Ice_Block.hpp"
 #include "Sand_Block.hpp"
 #include "Sandstone_Block.hpp"
@@ -16,6 +16,10 @@
 #include "Tallgrass_Block.hpp"
 #include "Water_Block.hpp"
 #include "Cactus_Block.hpp"
+#include "Gravel_Block.hpp"
+#include "Birch_Leaf_Block.hpp"
+#include "Birch_Wood_Block.hpp"
+#include "Brick_Block.hpp"
 
 #include <sstream>
 
@@ -30,13 +34,13 @@ public:
   * correctly inserted it the array.
   */
   static Block::unique_ptr_t create_static(BlockType type) {
-    static std::array<Block*(*)(), 13> factories {
+    static std::array<Block*(*)(), 17> factories {
       (Block*(*)())Air_Block::get,
       (Block*(*)())Grass_Block::get,
       (Block*(*)())Dirt_Block::get,
       (Block*(*)())Stone_Block::get,
-      (Block*(*)())Leaf_Block::get,
-      (Block*(*)())Wood_Block::get,
+      (Block*(*)())Oak_Leaf_Block::get,
+      (Block*(*)())Oak_Wood_Block::get,
       (Block*(*)())Ice_Block::get,
       (Block*(*)())Sand_Block::get,
       (Block*(*)())Sandstone_Block::get,
@@ -44,6 +48,10 @@ public:
       (Block*(*)())Tallgrass_Block::get,
       (Block*(*)())Water_Block::get,
       (Block*(*)())Cactus_Block::get,
+      (Block*(*)())Gravel_Block::get,
+      (Block*(*)())Birch_Leaf_Block::get,
+      (Block*(*)())Birch_Wood_Block::get,
+      (Block*(*)())Brick_Block::get,
     };
     auto index = (size_t)type;
     if(index > factories.size()) {

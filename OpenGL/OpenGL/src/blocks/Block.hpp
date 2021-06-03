@@ -12,15 +12,19 @@ enum class BlockType
     Grass,
     Dirt,
     Stone,
-    Leaf,
-    Wood,
+    Oak_Leaf,
+    Oak_Wood,
     Ice,
     Sand,
     Sandstone,
     Snow,
     Tallgrass,
     Water,
-    Cactus
+    Cactus,
+    Birch_Wood,
+    Birch_Leaf,
+    Gravel,
+    Brick
 };
 
 enum class BlockFace { TOP, BOTTOM, FRONT, RIGHT, BACK, LEFT };
