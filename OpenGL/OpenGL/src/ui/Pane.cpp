@@ -7,6 +7,8 @@
 using namespace ui;
 using namespace glm;
 
+const spec_t Pane::COLOR = MAKE_SPEC("Pane::color", vec4);
+
 static const GLfloat quad[6][2] = {
     { 1.0f, 1.0f },
     { 0.0f, 1.0f },
@@ -36,6 +38,15 @@ Pane::~Pane() {
   ASSERT_GL_MAIN_THREAD();
   glDeleteVertexArrays(1, &vao);
   glDeleteBuffers(1, &vbo);
+}
+
+void Pane::setStyle(prop_t prop) {
+  if(prop.spec == Pane::COLOR) {
+    setColor(prop.value->get<vec4>());
+  }
+  else {
+    Component::setStyle(std::move(prop));
+  }
 }
 
 void Pane::draw() {

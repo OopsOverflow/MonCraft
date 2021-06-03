@@ -4,6 +4,10 @@
 using namespace ui;
 using namespace glm;
 
+MAKE_TYPE(std::shared_ptr<const Font>);
+const spec_t Text::COLOR     = MAKE_SPEC("Text::color", vec4);
+const spec_t Text::FONT_SIZE = MAKE_SPEC("Text::fontSize", float);
+const spec_t Text::FONT      = MAKE_SPEC("Text::font", std::shared_ptr<const Font>);
 
 Text::Text(Component* parent, std::string text, std::shared_ptr<const Font> font)
   : Component(parent),
@@ -13,6 +17,18 @@ Text::Text(Component* parent, std::string text, std::shared_ptr<const Font> font
     font(std::move(font))
 {
   shader = ResourceManager::getShader("font");
+}
+
+void Text::setStyle(prop_t prop) {
+  if(prop.spec == Text::COLOR) {
+    setColor(prop.value->get<vec4>());
+  }
+  if(prop.spec == Text::FONT_SIZE) {
+    setFontSize(prop.value->get<float>());
+  }
+  else {
+    Component::setStyle(std::move(prop));
+  }
 }
 
 void Text::draw() {

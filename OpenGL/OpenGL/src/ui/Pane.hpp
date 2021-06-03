@@ -13,6 +13,9 @@ public:
 
   void draw() override;
 
+  static const spec_t COLOR;
+  virtual void setStyle(prop_t prop) override;
+
   void setColor(glm::vec4 color);
   glm::vec4 getColor() const;
 

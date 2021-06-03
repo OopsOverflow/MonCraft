@@ -5,11 +5,11 @@ using namespace ui;
 using namespace glm;
 
 MAKE_TYPE(Anchor);
-const spec_t Component::SIZE     = MAKE_SPEC("size", ivec2);
-const spec_t Component::POSITION = MAKE_SPEC("position", ivec2);
-const spec_t Component::PADDING  = MAKE_SPEC("padding", ivec2);
-const spec_t Component::ANCHOR_X = MAKE_SPEC("anchorX", Anchor);
-const spec_t Component::ANCHOR_Y = MAKE_SPEC("anchorY", Anchor);
+const spec_t Component::SIZE     = MAKE_SPEC("Component::size", ivec2);
+const spec_t Component::POSITION = MAKE_SPEC("Component::position", ivec2);
+const spec_t Component::PADDING  = MAKE_SPEC("Component::padding", ivec2);
+const spec_t Component::ANCHOR_X = MAKE_SPEC("Component::anchorX", Anchor);
+const spec_t Component::ANCHOR_Y = MAKE_SPEC("Component::anchorY", Anchor);
 
 Component::Component(Component* parent)
   : drawQueued(true), recomputeQueued(true),
@@ -24,7 +24,6 @@ Component::~Component() {
 }
 
 void Component::setStyle(prop_t prop) {
-
   if(prop.spec == Component::SIZE) {
     setSize(prop.value->get<ivec2>());
   }
