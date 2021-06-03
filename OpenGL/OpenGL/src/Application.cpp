@@ -50,14 +50,14 @@ void loadResources() {
 }
 
 void drawMiddleDot(Viewport const& vp) {
-  glEnable(GL_SCISSOR_TEST);
-  {
-      float pointSize = 8;
-      glScissor((vp.width - pointSize) / 2, (vp.height - pointSize) / 2, pointSize, pointSize);
-      glClearColor(1, 0, 0, 1);
-      glClear(GL_COLOR_BUFFER_BIT); // draw point
-  }
-  glDisable(GL_SCISSOR_TEST);
+    glEnable(GL_SCISSOR_TEST);
+    {
+        float pointSize = 8;
+        glScissor((vp.width - pointSize) / 2, (vp.height - pointSize) / 2, pointSize, pointSize);
+        glClearColor(1, 0, 0, 1);
+        glClear(GL_COLOR_BUFFER_BIT); // draw point
+    }
+    glDisable(GL_SCISSOR_TEST);
 }
 
 int main(int argc, char* argv[]) {
@@ -75,7 +75,7 @@ int main(int argc, char* argv[]) {
     GLuint texCharacter = ResourceManager::getTexture("character");
     GLuint normalMapID[30];
     for (size_t i = 0; i < 30; i += 1) {
-      normalMapID[i] = ResourceManager::getTexture("waterNormal" + std::to_string(i));
+        normalMapID[i] = ResourceManager::getTexture("waterNormal" + std::to_string(i));
     }
 
 
@@ -199,8 +199,8 @@ int main(int argc, char* argv[]) {
 
         // draw character
         if (character.view == View::THIRD_PERSON) {
-          shader->bindTexture(TEXTURE_COLOR, texCharacter);
-          character.render();
+            shader->bindTexture(TEXTURE_COLOR, texCharacter);
+            character.render();
         }
 
 
