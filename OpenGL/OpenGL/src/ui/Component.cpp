@@ -13,17 +13,18 @@ const spec_t Component::ANCHOR_Y = MAKE_SPEC("Component::anchorY", Anchor);
 
 Component::Component(Component* parent)
   : drawQueued(true), recomputeQueued(true),
-    parent(parent), position(0.f),
-    anchorX(Anchor::BEGIN), anchorY(Anchor::BEGIN)
+    parent(parent)
 {
   if(parent) parent->addChild(this);
+
+  Component::getDefaultStyle()->apply(this);
 }
 
 Component::~Component() {
   if(parent) parent->removeChild(this);
 }
 
-void Component::setStyle(prop_t prop) {
+void Component::setStyle(prop_t const& prop) {
   if(prop.spec == Component::SIZE) {
     setSize(prop.value->get<ivec2>());
   }
@@ -45,6 +46,44 @@ void Component::setStyle(prop_t prop) {
               << "'"
               << std::endl;
   }
+}
+
+prop_t Component::getStyle(spec_t spec) const {
+  if(spec == Component::SIZE) {
+    return make_property(spec, getSize());
+  }
+  else if(spec == Component::POSITION) {
+    return make_property(spec, getPosition());
+  }
+  else if(spec == Component::PADDING) {
+    return make_property(spec, getPadding());
+  }
+  else if(spec == Component::ANCHOR_X) {
+    return make_property(spec, getAnchorX());
+  }
+  else if(spec == Component::ANCHOR_Y) {
+    return make_property(spec, getAnchorY());
+  }
+  else {
+    throw StyleError(
+      "unsupported style property: " +
+      Specification::get(spec).name +
+      "'"
+    );
+  }
+}
+
+style_const_t Component::getDefaultStyle() const {
+  static style_const_t style = Style::make_style(
+    nullptr, // parent
+    make_property(Component::SIZE, ivec2(0.f)),
+    make_property(Component::POSITION, ivec2(0.f)),
+    make_property(Component::PADDING, ivec2(0.f)),
+    make_property(Component::ANCHOR_X, Anchor::BEGIN),
+    make_property(Component::ANCHOR_Y, Anchor::BEGIN)
+  );
+
+  return style;
 }
 
 void Component::draw() {

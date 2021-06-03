@@ -54,6 +54,7 @@ srcs = files(
   'OpenGL/src/ui/Root.cpp',
   'OpenGL/src/ui/Pane.cpp',
   'OpenGL/src/ui/Text.cpp',
+  'OpenGL/src/ui/style/Style.cpp',
   'OpenGL/src/ui/style/Type.cpp',
   'OpenGL/src/ui/style/Specification.cpp',
 )

@@ -12,14 +12,14 @@ const spec_t Text::FONT      = MAKE_SPEC("Text::font", std::shared_ptr<const Fon
 Text::Text(Component* parent, std::string text, std::shared_ptr<const Font> font)
   : Component(parent),
     text(std::move(text)),
-    color(0.f, 0.f, 0.f, 1.f),
-    fontSize(1.f),
     font(std::move(font))
 {
   shader = ResourceManager::getShader("font");
+
+  Text::getDefaultStyle()->apply(this);
 }
 
-void Text::setStyle(prop_t prop) {
+void Text::setStyle(prop_t const& prop) {
   if(prop.spec == Text::COLOR) {
     setColor(prop.value->get<vec4>());
   }
@@ -27,8 +27,30 @@ void Text::setStyle(prop_t prop) {
     setFontSize(prop.value->get<float>());
   }
   else {
-    Component::setStyle(std::move(prop));
+    Component::setStyle(prop);
   }
+}
+
+prop_t Text::getStyle(spec_t spec) const {
+  if(spec == Text::COLOR) {
+    return make_property(spec, getColor());
+  }
+  else if(spec == Text::FONT_SIZE) {
+    return make_property(spec, getFontSize());
+  }
+  else {
+    return Component::getStyle(spec);
+  }
+}
+
+style_const_t Text::getDefaultStyle() const {
+  static style_const_t style = Style::make_style(
+    Component::getDefaultStyle(),
+    make_property(Text::COLOR, vec4(0.f, 0.f, 0.f, 1.f)),
+    make_property(Text::FONT_SIZE, 1.f)
+  );
+
+  return style;
 }
 
 void Text::draw() {

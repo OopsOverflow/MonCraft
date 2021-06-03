@@ -18,7 +18,9 @@ public:
   static const spec_t COLOR;
   static const spec_t FONT_SIZE;
   static const spec_t FONT;
-  virtual void setStyle(prop_t prop) override;
+  virtual void setStyle(prop_t const& prop) override;
+  virtual prop_t getStyle(spec_t spec) const override;
+  virtual style_const_t getDefaultStyle() const override;
 
   void setText(std::string text);
   std::string getText() const;

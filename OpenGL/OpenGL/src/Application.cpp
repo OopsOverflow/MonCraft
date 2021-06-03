@@ -101,19 +101,20 @@ int main(int argc, char* argv[]) {
     // pane_fps.setAnchorX(ui::Anchor::END);
     // pane_fps.setPadding({ 10, 10 });
     // pane_fps.setSize({ 300, 10 });
-    pane_fps.setStyle(ui::make_property<vec4>(ui::Pane::COLOR, { 1.f, 1.f, 1.f, 0.5f }));
-    pane_fps.setStyle(ui::make_property<ivec2>(ui::Pane::POSITION, {-10, -10}));
-    pane_fps.setStyle(ui::make_property<ui::Anchor>(ui::Pane::ANCHOR_X, ui::Anchor::END));
-    pane_fps.setStyle(ui::make_property<ui::Anchor>(ui::Pane::ANCHOR_Y, ui::Anchor::END));
-    pane_fps.setStyle(ui::make_property<ivec2>(ui::Pane::PADDING, { 10, 10 }));
-    pane_fps.setStyle(ui::make_property<ivec2>(ui::Pane::SIZE, {300, 10}));
+    // pane_fps.setStyle(ui::make_property(ui::Pane::COLOR, vec4{1.f, 1.f, 1.f, 0.5f}));
+    pane_fps.setStyle(ui::make_property(ui::Pane::POSITION, ivec2{-10, -10}));
+    pane_fps.setStyle(ui::make_property(ui::Pane::ANCHOR_X, ui::Anchor::END));
+    pane_fps.setStyle(ui::make_property(ui::Pane::ANCHOR_Y, ui::Anchor::END));
+    pane_fps.setStyle(ui::make_property(ui::Pane::PADDING, ivec2{10, 10}));
+    pane_fps.setStyle(ui::make_property(ui::Pane::SIZE, ivec2{300, 10}));
 
     ui::Text text_fps(&pane_fps, "hello", font_vt323);
     // text_fps.setFontSize(2.f);
     // text_fps.setColor({ 0.8f, 0.7f, 0.0f, 1.f });
-    text_fps.setStyle(ui::make_property<float>(ui::Text::FONT_SIZE, 2.f));
+    text_fps.setStyle(ui::make_property(ui::Text::FONT_SIZE, 2.f));
     text_fps.setStyle(ui::make_property<vec4>(ui::Text::COLOR, { 0.8f, 0.7f, 0.0f, 1.f }));
 
+    // ui::Button btn(&interface, "hello", font_vt323);
 
     // main loop
     for (float dt = 0; window.beginFrame(dt); window.endFrame()) {

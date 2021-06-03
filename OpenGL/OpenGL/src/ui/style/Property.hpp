@@ -2,12 +2,13 @@
 
 #include "Specification.hpp"
 #include "Value.hpp"
+#include <memory>
 
 namespace ui {
 
 struct prop_t {
   spec_t spec;
-  std::unique_ptr<AbstractValue> value;
+  std::shared_ptr<const AbstractValue> value;
 };
 
 template<typename T>

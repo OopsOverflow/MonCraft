@@ -24,7 +24,9 @@ public:
   static const spec_t PADDING;
   static const spec_t ANCHOR_X;
   static const spec_t ANCHOR_Y;
-  virtual void setStyle(prop_t prop);
+  virtual void setStyle(prop_t const& prop);
+  virtual prop_t getStyle(spec_t spec) const;
+  virtual style_const_t getDefaultStyle() const;
 
   // avoid unecessary draw calls
   void queueDraw();
