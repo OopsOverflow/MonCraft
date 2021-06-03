@@ -3,8 +3,9 @@
 #include <string>
 
 #include "Camera.hpp"
-#include "../controller/MouseController.hpp"
-#include "../controller/KeyboardController.hpp"
+#include "controller/MouseController.hpp"
+#include "controller/KeyboardController.hpp"
+#include "ui/Root.hpp"
 
 #include <SDL2/SDL.h>
 
@@ -23,7 +24,7 @@ public:
   /**
    * Creates the SDL window with the given dimensions.
    */
-  Viewport(size_t width, size_t height);
+  Viewport(glm::ivec2 size);
   ~Viewport();
 
   static const int framerate; // fps in seconds
@@ -38,12 +39,13 @@ public:
   bool beginFrame(float& dt);
   void endFrame();
 
+  void setScene(std::shared_ptr<ui::Root> scene);
+
   Camera camera;
   MouseController mouseController;
   KeyboardController keyboardController;
 
-  unsigned width;
-  unsigned height;
+  glm::ivec2 size;
 
   bool enableFog;
 
@@ -65,4 +67,5 @@ private:
   bool mouseCaptured;
   bool vsync;
 
+  std::shared_ptr<ui::Root> scene;
 };

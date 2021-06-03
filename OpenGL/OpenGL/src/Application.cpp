@@ -20,10 +20,6 @@
 #include <functional>
 using namespace glm;
 
-// WINDOW DIMENSIONS
-#define WIDTH     800
-#define HEIGHT    800
-
 void loadResources() {
     // Easy swap SkyBox
     // Tool : https://jaxry.github.io/panorama-to-cubemap/
@@ -53,7 +49,7 @@ void drawMiddleDot(Viewport const& vp) {
     glEnable(GL_SCISSOR_TEST);
     {
         float pointSize = 8;
-        glScissor((vp.width - pointSize) / 2, (vp.height - pointSize) / 2, pointSize, pointSize);
+        glScissor((vp.size.x - pointSize) / 2, (vp.size.y - pointSize) / 2, pointSize, pointSize);
         glClearColor(1, 0, 0, 1);
         glClear(GL_COLOR_BUFFER_BIT); // draw point
     }
@@ -62,7 +58,7 @@ void drawMiddleDot(Viewport const& vp) {
 
 int main(int argc, char* argv[]) {
     std::cout << "---- Main ----" << std::endl;
-    Viewport window(WIDTH, HEIGHT);
+    Viewport window({800, 800});
 
     // game seed
     std::hash<std::string> hashString;
@@ -78,7 +74,6 @@ int main(int argc, char* argv[]) {
         normalMapID[i] = ResourceManager::getTexture("waterNormal" + std::to_string(i));
     }
 
-
     // init objects
     Terrain terrain;
     SkyBox sky;
@@ -92,9 +87,11 @@ int main(int argc, char* argv[]) {
     // UI stuff
     auto font_roboto = std::make_shared<const Font>("Roboto-Regular");
     auto font_vt323 = std::make_shared<const Font>("VT323-Regular");
-    ui::Root interface({ WIDTH, HEIGHT });
 
-    ui::Pane pane_fps(&interface);
+    auto scene = std::make_shared<ui::Root>(window.size);
+    window.setScene(scene);
+
+    ui::Pane pane_fps(scene.get());
     // pane_fps.setColor({ 1.f, 1.f, 1.f, 0.5f });
     // pane_fps.setPosition({ -10, -10 });
     // pane_fps.setAnchorY(ui::Anchor::END);
@@ -114,7 +111,7 @@ int main(int argc, char* argv[]) {
     text_fps.setStyle(ui::make_property(ui::Text::FONT_SIZE, 2.f));
     text_fps.setStyle(ui::make_property<vec4>(ui::Text::COLOR, { 0.8f, 0.7f, 0.0f, 1.f }));
 
-    // ui::Button btn(&interface, "hello", font_vt323);
+    ui::Button btn(scene.get(), "hello", font_vt323);
 
     // main loop
     for (float dt = 0; window.beginFrame(dt); window.endFrame()) {
@@ -206,10 +203,10 @@ int main(int argc, char* argv[]) {
 
 
         // draw ui
-        interface.setSize({ window.width, window.height });
         std::string text = "FPS : " + std::to_string((int)(1.f / dt));
         text_fps.setText(text);
-        interface.render();
+        scene->update();
+        scene->render();
     }
 
     ResourceManager::free();

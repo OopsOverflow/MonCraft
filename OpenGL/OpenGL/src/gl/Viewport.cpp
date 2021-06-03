@@ -21,15 +21,14 @@ extern "C" {
 }
 #endif
 
-Viewport::Viewport(size_t width, size_t height)
-    : camera(width, height, {0, 32, 10}, {0, 32, 0}),
-      width(width),
-      height(height),
-      window(nullptr),
-      context(nullptr),
+Viewport::Viewport(glm::ivec2 size)
+  :   camera(size, {0, 32, 10}, {0, 32, 0}),
+      size(size),
+      enableFog(false),
+      window(nullptr), context(nullptr),
       lastSpacePress(0), timeBegin(0), lastTime(0),
       mouseCaptured(false), vsync(true),
-      enableFog(0)
+      scene(nullptr)
 {
 
   //Initialize SDL2
@@ -40,7 +39,7 @@ Viewport::Viewport(size_t width, size_t height)
   //Create a Window
   window = SDL_CreateWindow("MonCraft",
       SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-      width, height,
+      size.x, size.y,
       SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
 
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -69,6 +68,10 @@ Viewport::~Viewport() {
         SDL_GL_DeleteContext(context);
     if (window)
         SDL_DestroyWindow(window);
+}
+
+void Viewport::setScene(std::shared_ptr<ui::Root> scene) {
+  this->scene = scene;
 }
 
 void Viewport::on_event(SDL_Event const& e) {
@@ -137,9 +140,10 @@ void Viewport::endFrame() {
 void Viewport::on_window_event(SDL_WindowEvent const& e) {
   switch (e.event) {
   case SDL_WINDOWEVENT_SIZE_CHANGED:
-    width = e.data1;
-    height = e.data2;
-    camera.setSize(width, height);
+    size.x = e.data1;
+    size.y = e.data2;
+    camera.setSize(size);
+    if(scene) scene->setSize(size);
     break;
   }
 }

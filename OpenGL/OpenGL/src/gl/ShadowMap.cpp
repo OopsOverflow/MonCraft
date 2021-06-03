@@ -4,7 +4,7 @@
 using namespace glm;
 
 ShadowMap::ShadowMap(int size)
-  : camera(size, size, {10, 10, 10}, {0, 0, 0}, Projection::PROJECTION_ORTHOGRAPHIC),
+  : camera(ivec2(size), {10, 10, 10}, {0, 0, 0}, Projection::PROJECTION_ORTHOGRAPHIC),
     shader("src/shader/shadow.vert", "src/shader/shadow.frag"),
     distance(100.f),
     size(size)

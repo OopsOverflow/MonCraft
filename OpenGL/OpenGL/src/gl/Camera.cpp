@@ -5,22 +5,19 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 
-Camera::Camera(unsigned int width, unsigned int height, const glm::vec3 &position,
+Camera::Camera(glm::ivec2 size, const glm::vec3 &position,
                const glm::vec3 &center, Projection projType)
  : view(1.f), projection(1.f),
    position(position), center(center),
-   fovY(45.f), near_(0.1f), far_(200.f),
-   screenWidth(width), screenHeight(height),
-   projType(projType)
+   near_(0.1f), far_(200.f), fovY(45.f),
+   size(size), projType(projType)
 {
-
-
   computeView();
   computeProjection();
 }
 
 void Camera::activate() {
-  glViewport(0, 0, screenWidth, screenHeight);
+  glViewport(0, 0, size.x, size.y);
   glm::mat4 normal = glm::transpose(glm::inverse(view));
   Shader *shader = Shader::getActive();
   if (shader) {
@@ -82,9 +79,8 @@ void Camera::rotate(const glm::vec3 &rotation, bool localSpace) {
   computeView();
 }
 
-void Camera::setSize(unsigned int width, unsigned int height) {
-  screenWidth = width;
-  screenHeight = height;
+void Camera::setSize(glm::ivec2 size) {
+  this->size = size;
   computeProjection();
 }
 
@@ -101,13 +97,13 @@ void Camera::setProjectionType(Projection projType, float box[6]) {
 void Camera::translatePixels(int x, int y) {
   glm::vec3 translation((float)x, (float)-y, 0.f);
 
-  float aspect = (float)screenWidth / (float)screenHeight;
+  float aspect = (float)size.x / (float)size.y;
   float localHeight =
       2.f * glm::length(center - position) * tan(glm::radians(fovY / 2.f));
   float localWidth = localHeight * aspect;
 
-  translation.x *= localWidth / (float)screenWidth;
-  translation.y *= localHeight / (float)screenHeight;
+  translation.x *= localWidth / (float)size.x;
+  translation.y *= localHeight / (float)size.y;
 
   translate(translation, true);
 }
@@ -119,11 +115,11 @@ void Camera::rotatePixels(int x, int y, bool localSpace) {
   float rotX, rotY;
 
   // can rotate by maxRotation degrees around x axis while translating from 0
-  // to screenWidth (resp. y axis & screenHeight).
+  // to size.x (resp. y axis & size.y).
   float maxRotation = 360.f;
 
-  rotY = x * maxRotation / (float)screenWidth;
-  rotX = y * maxRotation / (float)screenHeight;
+  rotY = x * maxRotation / (float)size.x;
+  rotX = y * maxRotation / (float)size.y;
 
   if(localSpace) {
     rotate({rotX, rotY, 0.f}, localSpace);
@@ -135,11 +131,23 @@ void Camera::rotatePixels(int x, int y, bool localSpace) {
   }
 }
 
+void Camera::setFovY(float fovY) {
+  this->fovY = fovY;
+}
+
 // ----------- getters -----------
 
-void Camera::getSize(unsigned int &width, unsigned int &height) const {
-  width = screenWidth;
-  height = screenHeight;
+float Camera::getFovY() const {
+   return fovY;
+}
+
+// see https://en.wikipedia.org/wiki/Field_of_view_in_video_games#Field_of_view_calculations
+float Camera::getFovX() const {
+  return glm::degrees(2 * atan(tan(glm::radians(fovY) * 0.5) * size.x / size.y));
+}
+
+glm::ivec2 Camera::getSize() const {
+  return size;
 }
 
 Projection Camera::getProjectionType() const { return projType; }
@@ -156,7 +164,7 @@ void Camera::computeView() {
 }
 
 void Camera::computeProjection(float box[6]) {
-  float aspect = (float)screenWidth / (float)screenHeight;
+  float aspect = (float)size.x / (float)size.y;
 
   if (projType == Projection::PROJECTION_ORTHOGRAPHIC) {
     // kind of perspective division... To switch between persp & ortho.
@@ -230,7 +238,7 @@ std::vector<glm::vec3> Camera::getBoxCorners(Frustum frustum) const {
 
     }
     else if(projType == Projection::PROJECTION_ORTHOGRAPHIC) {
-        float aspect = (float)screenWidth / (float)screenHeight;
+        float aspect = (float)size.x / (float)size.y;
         float y = glm::length(center - position) * tanFovY;
         float x = y * aspect;
 
@@ -295,8 +303,7 @@ bool Camera::chunkInView(glm::vec3 posCamSpace, float tolerance) const {
         return 1; //TODO we don't manage to make it work
     }
     bool inFrustum = true;
-    auto farChunkZ = posCamSpace.z - tolerance;
-    float aspect = (float)screenWidth / (float)screenHeight;
+    float aspect = (float)size.x / (float)size.y;
     float y = glm::length(center - position) * tanFovY;
     float x = y * aspect;
 
@@ -311,5 +318,3 @@ bool Camera::chunkInView(glm::vec3 posCamSpace, float tolerance) const {
 
 
 }
-
-
