@@ -12,7 +12,6 @@ Style::Style(style_const_t parent)
   : parent(std::move(parent))
 {}
 
-
 Style::Style(std::initializer_list<prop_t> list, style_const_t parent)
   : parent(parent)
 {
@@ -23,6 +22,10 @@ Style::Style(std::initializer_list<prop_t> list, style_const_t parent)
 
 void Style::set(prop_t prop) {
   props[prop.spec] = std::move(prop);
+}
+
+void Style::setParent(style_const_t parent) {
+  this->parent = parent;
 }
 
 void Style::apply(Component* comp) const {

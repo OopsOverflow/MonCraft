@@ -13,7 +13,8 @@ const spec_t Component::ANCHOR_Y = MAKE_SPEC("Component::anchorY", Anchor);
 
 Component::Component(Component* parent)
   : drawQueued(true), recomputeQueued(true),
-    parent(parent)
+    parent(parent),
+    hover(false), pressed(false)
 {
   if(parent) parent->addChild(this);
 
@@ -181,6 +182,69 @@ void Component::computeSize() {
   }
 }
 
+bool Component::overlaps(ivec2 point) const {
+  ivec2 p1 = getAbsoluteOrigin();
+  ivec2 p2 = p1 + getAbsoluteSize();
+  return
+    p1.x <= point.x && point.x <= p2.x &&
+    p1.y <= point.y && point.y <= p2.y;
+}
+
+// COMBAK: not sure if this works well.
+bool Component::bubbleEvent(Event const& evt) {
+  if(!overlaps(evt.getPosition())) {
+    if(hover) {
+      hover = false;
+      for(auto child : children)
+        child->bubbleEvent(evt);
+      onMouseOut(evt.getPosition());
+    }
+    return false;
+  }
+
+  else {
+    for(auto it = children.rbegin(); it != children.rend(); it++) {
+      Component* child = *it;
+      if(child->bubbleEvent(evt)) return true;
+    }
+    filterEvent(evt);
+    return true;
+  }
+}
+
+void Component::filterEvent(Event const& evt) {
+  bool stopPropagation = handleEvent(evt);
+  if(parent && !stopPropagation) {
+    parent->filterEvent(evt);
+  }
+}
+
+bool Component::handleEvent(Event const& evt) {
+  ivec2 pos = evt.getPosition();
+  if(!hover) onMouseIn(pos);
+
+  switch(evt.getType()) {
+    case Event::Type::MOVE:
+      hover = true;
+      return onMouseMove(pos);
+    case Event::Type::PRESS:
+      pressed = true;
+      return onMousePressed(pos);
+    case Event::Type::RELEASE:
+      pressed = false;
+      return onMouseReleased(pos);
+  }
+
+  return false;
+}
+
+void Component::handleEvents(std::vector<Event> const& events) {
+  for(auto const& evt : events)
+    bubbleEvent(evt);
+}
+
+// style setters / getters below
+
 void Component::setPosition(glm::ivec2 position) {
   if(position == this->position) return;
   this->position = position;
@@ -220,3 +284,10 @@ void Component::setAnchorY(Anchor anchor) {
 Anchor Component::getAnchorY() const {
   return anchorY;
 }
+
+// default event handlers
+void Component::onMouseIn(glm::ivec2 pos) { }
+void Component::onMouseOut(glm::ivec2 pos) { }
+bool Component::onMouseMove(glm::ivec2 pos) { return false; }
+bool Component::onMousePressed(glm::ivec2 pos) { return false; }
+bool Component::onMouseReleased(glm::ivec2 pos) { return false; }

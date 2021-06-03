@@ -24,10 +24,10 @@ public:
   Style(std::initializer_list<prop_t> list, style_const_t parent);
 
   void set(prop_t prop);
+  void setParent(style_const_t parent);
 
   void apply(Component* comp) const;
   void revert(Component* comp) const;
-
   void applyAll(Component* comp) const;
 
   // edge case

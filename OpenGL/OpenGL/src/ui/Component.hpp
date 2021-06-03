@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "style/Style.hpp"
+#include "Event.hpp"
 
 namespace ui {
 
@@ -60,10 +61,21 @@ protected:
   Component* parent;
   std::vector<Component*> children;
 
+  void handleEvents(std::vector<Event> const& events);
+  virtual void onMouseIn(glm::ivec2 pos);
+  virtual void onMouseOut(glm::ivec2 pos);
+  virtual bool onMouseMove(glm::ivec2 pos);
+  virtual bool onMousePressed(glm::ivec2 pos);
+  virtual bool onMouseReleased(glm::ivec2 pos);
+
 private:
   void queueRecompute(bool propagate = true);
   void computeSize();
   void computeOrigin();
+  bool handleEvent(Event const& evt);
+  bool bubbleEvent(Event const& evt);
+  void filterEvent(Event const& evt);
+  bool overlaps(glm::ivec2 point) const;
 
   glm::ivec2 size;
   glm::ivec2 absoluteSize;
@@ -73,6 +85,9 @@ private:
   glm::ivec2 padding;
   Anchor anchorX;
   Anchor anchorY;
+
+  bool hover;
+  bool pressed;
 };
 
 }; // namespace ui

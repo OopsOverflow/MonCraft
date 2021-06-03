@@ -87,6 +87,7 @@ void Viewport::on_event(SDL_Event const& e) {
     break;
   case SDL_MOUSEMOTION:
     mouseController.motionRel(e.motion.xrel, e.motion.yrel);
+    if(scene) scene->addEvent(Event(Event::Type::MOVE, {e.motion.x, size.y - e.motion.y}));
     break;
   case SDL_MOUSEBUTTONDOWN:
     on_mousedown(e.button);
