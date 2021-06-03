@@ -4,6 +4,13 @@
 using namespace ui;
 using namespace glm;
 
+MAKE_TYPE(Anchor);
+const spec_t Component::SIZE     = MAKE_SPEC("size", ivec2);
+const spec_t Component::POSITION = MAKE_SPEC("position", ivec2);
+const spec_t Component::PADDING  = MAKE_SPEC("padding", ivec2);
+const spec_t Component::ANCHOR_X = MAKE_SPEC("anchorX", Anchor);
+const spec_t Component::ANCHOR_Y = MAKE_SPEC("anchorY", Anchor);
+
 Component::Component(Component* parent)
   : drawQueued(true), recomputeQueued(true),
     parent(parent), position(0.f),
@@ -14,6 +21,30 @@ Component::Component(Component* parent)
 
 Component::~Component() {
   if(parent) parent->removeChild(this);
+}
+
+void Component::setStyle(prop_t prop) {
+
+  if(prop.spec == Component::SIZE) {
+    setSize(prop.value->get<ivec2>());
+  }
+  else if(prop.spec == Component::POSITION) {
+    setPosition(prop.value->get<ivec2>());
+  }
+  else if(prop.spec == Component::PADDING) {
+    setPadding(prop.value->get<ivec2>());
+  }
+  else if(prop.spec == Component::ANCHOR_X) {
+    setAnchorX(prop.value->get<Anchor>());
+  }
+  else if(prop.spec == Component::ANCHOR_Y) {
+    setAnchorY(prop.value->get<Anchor>());
+  }
+  else {
+    std::cout << "[WARN] unsupported style property: "
+              << Specification::get(prop.spec).name
+              << std::endl;
+  }
 }
 
 void Component::draw() {
@@ -61,8 +92,6 @@ ivec2 Component::getAbsoluteOrigin() const {
   if(!parent) return computedOrigin;
   return parent->getAbsoluteOrigin() + parent->padding + computedOrigin;
 }
-
-#include "debug/Debug.hpp"
 
 ivec2 Component::getAbsoluteSize() const {
   return computedSize;

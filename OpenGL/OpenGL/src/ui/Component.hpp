@@ -3,6 +3,8 @@
 #include <glm/glm.hpp>
 #include <vector>
 
+#include "style/Style.hpp"
+
 namespace ui {
 
 enum class Anchor { BEGIN, END, CENTER };
@@ -12,8 +14,17 @@ class Component {
 public:
   Component(Component* parent);
   virtual ~Component();
+  Component(Component&) = delete;
+  Component& operator=(Component&) = delete;
 
   virtual void draw();
+
+  static const spec_t SIZE;
+  static const spec_t POSITION;
+  static const spec_t PADDING;
+  static const spec_t ANCHOR_X;
+  static const spec_t ANCHOR_Y;
+  virtual void setStyle(prop_t prop);
 
   // avoid unecessary draw calls
   void queueDraw();

@@ -13,6 +13,7 @@
 #include "entity/character/Character.hpp"
 #include "audio/Music.hpp"
 #include "ui/ui.hpp"
+#include "ui/style/Style.hpp"
 
 #include "debug/Debug.hpp"
 
@@ -63,11 +64,9 @@ int main(int argc, char* argv[]) {
     std::cout << "---- Main ----" << std::endl;
     Viewport window(WIDTH, HEIGHT);
 
-
     // game seed
     std::hash<std::string> hashString;
     std::srand(hashString("Moncraft"));
-
 
     // load resources
     loadResources();
@@ -96,12 +95,17 @@ int main(int argc, char* argv[]) {
     ui::Root interface({ WIDTH, HEIGHT });
 
     ui::Pane pane_fps(&interface);
-    pane_fps.setPosition({ -10, -10 });
-    pane_fps.setAnchorY(ui::Anchor::END);
-    pane_fps.setAnchorX(ui::Anchor::END);
     pane_fps.setColor({ 1.f, 1.f, 1.f, 0.5f });
-    pane_fps.setPadding({ 10, 10 });
-    pane_fps.setSize({ 300, 10 });
+    // pane_fps.setPosition({ -10, -10 });
+    // pane_fps.setAnchorY(ui::Anchor::END);
+    // pane_fps.setAnchorX(ui::Anchor::END);
+    // pane_fps.setPadding({ 10, 10 });
+    // pane_fps.setSize({ 300, 10 });
+    pane_fps.setStyle(ui::make_property<ivec2>(ui::Pane::POSITION, {-10, -10}));
+    pane_fps.setStyle(ui::make_property<ui::Anchor>(ui::Pane::ANCHOR_X, ui::Anchor::END));
+    pane_fps.setStyle(ui::make_property<ui::Anchor>(ui::Pane::ANCHOR_Y, ui::Anchor::END));
+    pane_fps.setStyle(ui::make_property<ivec2>(ui::Pane::PADDING, { 10, 10 }));
+    pane_fps.setStyle(ui::make_property<ivec2>(ui::Pane::SIZE, {300, 10}));
 
     ui::Text text_fps(&pane_fps, "hello", font_vt323);
     text_fps.setFontSize(2.f);
