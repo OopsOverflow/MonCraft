@@ -101,7 +101,7 @@ int main(int argc, char* argv[]) {
     // pane_fps.setAnchorX(ui::Anchor::END);
     // pane_fps.setPadding({ 10, 10 });
     // pane_fps.setSize({ 300, 10 });
-    pane_fps.setStyle(ui::make_property<vec4>(ui::Pane::POSITION, { 1.f, 1.f, 1.f, 0.5f }));
+    pane_fps.setStyle(ui::make_property<vec4>(ui::Pane::COLOR, { 1.f, 1.f, 1.f, 0.5f }));
     pane_fps.setStyle(ui::make_property<ivec2>(ui::Pane::POSITION, {-10, -10}));
     pane_fps.setStyle(ui::make_property<ui::Anchor>(ui::Pane::ANCHOR_X, ui::Anchor::END));
     pane_fps.setStyle(ui::make_property<ui::Anchor>(ui::Pane::ANCHOR_Y, ui::Anchor::END));

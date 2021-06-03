@@ -23,7 +23,7 @@ void Text::setStyle(prop_t prop) {
   if(prop.spec == Text::COLOR) {
     setColor(prop.value->get<vec4>());
   }
-  if(prop.spec == Text::FONT_SIZE) {
+  else if(prop.spec == Text::FONT_SIZE) {
     setFontSize(prop.value->get<float>());
   }
   else {

@@ -5,10 +5,11 @@
 #include <unordered_map>
 #include "debug/Debug.hpp"
 #include "Type.hpp"
+#include "StyleError.hpp"
 
 namespace ui
 {
-  
+
 template<typename T>
 class Value;
 
@@ -21,7 +22,7 @@ public:
     if(Type::getType<T>() == type) {
       return static_cast<const Value<T>*>(this)->get();
     }
-    throw std::runtime_error("cannot get property value of wrong type");
+    throw StyleError("cannot get property value of wrong type");
   }
 
   template<typename T>
@@ -29,7 +30,7 @@ public:
     if(Type::getType<T>() == type) {
       static_cast<Value<T>*>(this)->set(val);
     }
-    throw std::runtime_error("cannot set property value of wrong type");
+    throw StyleError("cannot set property value of wrong type");
   }
 
   type_t getType() const {

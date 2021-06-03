@@ -1,4 +1,5 @@
 #include "Specification.hpp"
+#include "StyleError.hpp"
 
 using namespace ui;
 
@@ -25,7 +26,15 @@ spec_t Specification::create(std::string name, type_t type) {
     return res.first->second;
   }
   else {
-    throw std::runtime_error("redefined property spec with different type");
+    throw StyleError(
+      "redefined spec with different type: '" +
+      name +
+      "' was previously defined with type '" +
+      Type::getName(getPool().at(res.first->second).type) +
+      "', tried to redefine it with type '" +
+      Type::getName(type) +
+      "'"
+    );
   }
 }
 
@@ -36,6 +45,10 @@ Specification const& Specification::get(spec_t spec) {
 
 void Specification::assertSpecValid(spec_t spec) {
   if(spec >= getPool().size()) {
-    throw std::runtime_error("invalid property spec: " + std::to_string(spec));
+    throw StyleError(
+      "invalid property spec: '" +
+      std::to_string(spec) +
+      "'"
+    );
   }
 }

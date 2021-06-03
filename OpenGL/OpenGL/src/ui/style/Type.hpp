@@ -16,15 +16,19 @@ public:
   template<typename T>
   static type_t getType();
 
+  static std::string getName(type_t type);
+
 private:
-  static type_t registerType();
+  static type_t registerType(std::string name);
+  static void assertTypeValid(type_t type);
+  static std::vector<std::string>& getNames();
 };
 
-#define MAKE_TYPE(T)                           \
-  template <>                                  \
-  type_t Type::getType<T>() {                  \
-    static const type_t type = registerType(); \
-    return type;                               \
+#define MAKE_TYPE(T)                             \
+  template <>                                    \
+  type_t Type::getType<T>() {                    \
+    static const type_t type = registerType(#T); \
+    return type;                                 \
   }
 
 }; // namespace ui

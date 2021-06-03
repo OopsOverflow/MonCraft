@@ -40,8 +40,9 @@ void Component::setStyle(prop_t prop) {
     setAnchorY(prop.value->get<Anchor>());
   }
   else {
-    std::cout << "[WARN] unsupported style property: "
+    std::cout << "[WARN] unsupported style property: '"
               << Specification::get(prop.spec).name
+              << "'"
               << std::endl;
   }
 }
