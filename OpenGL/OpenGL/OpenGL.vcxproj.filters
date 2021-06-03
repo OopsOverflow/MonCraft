@@ -514,5 +514,11 @@
   <ItemGroup>
     <None Include="src\shader\simple.vert" />
     <None Include="src\shader\simple.frag" />
+    <None Include="src\shader\fog.vert" />
+    <None Include="src\shader\fog.frag" />
+    <None Include="src\shader\water.frag" />
+    <None Include="src\shader\water.vert" />
+    <None Include="src\shader\pane.vert" />
+    <None Include="src\shader\pane.frag" />
   </ItemGroup>
 </Project>
