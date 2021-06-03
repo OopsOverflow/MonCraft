@@ -76,6 +76,7 @@ int main(int argc, char* argv[]) {
     // load resources
     loadResources();
     Shader* shader = ResourceManager::getShader("simple");
+    Shader* fogShader = ResourceManager::getShader("fog");
     GLuint texAtlas = ResourceManager::getTexture("atlas");
     GLuint texCharacter = ResourceManager::getTexture("character");
     GLuint normalMapID[30];
@@ -160,8 +161,12 @@ int main(int argc, char* argv[]) {
         // set uniforms / textures
         glUniform1f(shader->getUniformLocation("lightIntensity"), 1);
         glUniform3fv(shader->getUniformLocation("lightDirection"), 1, value_ptr(sunDirViewSpace));
-        glUniform1f(shader->getUniformLocation("sunTime"), sunTime * 400);
-        glUniform1i(shader->getUniformLocation("fog"), (int)window.enableFog);
+
+        glUniform1f(fogShader->getUniformLocation("sunTime"), sunTime * 400);
+        glUniform1f(fogShader->getUniformLocation("lightIntensity"), 1);
+        glUniform3fv(fogShader->getUniformLocation("lightDirection"), 1, value_ptr(sunDirViewSpace));
+
+
         shader->bindTexture(TEXTURE_NORMAL, normalMapID[(size_t)(t*15)%30]);
 
         Block* block = terrain.getBlock(ivec3(window.camera.position + vec3(-0.5f,0.6f,-0.5f)));
@@ -180,12 +185,11 @@ int main(int argc, char* argv[]) {
 
         // draw skybox
         sky.render(window.camera);
+
+        // draw the terrain
         shader->activate();
         shadows.activate();
         window.camera.activate();
-
-
-        // draw the terrain
         shader->bindTexture(TEXTURE_COLOR, texAtlas);
         terrain.render(window.camera);
 
