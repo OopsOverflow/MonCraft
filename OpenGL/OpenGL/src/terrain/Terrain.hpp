@@ -58,7 +58,7 @@ public:
 private:
   static const int chunkSize = 16;
   static const int renderDistH = 15; // horizontal render distance (2n+1 chunks)
-  static const int renderDistV = 5; // vertical render distance (2n+1 chunks)
+  static const int renderDistV = 7; // vertical render distance (2n+1 chunks)
   const int chunksMaxCount;
 
   // dirty hash function for the chunks hashmap

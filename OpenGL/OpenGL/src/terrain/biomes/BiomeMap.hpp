@@ -34,7 +34,7 @@ private:
     float frequency = 0.01f;       // spatial displacement (distortion)
     float displacement = 50.f;     // spatial displacement (distortion)
     float blendSmoothness = 0.4f;   // amount of smoothing to apply 
-    float biomeBlend = 30.f; // distance to smooth biomes borders
+    float biomeBlend = 60.f; // distance to smooth biomes borders
     float globalFrequency = .5f;   // adjust the frequencies overall (high values gives)
     float globalAmplitude = 5.2f;  // adjust the amplitude overall (high values gives AMPLIFIED terrain)
 

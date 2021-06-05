@@ -53,7 +53,7 @@ Block::unique_ptr_t Generator::createBlock(ivec3 pos, Biome const& biome) const 
   float height = noise.fractal2(ivec2(pos.x, pos.z), biome.frequencies);
   int blockHeight = (int)floor(height + biome.elevation);
 
-  blockHeight = (int)floor(biome.elevation);
+  //blockHeight = (int)floor(biome.elevation);
 
   if(pos.y == blockHeight + 1 && noise.simplex3(pos) * 0.5 + 0.5 < biome.tallgrass && pos.y> valueNoise.sample1D(ivec2(pos.x, pos.z) + ivec2(3, -7)) % 4)
     return Block::create_static<Tallgrass_Block>();
