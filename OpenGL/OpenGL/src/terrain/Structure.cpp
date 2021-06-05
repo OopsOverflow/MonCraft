@@ -1,59 +1,8 @@
 #include "Structure.hpp"
-#include "blocks/Dirt_Block.hpp"
-#include "blocks/Leaf_Block.hpp"
-#include "blocks/Stone_Block.hpp"
+
 #include "blocks/AllBlocks.hpp"
 
 using namespace glm;
-
-Cactus::Cactus()
- : store(std::make_shared<BlockStore>(ivec3(1, 3, 1)))
-{
-  ivec3 pos;
-  for(pos.x = 0; pos.x < store->size.x; pos.x++) {
-    for(pos.y = 0; pos.y < store->size.y; pos.y++) {
-      for(pos.z = 0; pos.z < store->size.z; pos.z++) {
-        (*store)[pos] = BlockType::Air;
-      }
-    }
-  }
-
-  // trunk
-  (*store)[{0, 0, 0}] = BlockType::Cactus;
-  (*store)[{0, 1, 0}] = BlockType::Cactus;
-  (*store)[{0, 2, 0}] = BlockType::Cactus;
-}
-
-
-std::vector<Cactus::Slice> Cactus::spawn(Chunk& chunk, ivec3 pos) const {
-  std::vector<Cactus::Slice> slices;
-  ivec3 origin(0, -1, 0); // the tree is generated centered on the trunk, one block above
-  ivec3 start = pos - origin;
-
-  auto genSlice = [&](ivec3 chunkOffset) {
-    ivec3 sliceStart = start - chunk.size * chunkOffset; // position of the structure's min corner in this chunk space
-    slices.emplace_back(Tree::Slice{
-      store,
-      chunk.chunkPos + chunkOffset,
-      max(sliceStart, ivec3(0)) - sliceStart,
-      max(sliceStart, ivec3(0)),
-      min(sliceStart + store->size, chunk.size)
-    });
-  };
-
-  auto minCorner = -ivec3(lessThan(start, ivec3(0)));
-  auto maxCorner = ivec3(greaterThanEqual(start + store->size, chunk.size));
-  ivec3 dpos;
-  for(dpos.x = minCorner.x; dpos.x <= maxCorner.x; dpos.x++) {
-    for(dpos.y = minCorner.y; dpos.y <= maxCorner.y; dpos.y++) {
-      for(dpos.z = minCorner.z; dpos.z <= maxCorner.z; dpos.z++) {
-        genSlice(dpos);
-      }
-    }
-  }
-
-  return slices;
-}
 
 void Structure::applySlice(Chunk& chunk, Slice const& slice) {
   ivec3 dpos;
@@ -69,7 +18,7 @@ void Structure::applySlice(Chunk& chunk, Slice const& slice) {
 }
 
 
-Tree::Tree()
+Oak_Tree::Oak_Tree()
     : store(std::make_shared<BlockStore>(ivec3(5, 7, 5)))
 {
     ivec3 pos;
@@ -82,17 +31,17 @@ Tree::Tree()
     }
 
     // top cap
-    (*store)[{2, 6, 2}] = BlockType::Leaf;
-    (*store)[{3, 6, 2}] = BlockType::Leaf;
-    (*store)[{2, 6, 3}] = BlockType::Leaf;
-    (*store)[{1, 6, 2}] = BlockType::Leaf;
-    (*store)[{2, 6, 1}] = BlockType::Leaf;
+    (*store)[{2, 6, 2}] = BlockType::Oak_Leaf;
+    (*store)[{3, 6, 2}] = BlockType::Oak_Leaf;
+    (*store)[{2, 6, 3}] = BlockType::Oak_Leaf;
+    (*store)[{1, 6, 2}] = BlockType::Oak_Leaf;
+    (*store)[{2, 6, 1}] = BlockType::Oak_Leaf;
 
     // top
     pos = ivec3(0, 5, 0);
     for (pos.x = 1; pos.x < store->size.x - 1; pos.x++) {
         for (pos.z = 1; pos.z < store->size.z - 1; pos.z++) {
-            (*store)[pos] = BlockType::Leaf;
+            (*store)[pos] = BlockType::Oak_Leaf;
         }
     }
 
@@ -100,7 +49,7 @@ Tree::Tree()
     for (pos.x = 0; pos.x < store->size.x; pos.x++) {
         for (pos.y = 3; pos.y < 5; pos.y++) {
             for (pos.z = 0; pos.z < store->size.z; pos.z++) {
-                (*store)[pos] = BlockType::Leaf;
+                (*store)[pos] = BlockType::Oak_Leaf;
             }
         }
     }
@@ -108,20 +57,200 @@ Tree::Tree()
     // trunk
     pos = ivec3(2, 1, 2);
     for (pos.y = 0; pos.y < 4; pos.y++) {
-        (*store)[pos] = BlockType::Wood;
+        (*store)[pos] = BlockType::Oak_Wood;
     }
 }
 
-#include "debug/Debug.hpp"
 
-std::vector<Tree::Slice> Tree::spawn(Chunk& chunk, ivec3 pos) const {
-    std::vector<Tree::Slice> slices;
+std::vector<Oak_Tree::Slice> Oak_Tree::spawn(Chunk& chunk, ivec3 pos) const {
+    std::vector<Oak_Tree::Slice> slices;
     ivec3 origin(2, -1, 2); // the tree is generated centered on the trunk, one block above
     ivec3 start = pos - origin;
 
     auto genSlice = [&](ivec3 chunkOffset) {
         ivec3 sliceStart = start - chunk.size * chunkOffset; // position of the structure's min corner in this chunk space
-        slices.emplace_back(Tree::Slice{
+        slices.emplace_back(Oak_Tree::Slice{
+          store,
+          chunk.chunkPos + chunkOffset,
+          max(sliceStart, ivec3(0)) - sliceStart,
+          max(sliceStart, ivec3(0)),
+          min(sliceStart + store->size, chunk.size)
+            });
+    };
+
+    auto minCorner = -ivec3(lessThan(start, ivec3(0)));
+    auto maxCorner = ivec3(greaterThanEqual(start + store->size, chunk.size));
+    ivec3 dpos;
+    for (dpos.x = minCorner.x; dpos.x <= maxCorner.x; dpos.x++) {
+        for (dpos.y = minCorner.y; dpos.y <= maxCorner.y; dpos.y++) {
+            for (dpos.z = minCorner.z; dpos.z <= maxCorner.z; dpos.z++) {
+                genSlice(dpos);
+            }
+        }
+    }
+
+    return slices;
+}
+
+
+Birch_Tree::Birch_Tree()
+    : store(std::make_shared<BlockStore>(ivec3(5, 7, 5)))
+{
+    ivec3 pos;
+    for (pos.x = 0; pos.x < store->size.x; pos.x++) {
+        for (pos.y = 0; pos.y < store->size.y; pos.y++) {
+            for (pos.z = 0; pos.z < store->size.z; pos.z++) {
+                (*store)[pos] = BlockType::Air;
+            }
+        }
+    }
+
+    // top cap
+    (*store)[{2, 6, 2}] = BlockType::Birch_Leaf;
+    (*store)[{3, 6, 2}] = BlockType::Birch_Leaf;
+    (*store)[{2, 6, 3}] = BlockType::Birch_Leaf;
+    (*store)[{1, 6, 2}] = BlockType::Birch_Leaf;
+    (*store)[{2, 6, 1}] = BlockType::Birch_Leaf;
+
+    // top
+    pos = ivec3(0, 5, 0);
+    for (pos.x = 1; pos.x < store->size.x - 1; pos.x++) {
+        for (pos.z = 1; pos.z < store->size.z - 1; pos.z++) {
+            (*store)[pos] = BlockType::Birch_Leaf;
+        }
+    }
+
+    // body
+    for (pos.x = 0; pos.x < store->size.x; pos.x++) {
+        for (pos.y = 3; pos.y < 5; pos.y++) {
+            for (pos.z = 0; pos.z < store->size.z; pos.z++) {
+                (*store)[pos] = BlockType::Birch_Leaf;
+            }
+        }
+    }
+
+    // trunk
+    pos = ivec3(2, 1, 2);
+    for (pos.y = 0; pos.y < 4; pos.y++) {
+        (*store)[pos] = BlockType::Birch_Wood;
+    }
+}
+
+
+std::vector<Birch_Tree::Slice> Birch_Tree::spawn(Chunk& chunk, ivec3 pos) const {
+    std::vector<Birch_Tree::Slice> slices;
+    ivec3 origin(2, -1, 2); // the tree is generated centered on the trunk, one block above
+    ivec3 start = pos - origin;
+
+    auto genSlice = [&](ivec3 chunkOffset) {
+        ivec3 sliceStart = start - chunk.size * chunkOffset; // position of the structure's min corner in this chunk space
+        slices.emplace_back(Birch_Tree::Slice{
+          store,
+          chunk.chunkPos + chunkOffset,
+          max(sliceStart, ivec3(0)) - sliceStart,
+          max(sliceStart, ivec3(0)),
+          min(sliceStart + store->size, chunk.size)
+            });
+    };
+
+    auto minCorner = -ivec3(lessThan(start, ivec3(0)));
+    auto maxCorner = ivec3(greaterThanEqual(start + store->size, chunk.size));
+    ivec3 dpos;
+    for (dpos.x = minCorner.x; dpos.x <= maxCorner.x; dpos.x++) {
+        for (dpos.y = minCorner.y; dpos.y <= maxCorner.y; dpos.y++) {
+            for (dpos.z = minCorner.z; dpos.z <= maxCorner.z; dpos.z++) {
+                genSlice(dpos);
+            }
+        }
+    }
+
+    return slices;
+}
+
+
+EditPlaterforme::EditPlaterforme()
+    : store(std::make_shared<BlockStore>(ivec3(33, 2, 33)))
+{
+    ivec3 pos = ivec3(0,0,0);
+    for (pos.x = 0; pos.x < store->size.x; pos.x++) {
+        for (pos.z = 0; pos.z < store->size.z; pos.z++) {
+                (*store)[pos] = BlockType::Brick;
+        }
+    }
+
+    pos = ivec3(0, 1, 0);
+    for (pos.x = 0; pos.x < store->size.x; pos.x++) {
+        for (pos.z = 0; pos.z < store->size.z; pos.z++) {
+            (*store)[pos] = BlockType::Air;
+        }
+    }
+
+    pos = ivec3(0, 1, 0);
+    for (pos.x = 0; pos.x < store->size.x; pos.x++) {
+        (*store)[pos] = (BlockType)(pos.x < 17 ? pos.x : 0);
+    }
+
+}
+
+
+std::vector<EditPlaterforme::Slice> EditPlaterforme::spawn(Chunk& chunk, ivec3 pos) const {
+    std::vector<EditPlaterforme::Slice> slices;
+    ivec3 origin(0, -1, 0); // the tree is generated centered on the trunk, one block above
+    ivec3 start = pos - origin;
+
+    auto genSlice = [&](ivec3 chunkOffset) {
+        ivec3 sliceStart = start - chunk.size * chunkOffset; // position of the structure's min corner in this chunk space
+        slices.emplace_back(EditPlaterforme::Slice{
+          store,
+          chunk.chunkPos + chunkOffset,
+          max(sliceStart, ivec3(0)) - sliceStart,
+          max(sliceStart, ivec3(0)),
+          min(sliceStart + store->size, chunk.size)
+            });
+    };
+
+    auto minCorner = -ivec3(lessThan(start, ivec3(0)));
+    auto maxCorner = ivec3(greaterThanEqual(start + store->size, chunk.size));
+    ivec3 dpos;
+    for (dpos.x = minCorner.x; dpos.x <= maxCorner.x; dpos.x++) {
+        for (dpos.y = minCorner.y; dpos.y <= maxCorner.y; dpos.y++) {
+            for (dpos.z = minCorner.z; dpos.z <= maxCorner.z; dpos.z++) {
+                genSlice(dpos);
+            }
+        }
+    }
+
+    return slices;
+}
+
+
+Cactus::Cactus()
+    : store(std::make_shared<BlockStore>(ivec3(1, 3, 1)))
+{
+    ivec3 pos;
+    for (pos.x = 0; pos.x < store->size.x; pos.x++) {
+        for (pos.y = 0; pos.y < store->size.y; pos.y++) {
+            for (pos.z = 0; pos.z < store->size.z; pos.z++) {
+                (*store)[pos] = BlockType::Air;
+            }
+        }
+    }
+
+    // trunk
+    (*store)[{0, 0, 0}] = BlockType::Cactus;
+    (*store)[{0, 1, 0}] = BlockType::Cactus;
+    (*store)[{0, 2, 0}] = BlockType::Cactus;
+}
+
+
+std::vector<Cactus::Slice> Cactus::spawn(Chunk& chunk, ivec3 pos) const {
+    std::vector<Cactus::Slice> slices;
+    ivec3 origin(0, -1, 0); // the tree is generated centered on the trunk, one block above
+    ivec3 start = pos - origin;
+
+    auto genSlice = [&](ivec3 chunkOffset) {
+        ivec3 sliceStart = start - chunk.size * chunkOffset; // position of the structure's min corner in this chunk space
+        slices.emplace_back(Cactus::Slice{
           store,
           chunk.chunkPos + chunkOffset,
           max(sliceStart, ivec3(0)) - sliceStart,

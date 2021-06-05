@@ -38,8 +38,10 @@ private:
   SimplexNoise noiseY;
   SimplexNoise noiseZ;
   ValueNoise valueNoise;
-  Tree defaultTree;
+  Oak_Tree defaultOakTree;
+  Birch_Tree defaultBirchTree;
   Cactus defaultCactus;
+  EditPlaterforme defaultEditPlaterforme;
 
   BiomeMap biomeSampler;
 };

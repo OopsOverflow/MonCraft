@@ -92,9 +92,9 @@ std::vector<Structure::Slice> Generator::generateStructures(ivec3 cpos, Chunk& c
 
         if(chunk[dpos]->type == BlockType::Grass) {
           ivec3 pos = orig + dpos;
-          float tree = valueNoise.sample1D(ivec2(pos.x, pos.z)) / (float)UINT32_MAX;
-          if(tree < 0.0005f) {
-            auto treeSlices = defaultTree.spawn(chunk, dpos);
+          uint32 tree = valueNoise.sample1D(ivec2(pos.x, pos.z));
+          if(tree / (float)UINT32_MAX < 0.0008f) {
+            auto treeSlices = (tree%2?defaultOakTree.spawn(chunk, dpos): defaultBirchTree.spawn(chunk, dpos));
             slices.insert(slices.end(), treeSlices.begin(), treeSlices.end());
           }
         }
@@ -104,6 +104,15 @@ std::vector<Structure::Slice> Generator::generateStructures(ivec3 cpos, Chunk& c
             if (cactus < 0.0010f) {
                 auto cactusSlice = defaultCactus.spawn(chunk, dpos);
                 slices.insert(slices.end(), cactusSlice.begin(), cactusSlice.end());
+            }
+        }
+
+        if (chunk[dpos]->type == BlockType::Snow && biome.type == BiomeType::TOUNDRA) {
+            ivec3 pos = orig + dpos;
+            float editPlateforme = valueNoise.sample1D(ivec2(pos.x, pos.z)) / (float)UINT32_MAX;
+            if (editPlateforme < 0.0001f) {
+                auto editPlateformeSlice = defaultEditPlaterforme.spawn(chunk, dpos);
+                slices.insert(slices.end(), editPlateformeSlice.begin(), editPlateformeSlice.end());
             }
         }
 

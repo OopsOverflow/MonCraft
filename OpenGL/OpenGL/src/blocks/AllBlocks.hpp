@@ -16,9 +16,9 @@
 #include "Tallgrass_Block.hpp"
 #include "Water_Block.hpp"
 #include "Cactus_Block.hpp"
-#include "Gravel_Block.hpp"
-#include "Birch_Leaf_Block.hpp"
 #include "Birch_Wood_Block.hpp"
+#include "Birch_Leaf_Block.hpp"
+#include "Gravel_Block.hpp"
 #include "Brick_Block.hpp"
 
 #include <sstream>
@@ -48,9 +48,9 @@ public:
       (Block*(*)())Tallgrass_Block::get,
       (Block*(*)())Water_Block::get,
       (Block*(*)())Cactus_Block::get,
-      (Block*(*)())Gravel_Block::get,
-      (Block*(*)())Birch_Leaf_Block::get,
       (Block*(*)())Birch_Wood_Block::get,
+      (Block*(*)())Birch_Leaf_Block::get,
+      (Block*(*)())Gravel_Block::get,
       (Block*(*)())Brick_Block::get,
     };
     auto index = (size_t)type;

@@ -149,7 +149,7 @@ Biome const& BiomeMap::sampleWeighted(glm::ivec2 pos) const {
 
 // pipeline step 1: spatial distortion
 ivec2 BiomeMap::offsetSimplex(ivec2 pos) {
-  return pos; // to disable distortion, uncomment this ;)
+  //return pos; // to disable distortion, uncomment this ;)
   vec2 sample(simplexX.simplex2(vec2(pos) * frequency),
               simplexY.simplex2(vec2(pos) * frequency));
   sample += 1.0;
@@ -299,7 +299,7 @@ Biome BiomeMap::blendBiomes(BiomeMap::weightedBiomes_t biomes) {
     }
 
     // blend elevation
-    res.elevation += weighted.biome->elevation * weighted.weight * 4;
+    res.elevation += weighted.biome->elevation * weighted.weight;
   }
 
 
