@@ -6,7 +6,7 @@
 #include "terrain/Structure.hpp"
 
 
-enum class BiomeType { ICE, SEA, BEACH, TOUNDRA, PLAINS, DESERT, HILLS, MOUNTAINS };
+enum class BiomeType { ICE, SEA, BEACH, TOUNDRA, PLAINS, DESERT, HILLS, MOUNTAINS, FOREST };
 
 struct Biome {
   float elevation; // vertical biome offset

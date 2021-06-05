@@ -116,6 +116,20 @@ BiomeMap::BiomeMap()
   };
   biomeMountains.elevation = 20;
   biomeMountains.tallgrass = 0;
+
+  biomeForest = biomePlains;
+  biomeForest.type = BiomeType::FOREST;
+  biomeForest.surface = BlockType::Grass;
+  biomeForest.underLayers = BlockType::Dirt;
+  biomeForest.underWaterBlock = BlockType::Dirt;
+  biomeForest.frequencies = {
+    {3.0f, 0.002f}, // {magnitude, frequency}
+    {2.5f, 0.007f},
+    {0.0f, 0.050f},
+    {0.0f, 0.100f},
+  };
+  // biomeHills.tallgrass = 0;
+  biomeForest.elevation = 10;
 }
 
 
@@ -227,6 +241,7 @@ BiomeMap::weightedBiomes_t BiomeMap::sampleBiomes(BiomeMap::weightedBiomes_t bio
     int r = value.sample1D(biome.cellPos);
     if(r < INT_MAX * .1) biome.biome = &biomePlains;
     else if(r < INT_MAX * .2) biome.biome = &biomeSea;
+    else if(r < INT_MAX * .3) biome.biome = &biomeForest;
     else if(r < INT_MAX * .4) biome.biome = &biomeDesert;
     else if(r < INT_MAX * .6) biome.biome = &biomeToundra;
     else if(r < INT_MAX * .8) biome.biome = &biomeHills;
@@ -255,8 +270,11 @@ BiomeMap::weightedBiomes_t BiomeMap::sampleBiomes(BiomeMap::weightedBiomes_t bio
         if (temperature < .2) {
           biome.biome = &biomeToundra;
         }
-        else if (temperature < .57) {
+        else if (temperature < .5) {
           biome.biome = &biomePlains;
+        }
+        else if (temperature < .65) {
+            biome.biome = &biomeForest;
         }
         else {
           biome.biome = &biomeDesert;

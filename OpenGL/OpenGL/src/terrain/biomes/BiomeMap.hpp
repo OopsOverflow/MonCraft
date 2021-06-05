@@ -70,4 +70,5 @@ private:
     Biome biomeToundra;
     Biome biomeHills;
     Biome biomeMountains;
+    Biome biomeForest;
 };

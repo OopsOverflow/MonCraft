@@ -92,8 +92,10 @@ std::vector<Structure::Slice> Generator::generateStructures(ivec3 cpos, Chunk& c
 
         if(chunk[dpos]->type == BlockType::Grass) {
           ivec3 pos = orig + dpos;
+          float amount = 0.0005f;
+          if (biome.type == BiomeType::FOREST)amount = 0.02f;
           uint32 tree = valueNoise.sample1D(ivec2(pos.x, pos.z));
-          if(tree / (float)UINT32_MAX < 0.0008f) {
+          if(tree / (float)UINT32_MAX < amount) {
             auto treeSlices = (tree%2?defaultOakTree.spawn(chunk, dpos): defaultBirchTree.spawn(chunk, dpos));
             slices.insert(slices.end(), treeSlices.begin(), treeSlices.end());
           }
