@@ -88,7 +88,7 @@ int main(int argc, char* argv[]) {
     // main loop
     for (float dt = 0; window.beginFrame(dt); window.endFrame()) {
         t += dt;
-
+      
         scene.drawFrame(t, dt);
 
         std::ostringstream text;
