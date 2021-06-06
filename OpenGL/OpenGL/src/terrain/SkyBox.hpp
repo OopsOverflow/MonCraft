@@ -8,7 +8,7 @@ public:
 	SkyBox();
 
 	Shader skyBoxShader;
-	void render(Camera& camera);
+	void render(Camera& camera, float rotaion);
 
 private:
 	GLuint buffer;

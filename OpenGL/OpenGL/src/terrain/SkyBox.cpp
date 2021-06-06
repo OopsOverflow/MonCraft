@@ -76,13 +76,14 @@ SkyBox::SkyBox() :
   skyTxr = ResourceManager::getTexture("skybox");
 }
 
-void SkyBox::render(Camera& camera)
+void SkyBox::render(Camera& camera, float rotation)
 {
     glDisable(GL_CULL_FACE);
     glDepthFunc(GL_LEQUAL);
     skyBoxShader.activate();
     glBindVertexArray(buffer);
     glm::mat4 view = glm::mat4(glm::mat3(camera.view));
+    view = glm::rotate(view, rotation, glm::vec3(0, 1, 0));
     glUniformMatrix4fv(MATRIX_VIEW, 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(MATRIX_PROJECTION, 1, GL_FALSE, glm::value_ptr(camera.projection));
     glActiveTexture(GL_TEXTURE0);

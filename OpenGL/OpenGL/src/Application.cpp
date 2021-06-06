@@ -184,7 +184,8 @@ int main(int argc, char* argv[]) {
 
 
         // draw skybox
-        sky.render(window.camera);
+        // Reduced speed because it makes me dizzy 
+        sky.render(window.camera, sunTime/5);
 
         // draw the terrain
         shader->activate();

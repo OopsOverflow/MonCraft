@@ -22,3 +22,13 @@ void main() {
                            vec3(1.0,0.9,0.7), // yellowish
                            pow(sunAmount,8.0) );
 }
+
+// Move calc to cpp program
+// send calc color to vertex shader
+// mix fog color, block color and skybox color
+
+// Idea 1 : sep
+// Hours wasted = 1
+
+// Idea 2 : frame buffer
+
