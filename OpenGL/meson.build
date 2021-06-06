@@ -6,6 +6,7 @@ endif
 
 srcs = files(
   'OpenGL/src/Application.cpp',
+  'OpenGL/src/MonCraftScene.cpp',
 
   'OpenGL/src/audio/Music.cpp',
   'OpenGL/src/debug/Debug.cpp',

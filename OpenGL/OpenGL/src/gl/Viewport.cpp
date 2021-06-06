@@ -22,13 +22,11 @@ extern "C" {
 #endif
 
 Viewport::Viewport(glm::ivec2 size)
-  :   camera(size, {0, 32, 10}, {0, 32, 0}),
-      size(size),
-      enableFog(false),
+  :   size(size),
       window(nullptr), context(nullptr),
       lastSpacePress(0), timeBegin(0), lastTime(0),
       mouseCaptured(false), vsync(true),
-      scene(nullptr)
+      root(nullptr)
 {
 
   //Initialize SDL2
@@ -58,8 +56,10 @@ Viewport::Viewport(glm::ivec2 size)
   std::cout << "Vendor  :" << glGetString(GL_VENDOR) << std::endl;
   std::cout << "Renderer:" << glGetString(GL_RENDERER) << std::endl;
   std::cout << "---------" << std::endl;
+}
 
-
+void Viewport::createRoot() {
+  root = std::make_unique<ui::Root>(size);
 }
 
 Viewport::~Viewport() {
@@ -70,8 +70,16 @@ Viewport::~Viewport() {
         SDL_DestroyWindow(window);
 }
 
-void Viewport::setScene(std::shared_ptr<ui::Root> scene) {
-  this->scene = scene;
+ui::Root* Viewport::getRoot() {
+  return root.get();
+}
+
+void Viewport::captureMouse() {
+  SDL_SetRelativeMouseMode(SDL_TRUE);
+  mouseCaptured = true;
+  int x, y;
+  SDL_GetMouseState(&x, &y);
+  mouseController.rotateStart(x, y);
 }
 
 void Viewport::on_event(SDL_Event const& e) {
@@ -86,8 +94,12 @@ void Viewport::on_event(SDL_Event const& e) {
     on_keyup(e.key.keysym.sym);
     break;
   case SDL_MOUSEMOTION:
-    mouseController.motionRel(e.motion.xrel, e.motion.yrel);
-    if(scene) scene->addEvent(Event(Event::Type::MOVE, {e.motion.x, size.y - e.motion.y}));
+    if(mouseCaptured) {
+      mouseController.motionRel(e.motion.xrel, e.motion.yrel);
+    }
+    else {
+      root->addEvent(Event(Event::Type::MOVE, {e.motion.x, size.y - e.motion.y}));
+    }
     break;
   case SDL_MOUSEBUTTONDOWN:
     on_mousedown(e.button);
@@ -122,6 +134,9 @@ bool Viewport::beginFrame(float& dt) {
 }
 
 void Viewport::endFrame() {
+  root->update();
+  root->render();
+
   //Display on screen (swap the buffer on screen and the buffer you are drawing on)
   SDL_GL_SwapWindow(window);
 
@@ -129,23 +144,18 @@ void Viewport::endFrame() {
   uint32_t timeEnd = SDL_GetTicks();
   lastTime = timeBegin;
 
-  if(!vsync) std::cout << "fps: " << 1000.f / (timeEnd - timeBegin) << std::endl;
-  if (timeEnd - timeBegin < timePerFrame) {
-    if(vsync) SDL_Delay(timePerFrame - (timeEnd - timeBegin));
-  }
-  else if(timeEnd - timeBegin > 2 * timePerFrame) {
-    std::cout << "can't keep up ! " << 1000.f / (timeEnd - timeBegin) << "fps" << std::endl;
+  if (vsync && timeEnd - timeBegin < timePerFrame) {
+    SDL_Delay(timePerFrame - (timeEnd - timeBegin));
   }
 }
 
 void Viewport::on_window_event(SDL_WindowEvent const& e) {
   switch (e.event) {
   case SDL_WINDOWEVENT_SIZE_CHANGED:
-    size.x = e.data1;
-    size.y = e.data2;
-    camera.setSize(size);
-    if(scene) scene->setSize(size);
-    break;
+      size.x = e.data1;
+      size.y = e.data2;
+      root->setSize(size);
+      break;
   }
 }
 
@@ -173,8 +183,7 @@ void Viewport::on_keydown(SDL_Keycode k) {
           keyboardController.pressedUp();
       }
       lastSpacePress = currentTime; }
-
-    break;
+      break;
   case SDLK_LSHIFT:
     keyboardController.pressedDown();
     break;
@@ -200,7 +209,7 @@ void Viewport::on_keydown(SDL_Keycode k) {
       else SDL_GL_SetSwapInterval(0);
       break;
   case SDLK_h:
-      enableFog = 1 - enableFog;
+      // TODO: fog toggle
       break;
   }
 }
@@ -226,8 +235,8 @@ void Viewport::on_keyup(SDL_Keycode k) {
     keyboardController.releasedDown();
     break;
   case SDLK_LCTRL:
-      keyboardController.releasedControl();
-      break;
+    keyboardController.releasedControl();
+    break;
   }
 }
 
@@ -238,9 +247,7 @@ void Viewport::on_mousedown(SDL_MouseButtonEvent const& e) {
       mouseController.triggerAction(MouseController::Action::DESTROY);
     }
     else {
-      SDL_SetRelativeMouseMode(SDL_TRUE);
-      mouseController.rotateStart(e.x, e.y);
-      mouseCaptured = true;
+      root->addEvent(Event(Event::Type::PRESS, {e.x, size.y - e.y}));
     }
     break;
   case SDL_BUTTON_RIGHT:
@@ -261,7 +268,9 @@ void Viewport::on_mousedown(SDL_MouseButtonEvent const& e) {
 void Viewport::on_mouseup(SDL_MouseButtonEvent const& e) {
   switch (e.button) {
   case SDL_BUTTON_LEFT:
-      // mouseController.rotateEnd(e.x, e.y);
+      if(!mouseCaptured) {
+        root->addEvent(Event(Event::Type::RELEASE, {e.x, size.y - e.y}));
+      }
     break;
   default:
     break;

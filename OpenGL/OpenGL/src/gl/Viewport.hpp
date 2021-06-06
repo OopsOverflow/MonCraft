@@ -2,7 +2,6 @@
 
 #include <string>
 
-#include "Camera.hpp"
 #include "controller/MouseController.hpp"
 #include "controller/KeyboardController.hpp"
 #include "ui/Root.hpp"
@@ -39,15 +38,14 @@ public:
   bool beginFrame(float& dt);
   void endFrame();
 
-  void setScene(std::shared_ptr<ui::Root> scene);
-
-  Camera camera;
-  MouseController mouseController;
-  KeyboardController keyboardController;
+  void createRoot();
+  ui::Root* getRoot();
+  void captureMouse();
 
   glm::ivec2 size;
 
-  bool enableFog;
+  MouseController mouseController;
+  KeyboardController keyboardController;
 
 private:
   void on_event(SDL_Event const& e);
@@ -67,5 +65,5 @@ private:
   bool mouseCaptured;
   bool vsync;
 
-  std::shared_ptr<ui::Root> scene;
+  std::unique_ptr<ui::Root> root;
 };
