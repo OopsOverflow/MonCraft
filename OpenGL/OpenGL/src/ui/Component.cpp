@@ -14,6 +14,9 @@ const spec_t Component::ANCHOR_Y = MAKE_SPEC("Component::anchorY", Anchor);
 Component::Component(Component* parent)
   : drawQueued(true), recomputeQueued(true),
     parent(parent),
+    size(0), absoluteSize(0), computedSize(0), computedOrigin(0),
+    position(0), padding(0),
+    anchorX(Anchor::BEGIN), anchorY(Anchor::BEGIN),
     hover(false), pressed(false)
 {
   if(parent) parent->addChild(this);
@@ -137,16 +140,6 @@ ivec2 Component::getAbsoluteSize() const {
   return computedSize;
 }
 
-void Component::setSize(glm::ivec2 size) {
-  if(size == this->size) return;
-  this->size = size;
-  queueRecompute(true); // needs to recompute children (size changed)
-}
-
-ivec2 Component::getSize() const {
-  return size;
-}
-
 void Component::recompute() {
   computeSize();
   computeOrigin(); // also resets recomputeQueued
@@ -263,6 +256,16 @@ void Component::handleEvents(std::vector<Event> const& events) {
 
 // style setters / getters below
 
+void Component::setSize(glm::ivec2 size) {
+  if(size == this->size) return;
+  this->size = size;
+  queueRecompute(true); // needs to recompute children (size changed)
+}
+
+ivec2 Component::getSize() const {
+  return size;
+}
+
 void Component::setPosition(glm::ivec2 position) {
   if(position == this->position) return;
   this->position = position;
@@ -304,6 +307,7 @@ Anchor Component::getAnchorY() const {
 }
 
 // default event handlers
+
 void Component::onMouseIn(glm::ivec2 pos) { }
 void Component::onMouseOut(glm::ivec2 pos) { }
 bool Component::onMouseMove(glm::ivec2 pos) { return false; }

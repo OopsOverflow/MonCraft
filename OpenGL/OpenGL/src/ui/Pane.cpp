@@ -20,7 +20,8 @@ static const GLfloat quad[6][2] = {
 };
 
 Pane::Pane(Component* parent)
-  : Component(parent)
+  : Component(parent),
+    color(1.f)
 {
   glGenVertexArrays(1, &vao);
   glGenBuffers(1, &vbo);

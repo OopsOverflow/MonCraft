@@ -28,9 +28,8 @@ Viewport::Viewport(glm::ivec2 size)
       mouseCaptured(false), vsync(true),
       root(nullptr)
 {
-
   //Initialize SDL2
-  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) < 0) {
+  if (SDL_Init(SDL_INIT_VIDEO) < 0) {
       throw std::runtime_error(std::string("SDL init failed: ") + SDL_GetError());
   }
 
@@ -68,6 +67,7 @@ Viewport::~Viewport() {
         SDL_GL_DeleteContext(context);
     if (window)
         SDL_DestroyWindow(window);
+    SDL_Quit();
 }
 
 ui::Root* Viewport::getRoot() {

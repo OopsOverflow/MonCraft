@@ -12,10 +12,11 @@ const spec_t Text::FONT      = MAKE_SPEC("Text::font", std::shared_ptr<const Fon
 Text::Text(Component* parent, std::string text, std::shared_ptr<const Font> font)
   : Component(parent),
     text(std::move(text)),
+    color(0.f, 0.f, 0.f, 1.f), fontSize(1.f),
     font(std::move(font))
 {
   shader = ResourceManager::getShader("font");
-
+  computeSize();
   Text::getDefaultStyle()->apply(this);
 }
 
