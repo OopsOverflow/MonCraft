@@ -60,7 +60,7 @@ int main(int argc, char* argv[]) {
     pane_fps.setPadding({ 10, 10 });
     pane_fps.setSize({ 300, 10 });
 
-    ui::Text text_fps(&pane_fps, "hello", font_vt323);
+    ui::Text text_fps(&pane_fps, "", font_vt323);
     text_fps.setFontSize(2.f);
     text_fps.setColor({ 0.8f, 0.7f, 0.0f, 1.f });
 
@@ -79,14 +79,23 @@ int main(int argc, char* argv[]) {
     btn_gen.onclick([&] { scene.terrain.toggleGeneration(); });
     btn_fog.onclick([&] { scene.fogEnabled = !scene.fogEnabled; });
 
+    ui::Text text_pos(&scene, "", font_vt323);
+    text_pos.setAnchorY(ui::Anchor::END);
+    text_pos.setFontSize(.5f);
+
     // main loop
     for (float dt = 0; window.beginFrame(dt); window.endFrame()) {
         t += dt;
 
         scene.drawFrame(t, dt);
 
-        std::string text = "FPS : " + std::to_string((int)(1.f / dt));
-        text_fps.setText(text);
+        std::ostringstream text;
+        text << "FPS : " << (int)(1.f / dt);
+        text_fps.setText(text.str());
+
+        text.str(""); // "clears" the string stream
+        text << "Player Pos : " << std::fixed << std::setprecision(3) << scene.character.getPosition();
+        text_pos.setText(text.str());
     }
 
     ResourceManager::free();

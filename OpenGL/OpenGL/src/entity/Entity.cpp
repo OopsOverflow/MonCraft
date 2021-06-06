@@ -173,3 +173,7 @@ void Entity::update(Terrain& terrain, float dt) {
 
 	node.update();
 }
+
+vec3 Entity::getPosition() const {
+	return node.loc;
+}

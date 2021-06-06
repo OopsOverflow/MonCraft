@@ -14,7 +14,7 @@ MonCraftScene::MonCraftScene(Viewport* vp)
       character({ 0.0f, 40.0f, 0.0f }),
 
       fogEnabled(false),
-      sunSpeed(5.f),
+      sunSpeed(0.005f),
       captured(false)
 {
     // load resources
@@ -121,7 +121,7 @@ void MonCraftScene::drawFrame(float t, float dt) {
     terrain.update(camera.position);
 
     // update sun
-    float sunTime = quarter_pi<float>(); // sun is fixed
+    float sunTime = quarter_pi<float>() + t * sunSpeed; // sun is fixed
     float sunDist = 100.f;
     sunDir = -normalize(vec3(cos(sunTime), 1, sin(sunTime))) * sunDist;
 

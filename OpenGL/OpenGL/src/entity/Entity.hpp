@@ -57,13 +57,14 @@ public:
 	 */
 	virtual void update(Terrain& terrain, float dt);
 
+	glm::vec3 getPosition() const;
+
 	View view;
 	State state;
 	bool god;
 	bool sprint;
 
 protected:
-
 	float maxSpeed;
 	float maxAccel;
 	float verticalFriction;
