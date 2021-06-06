@@ -41,6 +41,7 @@ public:
   void createRoot();
   ui::Root* getRoot();
   void captureMouse();
+  void toggleVSync();
 
   glm::ivec2 size;
 

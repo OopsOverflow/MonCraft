@@ -82,6 +82,12 @@ void Viewport::captureMouse() {
   mouseController.rotateStart(x, y);
 }
 
+void Viewport::toggleVSync() {
+  vsync = !vsync;
+  if(vsync) SDL_GL_SetSwapInterval(1);
+  else SDL_GL_SetSwapInterval(0);
+}
+
 void Viewport::on_event(SDL_Event const& e) {
   switch (e.type) {
   case SDL_WINDOWEVENT:
@@ -204,9 +210,7 @@ void Viewport::on_keydown(SDL_Keycode k) {
       keyboardController.pressedPause();
       break;
   case SDLK_f:
-    vsync = !vsync;
-      if(vsync) SDL_GL_SetSwapInterval(1);
-      else SDL_GL_SetSwapInterval(0);
+      toggleVSync();
       break;
   case SDLK_h:
       // TODO: fog toggle

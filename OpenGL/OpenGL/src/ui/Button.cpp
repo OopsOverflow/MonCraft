@@ -20,6 +20,10 @@ Button::Button(Component* parent, std::string text, std::shared_ptr<const Font> 
   pressed.set(make_property(TEXT_COLOR, vec4(0.0, 1.0, 0.0, 1.0)));
 }
 
+void Button::onclick(std::function<void()> callback) {
+  this->clickCallback = callback;
+}
+
 void Button::setStyle(prop_t const& prop) {
   if(prop.spec == Button::TEXT) {
     setText(prop.value->get<std::string>());
@@ -57,12 +61,10 @@ style_const_t Button::getDefaultStyle() const {
 #include "debug/Debug.hpp"
 
 void Button::onMouseIn(glm::ivec2 pos) {
-  std::cout << "in " << pos << std::endl;
   hover.apply(this);
 }
 
 void Button::onMouseOut(glm::ivec2 pos) {
-  std::cout << "out " << pos << std::endl;
   if(isPressed()) pressed.revert(this);
   else hover.revert(this);
 }
@@ -71,6 +73,7 @@ bool Button::onMousePressed(glm::ivec2 pos) {
   Component::onMousePressed(pos);
   hover.revert(this);
   pressed.apply(this);
+  if(clickCallback) clickCallback();
   return true;
 }
 

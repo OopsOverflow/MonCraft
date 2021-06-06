@@ -50,6 +50,7 @@ int main(int argc, char* argv[]) {
     auto font_vt323 = std::make_shared<const Font>("VT323-Regular");
 
     MonCraftScene scene(&window);
+    scene.setPadding({10, 10});
 
     ui::Pane pane_fps(&scene);
     pane_fps.setColor({ 1.f, 1.f, 1.f, 0.5f });
@@ -63,7 +64,20 @@ int main(int argc, char* argv[]) {
     text_fps.setFontSize(2.f);
     text_fps.setColor({ 0.8f, 0.7f, 0.0f, 1.f });
 
-    ui::Button btn(&scene, "hello", font_vt323);
+    ui::Button btn_vsync(&scene, "VSync", font_vt323);
+    btn_vsync.setPadding({15, 10});
+
+    ui::Button btn_gen(&scene, "Generation", font_vt323);
+    btn_gen.setPosition({133, 0}); // TODO: implement a box container
+    btn_gen.setPadding({15, 10});
+
+    ui::Button btn_fog(&scene, "Fog", font_vt323);
+    btn_fog.setPosition({360, 0}); // TODO: implement a box container
+    btn_fog.setPadding({15, 10});
+
+    btn_vsync.onclick([&] { window.toggleVSync(); });
+    btn_gen.onclick([&] { scene.terrain.toggleGeneration(); });
+    btn_fog.onclick([&] { scene.fogEnabled = !scene.fogEnabled; });
 
     // main loop
     for (float dt = 0; window.beginFrame(dt); window.endFrame()) {

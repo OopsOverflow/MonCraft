@@ -4,6 +4,8 @@
 #include "Pane.hpp"
 #include "Text.hpp"
 
+#include <functional>
+
 namespace ui {
 
 class Button : public Pane {
@@ -16,6 +18,8 @@ public:
   virtual void setStyle(prop_t const& prop) override;
   virtual prop_t getStyle(spec_t spec) const override;
   virtual style_const_t getDefaultStyle() const override;
+
+  void onclick(std::function<void()> callback);
 
   // forward methods from ui::Text
   void setText(std::string text);
@@ -33,6 +37,7 @@ private:
   std::unique_ptr<Text> textComp;
   Style hover;
   Style pressed;
+  std::function<void()> clickCallback;
 };
 
 } // namespace ui

@@ -42,6 +42,7 @@ private:
   GLuint texCharacter;
   GLuint normalMapID[30];
 
+public:
   // components
   Terrain terrain;
   SkyBox sky;
