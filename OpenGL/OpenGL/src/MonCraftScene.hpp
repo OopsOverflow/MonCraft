@@ -38,6 +38,7 @@ private:
 
   // resources
   Shader* shader;
+  Shader* fogShader;
   GLuint texAtlas;
   GLuint texCharacter;
   GLuint normalMapID[30];

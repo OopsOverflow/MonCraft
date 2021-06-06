@@ -52,9 +52,15 @@ void WaterGeometry::genFace(glm::ivec3 pos, BlockFace face, Block* block, std::a
     const face_t<3>* posFace = &blockPositions[(size_t)face];
     size_t blockfaceID = (size_t)face;
     if (blockfaceID >= 2) {
-        Block* diagBotBlock = neighbors[checkNeighbors[blockfaceID-2][0]];
-        Block* botBlock = neighbors[checkNeighbors[blockfaceID-2][1]];
-        if (botBlock->type == BlockType::Water && (diagBotBlock->type == BlockType::Water || diagBotBlock->type == BlockType::Air)) posFace = &filledBlockPositions[(size_t)face];
+        Block* topBlock = neighbors[checkNeighbors[blockfaceID-2][2]];
+        if (topBlock->type == BlockType::Water) {
+            Block* neighborBlock = neighbors[checkNeighbors[blockfaceID - 2][0]];
+            posFace = &filledBlockPositions[(size_t)face];
+            if (neighborBlock->type == BlockType::Water)
+                posFace = &fillSpaceBlockPositions[(size_t)face];
+        }
+            
+            
     }
 
     _pos.insert(_pos.end(), posFace->begin(), posFace->end());
@@ -92,9 +98,28 @@ void WaterGeometry::genFace(glm::ivec3 pos, BlockFace face, Block* block, std::a
 void WaterGeometry::generateMesh(ivec3 pos, Block* block, std::array<Block*, 26> const& neighbors, MeshData& data) const {
     for (auto const& off : blockFaceOffsets) {
         auto neigh = neighbors[off.first];
-        if (neigh->type == BlockType::Air || (off.second == BlockFace::TOP && neigh->type!=BlockType::Water)) {
-            genFace(pos, off.second, block, neighbors, data);
+        bool printFace = false;
+
+        //TODO optimise this mess
+        
+        if (!neigh->isSolid() || off.second == BlockFace::TOP) {
+            if ((size_t)off.second >= 2) {
+                Block* topBlock = neighbors[checkNeighbors[(size_t)off.second - 2][2]];
+                if (topBlock->type != BlockType::Water) {
+                    printFace = neigh->type!=BlockType::Water;
+                }
+                else {
+                    Block* topNeighborBlock = neighbors[checkNeighbors[(size_t)off.second - 2][1]];
+                    if (neigh->type != BlockType::Water) {
+                        printFace = true;
+                    }else if(topNeighborBlock->type == BlockType::Air)printFace = true;
+                }
+            }
+            else {
+                printFace = neigh->type!=BlockType::Water;
+            }
         }
+        if(printFace)genFace(pos, off.second, block, neighbors, data);
     }
 }
 
@@ -134,37 +159,71 @@ const BlockData<3> WaterGeometry::blockPositions = {
   }
 };
 
+const BlockData<3> WaterGeometry::fillSpaceBlockPositions = {
+  face_t<3>{ // TOP
+    -0.5f,  0.5f,  0.5f,
+    0.5f,  0.5f,  0.5f,
+    0.5f,  0.5f, -0.5f,
+    -0.5f,  0.5f, -0.5f,
+  }, { // BOTTOM
+    0.5f, 0.4f,  0.5f,
+    -0.5f, 0.4f,  0.5f,
+    -0.5f, 0.4f, -0.5f,
+    0.5f, 0.4f, -0.5f,
+  }, { // FRONT
+    0.5f,  0.5f,  0.5f,
+    -0.5f,  0.5f,  0.5f,
+    -0.5f, 0.4f,  0.5f,
+    0.5f, 0.4f,  0.5f,
+  }, { // RIGHT
+    0.5f,  0.5f, -0.5f,
+    0.5f,  0.5f,  0.5f,
+    0.5f, 0.4f,  0.5f,
+    0.5f, 0.4f, -0.5f,
+  }, { // BACK
+    -0.5f,  0.5f, -0.5f,
+    0.5f,  0.5f, -0.5f,
+    0.5f, 0.4f, -0.5f,
+    -0.5f, 0.4f, -0.5f,
+  }, { // LEFT
+    -0.5f,  0.5f,  0.5f,
+    -0.5f,  0.5f, -0.5f,
+    -0.5f, 0.4f, -0.5f,
+    -0.5f, 0.4f,  0.5f,
+  }
+};
+
 const BlockData<3> WaterGeometry::filledBlockPositions = {
   face_t<3>{ // TOP
-    -0.5f,  0.4f,  0.5f,
-    0.5f,  0.4f,  0.5f,
-    0.5f,  0.4f, -0.5f,
-    -0.5f,  0.4f, -0.5f,
+    -0.5f,  0.5f,  0.5f,
+    0.5f,  0.5f,  0.5f,
+    0.5f,  0.5f, -0.5f,
+    -0.5f,  0.5f, -0.5f,
   }, { // BOTTOM
-    0.5f, -0.6f,  0.5f,
-    -0.5f, -0.6f,  0.5f,
-    -0.5f, -0.6f, -0.5f,
-    0.5f, -0.6f, -0.5f,
+    0.5f, -0.5f,  0.5f,
+    -0.5f, -0.5f,  0.5f,
+    -0.5f, -0.5f, -0.5f,
+    0.5f, -0.5f, -0.5f,
   }, { // FRONT
-    0.5f,  0.4f,  0.5f,
-    -0.5f,  0.4f,  0.5f,
-    -0.5f, -0.6f,  0.5f,
-    0.5f, -0.6f,  0.5f,
+    0.5f,  0.5f,  0.5f,
+    -0.5f,  0.5f,  0.5f,
+    -0.5f, -0.5f,  0.5f,
+    0.5f, -0.5f,  0.5f,
   }, { // RIGHT
-    0.5f,  0.4f, -0.5f,
-    0.5f,  0.4f,  0.5f,
-    0.5f, -0.6f,  0.5f,
-    0.5f, -0.6, -0.5f,
+    0.5f,  0.5f, -0.5f,
+    0.5f,  0.5f,  0.5f,
+    0.5f, -0.5f,  0.5f,
+    0.5f, -0.5f, -0.5f,
   }, { // BACK
-    -0.5f,  0.4f, -0.5f,
-    0.5f,  0.4f, -0.5f,
-    0.5f, -0.6f, -0.5f,
-    -0.5f, -0.6f, -0.5f,
+    -0.5f,  0.5f, -0.5f,
+    0.5f,  0.5f, -0.5f,
+    0.5f, -0.5f, -0.5f,
+    -0.5f, -0.5f, -0.5f,
   }, { // LEFT
-    -0.5f,  0.4f,  0.5f,
-    -0.5f,  0.4f, -0.5f,
-    -0.5f, -0.6f, -0.5f,
-    -0.5f, -0.6f,  0.5f,
+    -0.5f,  0.5f,  0.5f,
+    -0.5f,  0.5f, -0.5f,
+    -0.5f, -0.5f, -0.5f,
+    -0.5f, -0.5f,  0.5f,
   }
 };
 
@@ -271,12 +330,12 @@ const std::array<std::pair<int, BlockFace>, 6> WaterGeometry::blockFaceOffsets =
   {1, BlockFace::BACK},
 };
 
-const std::array<std::array<int, 2>, 4> WaterGeometry::checkNeighbors = {
-  std::array<int, 2>
-  {6, 5}, //BlockFace::FRONT
-  {14, 5},//BlockFace::RIGHT
-  {7, 5}, //BlockFace::BACK
-  {23, 5}// BlockFace::LEFT
+const std::array<std::array<int, 3>, 4> WaterGeometry::checkNeighbors = {
+  std::array<int, 3>
+  {0, 3, 2}, //BlockFace::FRONT
+  {8, 11, 2},//BlockFace::RIGHT
+  {1, 4, 2}, //BlockFace::BACK
+  {17, 20, 2}// BlockFace::LEFT
 
 };
 

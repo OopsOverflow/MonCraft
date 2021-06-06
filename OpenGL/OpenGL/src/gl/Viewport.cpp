@@ -212,9 +212,6 @@ void Viewport::on_keydown(SDL_Keycode k) {
   case SDLK_f:
       toggleVSync();
       break;
-  case SDLK_h:
-      // TODO: fog toggle
-      break;
   }
 }
 

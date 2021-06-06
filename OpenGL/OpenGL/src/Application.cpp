@@ -19,14 +19,16 @@ void loadResources() {
         "skybox/pz.png",  // front
         "skybox/nz.png"   // back
     };
+    ResourceManager::loadCubeMap("skybox", skyboxFaces);
+
+    ResourceManager::loadShader("simple", "simple.vert", "simple.frag");
+    ResourceManager::loadShader("font",   "font.vert",   "font.frag");
+    ResourceManager::loadShader("water",   "water.vert",   "water.frag");
+    ResourceManager::loadShader("fog", "fog.vert", "fog.frag");
+    ResourceManager::loadShader("pane", "pane.vert", "pane.frag");
 
     ResourceManager::loadTexture("atlas", "Texture_atlas");
     ResourceManager::loadTexture("character", "Character");
-    ResourceManager::loadShader("simple", "simple.vert", "simple.frag");
-    ResourceManager::loadShader("font",   "font.vert",   "font.frag");
-    ResourceManager::loadShader("pane",   "pane.vert",   "pane.frag");
-    ResourceManager::loadCubeMap("skybox", skyboxFaces);
-
     for (size_t i = 0; i < 30; i += 1) {
         std::string filename = "water/water_normal_" + std::to_string(i+1)+"_frame";
         ResourceManager::loadTexture("waterNormal" + std::to_string(i), filename);

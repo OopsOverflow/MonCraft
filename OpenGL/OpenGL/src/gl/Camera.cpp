@@ -293,28 +293,28 @@ bool Camera::chunkInView(glm::vec3 posCamSpace, float tolerance) const {
     else if (projType == Projection::CUSTOM_PROJECTION) {
         bool inFrustum = true;
 
-        inFrustum &= posCamSpace.x - tolerance > custumProjBox[0];
-        inFrustum &= posCamSpace.x + tolerance < custumProjBox[1];
-        inFrustum &= posCamSpace.y - tolerance > custumProjBox[2];
-        inFrustum &= posCamSpace.y + tolerance < custumProjBox[3];
-        inFrustum &= posCamSpace.z - tolerance > custumProjBox[4];
-        inFrustum &= posCamSpace.z + tolerance < custumProjBox[5];
+        inFrustum &= posCamSpace.x + tolerance > custumProjBox[0];
+        inFrustum &= posCamSpace.x - tolerance < custumProjBox[1];
+        inFrustum &= posCamSpace.y + tolerance > custumProjBox[2];
+        inFrustum &= posCamSpace.y - tolerance < custumProjBox[3];
+        inFrustum &= posCamSpace.z - tolerance < -custumProjBox[4];
+        inFrustum &= posCamSpace.z + tolerance > -custumProjBox[5];
 
-        return 1; //TODO we don't manage to make it work
+        return inFrustum;
     }
-    bool inFrustum = true;
-    float aspect = (float)size.x / (float)size.y;
-    float y = glm::length(center - position) * tanFovY;
-    float x = y * aspect;
+    else {
+      bool inFrustum = true;
+      float aspect = (float)size.x / (float)size.y;
+      float y = glm::length(center - position) * tanFovY;
+      float x = y * aspect;
 
-    inFrustum &= posCamSpace.x - tolerance < -x;
-    inFrustum &= posCamSpace.x + tolerance > x;
-    inFrustum &= posCamSpace.y - tolerance < -y;
-    inFrustum &= posCamSpace.y + tolerance > y;
-    inFrustum &= posCamSpace.z - tolerance < 0.0f;
-    inFrustum &= posCamSpace.z + tolerance > 1000.0f;
+      inFrustum &= posCamSpace.x - tolerance < -x;
+      inFrustum &= posCamSpace.x + tolerance > x;
+      inFrustum &= posCamSpace.y - tolerance < -y;
+      inFrustum &= posCamSpace.y + tolerance > y;
+      inFrustum &= posCamSpace.z - tolerance < 0.0f;
+      inFrustum &= posCamSpace.z + tolerance > 1000.0f;
 
-    return inFrustum;
-
-
+      return inFrustum;
+    }
 }

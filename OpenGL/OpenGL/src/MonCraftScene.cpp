@@ -19,6 +19,7 @@ MonCraftScene::MonCraftScene(Viewport* vp)
 {
     // load resources
     shader = ResourceManager::getShader("simple");
+    fogShader = ResourceManager::getShader("fog");
     texAtlas = ResourceManager::getTexture("atlas");
     texCharacter = ResourceManager::getTexture("character");
     for (size_t i = 0; i < 30; i += 1) {
@@ -59,8 +60,10 @@ void MonCraftScene::updateUniforms(float t) {
 
     glUniform1f(shader->getUniformLocation("lightIntensity"), 1);
     glUniform3fv(shader->getUniformLocation("lightDirection"), 1, value_ptr(sunDirViewSpace));
-    glUniform1f(shader->getUniformLocation("sunTime"), t);
-    glUniform1i(shader->getUniformLocation("fog"), (int)fogEnabled);
+    glUniform1f(fogShader->getUniformLocation("sunTime"), t);
+    glUniform1f(fogShader->getUniformLocation("lightIntensity"), 1);
+    glUniform3fv(fogShader->getUniformLocation("lightDirection"), 1, value_ptr(sunDirViewSpace));
+    glUniform1i(shader->getUniformLocation("fog"), (int)fogEnabled); // TODO
     shader->bindTexture(TEXTURE_NORMAL, normalMapID[(size_t)(t*15)%30]);
 
     Block* block = terrain.getBlock(ivec3(camera.position + vec3(-0.5f,0.6f,-0.5f)));

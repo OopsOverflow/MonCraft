@@ -350,8 +350,14 @@
     <ResourceCompile Include="OpenGL.rc" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="src\shader\fog.frag" />
+    <None Include="src\shader\fog.vert" />
+    <None Include="src\shader\pane.frag" />
+    <None Include="src\shader\pane.vert" />
     <None Include="src\shader\simple.frag" />
     <None Include="src\shader\simple.vert" />
+    <None Include="src\shader\water.frag" />
+    <None Include="src\shader\water.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
