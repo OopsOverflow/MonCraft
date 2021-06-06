@@ -25,11 +25,14 @@ public:
 
 protected:
   void onMouseIn(glm::ivec2 pos) override;
+  bool onMousePressed(glm::ivec2 pos) override;
+  bool onMouseReleased(glm::ivec2 pos) override;
   void onMouseOut(glm::ivec2 pos) override;
 
 private:
   std::unique_ptr<Text> textComp;
   Style hover;
+  Style pressed;
 };
 
 } // namespace ui

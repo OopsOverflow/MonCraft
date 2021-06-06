@@ -68,6 +68,9 @@ protected:
   virtual bool onMousePressed(glm::ivec2 pos);
   virtual bool onMouseReleased(glm::ivec2 pos);
 
+  bool isHover();
+  bool isPressed();
+
 private:
   void queueRecompute(bool propagate = true);
   void computeSize();

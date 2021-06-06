@@ -219,23 +219,41 @@ void Component::filterEvent(Event const& evt) {
   }
 }
 
+bool Component::isHover() {
+  return hover;
+}
+
+bool Component::isPressed() {
+  return pressed;
+}
+
 bool Component::handleEvent(Event const& evt) {
   ivec2 pos = evt.getPosition();
+  Event::Type type = evt.getType();
+  bool res = false;
+
   if(!hover) onMouseIn(pos);
 
-  switch(evt.getType()) {
+  // state is changed after event handling
+  hover = true;
+
+  switch(type) {
     case Event::Type::MOVE:
-      hover = true;
-      return onMouseMove(pos);
+      res = onMouseMove(pos);
+      break;
     case Event::Type::PRESS:
-      pressed = true;
-      return onMousePressed(pos);
+      res = onMousePressed(pos);
+      break;
     case Event::Type::RELEASE:
-      pressed = false;
-      return onMouseReleased(pos);
+      res = onMouseReleased(pos);
+      break;
   }
 
-  return false;
+  // state is changed after event handling
+  if(type == Event::Type::PRESS) pressed = true;
+  else if(type == Event::Type::RELEASE) pressed = false;
+
+  return res;
 }
 
 void Component::handleEvents(std::vector<Event> const& events) {

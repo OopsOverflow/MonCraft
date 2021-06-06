@@ -12,8 +12,12 @@ Button::Button(Component* parent, std::string text, std::shared_ptr<const Font> 
   textComp = std::make_unique<Text>(this, std::move(text), std::move(font));
 
   Button::getDefaultStyle()->apply(this);
+
   hover.setParent(Button::getDefaultStyle());
   hover.set(make_property(TEXT_COLOR, vec4(1.0, 0.0, 0.0, 1.0)));
+
+  pressed.setParent(Button::getDefaultStyle());
+  pressed.set(make_property(TEXT_COLOR, vec4(0.0, 1.0, 0.0, 1.0)));
 }
 
 void Button::setStyle(prop_t const& prop) {
@@ -59,7 +63,22 @@ void Button::onMouseIn(glm::ivec2 pos) {
 
 void Button::onMouseOut(glm::ivec2 pos) {
   std::cout << "out " << pos << std::endl;
+  if(isPressed()) pressed.revert(this);
+  else hover.revert(this);
+}
+
+bool Button::onMousePressed(glm::ivec2 pos) {
+  Component::onMousePressed(pos);
   hover.revert(this);
+  pressed.apply(this);
+  return true;
+}
+
+bool Button::onMouseReleased(glm::ivec2 pos) {
+  bool res = Component::onMousePressed(pos);
+  pressed.revert(this);
+  hover.apply(this);
+  return res;
 }
 
 void Button::setText(std::string text) {
