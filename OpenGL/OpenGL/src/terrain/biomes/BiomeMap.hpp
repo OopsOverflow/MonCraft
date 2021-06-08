@@ -30,11 +30,11 @@ public:
 private:
     // biome gen tuning
     int size = 1000;               // generated texture size
-    int gridSize = 100;            // voronoi single cell size
+    int gridSize = 300;            // voronoi single cell size
     float frequency = 0.01f;       // spatial displacement (distortion)
     float displacement = 50.f;     // spatial displacement (distortion)
-    float blendSmoothness = 0.4f;   // amount of smoothing to apply 
-    float biomeBlend = 60.f; // distance to smooth biomes borders
+    float blendSmoothness = 0.4f;   // amount of smoothing to apply
+    float biomeBlend = 40.f; // distance to smooth biomes borders
     float globalFrequency = .5f;   // adjust the frequencies overall (high values gives)
     float globalAmplitude = 5.2f;  // adjust the amplitude overall (high values gives AMPLIFIED terrain)
 
@@ -64,6 +64,8 @@ private:
     weightedBiomes_t sampleBiomes(weightedBiomes_t biomes);
     Biome blendBiomes(weightedBiomes_t biomes);
 
+    pixel_t teststep(BiomeMap::weightedBiomes_t biomes);
+
     Biome biomePlains;
     Biome biomeSea;
     Biome biomeDesert;
@@ -71,4 +73,8 @@ private:
     Biome biomeHills;
     Biome biomeMountains;
     Biome biomeForest;
+
+public:
+    BitmapTex testtex;
+    Bitmap test;
 };

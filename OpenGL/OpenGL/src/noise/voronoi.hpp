@@ -17,7 +17,7 @@ public:
    * Constructs a voronoi noise generator.
    * samples are reproducible.
    */
-  VoronoiNoise(int seed, int gridSize);
+  VoronoiNoise(int seed, int gridSize, glm::ivec2 offset);
 
   /**
    * Samples a point in 2D space and returns the grid index of the voronoi cell
@@ -29,7 +29,7 @@ public:
   /**
    * Generates the grid voronoi diagram.
    */
-  void generate(glm::ivec2 pos, Grid<glm::vec2> &map) const;
+  void generate(Grid<glm::vec2> &map) const;
 
 
   struct weightedSample_t {
@@ -44,9 +44,14 @@ public:
    * Generates the grid voronoi, giving the weights of the four closest cells
    * based on distance from the cell's center to the sampling point.
    */
-  void generateWeighted(glm::ivec2 pos, Grid<weightedSample_t> &map) const;
+  void generateWeighted(glm::ivec2 pos, Grid<weightedSample_t> &map, float margin) const;
 
 private:
+
+  glm::ivec2 findCell(glm::vec2 pos) const;
+  bool isNear(glm::vec2 pos, glm::ivec2 cell, float margin) const;
+
   ValueNoise noise;
   int gridSize;
+  Grid<glm::vec2> grid;
 };

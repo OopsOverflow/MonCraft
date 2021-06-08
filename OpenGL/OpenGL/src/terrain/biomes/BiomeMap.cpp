@@ -1,6 +1,7 @@
 #include "BiomeMap.hpp"
 #include <functional>
 #include <algorithm>
+#include <numeric>
 
 using namespace glm;
 using namespace std::placeholders;
@@ -29,10 +30,10 @@ const octaves_t waterOctaves = {
 };
 
 BiomeMap::BiomeMap()
- : voronoi(rand(), gridSize),
+ : voronoi(rand(), gridSize, ivec2(0)),
    value(rand()),
    grid(size + 2 * displacement),
-   map(size)
+   map(size), test(size)
 {
   simplexX.seed(rand());
   simplexY.seed(rand());
@@ -143,11 +144,20 @@ void BiomeMap::generate() {
   auto step4 = std::bind(&BiomeMap::blendBiomes, this, _1);
   auto pipeline = make_pipeline(step1, step2, step3, step4);
 
-  voronoi.generateWeighted(ivec2(0), grid);
+  auto teststep = std::bind(&BiomeMap::teststep, this, _1);
+  auto testpipeline = make_pipeline(step1, step2, teststep);
+
+  voronoi.generateWeighted(ivec2(0), grid, biomeBlend);
 
   map.for_each_parallel([&](vec2 pos, Biome& val) {
     val = pipeline(pos);
   });
+
+  test.for_each_parallel([&](vec2 pos, pixel_t& val) {
+    val = testpipeline(pos);
+  });
+
+  testtex.generate(test);
 }
 
 #include "debug/Debug.hpp"
@@ -163,7 +173,7 @@ Biome const& BiomeMap::sampleWeighted(glm::ivec2 pos) const {
 
 // pipeline step 1: spatial distortion
 ivec2 BiomeMap::offsetSimplex(ivec2 pos) {
-  //return pos; // to disable distortion, uncomment this ;)
+  return pos; // to disable distortion, uncomment this ;)
   vec2 sample(simplexX.simplex2(vec2(pos) * frequency),
               simplexY.simplex2(vec2(pos) * frequency));
   sample += 1.0;
@@ -193,62 +203,96 @@ BiomeMap::weightedBiomes_t BiomeMap::offsetVoronoi(ivec2 pos) {
     ivec2( 1, -1), ivec2( 1, 0), ivec2( 1, 1),
   };
 
-  int centerCell = std::min_element(sample.weights.begin(), sample.weights.end()) - sample.weights.begin();
-  float centerDist = sample.weights[centerCell];
-
-  float totalWeight = 1.f;
-
-  res.push_back(weightedBiome_t{
-    sample.pos + posLookup[centerCell],
-    1.f, // this is a temporary value to be normalized later
-    nullptr
+  std::array<float, 9> idx;
+  std::iota(idx.begin(), idx.end(), 0);
+  std::sort(idx.begin(), idx.end(), [&sample](auto i1, auto i2) {
+    return sample.weights[i1] < sample.weights[i2];
   });
 
-  for(int i = 0; i < 9; i++) if(i != centerCell) {
-    float dist = sample.weights[i] - centerDist;
-    if(dist < biomeBlend) {
-      float weight = (biomeBlend - dist) / biomeBlend;
-      weight *= weight; // make weight linear between 0 and 1
-      totalWeight += weight;
+  int count = 1;
+  for(int i = 1; i < 9; i++) {
+    if(sample.weights[idx.at(i)] < biomeBlend) count++;
+    else break;
+  }
+
+  if(count < 2) {
+    res.push_back(weightedBiome_t{
+      sample.pos + posLookup[idx.at(0)],
+      1.f,
+      nullptr
+    });
+  }
+
+  else if(count == 3) {
+    float weight = 0.;
+    res.push_back(weightedBiome_t{
+      sample.pos + posLookup[idx.at(0)],
+      weight,
+      nullptr
+    });
+    float tot = weight;
+
+    for(int i = 1; i < count; i++) {
+      weight = 0.5f - sample.weights.at(idx.at(i)) / biomeBlend * 0.5f;
+      tot += weight;
       res.push_back(weightedBiome_t{
-        sample.pos + posLookup[i],
-        weight, // this is a temporary value to be normalized later
+        sample.pos + posLookup[idx.at(i)],
+        weight,
         nullptr
       });
     }
+
+    for(auto& biome : res) {
+      biome.weight /= tot;
+    }
+    tot = 0;
+    for(auto& biome : res) {
+      biome.weight = smooth(biome.weight, blendSmoothness);
+      tot += biome.weight;
+    }
+    for(auto& biome : res) {
+      biome.weight /= tot;
+    }
+
   }
 
-  // normalize coeffs so that the sum of them all is 1
-  for(auto& biome : res) {
-    biome.weight /= totalWeight;
-  }
-  totalWeight = 0.f;
-  for(auto& biome : res) {
-    biome.weight = smooth(biome.weight, blendSmoothness);
-    totalWeight += biome.weight;
-  }
-  for(auto& biome : res) {
-    biome.weight /= totalWeight;
+  else {
+    res.push_back(weightedBiome_t{
+      sample.pos + posLookup[idx.at(0)],
+      0.f,
+      nullptr
+    });
   }
 
   return res;
 };
 
+
+pixel_t BiomeMap::teststep(BiomeMap::weightedBiomes_t biomes) {
+  pixel_t col(0);
+
+  for(int i = 0; i < std::min(10ul, biomes.size()); i++) {
+    col += vec3(value.sample3D(biomes.at(i).cellPos)) * biomes.at(i).weight;
+  }
+
+  return col;
+}
+
 // pipeline step 3: sample biome color
 BiomeMap::weightedBiomes_t BiomeMap::sampleBiomes(BiomeMap::weightedBiomes_t biomes) {
   // randomized biomes, debugging purposes
-  for(auto& biome : biomes) {
-    int r = value.sample1D(biome.cellPos);
-    if(r < INT_MAX * .1) biome.biome = &biomePlains;
-    else if(r < INT_MAX * .2) biome.biome = &biomeSea;
-    else if(r < INT_MAX * .3) biome.biome = &biomeForest;
-    else if(r < INT_MAX * .4) biome.biome = &biomeDesert;
-    else if(r < INT_MAX * .6) biome.biome = &biomeToundra;
-    else if(r < INT_MAX * .8) biome.biome = &biomeHills;
-    else if(r < INT_MAX     ) biome.biome = &biomeMountains;
-  }
-
-  return biomes;
+  // for(auto& biome : biomes) {
+  //   int r = value.sample1D(biome.cellPos);
+  //   if(r < INT_MAX * .1) biome.biome = &biomePlains;
+  //   else if(r < INT_MAX * .2) biome.biome = &biomeSea;
+  //   else if(r < INT_MAX * .3) biome.biome = &biomeForest;
+  //   else if(r < INT_MAX * .4) biome.biome = &biomeDesert;
+  //   else if(r < INT_MAX * .6) biome.biome = &biomeToundra;
+  //   else if(r < INT_MAX * .8) biome.biome = &biomeHills;
+  //   else if(r < INT_MAX     ) biome.biome = &biomeMountains;
+  // }
+  //
+  // return biomes;
 
   for(auto& biome : biomes) {
     float height = simplexBiome.fractal2(biome.cellPos, heightOctaves);
@@ -291,6 +335,7 @@ BiomeMap::weightedBiomes_t BiomeMap::sampleBiomes(BiomeMap::weightedBiomes_t bio
 
   return biomes;
 };
+
 
 // pipeline step 4: blend biomes together
 Biome BiomeMap::blendBiomes(BiomeMap::weightedBiomes_t biomes) {
