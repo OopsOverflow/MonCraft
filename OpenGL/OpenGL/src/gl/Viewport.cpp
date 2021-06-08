@@ -88,6 +88,12 @@ void Viewport::toggleVSync() {
   else SDL_GL_SetSwapInterval(0);
 }
 
+void Viewport::toggleFullscreen() {
+  fullscreen = !fullscreen;
+  if(fullscreen) SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+  else SDL_SetWindowFullscreen(window, 0);
+}
+
 void Viewport::on_event(SDL_Event const& e) {
   switch (e.type) {
   case SDL_WINDOWEVENT:

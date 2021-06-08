@@ -77,9 +77,14 @@ int main(int argc, char* argv[]) {
     btn_fog.setPosition({360, 0}); // TODO: implement a box container
     btn_fog.setPadding({15, 10});
 
+    ui::Button btn_fullscreen(&scene, "Fullscreen", font_vt323);
+    btn_fullscreen.setAnchorX(ui::Anchor::END);
+    btn_fullscreen.setPadding({15, 10});
+
     btn_vsync.onclick([&] { window.toggleVSync(); });
     btn_gen.onclick([&] { scene.terrain.toggleGeneration(); });
     btn_fog.onclick([&] { scene.fogEnabled = !scene.fogEnabled; });
+    btn_fullscreen.onclick([&] { window.toggleFullscreen(); });
 
     ui::Text text_pos(&scene, "", font_vt323);
     text_pos.setAnchorY(ui::Anchor::END);
