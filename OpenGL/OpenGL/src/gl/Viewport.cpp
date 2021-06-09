@@ -24,7 +24,8 @@ extern "C" {
 Viewport::Viewport(glm::ivec2 size)
   :   size(size),
       window(nullptr), context(nullptr),
-      lastSpacePress(0), timeBegin(0), lastTime(0),
+      lastSpacePress(0), spaceIsPressed(false),
+      timeBegin(0), lastTime(0),
       mouseCaptured(false), vsync(true),
       root(nullptr)
 {
@@ -171,6 +172,22 @@ void Viewport::on_window_event(SDL_WindowEvent const& e) {
   }
 }
 
+bool Viewport::isDoubleSpace() {
+  static const int thresold = 500;
+
+  bool res = false;
+
+  if(!spaceIsPressed) {
+    uint32_t time = SDL_GetTicks();
+    res = time - lastSpacePress < thresold;
+    std::cout << time - lastSpacePress << std::endl;
+    lastSpacePress = time;
+    spaceIsPressed = true;
+  }
+
+  return res;
+}
+
 void Viewport::on_keydown(SDL_Keycode k) {
   switch (k) {
   case SDLK_z:
@@ -186,16 +203,9 @@ void Viewport::on_keydown(SDL_Keycode k) {
     keyboardController.pressedLeft();
     break;
   case SDLK_SPACE:
-  {
-      uint32_t currentTime = SDL_GetTicks();
-      if (currentTime - lastSpacePress > 100 && currentTime - lastSpacePress < 250) {
-          keyboardController.changedMod();
-      }
-      else {
-          keyboardController.pressedUp();
-      }
-      lastSpacePress = currentTime; }
-      break;
+    if(isDoubleSpace()) keyboardController.changedMod();
+    else keyboardController.pressedUp();
+    break;
   case SDLK_LSHIFT:
     keyboardController.pressedDown();
     break;
@@ -237,6 +247,7 @@ void Viewport::on_keyup(SDL_Keycode k) {
     break;
   case SDLK_SPACE:
     keyboardController.releasedUp();
+    spaceIsPressed = false;
     break;
   case SDLK_LSHIFT:
     keyboardController.releasedDown();

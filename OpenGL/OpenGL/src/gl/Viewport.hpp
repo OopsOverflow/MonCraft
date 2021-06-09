@@ -57,10 +57,14 @@ private:
   void on_mousedown(SDL_MouseButtonEvent const& e);
   void on_mouseup(SDL_MouseButtonEvent const& e);
 
+  bool isDoubleSpace();
+
   SDL_Window* window;
   SDL_GLContext context;
 
   uint32_t lastSpacePress;
+  bool spaceIsPressed;
+
   uint32_t timeBegin;
   uint32_t lastTime;
 
