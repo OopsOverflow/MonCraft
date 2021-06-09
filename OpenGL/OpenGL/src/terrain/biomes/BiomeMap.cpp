@@ -222,19 +222,28 @@ BiomeMap::weightedBiomes_t BiomeMap::offsetVoronoi(ivec2 ipos) {
     {-1, -1}, {-1,  0}, {-1,  1}, { 0,  1},
     { 1,  1}, { 1,  0}, { 1, -1}, { 0, -1},
   };
-  int found = 0;
+
+  std::array<float, 8> distToBorders;
+
+  for(int i = 0; i < neighbors.size(); i++) {
+    vec2 otherPos = voronoi.get(mainCell + neighbors[i]);
+    distToBorders[i] = dot((mainPos + otherPos) / 2.f - pos, normalize(otherPos - mainPos));
+  }
+
+  std::array<int, 8> indicesDistToBorders;
+  std::iota(indicesDistToBorders.begin(), indicesDistToBorders.end(), 0);
+  std::sort(indicesDistToBorders.begin(), indicesDistToBorders.end(), [&](int a, int b) {
+    return distToBorders[a] < distToBorders[b];
+  });
 
   for(int i = 0; i < neighbors.size(); i++) {
 
-    ivec2 otherCell1 = mainCell + neighbors[i];
-    ivec2 otherCell2 = mainCell + neighbors[(i + 1) % 8];
+    ivec2 otherCell1 = mainCell + neighbors[indicesDistToBorders[i]];
+    ivec2 otherCell2 = mainCell + neighbors[(indicesDistToBorders[i] + 1) % neighbors.size()];
     vec2 otherPos1 = voronoi.get(otherCell1);
     vec2 otherPos2 = voronoi.get(otherCell2);
 
-    if(found) {
-    }
-
-    else if(PointInTriangle(pos, mainPos, otherPos1, otherPos2)) {
+    if(PointInTriangle(pos, mainPos, otherPos1, otherPos2)) {
 
       float a = (otherPos1 - otherPos2).y * (mainPos - otherPos2).x + (otherPos2 - otherPos1).x * (mainPos - otherPos2).y;
       vec2 b = pos - otherPos2;
@@ -262,18 +271,18 @@ BiomeMap::weightedBiomes_t BiomeMap::offsetVoronoi(ivec2 ipos) {
         w3,
         nullptr
       });
-
-      found = i+1;
     }
   }
 
   if(res.size() == 0) {
-      res.push_back({
-        mainCell,
-        0.f,
-        nullptr
-      });
+    res.push_back({
+      mainCell,
+      0.f,
+      nullptr
+    });
+    // std::cout << "BUG" << std::endl;
   }
+
 
   // normalize weights (sum = 1)
   // float totalWeight = 0;
