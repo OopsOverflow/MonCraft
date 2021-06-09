@@ -32,7 +32,6 @@ const octaves_t waterOctaves = {
 BiomeMap::BiomeMap()
  : voronoi(rand(), gridSize, ivec2(0)),
    value(rand()),
-   grid(size + 2 * displacement),
    map(size), test(size)
 {
   simplexX.seed(rand());
@@ -147,8 +146,6 @@ void BiomeMap::generate() {
   auto teststep = std::bind(&BiomeMap::teststep, this, _1);
   auto testpipeline = make_pipeline(step1, step2, teststep);
 
-  voronoi.generateWeighted(ivec2(0), grid, biomeBlend);
-
   map.for_each_parallel([&](vec2 pos, Biome& val) {
     val = pipeline(pos);
   });
@@ -192,77 +189,100 @@ float smooth(float x, float a) {
   // return f(x, a);
 }
 
+
+float sign (vec2 p1, vec2 p2, vec2 p3) {
+    return (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y);
+}
+
+bool PointInTriangle (vec2 pt, vec2 v1, vec2 v2, vec2 v3) {
+    float d1, d2, d3;
+    bool has_neg, has_pos;
+
+    d1 = sign(pt, v1, v2);
+    d2 = sign(pt, v2, v3);
+    d3 = sign(pt, v3, v1);
+
+    has_neg = (d1 < 0) || (d2 < 0) || (d3 < 0);
+    has_pos = (d1 > 0) || (d2 > 0) || (d3 > 0);
+
+    return !(has_neg && has_pos);
+}
+
+
 // pipeline step 2: voronoi splitting (this approximate the distance to chunks borders)
-BiomeMap::weightedBiomes_t BiomeMap::offsetVoronoi(ivec2 pos) {
+BiomeMap::weightedBiomes_t BiomeMap::offsetVoronoi(ivec2 ipos) {
   weightedBiomes_t res;
-  auto& sample = grid.at(pos);
 
-  static const std::array<ivec2, 9> posLookup {
-    ivec2(-1, -1), ivec2(-1, 0), ivec2(-1, 1),
-    ivec2( 0, -1), ivec2( 0, 0), ivec2( 0, 1),
-    ivec2( 1, -1), ivec2( 1, 0), ivec2( 1, 1),
+  vec2 pos = ipos;
+  ivec2 mainCell = voronoi.findCell(pos);
+  vec2 mainPos = voronoi.get(mainCell);
+
+  static const std::array<ivec2, 8> neighbors = {
+    ivec2
+    {-1, -1}, {-1,  0}, {-1,  1}, { 0,  1},
+    { 1,  1}, { 1,  0}, { 1, -1}, { 0, -1},
   };
+  int found = 0;
 
-  std::array<float, 9> idx;
-  std::iota(idx.begin(), idx.end(), 0);
-  std::sort(idx.begin(), idx.end(), [&sample](auto i1, auto i2) {
-    return sample.weights[i1] < sample.weights[i2];
-  });
+  for(int i = 0; i < neighbors.size(); i++) {
 
-  int count = 1;
-  for(int i = 1; i < 9; i++) {
-    if(sample.weights[idx.at(i)] < biomeBlend) count++;
-    else break;
-  }
+    ivec2 otherCell1 = mainCell + neighbors[i];
+    ivec2 otherCell2 = mainCell + neighbors[(i + 1) % 8];
+    vec2 otherPos1 = voronoi.get(otherCell1);
+    vec2 otherPos2 = voronoi.get(otherCell2);
 
-  if(count < 2) {
-    res.push_back(weightedBiome_t{
-      sample.pos + posLookup[idx.at(0)],
-      1.f,
-      nullptr
-    });
-  }
+    if(found) {
+    }
 
-  else if(count == 3) {
-    float weight = 0.;
-    res.push_back(weightedBiome_t{
-      sample.pos + posLookup[idx.at(0)],
-      weight,
-      nullptr
-    });
-    float tot = weight;
+    else if(PointInTriangle(pos, mainPos, otherPos1, otherPos2)) {
 
-    for(int i = 1; i < count; i++) {
-      weight = 0.5f - sample.weights.at(idx.at(i)) / biomeBlend * 0.5f;
-      tot += weight;
-      res.push_back(weightedBiome_t{
-        sample.pos + posLookup[idx.at(i)],
-        weight,
+      float a = (otherPos1 - otherPos2).y * (mainPos - otherPos2).x + (otherPos2 - otherPos1).x * (mainPos - otherPos2).y;
+      vec2 b = pos - otherPos2;
+
+      float w1, w2, w3;
+      float c = (otherPos1 - otherPos2).y * b.x + (otherPos2 - otherPos1).x * b.y;
+      float d = (otherPos2 - mainPos).y * b.x + (mainPos - otherPos2).x * b.y;
+
+      w1 = c / a;
+      w2 = d / a;
+      w3 = 1.f - w1 - w2;
+
+      res.push_back({
+        mainCell,
+        w1,
         nullptr
       });
-    }
+      res.push_back({
+        otherCell1,
+        w2,
+        nullptr
+      });
+      res.push_back({
+        otherCell2,
+        w3,
+        nullptr
+      });
 
-    for(auto& biome : res) {
-      biome.weight /= tot;
+      found = i+1;
     }
-    tot = 0;
-    for(auto& biome : res) {
-      biome.weight = smooth(biome.weight, blendSmoothness);
-      tot += biome.weight;
-    }
-    for(auto& biome : res) {
-      biome.weight /= tot;
-    }
-
   }
 
-  else {
-    res.push_back(weightedBiome_t{
-      sample.pos + posLookup[idx.at(0)],
-      0.f,
-      nullptr
-    });
+  if(res.size() == 0) {
+      res.push_back({
+        mainCell,
+        0.f,
+        nullptr
+      });
   }
+
+  // normalize weights (sum = 1)
+  // float totalWeight = 0;
+  // for(auto const& biome: res) {
+  //   totalWeight += biome.weight;
+  // }
+  // for(auto& biome: res) {
+  //   biome.weight /= totalWeight;
+  // }
 
   return res;
 };

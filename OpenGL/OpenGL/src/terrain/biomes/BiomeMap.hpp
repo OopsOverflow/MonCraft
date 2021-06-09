@@ -54,8 +54,7 @@ private:
     using weightedBiomes_t = std::vector<weightedBiome_t>;
 
     // bitmaps
-    Grid<VoronoiNoise::weightedSample_t> grid;  // voronoi
-    Grid<Biome> map;      // final Biome Map
+    Grid<Biome> map; // final Biome Map
 
     // pipeline functions
     // note: the compiler should be able to optimize copies with RVO
