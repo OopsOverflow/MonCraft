@@ -1,6 +1,6 @@
 #pragma once
 
-#include "entity/Entity.hpp"
+#include "entity/character/Character.hpp"
 #include "terrain/Terrain.hpp"
 
 #include <glm/glm.hpp>
@@ -28,7 +28,7 @@ public:
   void pressedF5();
   void changedMod();
 
-  void apply(Entity& character, Terrain& terrain);
+  void apply(Character& character, Terrain& terrain);
 
 private:
   glm::vec3 direction;

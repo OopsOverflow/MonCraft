@@ -4,8 +4,8 @@ using namespace glm;
 static const mat4 I(1.f);
 
 Entity::Entity(Hitbox hitbox)
-: view(View::FIRST_PERSON), state(State::Idle), god(true), sprint(false),
-	maxSpeed(4.3f), maxAccel(10.f), verticalFriction(5.5f), horizontalFriction(5.f),
+: view(View::FIRST_PERSON), state(State::Idle),
+	maxSpeed(4.3f), maxAccel(10.f), verticalFriction(0.f), horizontalFriction(5.f),
 	gravity(32.f), jumpSpeed(10.5f), maxFallSpeed(78.4f),
 	playerFovY(45.0f),
 	speed(0), accel(0), direction(0),
@@ -16,37 +16,21 @@ Entity::Entity(Hitbox hitbox)
 Entity::~Entity() {}
 
 void Entity::walk(vec3 dir) {
-
-	if(god) {
-		if(dir == vec3(0)) {
-			state = State::Idle;
-			sprint = false;
-			accel = vec3(0);
-		}
-		else {
-			state = State::Walking;
-			direction = normalize(dir);
-			accel = direction * maxAccel * 4.0f;
-		}
+	if(dir == vec3(0)) {
+		state = State::Idle;
+		accel = vec3(0);
 	}
+	else {
+		state = State::Walking;
+		direction = normalize(dir);
+		accel = direction * maxAccel;
+	}
+}
 
-	else { // not god
-		float dirY = dir.y;
-		dir.y = 0;
-		if(dir == vec3(0)) {
-			state = State::Idle;
-			sprint = false;
-			accel = vec3(0);
-		}
-		else {
-			state = State::Walking;
-			direction = normalize(dir);
-			accel = direction * maxAccel;
-		}
-		if(dirY > 0 && onFloor) {
-			onFloor = false;
-			speed.y = jumpSpeed;
-		}
+void Entity::jump() {
+	if(onFloor) {
+		onFloor = false;
+		speed.y = jumpSpeed;
 	}
 }
 
@@ -65,7 +49,7 @@ void Entity::turn(vec2 rot) {
 void Entity::cameraToHead(Camera& camera) {
 	if(view == View::FIRST_PERSON) {
 		vec3 eyePos = headNode.model * vec4(0, 4, 0, 1);
-		vec3 eyeTarget = headNode.model * vec4(0, 4, 54, 1);
+		vec3 eyeTarget = headNode.model * vec4(0, 4, 50, 1);
 		camera.setLookAt(eyePos, eyeTarget);
 	}
 	else {
@@ -87,12 +71,12 @@ void Entity::update(Terrain& terrain, float dt) {
 	vec3 posOffset;
 	{
 		vec3 acc = accel;
-		if(!god) acc += vec3(0, -1, 0) * gravity; // gravity
+		acc += vec3(0, -1, 0) * gravity; // gravity
 
 		// disable friction in accel direction
 		vec2 dragXZ = vec2(speed.x, speed.z) * horizontalFriction;
 		float dragY = 0;
-		if (god)dragY = speed.y * verticalFriction;
+		dragY = speed.y * verticalFriction;
 		vec2 accXZ = vec2(acc.x, acc.z);
 		if(accXZ != vec2(0))
 			dragXZ -= normalize(accXZ) * max(dot(dragXZ, normalize(accXZ)), 0.f); // substract component in accel direction from drag
@@ -100,14 +84,6 @@ void Entity::update(Terrain& terrain, float dt) {
 		// update speed
 		speed = speed + acc * dt - vec3(dragXZ.x, dragY, dragXZ.y) * dt;
 		vec2 speedXZ = vec2(speed.x, speed.z);
-		if (god) {
-			maxSpeed = 10.89f * 3.0f;
-			if (sprint) maxSpeed = maxSpeed * 2.0f;
-		}
-		else {
-			maxSpeed = 4.317f;
-			if (sprint) maxSpeed = maxSpeed * 1.3f;
-		}
 		if(length(speedXZ) >= maxSpeed) {
 			speedXZ = normalize(speedXZ) * maxSpeed;
 			speed = vec3(speedXZ.x, speed.y, speedXZ.y);
@@ -137,7 +113,6 @@ void Entity::update(Terrain& terrain, float dt) {
 		// on ground
 		if(finalOffset.y > 0.001) {
 			onFloor = true;
-			god = false;
 		}
 
 		// cancel speed in collision direction

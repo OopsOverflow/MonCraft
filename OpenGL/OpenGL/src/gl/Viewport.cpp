@@ -173,7 +173,7 @@ void Viewport::on_window_event(SDL_WindowEvent const& e) {
 }
 
 bool Viewport::isDoubleSpace() {
-  static const int thresold = 500;
+  static const int thresold = 300;
 
   bool res = false;
 

@@ -54,6 +54,13 @@ public:
    */
   void pickBlock(Terrain& terrain);
 
+  void enableGodMode();
+  void disableGodMode();
+  void toggleGodMode();
+  bool getGodMode();
+
+  void setSprint(bool sprint);
+
 private:
   Node rootNode;
   Head head;
@@ -67,4 +74,7 @@ private:
 
   Raycast caster;
   BlockType currentBlock;
+
+  bool god;
+  bool sprint;
 };

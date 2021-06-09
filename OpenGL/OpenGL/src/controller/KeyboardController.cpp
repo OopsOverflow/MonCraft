@@ -88,14 +88,20 @@ void KeyboardController::pressedPause() {
     paused = true;
 }
 
-void KeyboardController::apply(Entity& character, Terrain& terrain) {
+void KeyboardController::apply(Character& character, Terrain& terrain) {
   character.view = view;
-  character.sprint = sprint;
+  character.setSprint(sprint);
   if (change) {
-      character.god = !character.god;
+      character.toggleGodMode();
       change = false;
   }
-  character.walk(direction);
+  if(character.getGodMode()) {
+    character.walk(direction);
+  }
+  else {
+    character.walk({direction.x, 0, direction.z});
+    if(direction.y > 0) character.jump();
+  }
 
   if(paused) {
     terrain.toggleGeneration();

@@ -9,10 +9,15 @@
 
 using namespace glm;
 
+const float defaultSpeed = 4.317;
+const float godMultiplier = 5;
+const float sprintMultiplier = 2;
+
 Character::Character(vec3 pos)
     : Entity(Hitbox(-vec3(.3f, .5f, .3f), vec3(.3f, 1.3f, .3f))),
       caster(100), // distance the player can place blocks
-      currentBlock(BlockType::Dirt)
+      currentBlock(BlockType::Dirt),
+      god(true), sprint(false)
 {
   node.loc = pos;
   rootNode.sca = vec3(1.85f / 32.f); // steve is 1.85 blocks high, 32 pixels high
@@ -28,11 +33,58 @@ Character::Character(vec3 pos)
   chest.node.addChild(&l_leg.node);
   chest.node.addChild(&r_leg.node);
   animState = 0;
+
+  god = !god;
+  if(!god) enableGodMode();
+  else disableGodMode();
 }
 
 Character::~Character() {}
 
 #include "debug/Debug.hpp"
+
+
+void Character::enableGodMode() {
+  if(god) return;
+  verticalFriction = 5.f;
+  gravity = 0;
+  maxSpeed = defaultSpeed * godMultiplier;
+  if(sprint) maxSpeed *= sprintMultiplier;
+  maxAccel = 40.f;
+  god = true;
+}
+
+void Character::disableGodMode() {
+  if(!god) return;
+  verticalFriction = 0.f;
+  gravity = 32.f;
+  maxSpeed = defaultSpeed;
+  if(sprint) maxSpeed *= sprintMultiplier;
+  maxAccel = 10.f;
+  god = false;
+}
+
+void Character::toggleGodMode() {
+  if(god) disableGodMode();
+  else enableGodMode();
+}
+
+bool Character::getGodMode() {
+  return god;
+}
+
+void Character::setSprint(bool sprint) {
+  if(this->sprint == sprint) return;
+  this->sprint = sprint;
+
+  if(sprint) {
+    maxSpeed *= sprintMultiplier;
+  }
+  else {
+    maxSpeed /= sprintMultiplier;
+  }
+}
+
 
 void Character::breakBlock(Terrain& terrain) {
   vec3 eyePos = headNode.model * vec4(0, 4, 0, 1);
