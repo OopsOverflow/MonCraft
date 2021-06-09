@@ -13,7 +13,7 @@ Member::Member(Mesh mesh)
 Member::~Member() {}
 
 void Member::draw() {
-  glm::mat4 modelMatrix = node.model * geometryModel;
+  mat4 modelMatrix = mat4(node.model) * geometryModel;
   glBindVertexArray(mesh.getVAO());
   glUniformMatrix4fv(MATRIX_MODEL, 1, GL_FALSE, glm::value_ptr(modelMatrix));
   glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_INT, nullptr);

@@ -125,7 +125,7 @@ void Character::update(Terrain& terrain, float dt) {
   // smooth head rot with constant speed
   {
     float speed = 5;
-    auto dist = headNode.rot - head.node.rot;
+    auto dist = vec3(headNode.rot - head.node.rot);
     if(dist != vec3(0)) {
       auto delta = normalize(dist) * speed * dt;
       if(any(greaterThan(abs(delta), abs(dist)))) {

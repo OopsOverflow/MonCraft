@@ -1,7 +1,7 @@
 #include "Entity.hpp"
 
 using namespace glm;
-static const mat4 I(1.f);
+static const highp_dmat4 I(1.0);
 
 Entity::Entity(Hitbox hitbox)
 : view(View::FIRST_PERSON), state(State::Idle),
@@ -36,11 +36,11 @@ void Entity::jump() {
 
 void Entity::turn(vec2 rot) {
 	headNode.rot.x += rot.x;
-	float maxRotX = radians(89.f);
+	auto maxRotX = radians(89.0);
 	headNode.rot.x = clamp(headNode.rot.x, -maxRotX, maxRotX);
 
-	float thresold = quarter_pi<float>();
-	float headDelta = clamp(headNode.rot.y + rot.y, -thresold, thresold) - headNode.rot.y;
+	auto thresold = quarter_pi<double>();
+	auto headDelta = clamp(headNode.rot.y + rot.y, -thresold, thresold) - headNode.rot.y;
 
 	headNode.rot.y += headDelta;
 	node.rot.y += rot.y - headDelta;
@@ -62,13 +62,10 @@ void Entity::cameraToHead(Camera& camera) {
 
 #include "../debug/Debug.hpp"
 
-vec3 normalizeOrZero(vec3 vec) {
-	return all(lessThan(abs(vec), vec3(0.0001f))) ? vec3(0) : normalize(vec);
-}
-
 void Entity::update(Terrain& terrain, float dt) {
 	// update forces
-	vec3 posOffset;
+	// highp_dvec3 posOffset;
+	highp_dvec3 posOffset;
 	{
 		vec3 acc = accel;
 		acc += vec3(0, -1, 0) * gravity; // gravity
@@ -98,16 +95,16 @@ void Entity::update(Terrain& terrain, float dt) {
 	// check collisions
 	{
 		// check collisions one block at a time (usually posOffset is < 1 so only 1 check)
-		vec3 newPos = node.loc;
+		auto newPos = node.loc;
 		float totalOffset = length(posOffset);
 		size_t steps = (size_t)ceil(totalOffset);
 		for (size_t i = 0; i < steps; i++) {
-			vec3 thisOffset = posOffset * 1.f / (float)steps;
+			vec3 thisOffset = posOffset * 1.0 / (double)steps;
 			newPos = hitbox.computeCollision(newPos, thisOffset, terrain);
 		}
 
 		// the final entity displacement for this frame.
-		vec3 finalOffset = newPos - (node.loc + posOffset);
+		highp_dvec3 finalOffset = newPos - (node.loc + posOffset);
 		node.loc = newPos;
 
 		// on ground
@@ -118,8 +115,8 @@ void Entity::update(Terrain& terrain, float dt) {
 		// cancel speed in collision direction
 		if(length(finalOffset) > 0.001) {
 			auto rotMatrix = rotate(I, -node.rot.y - headNode.rot.y, {0, 1, 0});
-			vec3 worldOffDir = normalize(vec3(rotMatrix * vec4(finalOffset, 1.f)));
-			if(finalOffset != vec3(0)) speed -= worldOffDir * dot(speed, worldOffDir); // substract component in collision direction from speed
+			vec3 worldOffDir = normalize(rotMatrix * highp_dvec4(finalOffset, 1.0));
+			speed -= worldOffDir * dot(speed, worldOffDir); // substract component in collision direction from speed
 		}
 	}
 

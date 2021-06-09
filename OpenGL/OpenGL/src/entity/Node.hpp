@@ -17,15 +17,15 @@ public:
   /**
    * read/write parameters of the node. Invalidates the model.
    */
-  glm::vec3 loc;
-  glm::vec3 rot;
-  glm::vec3 sca;
+  glm::highp_dvec3 loc;
+  glm::highp_dvec3 rot;
+  glm::highp_dvec3 sca;
 
   /**
    * The node model is computed when the root node calls update().
    * /!\ this is readonly
    */
-  glm::mat4 model;
+  glm::highp_dmat4 model;
 
   /**
    * A root node may call update() to compute its model and recursively all of
@@ -41,6 +41,6 @@ public:
   void addChild(Node* child);
 
 private:
-  void computeTransforms(glm::mat4 parentModel);
+  void computeTransforms(glm::highp_dmat4 parentModel);
   std::vector<Node*> children;
 };

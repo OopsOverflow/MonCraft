@@ -2,7 +2,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 using namespace glm;
 
-static const mat4 I(1.f);
+static const highp_dmat4 I(1.0);
 
 Node::Node()
   : loc(0), rot(0), sca(1), model(I)
@@ -19,7 +19,7 @@ void Node::addChild(Node* child) {
   children.push_back(child);
 }
 
-void Node::computeTransforms(mat4 parentModel) {
+void Node::computeTransforms(highp_dmat4 parentModel) {
   model = I;
   model = translate(model, loc);
   model = scale(model, sca);
