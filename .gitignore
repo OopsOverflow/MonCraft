@@ -8,3 +8,4 @@ OpenGL/Dependencies/glm/out
 compile_commands.json
 .cache
 .valgrind
+Documentation
