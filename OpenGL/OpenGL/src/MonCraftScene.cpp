@@ -59,6 +59,7 @@ void MonCraftScene::updateUniforms(float t) {
     auto sunDirViewSpace = camera.view * vec4(sunDir, 0.0);
 
     glUniform1f(shader->getUniformLocation("lightIntensity"), 1);
+    glUniform1f(shader->getUniformLocation("skyTime"), t * skyboxSpeed);
     glUniform3fv(shader->getUniformLocation("lightDirection"), 1, value_ptr(sunDirViewSpace));
     glUniform1f(fogShader->getUniformLocation("sunTime"), t);
     glUniform1f(fogShader->getUniformLocation("lightIntensity"), 1);

@@ -97,9 +97,14 @@ int main(int argc, char* argv[]) {
     btn_fog.onclick([&] { scene.fogEnabled = !scene.fogEnabled; });
     btn_fullscreen.onclick([&] { window.toggleFullscreen(); });
 
-    ui::Text text_pos(&scene, "", font_vt323);
-    text_pos.setAnchorY(ui::Anchor::END);
-    text_pos.setFontSize(.5f);
+    ui::Text text_posPlayer(&scene, "", font_vt323);
+    text_posPlayer.setAnchorY(ui::Anchor::END);
+    text_posPlayer.setFontSize(.5f);
+
+    ui::Text text_gameTime(&scene, "", font_vt323);
+    text_gameTime.setAnchorY(ui::Anchor::END);
+    text_gameTime.setPosition(ivec2(0, -40));
+    text_gameTime.setFontSize(.5f);
 
     // main loop
     for (float dt = 0; window.beginFrame(dt); window.endFrame()) {
@@ -113,7 +118,11 @@ int main(int argc, char* argv[]) {
 
         text.str(""); // "clears" the string stream
         text << "Player Pos : " << std::fixed << std::setprecision(3) << scene.character.getPosition();
-        text_pos.setText(text.str());
+        text_posPlayer.setText(text.str());
+
+        text.str(""); // "clears" the string stream
+        text << "GameTime : " << std::fixed << std::setprecision(3) << t;
+        text_gameTime.setText(text.str());
     }
 
     ResourceManager::free();

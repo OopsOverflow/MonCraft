@@ -13,6 +13,7 @@ smooth in mat3 TBN;
 
 uniform vec3 lightDirection;
 uniform float lightIntensity;
+uniform float skyTime;
 
 uniform sampler2D t_color;
 uniform sampler2D t_normal;
@@ -60,6 +61,8 @@ float linearizeDepth(float depth) { // https://learnopengl.com/Advanced-OpenGL/D
 
 void main() {
 
+  float sinus = 20000*sin(((skyTime+0.8f)*10000 * 2*3.1416/24000)-2.22)+10000;
+  float sunAmount = max(-7500,min(sinus,7500))/15000.0 +0.5;
   vec3 normalizedLightDirection = normalize(lightDirection);
 
   vec3 normal = normalize(TBN * (texture(t_normal ,normalCoords).rgb *2.0 -1.0));
@@ -88,9 +91,9 @@ void main() {
   }
 
   vec4 color = outputColor;
-  outputColor.xyz = color.xyz * .5;
-  outputColor.xyz += color.xyz * lightIntensity * lambertian * shadow *.5 ;
-  outputColor.xyz +=vec3(1.0f) * specular * shadow  * texture(t_normal ,normalCoords).a* 1.0;
+  outputColor.xyz = color.xyz * (.5+0.5*(1-sunAmount));
+  outputColor.xyz += color.xyz * lightIntensity * lambertian * shadow *(.5-0.5*(1-sunAmount)) ;
+  outputColor.xyz +=vec3(1.0f) * specular * shadow  * texture(t_normal ,normalCoords).a* 1.0 * sunAmount;
 
 
   float occl = .7;
@@ -106,6 +109,8 @@ void main() {
 //      break;
 //    }
 //  }
+
+    outputColor.rgb *= 0.2 + 0.8*sunAmount;
 
   if(outputColor.a < 0.1) {
     discard;
