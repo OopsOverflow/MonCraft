@@ -30,9 +30,7 @@ public:
 private:
     // biome gen tuning
     int size = 1000;               // generated texture size
-    int gridSize = 300;            // voronoi single cell size
-    float frequency = 0.01f;       // spatial displacement (distortion)
-    float displacement = 50.f;     // spatial displacement (distortion)
+    float cellSize = 150.f;         // voronoi single cell size
     float blendSmoothness = 0.4f;   // amount of smoothing to apply
     float biomeBlend = 40.f; // distance to smooth biomes borders
     float globalFrequency = .5f;   // adjust the frequencies overall (high values gives)

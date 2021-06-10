@@ -4,22 +4,27 @@
 using glm::ivec2;
 using glm::vec2;
 
-VoronoiNoise::VoronoiNoise(int seed, int gridSize, ivec2 offset)
+VoronoiNoise::VoronoiNoise(int seed, int size, float cellSize, ivec2 offset)
     : noise(ValueNoise(seed)),
-      gridSize(gridSize), fGridSize(gridSize),
-      grid(gridSize + 2)
+      size(size), cellSize(cellSize),
+      grid(ceil(size / cellSize) + 2)
 {
   grid.for_each([&](ivec2 ipos, vec2& val) {
     val = vec2(noise.sample2D(offset + ipos)) / vec2(UINT16_MAX);
   });
 }
 
+#include "debug/Debug.hpp"
+
 glm::vec2 VoronoiNoise::get(glm::ivec2 cell) const {
-    return (vec2(cell) + grid.at(cell + 1)) * fGridSize;
+    if(any(glm::greaterThanEqual(cell, grid.size))) {
+      std::cout << cell << grid.size << std::endl;
+    }
+    return (vec2(cell) + grid.at(cell + 1)) * cellSize;
 }
 
 glm::ivec2 VoronoiNoise::findCell(vec2 pos) const {
-  vec2 gridPos = pos / fGridSize;
+  vec2 gridPos = pos / cellSize;
   ivec2 centerCell = gridPos;
   ivec2 res = centerCell;
   float min_dist = 10.f; // bigger than possible

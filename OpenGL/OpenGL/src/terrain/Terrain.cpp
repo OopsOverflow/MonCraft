@@ -242,7 +242,7 @@ void Terrain::render(Camera const& camera) {
     pair.second->drawTransparent(viewDir);
   }
 
-  generator.biomeSampler.testtex.draw();
+  // generator.biomeSampler.testtex.draw();
 }
 
 Block* Terrain::getBlock(ivec3 pos) {
