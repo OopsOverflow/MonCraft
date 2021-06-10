@@ -136,9 +136,11 @@ GLuint ResourceManager::loadCubeMap(std::string const& name, std::vector<std::st
         if (rgbImg) {
             glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
                 0, GL_RGB, rgbImg->w, rgbImg->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid*)rgbImg->pixels);
+            SDL_FreeSurface(img);
             SDL_FreeSurface(rgbImg);
         }
         else {
+            SDL_FreeSurface(img);
             SDL_FreeSurface(rgbImg);
             throw std::runtime_error("Cubemap tex failed to load at path: " + faces[i]);
         }

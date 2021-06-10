@@ -52,7 +52,7 @@ Chunk::Chunk(ivec3 chunkPos, int chunkSize)
   : DataStore<Block::unique_ptr_t, 3>(glm::ivec3(chunkSize)),
     chunkPos(chunkPos),
     mesh(nullptr),
-    loaded(false), mustRecompute(false)
+    loaded(false), computed(false), mustRecompute(false)
 {
   // std::cout << "created Chunk " << chunkPos << std::endl;
 }

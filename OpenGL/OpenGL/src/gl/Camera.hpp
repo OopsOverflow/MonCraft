@@ -21,7 +21,7 @@ public:
    * Constructs a camera with a given size, lookat (position/center) and
    * projection type.
    */
-  Camera(unsigned int width, unsigned int height, const glm::vec3& position,
+  Camera(glm::ivec2 size, const glm::vec3& position,
       const glm::vec3& center, Projection proj = Projection::PROJECTION_PERSPECTIVE);
 
   /**
@@ -33,7 +33,7 @@ public:
   /**
    * Sets the camera width / height and updates itself accordingly.
    */
-  void setSize(unsigned int width, unsigned int height);
+  void setSize(glm::ivec2 size);
 
   /**
    * Switches smoothly between different projection types.
@@ -79,23 +79,23 @@ public:
   /**
    * Sets the vertical fov and updates itself accordingly.
    */
-  void setFovY(float fovY) { this->fovY = fovY; }
+  void setFovY(float fovY);
 
   /**
    * Gets the vertical fov.
    */
-  float getFovY() const { return fovY; }
+  float getFovY() const;
 
   /**
    * Gets the horizontal fov.
    */
-  float getFovX() const { return glm::degrees(2 * atan(tan(glm::radians(fovY) * 0.5) * screenWidth / screenHeight)); } // see https://en.wikipedia.org/wiki/Field_of_view_in_video_games#Field_of_view_calculations
+  float getFovX() const;
 
   /**
    * Gets the camera dimensions.
    * Copies the camera dimensions in width and height.
    */
-  void getSize(unsigned int &width, unsigned int &height) const;
+  glm::ivec2 getSize() const;
 
   /**
    * Gets the projection type.
@@ -121,8 +121,7 @@ public:
 
 protected:
   float fovY;
-  unsigned int screenWidth;
-  unsigned int screenHeight;
+  glm::ivec2 size;
   Projection projType;
 
 private:

@@ -107,7 +107,6 @@ void SkyBox::calcBlendFactor(float skytime) {
     }
 
     glUniform1f(skyBoxShader->getUniformLocation("blendFactor"), blendFactor);
-
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_CUBE_MAP, texture1);
     glActiveTexture(GL_TEXTURE1);
@@ -115,14 +114,15 @@ void SkyBox::calcBlendFactor(float skytime) {
 
 }
 
-void SkyBox::render(Camera& camera, float rotation)
+void SkyBox::render(Camera& camera, float time)
 {
     glDisable(GL_CULL_FACE);
     glDepthFunc(GL_LEQUAL);
     skyBoxShader->activate();
     glBindVertexArray(buffer);
     glm::mat4 view = glm::mat4(glm::mat3(camera.view));
-    view = glm::rotate(view, rotation, glm::vec3(0, 1, 0));
+    time += 0.8f; // 8:00 (morning)
+    view = glm::rotate(view, time, glm::vec3(0, 1, 0));
     glUniformMatrix4fv(MATRIX_VIEW, 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(MATRIX_PROJECTION, 1, GL_FALSE, glm::value_ptr(camera.projection));
 
@@ -131,11 +131,11 @@ void SkyBox::render(Camera& camera, float rotation)
     glUniform1i(skyBoxShader->getUniformLocation("skyboxN"), 1);
 
     // Sampling
-    calcBlendFactor(rotation);
+    calcBlendFactor(time);
 
     glDrawArrays(GL_TRIANGLES, 0, 36);
     glBindVertexArray(0);
     glDepthFunc(GL_LESS);
     glEnable(GL_CULL_FACE);
-    
+
 }

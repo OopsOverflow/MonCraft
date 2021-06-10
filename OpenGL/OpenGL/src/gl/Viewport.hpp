@@ -2,9 +2,9 @@
 
 #include <string>
 
-#include "Camera.hpp"
-#include "../controller/MouseController.hpp"
-#include "../controller/KeyboardController.hpp"
+#include "controller/MouseController.hpp"
+#include "controller/KeyboardController.hpp"
+#include "ui/Root.hpp"
 
 #include <SDL2/SDL.h>
 
@@ -23,7 +23,7 @@ public:
   /**
    * Creates the SDL window with the given dimensions.
    */
-  Viewport(size_t width, size_t height);
+  Viewport(glm::ivec2 size);
   ~Viewport();
 
   static const int framerate; // fps in seconds
@@ -38,15 +38,16 @@ public:
   bool beginFrame(float& dt);
   void endFrame();
 
-  Camera camera;
+  void createRoot();
+  ui::Root* getRoot();
+  void captureMouse();
+  void toggleVSync();
+  void toggleFullscreen();
+
+  glm::ivec2 size;
+
   MouseController mouseController;
   KeyboardController keyboardController;
-
-  unsigned width;
-  unsigned height;
-
-  bool fog() { return enableFog; }
-
 
 private:
   void on_event(SDL_Event const& e);
@@ -56,16 +57,20 @@ private:
   void on_mousedown(SDL_MouseButtonEvent const& e);
   void on_mouseup(SDL_MouseButtonEvent const& e);
 
+  bool isDoubleSpace();
+
   SDL_Window* window;
   SDL_GLContext context;
 
   uint32_t lastSpacePress;
+  bool spaceIsPressed;
+
   uint32_t timeBegin;
   uint32_t lastTime;
 
   bool mouseCaptured;
   bool vsync;
+  bool fullscreen;
 
-  bool enableFog;
-
+  std::unique_ptr<ui::Root> root;
 };

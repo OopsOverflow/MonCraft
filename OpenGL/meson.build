@@ -6,6 +6,7 @@ endif
 
 srcs = files(
   'OpenGL/src/Application.cpp',
+  'OpenGL/src/MonCraftScene.cpp',
 
   'OpenGL/src/audio/Music.cpp',
   'OpenGL/src/debug/Debug.cpp',
@@ -54,6 +55,11 @@ srcs = files(
   'OpenGL/src/ui/Root.cpp',
   'OpenGL/src/ui/Pane.cpp',
   'OpenGL/src/ui/Text.cpp',
+  'OpenGL/src/ui/Button.cpp',
+  'OpenGL/src/ui/Event.cpp',
+  'OpenGL/src/ui/style/Style.cpp',
+  'OpenGL/src/ui/style/Type.cpp',
+  'OpenGL/src/ui/style/Specification.cpp',
 )
 
 deps = [

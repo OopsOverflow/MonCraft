@@ -4,16 +4,90 @@
 using namespace ui;
 using namespace glm;
 
+MAKE_TYPE(Anchor);
+const spec_t Component::SIZE     = MAKE_SPEC("Component::size", ivec2);
+const spec_t Component::POSITION = MAKE_SPEC("Component::position", ivec2);
+const spec_t Component::PADDING  = MAKE_SPEC("Component::padding", ivec2);
+const spec_t Component::ANCHOR_X = MAKE_SPEC("Component::anchorX", Anchor);
+const spec_t Component::ANCHOR_Y = MAKE_SPEC("Component::anchorY", Anchor);
+
 Component::Component(Component* parent)
   : drawQueued(true), recomputeQueued(true),
-    parent(parent), position(0.f),
-    anchorX(Anchor::BEGIN), anchorY(Anchor::BEGIN)
+    parent(parent),
+    size(0), absoluteSize(0), computedSize(0), computedOrigin(0),
+    position(0), padding(0),
+    anchorX(Anchor::BEGIN), anchorY(Anchor::BEGIN),
+    hover(false), pressed(false)
 {
   if(parent) parent->addChild(this);
+
+  Component::getDefaultStyle()->apply(this);
 }
 
 Component::~Component() {
   if(parent) parent->removeChild(this);
+}
+
+void Component::setStyle(prop_t const& prop) {
+  if(prop.spec == Component::SIZE) {
+    setSize(prop.value->get<ivec2>());
+  }
+  else if(prop.spec == Component::POSITION) {
+    setPosition(prop.value->get<ivec2>());
+  }
+  else if(prop.spec == Component::PADDING) {
+    setPadding(prop.value->get<ivec2>());
+  }
+  else if(prop.spec == Component::ANCHOR_X) {
+    setAnchorX(prop.value->get<Anchor>());
+  }
+  else if(prop.spec == Component::ANCHOR_Y) {
+    setAnchorY(prop.value->get<Anchor>());
+  }
+  else {
+    std::cout << "[WARN] unsupported style property: '"
+              << Specification::get(prop.spec).name
+              << "'"
+              << std::endl;
+  }
+}
+
+prop_t Component::getStyle(spec_t spec) const {
+  if(spec == Component::SIZE) {
+    return make_property(spec, getSize());
+  }
+  else if(spec == Component::POSITION) {
+    return make_property(spec, getPosition());
+  }
+  else if(spec == Component::PADDING) {
+    return make_property(spec, getPadding());
+  }
+  else if(spec == Component::ANCHOR_X) {
+    return make_property(spec, getAnchorX());
+  }
+  else if(spec == Component::ANCHOR_Y) {
+    return make_property(spec, getAnchorY());
+  }
+  else {
+    throw StyleError(
+      "unsupported style property: " +
+      Specification::get(spec).name +
+      "'"
+    );
+  }
+}
+
+style_const_t Component::getDefaultStyle() const {
+  static style_const_t style = Style::make_style(
+    nullptr, // parent
+    make_property(Component::SIZE, ivec2(0.f)),
+    make_property(Component::POSITION, ivec2(0.f)),
+    make_property(Component::PADDING, ivec2(0.f)),
+    make_property(Component::ANCHOR_X, Anchor::BEGIN),
+    make_property(Component::ANCHOR_Y, Anchor::BEGIN)
+  );
+
+  return style;
 }
 
 void Component::draw() {
@@ -35,7 +109,7 @@ void Component::queueRecompute(bool propagate) {
 
 void Component::addChild(Component* child) {
   children.push_back(child);
-  queueRecompute();
+  queueRecompute(true);
   if(parent) parent->queueRecompute();
 }
 
@@ -62,19 +136,8 @@ ivec2 Component::getAbsoluteOrigin() const {
   return parent->getAbsoluteOrigin() + parent->padding + computedOrigin;
 }
 
-#include "debug/Debug.hpp"
-
 ivec2 Component::getAbsoluteSize() const {
   return computedSize;
-}
-
-void Component::setSize(glm::ivec2 size) {
-  this->size = size;
-  queueRecompute(true); // needs to recompute children (size changed)
-}
-
-ivec2 Component::getSize() const {
-  return size;
 }
 
 void Component::recompute() {
@@ -112,7 +175,99 @@ void Component::computeSize() {
   }
 }
 
+bool Component::overlaps(ivec2 point) const {
+  ivec2 p1 = getAbsoluteOrigin();
+  ivec2 p2 = p1 + getAbsoluteSize();
+  return
+    p1.x <= point.x && point.x <= p2.x &&
+    p1.y <= point.y && point.y <= p2.y;
+}
+
+// COMBAK: not sure if this works well.
+bool Component::bubbleEvent(Event const& evt) {
+  if(!overlaps(evt.getPosition())) {
+    if(hover) {
+      hover = false;
+      for(auto child : children)
+        child->bubbleEvent(evt);
+      onMouseOut(evt.getPosition());
+    }
+    return false;
+  }
+
+  else {
+    for(auto it = children.rbegin(); it != children.rend(); it++) {
+      Component* child = *it;
+      if(child->bubbleEvent(evt)) return true;
+    }
+    filterEvent(evt);
+    return true;
+  }
+}
+
+void Component::filterEvent(Event const& evt) {
+  bool stopPropagation = handleEvent(evt);
+  if(parent && !stopPropagation) {
+    parent->filterEvent(evt);
+  }
+}
+
+bool Component::isHover() {
+  return hover;
+}
+
+bool Component::isPressed() {
+  return pressed;
+}
+
+bool Component::handleEvent(Event const& evt) {
+  ivec2 pos = evt.getPosition();
+  Event::Type type = evt.getType();
+  bool res = false;
+
+  if(!hover) onMouseIn(pos);
+
+  // state is changed after event handling
+  hover = true;
+
+  switch(type) {
+    case Event::Type::MOVE:
+      res = onMouseMove(pos);
+      break;
+    case Event::Type::PRESS:
+      res = onMousePressed(pos);
+      break;
+    case Event::Type::RELEASE:
+      res = onMouseReleased(pos);
+      break;
+  }
+
+  // state is changed after event handling
+  if(type == Event::Type::PRESS) pressed = true;
+  else if(type == Event::Type::RELEASE) pressed = false;
+
+  return res;
+}
+
+void Component::handleEvents(std::vector<Event> const& events) {
+  for(auto const& evt : events)
+    bubbleEvent(evt);
+}
+
+// style setters / getters below
+
+void Component::setSize(glm::ivec2 size) {
+  if(size == this->size) return;
+  this->size = size;
+  queueRecompute(true); // needs to recompute children (size changed)
+}
+
+ivec2 Component::getSize() const {
+  return size;
+}
+
 void Component::setPosition(glm::ivec2 position) {
+  if(position == this->position) return;
   this->position = position;
   queueRecompute(false); // no need to recompute children
 }
@@ -122,6 +277,7 @@ glm::ivec2 Component::getPosition() const {
 }
 
 void Component::setPadding(glm::ivec2 padding) {
+  if(padding == this->padding) return;
   this->padding = padding;
   queueRecompute(true);
 }
@@ -131,6 +287,7 @@ glm::ivec2 Component::getPadding() const {
 }
 
 void Component::setAnchorX(Anchor anchor) {
+  if(anchor == this->anchorX) return;
   this->anchorX = anchor;
   queueRecompute(false); // no need to recompute children
 }
@@ -140,6 +297,7 @@ Anchor Component::getAnchorX() const {
 }
 
 void Component::setAnchorY(Anchor anchor) {
+  if(anchor == this->anchorY) return;
   this->anchorY = anchor;
   queueRecompute(false); // no need to recompute children
 }
@@ -147,3 +305,11 @@ void Component::setAnchorY(Anchor anchor) {
 Anchor Component::getAnchorY() const {
   return anchorY;
 }
+
+// default event handlers
+
+void Component::onMouseIn(glm::ivec2 pos) { }
+void Component::onMouseOut(glm::ivec2 pos) { }
+bool Component::onMouseMove(glm::ivec2 pos) { return false; }
+bool Component::onMousePressed(glm::ivec2 pos) { return false; }
+bool Component::onMouseReleased(glm::ivec2 pos) { return false; }

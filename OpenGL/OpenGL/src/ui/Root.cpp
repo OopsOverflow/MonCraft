@@ -18,6 +18,15 @@ Root::Root(ivec2 size)
   };
 }
 
+void Root::addEvent(Event evt) {
+  events.push_back(evt);
+}
+
+void Root::update() {
+  handleEvents(events);
+  events = {};
+}
+
 void Root::render() {
   auto size = getAbsoluteSize();
   auto proj = glm::ortho(0.0f, (float)size.x, 0.0f, (float)size.y);

@@ -21,26 +21,23 @@ extern "C" {
 }
 #endif
 
-Viewport::Viewport(size_t width, size_t height)
-    : camera(width, height, {0, 32, 10}, {0, 32, 0}),
-      width(width),
-      height(height),
-      window(nullptr),
-      context(nullptr),
-      lastSpacePress(0), timeBegin(0), lastTime(0),
+Viewport::Viewport(glm::ivec2 size)
+  :   size(size),
+      window(nullptr), context(nullptr),
+      lastSpacePress(0), spaceIsPressed(false),
+      timeBegin(0), lastTime(0),
       mouseCaptured(false), vsync(true),
-      enableFog(false)
+      root(nullptr)
 {
-
   //Initialize SDL2
-  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) < 0) {
+  if (SDL_Init(SDL_INIT_VIDEO) < 0) {
       throw std::runtime_error(std::string("SDL init failed: ") + SDL_GetError());
   }
 
   //Create a Window
   window = SDL_CreateWindow("MonCraft",
       SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-      width, height,
+      size.x, size.y,
       SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
 
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -59,8 +56,10 @@ Viewport::Viewport(size_t width, size_t height)
   std::cout << "Vendor  :" << glGetString(GL_VENDOR) << std::endl;
   std::cout << "Renderer:" << glGetString(GL_RENDERER) << std::endl;
   std::cout << "---------" << std::endl;
+}
 
-
+void Viewport::createRoot() {
+  root = std::make_unique<ui::Root>(size);
 }
 
 Viewport::~Viewport() {
@@ -69,6 +68,31 @@ Viewport::~Viewport() {
         SDL_GL_DeleteContext(context);
     if (window)
         SDL_DestroyWindow(window);
+    SDL_Quit();
+}
+
+ui::Root* Viewport::getRoot() {
+  return root.get();
+}
+
+void Viewport::captureMouse() {
+  SDL_SetRelativeMouseMode(SDL_TRUE);
+  mouseCaptured = true;
+  int x, y;
+  SDL_GetMouseState(&x, &y);
+  mouseController.rotateStart(x, y);
+}
+
+void Viewport::toggleVSync() {
+  vsync = !vsync;
+  if(vsync) SDL_GL_SetSwapInterval(1);
+  else SDL_GL_SetSwapInterval(0);
+}
+
+void Viewport::toggleFullscreen() {
+  fullscreen = !fullscreen;
+  if(fullscreen) SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+  else SDL_SetWindowFullscreen(window, 0);
 }
 
 void Viewport::on_event(SDL_Event const& e) {
@@ -83,7 +107,12 @@ void Viewport::on_event(SDL_Event const& e) {
     on_keyup(e.key.keysym.sym);
     break;
   case SDL_MOUSEMOTION:
-    mouseController.motionRel(e.motion.xrel, e.motion.yrel);
+    if(mouseCaptured) {
+      mouseController.motionRel(e.motion.xrel, e.motion.yrel);
+    }
+    else {
+      root->addEvent(Event(Event::Type::MOVE, {e.motion.x, size.y - e.motion.y}));
+    }
     break;
   case SDL_MOUSEBUTTONDOWN:
     on_mousedown(e.button);
@@ -118,6 +147,9 @@ bool Viewport::beginFrame(float& dt) {
 }
 
 void Viewport::endFrame() {
+  root->update();
+  root->render();
+
   //Display on screen (swap the buffer on screen and the buffer you are drawing on)
   SDL_GL_SwapWindow(window);
 
@@ -125,23 +157,34 @@ void Viewport::endFrame() {
   uint32_t timeEnd = SDL_GetTicks();
   lastTime = timeBegin;
 
-  if(!vsync) std::cout << "fps: " << 1000.f / (timeEnd - timeBegin) << std::endl;
-  if (timeEnd - timeBegin < timePerFrame) {
-    if(vsync) SDL_Delay(timePerFrame - (timeEnd - timeBegin));
-  }
-  else if(timeEnd - timeBegin > 2 * timePerFrame) {
-    std::cout << "can't keep up ! " << 1000.f / (timeEnd - timeBegin) << "fps" << std::endl;
+  if (vsync && timeEnd - timeBegin < timePerFrame) {
+    SDL_Delay(timePerFrame - (timeEnd - timeBegin));
   }
 }
 
 void Viewport::on_window_event(SDL_WindowEvent const& e) {
   switch (e.event) {
   case SDL_WINDOWEVENT_SIZE_CHANGED:
-    width = e.data1;
-    height = e.data2;
-    camera.setSize(width, height);
-    break;
+      size.x = e.data1;
+      size.y = e.data2;
+      root->setSize(size);
+      break;
   }
+}
+
+bool Viewport::isDoubleSpace() {
+  static const int thresold = 300;
+
+  bool res = false;
+
+  if(!spaceIsPressed) {
+    uint32_t time = SDL_GetTicks();
+    res = time - lastSpacePress < thresold;
+    lastSpacePress = time;
+    spaceIsPressed = true;
+  }
+
+  return res;
 }
 
 void Viewport::on_keydown(SDL_Keycode k) {
@@ -159,16 +202,8 @@ void Viewport::on_keydown(SDL_Keycode k) {
     keyboardController.pressedLeft();
     break;
   case SDLK_SPACE:
-  {
-      uint32_t currentTime = SDL_GetTicks();
-      if (currentTime - lastSpacePress > 100 && currentTime - lastSpacePress < 250) {
-          keyboardController.changedMod();
-      }
-      else {
-          keyboardController.pressedUp();
-      }
-      lastSpacePress = currentTime; }
-
+    if(isDoubleSpace()) keyboardController.changedMod();
+    else keyboardController.pressedUp();
     break;
   case SDLK_LSHIFT:
     keyboardController.pressedDown();
@@ -190,12 +225,7 @@ void Viewport::on_keydown(SDL_Keycode k) {
       keyboardController.pressedPause();
       break;
   case SDLK_f:
-    vsync = !vsync;
-      if(vsync) SDL_GL_SetSwapInterval(1);
-      else SDL_GL_SetSwapInterval(0);
-      break;
-  case SDLK_h:
-      enableFog = !enableFog;
+      toggleVSync();
       break;
   }
 }
@@ -216,13 +246,14 @@ void Viewport::on_keyup(SDL_Keycode k) {
     break;
   case SDLK_SPACE:
     keyboardController.releasedUp();
+    spaceIsPressed = false;
     break;
   case SDLK_LSHIFT:
     keyboardController.releasedDown();
     break;
   case SDLK_LCTRL:
-      keyboardController.releasedControl();
-      break;
+    keyboardController.releasedControl();
+    break;
   }
 }
 
@@ -233,9 +264,7 @@ void Viewport::on_mousedown(SDL_MouseButtonEvent const& e) {
       mouseController.triggerAction(MouseController::Action::DESTROY);
     }
     else {
-      SDL_SetRelativeMouseMode(SDL_TRUE);
-      mouseController.rotateStart(e.x, e.y);
-      mouseCaptured = true;
+      root->addEvent(Event(Event::Type::PRESS, {e.x, size.y - e.y}));
     }
     break;
   case SDL_BUTTON_RIGHT:
@@ -256,7 +285,9 @@ void Viewport::on_mousedown(SDL_MouseButtonEvent const& e) {
 void Viewport::on_mouseup(SDL_MouseButtonEvent const& e) {
   switch (e.button) {
   case SDL_BUTTON_LEFT:
-      // mouseController.rotateEnd(e.x, e.y);
+      if(!mouseCaptured) {
+        root->addEvent(Event(Event::Type::RELEASE, {e.x, size.y - e.y}));
+      }
     break;
   default:
     break;

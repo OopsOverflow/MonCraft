@@ -36,6 +36,8 @@ public:
 	 */
 	void walk(glm::vec3 direction);
 
+	void jump();
+
 	/**
 	 * Turns the entity's view direction by a specified amount in global x/y axes.
 	 */
@@ -57,13 +59,12 @@ public:
 	 */
 	virtual void update(Terrain& terrain, float dt);
 
+	glm::vec3 getPosition() const;
+
 	View view;
 	State state;
-	bool god;
-	bool sprint;
 
 protected:
-
 	float maxSpeed;
 	float maxAccel;
 	float verticalFriction;

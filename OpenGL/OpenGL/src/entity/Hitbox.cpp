@@ -3,14 +3,14 @@
 
 using namespace glm;
 
-Hitbox::Hitbox(glm::vec3 c1, glm::vec3 c2)
+Hitbox::Hitbox(glm::highp_dvec3 c1, glm::highp_dvec3 c2)
  : c1(c1), c2(c2)
 {}
 
 
-glm::vec3 Hitbox::computeCollision(glm::vec3 pos, vec3 displ, Terrain& terrain) {
+highp_dvec3 Hitbox::computeCollision(highp_dvec3 pos, highp_dvec3 displ, Terrain& terrain) {
 
-  float thresold = 0.0001f; // histeresis
+  double thresold = 0.0001; // histeresis
 
   auto isSolid = [&](ivec3 ipos) {
     Block* block = terrain.getBlock(ipos);
@@ -22,17 +22,17 @@ glm::vec3 Hitbox::computeCollision(glm::vec3 pos, vec3 displ, Terrain& terrain) 
 
   auto testComponent = [&](int c) {
 
-    vec3 p1 = pos + c1;
-    vec3 p2 = pos + c2;
+    highp_dvec3 p1 = pos + c1;
+    highp_dvec3 p2 = pos + c2;
 
-    ivec3 oldStart = floor(p1 + .5f);
-    ivec3 oldEnd = floor(p2 + .5f);
+    ivec3 oldStart = floor(p1 + .5);
+    ivec3 oldEnd = floor(p2 + .5);
 
     p1[c] += displ[c];
     p2[c] += displ[c];
 
-    ivec3 start = floor(p1 + .5f);
-    ivec3 end = floor(p2 + .5f);
+    ivec3 start = floor(p1 + .5);
+    ivec3 end = floor(p2 + .5);
 
     if(start[c] < oldStart[c] || end[c] > oldEnd[c]) {
 
@@ -68,9 +68,9 @@ glm::vec3 Hitbox::computeCollision(glm::vec3 pos, vec3 displ, Terrain& terrain) 
   return pos;
 }
 
-bool Hitbox::collides(vec3 pos, ivec3 blockPos) {
-  ivec3 min = floor(pos + c1 + .5f);
-  ivec3 max = floor(pos + c2 + .5f);
+bool Hitbox::collides(highp_dvec3 pos, ivec3 blockPos) {
+  ivec3 min = floor(pos + c1 + .5);
+  ivec3 max = floor(pos + c2 + .5);
 
   return all(greaterThanEqual(blockPos, min)) && all(lessThanEqual(blockPos, max));
 }
