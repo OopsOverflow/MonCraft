@@ -29,7 +29,7 @@ Viewport::Viewport(size_t width, size_t height)
       context(nullptr),
       lastSpacePress(0), timeBegin(0), lastTime(0),
       mouseCaptured(false), vsync(true),
-      enableFog(0)
+      enableFog(false)
 {
 
   //Initialize SDL2
@@ -195,7 +195,7 @@ void Viewport::on_keydown(SDL_Keycode k) {
       else SDL_GL_SetSwapInterval(0);
       break;
   case SDLK_h:
-      enableFog = 1 - enableFog;
+      enableFog = !enableFog;
       break;
   }
 }

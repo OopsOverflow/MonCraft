@@ -25,13 +25,17 @@ Why Buy Minecraft When You Can Code it Yourself? 💹
 ***
 
 ## Compiling
-***Supports Windows and Linux. (Should work on mac but not tested)***
+***Supports Windows and Linux. (Should work on MacOS but not tested)***
 ### Dependencies
  1. SDL2
  2. SFML
  3. GLEW
  4. GLM
 
+****
+
+## Contribute
+  ✔ Please do refer to [```CONTRIBUTING.md```](https://github.com/OopsOverflow/MonCraft/blob/main/CONTRIBUTING.md) file.
 ****
 
 ### World Interactions
@@ -66,7 +70,7 @@ MonCraft supports optimizations on both AMD and NVIDIA cards
 
 ***
 ### Frsutrum Culling
-Talk about it here, how it works
+
 ***
 ### Shadow Engine 🌑
 MonCraft has a fully fledged shadow engine that makes the terrain look more beautiful and crisp.

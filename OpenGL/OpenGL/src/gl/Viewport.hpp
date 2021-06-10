@@ -45,7 +45,8 @@ public:
   unsigned width;
   unsigned height;
 
-  bool enableFog;
+  bool fog() { return enableFog; }
+
 
 private:
   void on_event(SDL_Event const& e);
@@ -64,5 +65,7 @@ private:
 
   bool mouseCaptured;
   bool vsync;
+
+  bool enableFog;
 
 };

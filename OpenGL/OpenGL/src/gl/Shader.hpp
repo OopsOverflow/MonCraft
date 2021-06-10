@@ -10,17 +10,28 @@
 #include <string>
 
 enum ShaderLocation {
+	// vertex attributes
 	VERTEX_POSITION = 0,
 	VERTEX_NORMAL = 1,
 	VERTEX_TEXTURE = 2,
 	VERTEX_OCCLUSION = 3,
 	VERTEX_NORMALTEXTURE = 4,
+
+	// uniform matrices
 	MATRIX_MODEL = 0,
 	MATRIX_VIEW = 1,
 	MATRIX_PROJECTION = 2,
 	MATRIX_NORMAL = 3,
 	MATRIX_SHADOWS = 4,
 
+	// texture sampler uniforms
+	TEXTURE_COLOR = 0,
+	TEXTURE_NORMAL = 1,
+	TEXTURE_SHADOW0 = 2,
+	TEXTURE_SHADOW1 = 3,
+	TEXTURE_SHADOW2 = 4,
+
+	// other uniforms
 	CAMERA_CENTER = -1,
 	SUN_TIME = -1
 
@@ -52,6 +63,11 @@ public:
 	 * shader compiler.
 	 */
   GLint getUniformLocation(const std::string &location) const;
+
+	/**
+	 * TODO doc
+	 */
+  void bindTexture(ShaderLocation textureLocation, GLuint texture) const;
 
 	/**
 	 * Gets the shader currently active.

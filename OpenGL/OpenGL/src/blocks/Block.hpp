@@ -70,6 +70,11 @@ public:
     virtual bool isTransparent() const { return false; }
 
     /**
+    * Water block have differents physics and display
+    */
+    virtual bool isWater() const { return false; }
+
+    /**
      * Gets the block geometry generator.
      */
     virtual BlockGeometry* getGeometry() const { return DefaultBlockGeometry::get(); }
