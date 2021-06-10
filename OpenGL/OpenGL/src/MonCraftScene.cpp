@@ -14,7 +14,7 @@ MonCraftScene::MonCraftScene(Viewport* vp)
       character({ 0.0f, 40.0f, 0.0f }),
 
       fogEnabled(false),
-      sunSpeed(0.005f),
+      sunSpeed(0.005f), skyboxSpeed(0.005f),
       captured(false)
 {
     // load resources
@@ -72,8 +72,8 @@ void MonCraftScene::updateUniforms(float t) {
         GLint underWater = shader->getUniformLocation("underWater");
         glUniform1i(underWater, isUnderWater);
 
-        sky.skyBoxShader.activate();
-        underWater = sky.skyBoxShader.getUniformLocation("underWater");
+        sky.skyBoxShader->activate();
+        underWater = sky.skyBoxShader->getUniformLocation("underWater");
         glUniform1i(underWater, isUnderWater);
 
         shader->activate();
@@ -93,8 +93,8 @@ void MonCraftScene::drawMiddleDot() {
     glDisable(GL_SCISSOR_TEST);
 }
 
-void MonCraftScene::drawSkybox() {
-    sky.render(camera);
+void MonCraftScene::drawSkybox(float t) {
+    sky.render(camera, t * skyboxSpeed);
     shader->activate();
     shadows.activate();
     camera.activate();
@@ -140,7 +140,7 @@ void MonCraftScene::drawFrame(float t, float dt) {
     updateUniforms(t);
 
     // draw skybox
-    drawSkybox();
+    drawSkybox(t);
 
     // draw the terrain
     drawTerrain();

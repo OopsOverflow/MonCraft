@@ -2,7 +2,6 @@
 #include "blocks/Debug_Block.hpp"
 #include "blocks/Air_Block.hpp"
 #include "blocks/Dirt_Block.hpp"
-#include "blocks/Leaf_Block.hpp"
 #include "blocks/Tallgrass_Block.hpp"
 #include "blocks/Water_Block.hpp"
 #include "gl/ResourceManager.hpp"

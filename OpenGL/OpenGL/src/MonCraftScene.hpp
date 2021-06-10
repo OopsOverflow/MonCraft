@@ -23,7 +23,7 @@ private:
   void updateShadowMaps();
   void updateUniforms(float t);
   void drawMiddleDot();
-  void drawSkybox();
+  void drawSkybox(float t);
   void drawTerrain();
   void drawCharacter();
 
@@ -55,6 +55,7 @@ public:
   // other parameters
   bool fogEnabled;
   const float sunSpeed;
+  const float skyboxSpeed;
   glm::vec3 sunDir;
   bool captured;
 };

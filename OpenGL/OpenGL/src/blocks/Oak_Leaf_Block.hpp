@@ -2,10 +2,10 @@
 
 #include "Block.hpp"
 
-class Leaf_Block : public Block {
+class Oak_Leaf_Block : public Block {
 public:
-    static Leaf_Block* get() {
-      static Leaf_Block inst;
+    static Oak_Leaf_Block* get() {
+      static Oak_Leaf_Block inst;
       return &inst;
     }
 
@@ -16,5 +16,5 @@ public:
     bool isTransparent() const override { return true; }
 
 private:
-    Leaf_Block() : Block(BlockType::Leaf) {}
+    Oak_Leaf_Block() : Block(BlockType::Oak_Leaf) {}
 };

@@ -4,106 +4,45 @@
 using glm::ivec2;
 using glm::vec2;
 
-VoronoiNoise::VoronoiNoise(int seed, int gridSize)
+VoronoiNoise::VoronoiNoise(int seed, int size, float cellSize, ivec2 offset)
     : noise(ValueNoise(seed)),
-      gridSize(gridSize) {}
-
-// ivec2 VoronoiNoise::sample(ivec2 pos) {
-//   ivec2 ipos = floor(vec2(pos / gridSize));
-//   ivec2 res = ipos;
-//
-//   float min_dist = 10 * gridSize; // bigger than possible
-//
-//   for (int di = -1; di <= 1; di++)
-//     for (int dj = -1; dj <= 1; dj++) {
-//       ivec2 ipos2 = ipos + ivec2(di, dj);
-//       vec2 rpos2 = vec2(ipos2) + vec2(noise.sample2D(ipos2)) / vec2(UINT16_MAX);
-//       ivec2 pos2 = rpos2 * vec2(gridSize);
-//       float dist = glm::length(vec2(pos2 - pos));
-//
-//       if (dist < min_dist) {
-//       	min_dist = dist;
-//       	res = ipos2;
-//       }
-//     }
-//
-//   return res;
-// }
-
-
-void VoronoiNoise::generate(ivec2 pos, Grid<glm::vec2>& map) const {
-  float fGridSize = (float)gridSize;
-  ivec2 istart = floor(vec2(pos) / fGridSize);
-  istart -= 1;
-  ivec2 iend = ceil(vec2(pos + map.size) / fGridSize);
-  iend += 1;
-  ivec2 isize = iend - istart;
-  ivec2 offset = pos % gridSize;
-
-  Grid<glm::vec2> grid(isize);
+      size(size), cellSize(cellSize),
+      grid(ceil(size / cellSize) + 2)
+{
   grid.for_each([&](ivec2 ipos, vec2& val) {
-    val = vec2(noise.sample2D(istart + ipos)) / vec2(UINT16_MAX);
-  });
-
-  map.for_each_parallel([&](vec2 pos, vec2& val) {
-    pos += offset;
-    ivec2 ipos = floor(pos / fGridSize);
-    ivec2 res = ipos;
-    float min_dist = 10.f * gridSize; // bigger than possible
-
-    ivec2 dpos{};
-    for (dpos.x = -1; dpos.x <= 1; dpos.x++) {
-      for (dpos.y = -1; dpos.y <= 1; dpos.y++) {
-
-        ivec2 ipos2 = ipos + dpos;
-        vec2 rpos2 = vec2(ipos2) + grid.at(ipos2 + 1);
-        vec2 pos2 = rpos2 * fGridSize;
-        float dist = distance(pos2, pos);
-
-        if (dist < min_dist) {
-          min_dist = dist;
-          res = ipos2;
-        }
-      }
-    }
-
-    val = res;
+    val = vec2(noise.sample2D(offset + ipos)) / vec2(UINT16_MAX);
   });
 }
 
 #include "debug/Debug.hpp"
 
-void VoronoiNoise::generateWeighted(ivec2 pos, Grid<weightedSample_t>& map) const {
-  float fGridSize = (float)gridSize;
-  ivec2 istart = floor(vec2(pos) / fGridSize);
-  istart -= 1;
-  ivec2 iend = ceil(vec2(pos + map.size) / fGridSize);
-  iend += 1;
-  ivec2 isize = iend - istart;
-  vec2 offset = pos % gridSize;
+glm::vec2 VoronoiNoise::get(glm::ivec2 cell) const {
+    if(any(glm::greaterThanEqual(cell, grid.size))) {
+      std::cout << cell << grid.size << std::endl;
+    }
+    return (vec2(cell) + grid.at(cell + 1)) * cellSize;
+}
 
-  Grid<glm::vec2> grid(isize);
-  grid.for_each([&](ivec2 ipos, vec2& val) {
-    val = vec2(noise.sample2D(istart + ipos)) / vec2(UINT16_MAX);
-  });
+glm::ivec2 VoronoiNoise::findCell(vec2 pos) const {
+  vec2 gridPos = pos / cellSize;
+  ivec2 centerCell = gridPos;
+  ivec2 res = centerCell;
+  float min_dist = 10.f; // bigger than possible
 
-  map.for_each_parallel([&](vec2 pos, weightedSample_t& val) {
-    pos += offset;
-    val.pos = floor(pos / fGridSize);
+  ivec2 delta{};
+  for (delta.x = -1; delta.x <= 1; delta.x++) {
+    for (delta.y = -1; delta.y <= 1; delta.y++) {
 
-    // compute all weights
-    int i = 0;
-    ivec2 dpos{};
-    for (dpos.x = -1; dpos.x <= 1; dpos.x++) {
-      for (dpos.y = -1; dpos.y <= 1; dpos.y++) {
+      ivec2 otherCell = centerCell + delta;
+      vec2 otherGridPos = vec2(otherCell) + grid.at(otherCell + 1);
+      float dist = distance(gridPos, otherGridPos); // TODO: distance squared
 
-        ivec2 ipos2 = val.pos + dpos;
-        vec2 rpos2 = vec2(ipos2) + grid.at(ipos2 + 1);
-        vec2 pos2 = rpos2 * fGridSize;
-        float dist = distance(pos2, pos);
-        val.weights[i++] = dist;
+      if (dist < min_dist) {
+        min_dist = dist;
+        res = otherCell;
       }
     }
+  }
 
-  });
+  return res;
 }

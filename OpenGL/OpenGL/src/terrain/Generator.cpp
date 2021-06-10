@@ -53,6 +53,8 @@ Block::unique_ptr_t Generator::createBlock(ivec3 pos, Biome const& biome) const 
   float height = noise.fractal2(ivec2(pos.x, pos.z), biome.frequencies);
   int blockHeight = (int)floor(height + biome.elevation);
 
+  //blockHeight = (int)floor(biome.elevation);
+
   if(pos.y == blockHeight + 1 && noise.simplex3(pos) * 0.5 + 0.5 < biome.tallgrass && pos.y> valueNoise.sample1D(ivec2(pos.x, pos.z) + ivec2(3, -7)) % 4)
     return Block::create_static<Tallgrass_Block>();
   if(pos.y > blockHeight) {
@@ -65,7 +67,7 @@ Block::unique_ptr_t Generator::createBlock(ivec3 pos, Biome const& biome) const 
   }
   if(pos.y >= blockHeight - (int)(valueNoise.sample1D(ivec2(pos.x, pos.z) + ivec2(-91, 859)) % 3))
       return computeSurfaceBlock(pos, biome, blockHeight);
-  // COMBAK: are we not using this anymore ? That piece of code was useless 
+  // COMBAK: are we not using this anymore ? That piece of code was useless
   // if(pos.y >= blockHeight - (int)(2+ valueNoise.sample1D(ivec2(pos.x,pos.z) + ivec2(2,-59)) % 3))
   //   block = AllBlocks::create_static(biome.underLayers);
 
@@ -90,9 +92,11 @@ std::vector<Structure::Slice> Generator::generateStructures(ivec3 cpos, Chunk& c
 
         if(chunk[dpos]->type == BlockType::Grass) {
           ivec3 pos = orig + dpos;
-          float tree = valueNoise.sample1D(ivec2(pos.x, pos.z)) / (float)UINT32_MAX;
-          if(tree < 0.0005f) {
-            auto treeSlices = defaultTree.spawn(chunk, dpos);
+          float amount = 0.0005f;
+          if (biome.type == BiomeType::FOREST)amount = 0.02f;
+          uint32 tree = valueNoise.sample1D(ivec2(pos.x, pos.z));
+          if(tree / (float)UINT32_MAX < amount) {
+            auto treeSlices = (tree%2?defaultOakTree.spawn(chunk, dpos): defaultBirchTree.spawn(chunk, dpos));
             slices.insert(slices.end(), treeSlices.begin(), treeSlices.end());
           }
         }
@@ -102,6 +106,15 @@ std::vector<Structure::Slice> Generator::generateStructures(ivec3 cpos, Chunk& c
             if (cactus < 0.0010f) {
                 auto cactusSlice = defaultCactus.spawn(chunk, dpos);
                 slices.insert(slices.end(), cactusSlice.begin(), cactusSlice.end());
+            }
+        }
+
+        if (chunk[dpos]->type == BlockType::Snow && biome.type == BiomeType::TOUNDRA) {
+            ivec3 pos = orig + dpos;
+            float editPlateforme = valueNoise.sample1D(ivec2(pos.x, pos.z)) / (float)UINT32_MAX;
+            if (editPlateforme < 0.0001f) {
+                auto editPlateformeSlice = defaultEditPlaterforme.spawn(chunk, dpos);
+                slices.insert(slices.end(), editPlateformeSlice.begin(), editPlateformeSlice.end());
             }
         }
 

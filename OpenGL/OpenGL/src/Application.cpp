@@ -11,7 +11,7 @@ using namespace glm;
 void loadResources() {
     // Easy swap SkyBox
     // Tool : https://jaxry.github.io/panorama-to-cubemap/
-    static const std::vector<std::string> skyboxFaces {
+    static const std::vector<std::string> skyboxDayFaces {
         "skybox/px.png",  // right
         "skybox/nx.png",  // left
         "skybox/py.png",  // top
@@ -19,9 +19,20 @@ void loadResources() {
         "skybox/pz.png",  // front
         "skybox/nz.png"   // back
     };
-    ResourceManager::loadCubeMap("skybox", skyboxFaces);
+    static const std::vector<std::string> skyboxNightFaces{
+        "skybox/px(1).png",  // right
+        "skybox/nx(1).png",  // left
+        "skybox/py(1).png",  // top
+        "skybox/ny(1).png",  // bottom
+        "skybox/pz(1).png",  // front
+        "skybox/nz(1).png"   // back
+    };
+
+    ResourceManager::loadCubeMap("skyboxDay", skyboxDayFaces);
+    ResourceManager::loadCubeMap("skyboxNight", skyboxNightFaces);
 
     ResourceManager::loadShader("simple", "simple.vert", "simple.frag");
+    ResourceManager::loadShader("skyBox", "skyBox.vert", "skyBox.frag");
     ResourceManager::loadShader("font",   "font.vert",   "font.frag");
     ResourceManager::loadShader("water",   "water.vert",   "water.frag");
     ResourceManager::loadShader("fog", "fog.vert", "fog.frag");
@@ -93,7 +104,7 @@ int main(int argc, char* argv[]) {
     // main loop
     for (float dt = 0; window.beginFrame(dt); window.endFrame()) {
         t += dt;
-      
+
         scene.drawFrame(t, dt);
 
         std::ostringstream text;

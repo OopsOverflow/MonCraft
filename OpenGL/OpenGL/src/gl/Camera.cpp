@@ -299,7 +299,7 @@ bool Camera::chunkInView(glm::vec3 posCamSpace, float tolerance) const {
         inFrustum &= posCamSpace.y - tolerance < custumProjBox[3];
         inFrustum &= posCamSpace.z - tolerance < -custumProjBox[4];
         inFrustum &= posCamSpace.z + tolerance > -custumProjBox[5];
-      
+
         return inFrustum;
     }
     else {
