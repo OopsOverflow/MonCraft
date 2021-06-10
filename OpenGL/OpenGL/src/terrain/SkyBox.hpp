@@ -7,13 +7,13 @@ class SkyBox
 public:
 	SkyBox();
 
-	Shader skyBoxShader;
+	Shader* skyBoxShader;
 	void render(Camera& camera, float rotaion);
 
 private:
 	GLuint buffer;
 	GLuint skyDayTxr;
 	GLuint skyNightTxr;
-	GLuint initSky(Shader& shader);
+	GLuint initSky();
 	void calcBlendFactor(float skytime);
 };

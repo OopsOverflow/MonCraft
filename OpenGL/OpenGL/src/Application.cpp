@@ -47,6 +47,7 @@ void loadResources() {
     ResourceManager::loadCubeMap("skyboxNight", skyboxNightFaces);
 
     ResourceManager::loadShader("simple", "simple.vert", "simple.frag");
+    ResourceManager::loadShader("skyBox", "skyBox.vert", "skyBox.frag");
     ResourceManager::loadShader("font",   "font.vert",   "font.frag");
     ResourceManager::loadShader("water",   "water.vert",   "water.frag");
     ResourceManager::loadShader("fog", "fog.vert", "fog.frag");
@@ -185,8 +186,8 @@ int main(int argc, char* argv[]) {
             GLint underWater = shader->getUniformLocation("underWater");
             glUniform1i(underWater, isUnderWater);
 
-            sky.skyBoxShader.activate();
-            underWater = sky.skyBoxShader.getUniformLocation("underWater");
+            sky.skyBoxShader->activate();
+            underWater = sky.skyBoxShader->getUniformLocation("underWater");
             glUniform1i(underWater, isUnderWater);
 
             shader->activate();

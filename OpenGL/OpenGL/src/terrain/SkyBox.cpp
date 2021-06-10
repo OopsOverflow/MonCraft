@@ -5,7 +5,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-GLuint SkyBox::initSky(Shader& shader) {
+GLuint SkyBox::initSky() {
     float skyboxVertices[] = {
         // positions
         -1.0f,  1.0f, -1.0f,
@@ -70,8 +70,8 @@ GLuint SkyBox::initSky(Shader& shader) {
 }
 
 SkyBox::SkyBox() :
-    skyBoxShader("src/shader/skyBox.vert", "src/shader/skyBox.frag"),
-    buffer(initSky(skyBoxShader))
+    skyBoxShader(ResourceManager::getShader("skyBox")),
+    buffer(initSky())
 {
   skyDayTxr = ResourceManager::getTexture("skyboxDay");
   skyNightTxr = ResourceManager::getTexture("skyboxNight");
@@ -106,7 +106,7 @@ void SkyBox::calcBlendFactor(float skytime) {
         blendFactor = (float)(time - 21000) / (float)(24000 - 21000);
     }
 
-    glUniform1f(skyBoxShader.getUniformLocation("blendFactor"), blendFactor);
+    glUniform1f(skyBoxShader->getUniformLocation("blendFactor"), blendFactor);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_CUBE_MAP, texture1);
@@ -119,7 +119,7 @@ void SkyBox::render(Camera& camera, float rotation)
 {
     glDisable(GL_CULL_FACE);
     glDepthFunc(GL_LEQUAL);
-    skyBoxShader.activate();
+    skyBoxShader->activate();
     glBindVertexArray(buffer);
     glm::mat4 view = glm::mat4(glm::mat3(camera.view));
     view = glm::rotate(view, rotation, glm::vec3(0, 1, 0));
@@ -127,8 +127,8 @@ void SkyBox::render(Camera& camera, float rotation)
     glUniformMatrix4fv(MATRIX_PROJECTION, 1, GL_FALSE, glm::value_ptr(camera.projection));
 
     // Set Texture Locations for CubeSamplers.
-    glUniform1i(skyBoxShader.getUniformLocation("skyboxD"), 0);
-    glUniform1i(skyBoxShader.getUniformLocation("skyboxN"), 1);
+    glUniform1i(skyBoxShader->getUniformLocation("skyboxD"), 0);
+    glUniform1i(skyBoxShader->getUniformLocation("skyboxN"), 1);
 
     // Sampling
     calcBlendFactor(rotation);
