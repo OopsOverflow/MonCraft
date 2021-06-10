@@ -1,16 +1,17 @@
 #include "BiomeMap.hpp"
 #include <functional>
 #include <algorithm>
+#include <numeric>
 
 using namespace glm;
 using namespace std::placeholders;
 
+const float displacement = 40.f;
+
 // spatial distortion octaves
 const octaves_t octaves = {
-  {.65f, 0.004f}, // {magnitude, frequency}
-  {.20f, 0.008f},
-  {.10f, 0.050f},
-  {.05f, 0.100f},
+  {displacement * .75f, 0.01f}, // {magnitude, frequency}
+  {displacement * .25f, 0.05f},
 };
 
 // temperature / dryness octaves
@@ -29,10 +30,9 @@ const octaves_t waterOctaves = {
 };
 
 BiomeMap::BiomeMap()
- : voronoi(rand(), gridSize),
+ : voronoi(rand(), size + 2 * displacement, cellSize, ivec2(0)),
    value(rand()),
-   grid(size + 2 * displacement),
-   map(size)
+   map(size), test(size)
 {
   simplexX.seed(rand());
   simplexY.seed(rand());
@@ -116,6 +116,20 @@ BiomeMap::BiomeMap()
   };
   biomeMountains.elevation = 20;
   biomeMountains.tallgrass = 0;
+
+  biomeForest = biomePlains;
+  biomeForest.type = BiomeType::FOREST;
+  biomeForest.surface = BlockType::Grass;
+  biomeForest.underLayers = BlockType::Dirt;
+  biomeForest.underWaterBlock = BlockType::Dirt;
+  biomeForest.frequencies = {
+    {3.0f, 0.002f}, // {magnitude, frequency}
+    {2.5f, 0.007f},
+    {0.0f, 0.050f},
+    {0.0f, 0.100f},
+  };
+  // biomeHills.tallgrass = 0;
+  biomeForest.elevation = 10;
 }
 
 
@@ -129,11 +143,18 @@ void BiomeMap::generate() {
   auto step4 = std::bind(&BiomeMap::blendBiomes, this, _1);
   auto pipeline = make_pipeline(step1, step2, step3, step4);
 
-  voronoi.generateWeighted(ivec2(0), grid);
+  auto teststep = std::bind(&BiomeMap::teststep, this, _1);
+  auto testpipeline = make_pipeline(step1, step2, teststep);
 
   map.for_each_parallel([&](vec2 pos, Biome& val) {
     val = pipeline(pos);
   });
+
+  test.for_each_parallel([&](vec2 pos, pixel_t& val) {
+    val = testpipeline(pos);
+  });
+
+  testtex.generate(test);
 }
 
 #include "debug/Debug.hpp"
@@ -150,58 +171,82 @@ Biome const& BiomeMap::sampleWeighted(glm::ivec2 pos) const {
 // pipeline step 1: spatial distortion
 ivec2 BiomeMap::offsetSimplex(ivec2 pos) {
   // return pos; // to disable distortion, uncomment this ;)
-  vec2 sample(simplexX.simplex2(vec2(pos) * frequency),
-              simplexY.simplex2(vec2(pos) * frequency));
-  sample += 1.0;
-  sample *= displacement;
+  vec2 sample(simplexX.fractal2(vec2(pos), octaves),
+              simplexY.fractal2(vec2(pos), octaves));
 
   return pos + ivec2(sample);
 }
 
 // pipeline step 2: voronoi splitting (this approximate the distance to chunks borders)
-BiomeMap::weightedBiomes_t BiomeMap::offsetVoronoi(ivec2 pos) {
-  weightedBiomes_t res;
-  auto& sample = grid.at(pos);
+BiomeMap::weightedBiomes_t BiomeMap::offsetVoronoi(ivec2 ipos) {
+    weightedBiomes_t res;
 
-  static const std::array<ivec2, 9> posLookup {
-    ivec2(-1, -1), ivec2(-1, 0), ivec2(-1, 1),
-    ivec2( 0, -1), ivec2( 0, 0), ivec2( 0, 1),
-    ivec2( 1, -1), ivec2( 1, 0), ivec2( 1, 1),
-  };
+    vec2 pos = ipos;
+    ivec2 mainCell = voronoi.findCell(pos);
+    vec2 mainPos = voronoi.get(mainCell);
 
-  int centerCell = std::min_element(sample.weights.begin(), sample.weights.end()) - sample.weights.begin();
-  float centerDist = sample.weights[centerCell];
+    float thres = cellSize * 2;
 
-  float totalWeight = 1.f;
-
-  res.push_back(weightedBiome_t{
-    sample.pos + posLookup[centerCell],
-    1.f, // this is a temporary value to be normalized later
-    nullptr
-  });
-
-  for(int i = 0; i < 9; i++) if(i != centerCell) {
-    float dist = sample.weights[i] - centerDist;
-    if(dist < biomeBlend) {
-      float weight = (biomeBlend - dist) / biomeBlend;
-      weight *= weight;
-      weight *= weight;
-      totalWeight += weight;
-      res.push_back(weightedBiome_t{
-        sample.pos + posLookup[i],
-        weight, // this is a temporary value to be normalized later
+    float dist = distance(pos, mainPos);
+    if(dist < thres) {
+      float weight = thres - dist;
+      res.push_back({
+        mainCell,
+        weight,
         nullptr
       });
     }
-  }
 
-  // normalize coeffs so that the sum of them all is 1
-  for(auto& biome : res) {
-    biome.weight /= totalWeight;
-  }
+    ivec2 delta{};
+    for (delta.x = -2; delta.x <= 2; delta.x++) {
+      for (delta.y = -2; delta.y <= 2; delta.y++) {
 
-  return res;
+        if(delta == ivec2(0)) continue;
+
+        vec2 otherPos = voronoi.get(mainCell + delta);
+        float dist = distance(pos, otherPos);
+        if(dist < thres) {
+          float weight = thres - dist;
+          res.push_back({
+            mainCell + delta,
+            weight,
+            nullptr
+          });
+        }
+
+      }
+    }
+
+    if(res.size() == 0) { // BUG
+      res.push_back({
+        mainCell,
+        0.f,
+        nullptr
+      });
+    }
+
+    // normalize weights (sum = 1)
+    float totalWeight = 0;
+    for(auto const& biome: res) {
+      totalWeight += biome.weight;
+    }
+    for(auto& biome: res) {
+      biome.weight /= totalWeight;
+    }
+
+    return res;
 };
+
+
+pixel_t BiomeMap::teststep(BiomeMap::weightedBiomes_t biomes) {
+  pixel_t col(0);
+
+  for(int i = 0; i < biomes.size(); i++) {
+    col += vec3(value.sample3D(biomes.at(i).cellPos)) * biomes.at(i).weight;
+  }
+
+  return col;
+}
 
 // pipeline step 3: sample biome color
 BiomeMap::weightedBiomes_t BiomeMap::sampleBiomes(BiomeMap::weightedBiomes_t biomes) {
@@ -210,6 +255,7 @@ BiomeMap::weightedBiomes_t BiomeMap::sampleBiomes(BiomeMap::weightedBiomes_t bio
   //   int r = value.sample1D(biome.cellPos);
   //   if(r < INT_MAX * .1) biome.biome = &biomePlains;
   //   else if(r < INT_MAX * .2) biome.biome = &biomeSea;
+  //   else if(r < INT_MAX * .3) biome.biome = &biomeForest;
   //   else if(r < INT_MAX * .4) biome.biome = &biomeDesert;
   //   else if(r < INT_MAX * .6) biome.biome = &biomeToundra;
   //   else if(r < INT_MAX * .8) biome.biome = &biomeHills;
@@ -238,8 +284,11 @@ BiomeMap::weightedBiomes_t BiomeMap::sampleBiomes(BiomeMap::weightedBiomes_t bio
         if (temperature < .2) {
           biome.biome = &biomeToundra;
         }
-        else if (temperature < .57) {
+        else if (temperature < .5) {
           biome.biome = &biomePlains;
+        }
+        else if (temperature < .65) {
+            biome.biome = &biomeForest;
         }
         else {
           biome.biome = &biomeDesert;
@@ -256,6 +305,7 @@ BiomeMap::weightedBiomes_t BiomeMap::sampleBiomes(BiomeMap::weightedBiomes_t bio
 
   return biomes;
 };
+
 
 // pipeline step 4: blend biomes together
 Biome BiomeMap::blendBiomes(BiomeMap::weightedBiomes_t biomes) {
@@ -284,6 +334,7 @@ Biome BiomeMap::blendBiomes(BiomeMap::weightedBiomes_t biomes) {
     // blend elevation
     res.elevation += weighted.biome->elevation * weighted.weight;
   }
+
 
   return res;
 };

@@ -52,6 +52,8 @@ void BitmapTex::generate(Bitmap const& map) {
 void BitmapTex::draw() {
   shader->activate();
   glBindVertexArray(vao);
+  // glUniform1i(shadowSampler, 2);
+  glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, tex);
   glDrawArrays(GL_TRIANGLES, 0, 6);
   glBindTexture(GL_TEXTURE_2D, 0);

@@ -23,7 +23,7 @@ public:
 
   /**
   * Generates the structures inside the given chunk.
-  * returns a list of slices to be applied to the chunks. 
+  * returns a list of slices to be applied to the chunks.
   */
   Structure::slices_t generateStructures(glm::ivec3 cpos, Chunk& chunk) const;
 
@@ -38,8 +38,10 @@ private:
   SimplexNoise noiseY;
   SimplexNoise noiseZ;
   ValueNoise valueNoise;
-  Tree defaultTree;
+  Oak_Tree defaultOakTree;
+  Birch_Tree defaultBirchTree;
   Cactus defaultCactus;
-
+  EditPlaterforme defaultEditPlaterforme;
+public:
   BiomeMap biomeSampler;
 };

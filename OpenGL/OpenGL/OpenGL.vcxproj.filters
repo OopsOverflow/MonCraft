@@ -314,7 +314,7 @@
     <ClInclude Include="src\entity\Node.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\blocks\Leaf_Block.hpp">
+    <ClInclude Include="src\blocks\Oak_Leaf_Block.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\terrain\ChunkMap.hpp">
@@ -323,7 +323,7 @@
     <ClInclude Include="src\blocks\AllBlocks.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\blocks\Wood_Block.hpp">
+    <ClInclude Include="src\blocks\Oak_Wood_Block.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\terrain\SliceMap.hpp">
@@ -369,6 +369,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\blocks\Cactus_Block.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\blocks\Gravel_Block.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\blocks\Birch_Leaf_Block.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\blocks\Birch_Wood_Block.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\blocks\Brick_Block.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\ui\Component.hpp">

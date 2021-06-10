@@ -71,6 +71,18 @@ public:
   }
 
   /**
+   * Gets the data stored at pos.
+   * @throws std::out_of_range
+   */
+  T const& at(glm::vec<N, int> pos) const {
+    for(int i = 0; i < N; i++)
+      if(pos[i] > size[i])
+        throw std::out_of_range("DataStore coordinates are out of range");
+
+    return this->operator[](pos);
+  }
+
+  /**
    * Gets the data stored at pos. (unsafe)
    */
   T &operator[](glm::vec<N, int> pos) {

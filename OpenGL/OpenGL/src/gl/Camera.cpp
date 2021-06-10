@@ -9,7 +9,7 @@ Camera::Camera(unsigned int width, unsigned int height, const glm::vec3 &positio
                const glm::vec3 &center, Projection projType)
  : view(1.f), projection(1.f),
    position(position), center(center),
-   fovY(45.f), near_(0.1f), far_(200.f),
+   fovY(45.f), near_(0.1f), far_(400.f),
    screenWidth(width), screenHeight(height),
    projType(projType)
 {

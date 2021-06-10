@@ -38,18 +38,34 @@ public:
 };
 
 
-class Tree : public Structure {
+class Oak_Tree : public Structure {
 
 public:
-  Tree();
+    Oak_Tree();
   slices_t spawn(Chunk& chunk, glm::ivec3 pos) const override;
   std::shared_ptr<BlockStore> store;
+};
+
+class Birch_Tree : public Structure {
+
+public:
+    Birch_Tree();
+    slices_t spawn(Chunk& chunk, glm::ivec3 pos) const override;
+    std::shared_ptr<BlockStore> store;
 };
 
 class Cactus : public Structure {
 
 public:
     Cactus();
+    slices_t spawn(Chunk& chunk, glm::ivec3 pos) const override;
+    std::shared_ptr<BlockStore> store;
+};
+
+class EditPlaterforme : public Structure {
+
+public:
+    EditPlaterforme();
     slices_t spawn(Chunk& chunk, glm::ivec3 pos) const override;
     std::shared_ptr<BlockStore> store;
 };

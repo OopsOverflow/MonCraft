@@ -30,12 +30,11 @@ public:
 private:
     // biome gen tuning
     int size = 1000;               // generated texture size
-    int gridSize = 100;            // voronoi single cell size
-    float frequency = 0.01f;       // spatial displacement (distortion)
-    float displacement = 50.f;     // spatial displacement (distortion)
-    float biomeBlend = 25.f;       // distance to smooth biomes borders
+    float cellSize = 150.f;         // voronoi single cell size
+    float blendSmoothness = 0.4f;   // amount of smoothing to apply
+    float biomeBlend = 40.f; // distance to smooth biomes borders
     float globalFrequency = .5f;   // adjust the frequencies overall (high values gives)
-    float globalAmplitude = 3.2f;  // adjust the amplitude overall (high values gives AMPLIFIED terrain)
+    float globalAmplitude = 5.2f;  // adjust the amplitude overall (high values gives AMPLIFIED terrain)
 
     // noises
     SimplexNoise simplexX;       // samples space in x direction
@@ -53,8 +52,7 @@ private:
     using weightedBiomes_t = std::vector<weightedBiome_t>;
 
     // bitmaps
-    Grid<VoronoiNoise::weightedSample_t> grid;  // voronoi
-    Grid<Biome> map;      // final Biome Map
+    Grid<Biome> map; // final Biome Map
 
     // pipeline functions
     // note: the compiler should be able to optimize copies with RVO
@@ -63,10 +61,17 @@ private:
     weightedBiomes_t sampleBiomes(weightedBiomes_t biomes);
     Biome blendBiomes(weightedBiomes_t biomes);
 
+    pixel_t teststep(BiomeMap::weightedBiomes_t biomes);
+
     Biome biomePlains;
     Biome biomeSea;
     Biome biomeDesert;
     Biome biomeToundra;
     Biome biomeHills;
     Biome biomeMountains;
+    Biome biomeForest;
+
+public:
+    BitmapTex testtex;
+    Bitmap test;
 };
