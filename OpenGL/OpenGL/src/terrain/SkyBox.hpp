@@ -12,6 +12,8 @@ public:
 
 private:
 	GLuint buffer;
-	GLuint skyTxr;
+	GLuint skyDayTxr;
+	GLuint skyNightTxr;
 	GLuint initSky(Shader& shader);
+	void calcBlendFactor(float skytime);
 };

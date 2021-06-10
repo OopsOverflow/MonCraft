@@ -520,5 +520,7 @@
     <None Include="src\shader\water.vert" />
     <None Include="src\shader\pane.vert" />
     <None Include="src\shader\pane.frag" />
+    <None Include="src\shader\skyBox.vert" />
+    <None Include="src\shader\skyBox.frag" />
   </ItemGroup>
 </Project>
