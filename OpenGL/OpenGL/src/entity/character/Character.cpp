@@ -46,7 +46,7 @@ Character::~Character() {}
 
 void Character::enableGodMode() {
   if(god) return;
-  verticalFriction = 5.f;
+  verticalFriction = 5.5f;
   gravity = 0;
   maxSpeed = defaultSpeed * godMultiplier;
   if(sprint) maxSpeed *= sprintMultiplier;

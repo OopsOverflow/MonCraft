@@ -63,8 +63,8 @@ void Entity::cameraToHead(Camera& camera) {
 #include "../debug/Debug.hpp"
 
 void Entity::update(Terrain& terrain, float dt) {
+
 	// update forces
-	// highp_dvec3 posOffset;
 	highp_dvec3 posOffset;
 	{
 		vec3 acc = accel;
@@ -72,8 +72,7 @@ void Entity::update(Terrain& terrain, float dt) {
 
 		// disable friction in accel direction
 		vec2 dragXZ = vec2(speed.x, speed.z) * horizontalFriction;
-		float dragY = 0;
-		dragY = speed.y * verticalFriction;
+		float dragY = speed.y * verticalFriction;
 		vec2 accXZ = vec2(acc.x, acc.z);
 		if(accXZ != vec2(0))
 			dragXZ -= normalize(accXZ) * max(dot(dragXZ, normalize(accXZ)), 0.f); // substract component in accel direction from drag
@@ -115,7 +114,7 @@ void Entity::update(Terrain& terrain, float dt) {
 		// cancel speed in collision direction
 		if(length(finalOffset) > 0.001) {
 			auto rotMatrix = rotate(I, -node.rot.y - headNode.rot.y, {0, 1, 0});
-			vec3 worldOffDir = normalize(rotMatrix * highp_dvec4(finalOffset, 1.0));
+			vec3 worldOffDir = normalize(vec3(rotMatrix * highp_dvec4(finalOffset, 1.0)));
 			speed -= worldOffDir * dot(speed, worldOffDir); // substract component in collision direction from speed
 		}
 	}

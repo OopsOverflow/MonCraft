@@ -180,7 +180,6 @@ bool Viewport::isDoubleSpace() {
   if(!spaceIsPressed) {
     uint32_t time = SDL_GetTicks();
     res = time - lastSpacePress < thresold;
-    std::cout << time - lastSpacePress << std::endl;
     lastSpacePress = time;
     spaceIsPressed = true;
   }
