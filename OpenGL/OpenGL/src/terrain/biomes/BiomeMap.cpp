@@ -211,73 +211,100 @@ bool PointInTriangle (vec2 pt, vec2 v1, vec2 v2, vec2 v3) {
 
 // pipeline step 2: voronoi splitting (this approximate the distance to chunks borders)
 BiomeMap::weightedBiomes_t BiomeMap::offsetVoronoi(ivec2 ipos) {
-  weightedBiomes_t res;
+    weightedBiomes_t res;
 
-  vec2 pos = ipos;
-  ivec2 mainCell = voronoi.findCell(pos);
-  vec2 mainPos = voronoi.get(mainCell);
+    vec2 pos = ipos;
+    ivec2 mainCell = voronoi.findCell(pos);
+    vec2 mainPos = voronoi.get(mainCell);
 
-  static const std::array<ivec2, 8> neighbors = {
-    ivec2
+    static const std::array<ivec2, 8> neighbors = {
+      ivec2
+
     {-1, -1}, {-1,  0}, {-1,  1}, { 0,  1},
     { 1,  1}, { 1,  0}, { 1, -1}, { 0, -1},
-  };
+    };
 
-  std::array<float, 8> distToBorders;
+    std::vector<int> finalNeighborsIndices;
+    for (int i = 0; i < neighbors.size()-1; i += 1) {
+        for (int j = i + 1; j < neighbors.size(); j += 1) {
+            vec2 vertice1 = voronoi.get(mainCell + neighbors[i]);
+            vec2 vertice2 = voronoi.get(mainCell + neighbors[j]);
+           
 
-  for(int i = 0; i < neighbors.size(); i++) {
-    vec2 otherPos = voronoi.get(mainCell + neighbors[i]);
-    distToBorders[i] = dot((mainPos + otherPos) / 2.f - pos, normalize(otherPos - mainPos));
-  }
+            //https://math.stackexchange.com/questions/3489550/how-could-i-get-the-coordinates-of-the-circumscribed-circle-giving-the-3-points
+            vec2 center = vec2(0.0f);
+            float a = distance(vertice1, vertice2);
+            float b = distance(vertice2, mainPos);
+            float c = distance(mainPos, vertice1);
 
-  std::array<int, 8> indicesDistToBorders;
-  std::iota(indicesDistToBorders.begin(), indicesDistToBorders.end(), 0);
-  std::sort(indicesDistToBorders.begin(), indicesDistToBorders.end(), [&](int a, int b) {
-    return distToBorders[a] < distToBorders[b];
-  });
+            float numerator = (a * a) * ((b * b) + (c * c) - (a * a));
+            float denominator = (((b + c) * (b + c)) - (a * a)) * ((a * a) - ((b - c) * (b - c)));
+            center += mainPos * numerator / denominator;
 
-  for(int i = 0; i < neighbors.size(); i++) {
+            numerator = (b * b) * ((a * a) + (c * c) - (b * b));
+            denominator = (((a + c) * (a + c)) - (b * b)) * ((b * b) - ((a - c) * (a - c)));
+            center += vertice1 * numerator / denominator;
 
-    ivec2 otherCell1 = mainCell + neighbors[indicesDistToBorders[i]];
-    ivec2 otherCell2 = mainCell + neighbors[(indicesDistToBorders[i] + 1) % neighbors.size()];
-    vec2 otherPos1 = voronoi.get(otherCell1);
-    vec2 otherPos2 = voronoi.get(otherCell2);
+            numerator = (c * c) * ((b * b) + (a * a) - (c * c));
+            denominator = (((b + a) * (b + a)) - (c * c)) * ((c * c) - ((b - a) * (b - a)));
+            center += vertice2 * numerator / denominator;
 
-    if(PointInTriangle(pos, mainPos, otherPos1, otherPos2)) {
+            float radius = distance(center, mainPos);
 
-      float a = (otherPos1 - otherPos2).y * (mainPos - otherPos2).x + (otherPos2 - otherPos1).x * (mainPos - otherPos2).y;
-      vec2 b = pos - otherPos2;
-
-      float w1, w2, w3;
-      float c = (otherPos1 - otherPos2).y * b.x + (otherPos2 - otherPos1).x * b.y;
-      float d = (otherPos2 - mainPos).y * b.x + (mainPos - otherPos2).x * b.y;
-
-      w1 = c / a;
-      w2 = d / a;
-      w3 = 1.f - w1 - w2;
-
-      res.push_back({
-        mainCell,
-        w1,
-        nullptr
-      });
-      res.push_back({
-        otherCell1,
-        w2,
-        nullptr
-      });
-      res.push_back({
-        otherCell2,
-        w3,
-        nullptr
-      });
+            bool valid = true;
+            for (int k = 0; k < neighbors.size(); k += 1) {
+                vec2 point = voronoi.get(mainCell + neighbors[k]);
+                if (k!=i && k!=j && distance(center, point) <= radius)valid = false;
+            }
+            if (valid) {
+                finalNeighborsIndices.push_back(i);
+                finalNeighborsIndices.push_back(j);
+            }
+            
+        }
     }
-  }
+
+    for (int i = 0; i < finalNeighborsIndices.size(); i+=2) {
+        ivec2 otherCell1 = mainCell + neighbors[finalNeighborsIndices.at(i)];
+        ivec2 otherCell2 = mainCell + neighbors[finalNeighborsIndices.at(i+1)];
+        vec2 otherPos1 = voronoi.get(otherCell1);
+        vec2 otherPos2 = voronoi.get(otherCell2);
+
+        if (PointInTriangle(pos, mainPos, otherPos1, otherPos2)) {
+            float a = (otherPos1 - otherPos2).y * (mainPos - otherPos2).x + (otherPos2 - otherPos1).x * (mainPos - otherPos2).y;
+            vec2 b = pos - otherPos2;
+
+            float w1, w2, w3;
+            float c = (otherPos1 - otherPos2).y * b.x + (otherPos2 - otherPos1).x * b.y;
+            float d = (otherPos2 - mainPos).y * b.x + (mainPos - otherPos2).x * b.y;
+
+            w1 = c / a;
+            w2 = d / a;
+            w3 = 1.f - w1 - w2;
+
+            res.push_back({
+              mainCell,
+              w1,
+              nullptr
+                });
+            res.push_back({
+              otherCell1,
+              w2,
+              nullptr
+                });
+            res.push_back({
+              otherCell2,
+              w3,
+              nullptr
+                });
+           break;
+        }
+    }
 
   if(res.size() == 0) {
     res.push_back({
       mainCell,
-      0.f,
+      1.f,
       nullptr
     });
     // std::cout << "BUG" << std::endl;
@@ -300,7 +327,7 @@ BiomeMap::weightedBiomes_t BiomeMap::offsetVoronoi(ivec2 ipos) {
 pixel_t BiomeMap::teststep(BiomeMap::weightedBiomes_t biomes) {
   pixel_t col(0);
 
-  for(int i = 0; i < std::min(10ul, biomes.size()); i++) {
+  for(int i = 0; i < biomes.size(); i++) {
     col += vec3(value.sample3D(biomes.at(i).cellPos)) * biomes.at(i).weight;
   }
 
