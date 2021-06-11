@@ -37,6 +37,7 @@ std::unique_ptr<Chunk> Generator::generate(ivec3 cpos) const {
 }
 
 Block::unique_ptr_t Generator::computeSurfaceBlock(ivec3 const& pos, Biome const& biome, int const& blockHeight) const {
+    if(pos.y<-5.0f)return Block::create_static<Sandstone_Block>();
     if (abs(pos.y) < 3.f && biome.type == BiomeType::SEA) return Block::create_static<Sand_Block>();
     if (biome.type == BiomeType::MOUNTAINS && abs(abs(pos.y) < 2.f))return Block::create_static<Ice_Block>();
     if (abs(pos.y) < 2.f) return Block::create_static<Sand_Block>();

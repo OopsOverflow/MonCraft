@@ -78,7 +78,7 @@ BiomeMap::BiomeMap()
   {0.5f, 0.050f},
   {0.5f, 0.100f},
   };
-  biomeSea.elevation = -10;
+  biomeSea.elevation = -40;
   biomeSea.tallgrass = 0;
 
   biomeToundra = biomePlains;
