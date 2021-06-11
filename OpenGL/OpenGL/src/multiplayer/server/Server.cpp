@@ -105,7 +105,7 @@ void Server::handle_login(sf::IpAddress clientAddr, unsigned short clientPort) {
     packet_ack_login(it->first, it->second.player.getIdentifier());
   }
   else {
-    Identifier uid = Identifier::generate();
+    Identifier uid = generateIdentifier();
     auto res = clients.emplace(id, Client(uid));
 
     if(res.second) {
