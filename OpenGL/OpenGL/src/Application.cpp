@@ -50,10 +50,10 @@ void loadResources() {
 
 int main(int argc, char* argv[]) {
     std::cout << "---- Main ----" << std::endl;
+    Server server(NetworkConfig::SERVER_ADDR, NetworkConfig::SERVER_PORT);
     Viewport window({800, 800});
     loadResources();
     window.createRoot();
-    Server server(NetworkConfig::SERVER_ADDR, NetworkConfig::SERVER_PORT);
 
     // game seed
     std::hash<std::string> hashString;
@@ -109,6 +109,11 @@ int main(int argc, char* argv[]) {
     text_pos.setAnchorY(ui::Anchor::END);
     text_pos.setFontSize(.5f);
 
+    ui::Text text_players(&scene, "", font_vt323);
+    text_players.setAnchorY(ui::Anchor::END);
+    text_players.setPosition({0, -50}); // TODO: implement a box container
+    text_players.setFontSize(.5f);
+
     // main loop
     for (float dt = 0; window.beginFrame(dt); window.endFrame()) {
         t += dt;
@@ -122,8 +127,12 @@ int main(int argc, char* argv[]) {
         text_fps.setText(text.str());
 
         text.str(""); // "clears" the string stream
-        text << "Player Pos : " << std::fixed << std::setprecision(3) << scene.entities->player.character->getPosition();
+        text << "Player Pos : " << std::fixed << std::setprecision(3) << scene.entities->player->getPosition();
         text_pos.setText(text.str());
+
+        text.str(""); // "clears" the string stream
+        text << "Players online : " << scene.entities->players.size() + 1;
+        text_players.setText(text.str());
     }
 
     ResourceManager::free();

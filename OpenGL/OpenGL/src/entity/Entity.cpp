@@ -152,3 +152,24 @@ vec3 Entity::getPosition() const {
 void Entity::setPosition(glm::vec3 pos) {
 	node.loc = pos;
 }
+
+
+sf::Packet& operator<<(sf::Packet& packet, Entity const& entity) {
+	packet << entity.node.loc;
+	packet << entity.node.rot;
+	packet << entity.headNode.rot;
+	packet << entity.speed;
+	packet << entity.accel;
+	packet << entity.direction;
+	return packet;
+}
+
+sf::Packet& operator>>(sf::Packet& packet, Entity& entity) {
+	packet >> entity.node.loc;
+	packet >> entity.node.rot;
+	packet >> entity.headNode.rot;
+	packet >> entity.speed;
+	packet >> entity.accel;
+	packet >> entity.direction;
+	return packet;
+}

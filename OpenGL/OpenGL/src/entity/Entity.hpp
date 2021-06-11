@@ -8,6 +8,7 @@
 #include "gl/Camera.hpp"
 #include "terrain/Terrain.hpp"
 #include "audio/SoundEffect.hpp"
+#include "multiplayer/common/Packet.hpp"
 
 enum class View { FIRST_PERSON, THIRD_PERSON };
 enum class State { Walking, Idle };
@@ -80,4 +81,7 @@ protected:
 
 	Node node;
 	Node headNode;
+
+	friend sf::Packet& operator<<(sf::Packet& packet, Entity const& entity);
+  friend sf::Packet& operator>>(sf::Packet& packet, Entity& entity);
 };

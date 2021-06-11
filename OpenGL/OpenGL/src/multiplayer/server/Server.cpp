@@ -45,9 +45,7 @@ bool Server::poll() {
 
       if(type == PacketType::PING) handle_ping(it->second);
       else if(type == PacketType::PLAYER_TICK) {
-        PacketPlayerTick body;
-        packet >> body;
-        handle_player_tick(it->second, body);
+        handle_player_tick(it->second, packet);
       }
 
     }
@@ -60,18 +58,13 @@ bool Server::poll() {
 void Server::broadcast() {
   sf::Packet packet;
   PacketHeader header(PacketType::ENTITY_TICK);
-
-  std::vector<EntityData> entities;
+  packet << header;
+  packet << (sf::Uint64)clients.size();
 
   for(auto const& pair : clients) {
-    entities.emplace_back(
-      pair.second.player.getPosition(),
-      pair.second.player.getIdentifier()
-    );
+    packet << pair.second.player.getIdentifier();
+    packet << pair.second.player;
   }
-
-  PacketEntityTick body(entities);
-  packet << header << body;
 
   for(auto const& pair : clients) {
     socket.send(packet, pair.first.getAddr(), pair.first.getPort());
@@ -136,14 +129,13 @@ void Server::handle_ping(Client& client) {
   std::cout << "Ping!" << std::endl;
 }
 
-void Server::handle_player_tick(Client& client, PacketPlayerTick& body) {
-  client.player.setPosition(body.getPlayerPos());
+void Server::handle_player_tick(Client& client, sf::Packet& packet) {
+  packet >> client.player;
 }
 
 void Server::packet_ack_login(ClientID const& client, Identifier uid) {
   sf::Packet packet;
   PacketHeader header(PacketType::ACK_LOGIN);
-  PacketAckLogin body(uid);
-  packet << header << body;
+  packet << header << uid;
   socket.send(packet, client.getAddr(), client.getPort());
 }

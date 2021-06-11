@@ -1,9 +1,4 @@
 #pragma once
-
-#include "packets/PlayerTick.hpp"
-#include "packets/EntityTick.hpp"
-#include "packets/AckLogin.hpp"
-
 #include <SFML/Network.hpp>
 #include <glm/glm.hpp>
 

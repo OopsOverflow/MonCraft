@@ -5,7 +5,6 @@ if get_option('buildtype').startswith('debug')
 endif
 
 srcs = files(
-  'OpenGL/src/MonCraftScene.cpp',
 
   'OpenGL/src/audio/Music.cpp',
   'OpenGL/src/debug/Debug.cpp',
@@ -63,13 +62,11 @@ srcs = files(
   'OpenGL/src/multiplayer/common/NetworkError.cpp',
   'OpenGL/src/multiplayer/common/Packet.cpp',
   'OpenGL/src/multiplayer/common/Identifier.cpp',
-  'OpenGL/src/multiplayer/common/packets/EntityTick.cpp',
-  'OpenGL/src/multiplayer/common/packets/PlayerTick.cpp',
-  'OpenGL/src/multiplayer/common/packets/AckLogin.cpp',
 )
 
 client_srcs = files(
   'OpenGL/src/Application.cpp',
+  'OpenGL/src/MonCraftScene.cpp',
   'OpenGL/src/multiplayer/client/Server.cpp',
   'OpenGL/src/multiplayer/client/SharedEntities.cpp',
 )

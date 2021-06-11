@@ -19,14 +19,14 @@ public:
   void update();
   entities_ptr_t getEntities() const;
 
-
 private:
   void packet_login();
   void packet_logout();
   void packet_ping();
-  void packet_player_tick(glm::vec3 playerPos);
+  void packet_player_tick();
   bool listen_ack_login();
   bool poll();
+  void applyEntityTransforms(sf::Packet& packet);
 
   sf::IpAddress addr;
   unsigned short port;

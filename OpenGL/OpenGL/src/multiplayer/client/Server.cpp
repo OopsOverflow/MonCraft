@@ -37,7 +37,7 @@ void Server::update() {
 
   sf::Time now = clock.getElapsedTime();
   if(now - lastUpdate > frameDuration) {
-    packet_player_tick(entities->player.character->getPosition());
+    packet_player_tick();
     lastUpdate = now;
   }
 }
@@ -58,31 +58,38 @@ bool Server::poll() {
   auto type = header.getType();
 
   if(type == PacketType::ENTITY_TICK) {
-    PacketEntityTick body;
-    packet >> body;
-
-    for(auto const& serverPlayer : body.getPlayers()) {
-      if(serverPlayer.uid == entities->player.uid) {
-        // std::cout << "server pos: " << serverPlayer.pos << std::endl;
-      }
-      else {
-        auto const& players = entities->players;
-
-        auto it = std::find_if(players.begin(), players.end(), [&] (Player const& p) {
-          return p.uid == serverPlayer.uid;
-        });
-
-        if(it != players.end()) {
-          it->character->setPosition(serverPlayer.pos);
-        }
-        else {
-          entities->players.emplace_back(serverPlayer.uid, serverPlayer.pos);
-        }
-      }
-    }
+    applyEntityTransforms(packet);
   }
 
   return true;
+}
+
+void Server::applyEntityTransforms(sf::Packet& packet) {
+  auto& players = entities->players;
+
+  sf::Uint64 size;
+  packet >> size;
+
+  for(sf::Uint64 i = 0; i < size; i++) {
+    Identifier uid;
+    packet >> uid;
+
+    if(uid == entities->uid) {
+      
+    }
+    else {
+      auto it = players.find(uid);
+      if(it != players.end()) {
+        auto player = entities->createPlayer();
+        packet >> *it->second;
+      }
+      else {
+        auto player = entities->createPlayer();
+        packet >> *player;
+        players.emplace(uid, std::move(player));
+      }
+    }
+  }
 }
 
 void Server::ping() {
@@ -128,12 +135,10 @@ void Server::packet_logout() {
   }
 }
 
-void Server::packet_player_tick(glm::vec3 playerPos) {
+void Server::packet_player_tick() {
   sf::Packet packet;
   PacketHeader header(PacketType::PLAYER_TICK);
-  PacketPlayerTick body(playerPos);
-
-  packet << header << body;
+  packet << header << *entities->player;
 
   auto send_res = socket.send(packet, addr, port);
 
@@ -161,9 +166,7 @@ bool Server::listen_ack_login() {
     throw NetworkError("listen_ack_login failed");
   }
 
-  PacketAckLogin body;
-  packet >> body;
-  entities->player.uid = body.getIdentifier();
+  packet >> entities->uid;
 
   return true;
 }
