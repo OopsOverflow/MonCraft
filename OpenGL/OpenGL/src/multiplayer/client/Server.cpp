@@ -75,7 +75,7 @@ void Server::applyEntityTransforms(sf::Packet& packet) {
     packet >> uid;
 
     if(uid == entities->uid) {
-      
+      entities->player->consume(packet);
     }
     else {
       auto it = players.find(uid);

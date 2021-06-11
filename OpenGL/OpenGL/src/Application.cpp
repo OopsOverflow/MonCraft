@@ -111,8 +111,13 @@ int main(int argc, char* argv[]) {
 
     ui::Text text_players(&scene, "", font_vt323);
     text_players.setAnchorY(ui::Anchor::END);
-    text_players.setPosition({0, -50}); // TODO: implement a box container
+    text_players.setPosition({0, -30}); // TODO: implement a box container
     text_players.setFontSize(.5f);
+
+    ui::Text text_uid(&scene, "", font_vt323);
+    text_uid.setAnchorY(ui::Anchor::END);
+    text_uid.setPosition({0, -60}); // TODO: implement a box container
+    text_uid.setFontSize(.5f);
 
     // main loop
     for (float dt = 0; window.beginFrame(dt); window.endFrame()) {
@@ -133,6 +138,10 @@ int main(int argc, char* argv[]) {
         text.str(""); // "clears" the string stream
         text << "Players online : " << scene.entities->players.size() + 1;
         text_players.setText(text.str());
+
+        text.str(""); // "clears" the string stream
+        text << "UID : " << scene.entities->uid;
+        text_uid.setText(text.str());
     }
 
     ResourceManager::free();

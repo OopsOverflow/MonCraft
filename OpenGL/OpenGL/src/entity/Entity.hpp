@@ -62,6 +62,10 @@ public:
 	View view;
 	State state;
 
+	friend sf::Packet& operator<<(sf::Packet& packet, Entity const& entity);
+	friend sf::Packet& operator>>(sf::Packet& packet, Entity& entity);
+	sf::Packet& consume(sf::Packet& packet);
+
 protected:
 	float maxSpeed;
 	float maxAccel;
@@ -81,7 +85,4 @@ protected:
 
 	Node node;
 	Node headNode;
-
-	friend sf::Packet& operator<<(sf::Packet& packet, Entity const& entity);
-  friend sf::Packet& operator>>(sf::Packet& packet, Entity& entity);
 };
