@@ -14,7 +14,7 @@ MonCraftScene::MonCraftScene(Viewport* vp)
       character({ 0.0f, 40.0f, 0.0f }),
 
       fogEnabled(false),
-      sunSpeed(0.005f), skyboxSpeed(0.005f),
+      sunSpeed(0.0075f), skyboxSpeed(0.0075f),
       captured(false)
 {
     // load resources
