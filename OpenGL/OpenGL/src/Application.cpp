@@ -83,18 +83,18 @@ int main(int argc, char* argv[]) {
     ui::Button btn_gen(&scene, "Generation", font_vt323);
     btn_gen.setPosition({133, 0}); // TODO: implement a box container
     btn_gen.setPadding({15, 10});
-
+    /*
     ui::Button btn_fog(&scene, "Fog", font_vt323);
     btn_fog.setPosition({360, 0}); // TODO: implement a box container
     btn_fog.setPadding({15, 10});
-
+    */
     ui::Button btn_fullscreen(&scene, "Fullscreen", font_vt323);
     btn_fullscreen.setAnchorX(ui::Anchor::END);
     btn_fullscreen.setPadding({15, 10});
 
     btn_vsync.onclick([&] { window.toggleVSync(); });
     btn_gen.onclick([&] { scene.terrain.toggleGeneration(); });
-    btn_fog.onclick([&] { scene.fogEnabled = !scene.fogEnabled; });
+    //btn_fog.onclick([&] { scene.fogEnabled = !scene.fogEnabled; });
     btn_fullscreen.onclick([&] { window.toggleFullscreen(); });
 
     ui::Text text_posPlayer(&scene, "", font_vt323);

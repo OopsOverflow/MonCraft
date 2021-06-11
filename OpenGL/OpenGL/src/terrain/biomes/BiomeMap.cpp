@@ -43,7 +43,7 @@ BiomeMap::BiomeMap()
   biomePlains.distortion = {};
   biomePlains.frequencies = {
     {2.0f, 0.002f}, // {magnitude, frequency}
-    {1.5f, 0.007f},
+    {0.5f, 0.007f},
     {0.0f, 0.050f},
     {0.5f, 0.100f},
   };
@@ -60,8 +60,8 @@ BiomeMap::BiomeMap()
   biomeDesert.underWaterBlock = BlockType::Sand;
   biomeDesert.frequencies = {
     {2.0f, 0.002f}, // {magnitude, frequency}
-    {1.5f, 0.007f},
-    {1.0f, 0.050f},
+    {1.0f, 0.007f},
+    {0.5f, 0.050f},
     {0.0f, 0.100f},
   };
   biomeDesert.elevation = 10;
@@ -69,8 +69,8 @@ BiomeMap::BiomeMap()
 
   biomeSea = biomePlains;
   biomeSea.type = BiomeType::SEA;
-  biomeSea.surface = BlockType::Sand;
-  biomeSea.underLayers = BlockType::Sand;
+  biomeSea.surface = BlockType::Grass;
+  biomeSea.underLayers = BlockType::Dirt;
   biomeSea.underWaterBlock = BlockType::Sandstone;
   biomeSea.frequencies = {
   {3.0f, 0.002f}, // {magnitude, frequency}
@@ -95,8 +95,8 @@ BiomeMap::BiomeMap()
   biomeHills.underLayers = BlockType::Dirt;
   biomeHills.underWaterBlock = BlockType::Dirt;
   biomeHills.frequencies = {
-    {6.0f, 0.002f}, // {magnitude, frequency}
-    {2.5f, 0.007f},
+    {2.0f, 0.002f}, // {magnitude, frequency}
+    {0.5f, 0.007f},
     {0.0f, 0.050f},
     {0.0f, 0.100f},
   };
@@ -109,12 +109,12 @@ BiomeMap::BiomeMap()
   biomeMountains.underLayers = BlockType::Stone;
   biomeMountains.underWaterBlock = BlockType::Stone;
   biomeMountains.frequencies = {
-    {20.0f, 0.002f}, // {magnitude, frequency}
-    {18.0f, 0.007f},
-    {2.0f, 0.050f},
-    {1.5f, 0.100f},
+    {7.0f, 0.002f}, // {magnitude, frequency}
+    {0.0f, 0.007f},
+    {0.0f, 0.050f},
+    {0.0f, 0.100f},
   };
-  biomeMountains.elevation = 20;
+  biomeMountains.elevation = 110;
   biomeMountains.tallgrass = 0;
 
   biomeForest = biomePlains;
@@ -124,7 +124,7 @@ BiomeMap::BiomeMap()
   biomeForest.underWaterBlock = BlockType::Dirt;
   biomeForest.frequencies = {
     {3.0f, 0.002f}, // {magnitude, frequency}
-    {2.5f, 0.007f},
+    {1.5f, 0.007f},
     {0.0f, 0.050f},
     {0.0f, 0.100f},
   };
@@ -189,7 +189,7 @@ BiomeMap::weightedBiomes_t BiomeMap::offsetVoronoi(ivec2 ipos) {
 
     float dist = distance(pos, mainPos);
     if(dist < thres) {
-      float weight = thres - dist;
+      float weight = pow(0.001*(thres - dist),4);
       res.push_back({
         mainCell,
         weight,
@@ -206,7 +206,7 @@ BiomeMap::weightedBiomes_t BiomeMap::offsetVoronoi(ivec2 ipos) {
         vec2 otherPos = voronoi.get(mainCell + delta);
         float dist = distance(pos, otherPos);
         if(dist < thres) {
-          float weight = thres - dist;
+          float weight = pow(0.001 * (thres - dist), 4);
           res.push_back({
             mainCell + delta,
             weight,
@@ -272,7 +272,7 @@ BiomeMap::weightedBiomes_t BiomeMap::sampleBiomes(BiomeMap::weightedBiomes_t bio
     temperature = (temperature + 1) / 2;
     water = (water + 1) / 2;
 
-    if (water < .4) {
+    if (water < .2) {
       biome.biome = &biomeSea;
     }
     // else if (water < ) {
@@ -284,10 +284,10 @@ BiomeMap::weightedBiomes_t BiomeMap::sampleBiomes(BiomeMap::weightedBiomes_t bio
         if (temperature < .2) {
           biome.biome = &biomeToundra;
         }
-        else if (temperature < .5) {
+        else if (temperature < .4) {
           biome.biome = &biomePlains;
         }
-        else if (temperature < .65) {
+        else if (temperature < .55) {
             biome.biome = &biomeForest;
         }
         else {
