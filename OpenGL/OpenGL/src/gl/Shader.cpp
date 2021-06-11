@@ -2,6 +2,8 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
+#define SHADER_ENABLE_DEBUG 0
+
 Shader *Shader::activeShader = nullptr;
 
 Shader::Shader(const char *vertexPath, const char *fragmentPath) {
@@ -47,6 +49,7 @@ void Shader::initLocations() {
   glUniform1i(t_shadow1, 3);
   glUniform1i(t_shadow2, 4);
 
+#if defined(DEBUG) && SHADER_ENABLE_DEBUG == 1
 #define ATTRLOC(str) glGetAttribLocation(program, str)
 #define UNILOC(str) glGetUniformLocation(program, str)
   std::cout << "---- SHADER ----" << std::endl
@@ -68,6 +71,7 @@ void Shader::initLocations() {
             << "t_shadow2: " << t_shadow2 << std::endl;
   #undef ATTRLOC
   #undef UNILOC
+  #endif
 }
 
 std::string Shader::readFile(const std::string &path) {
