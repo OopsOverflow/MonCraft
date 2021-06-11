@@ -31,7 +31,7 @@ public:
   /**
    * Draws the character entirely, including body parts.
    */
-	void render() override;
+	void render();
 
   /**
    * Update the character state.

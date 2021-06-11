@@ -50,11 +50,6 @@ public:
 	void cameraToHead(Camera& cam);
 
 	/**
-	 * Renders the entity.
-	 */
-	virtual void render() = 0;
-
-	/**
 	 * Update the state of the entity
 	 */
 	virtual void update(Terrain& terrain, float dt);

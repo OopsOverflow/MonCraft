@@ -9,7 +9,6 @@ class ClientID {
 public:
   ClientID(sf::IpAddress addr, unsigned short port);
 
-
   bool operator==(ClientID const& lhs) const;
   bool operator<(ClientID const& lhs) const;
 
