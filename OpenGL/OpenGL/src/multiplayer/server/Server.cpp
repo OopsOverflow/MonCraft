@@ -68,6 +68,11 @@ void Server::packet_entity_tick() {
   broadcast(packet);
 }
 
+void Server::beep() {
+  std::cout << '\a';
+  std::cout.flush();
+}
+
 void Server::broadcast(sf::Packet& packet) {
   for(auto const& pair : clients) {
     socket.send(packet, pair.first.getAddr(), pair.first.getPort());
@@ -113,6 +118,7 @@ void Server::handle_login(sf::IpAddress clientAddr, unsigned short clientPort) {
 
     if(res.second) {
       packet_ack_login(res.first->first, uid);
+      beep();
       std::cout << "client connected" << std::endl;
     }
     else {
@@ -133,12 +139,14 @@ void Server::handle_logout(sf::IpAddress clientAddr, unsigned short clientPort) 
     Identifier uid = it->second.player.getIdentifier();
     clients.erase(it);
     packet_logout(uid);
+    beep();
     std::cout << "client disconnected" << std::endl;
   }
 }
 
 void Server::handle_ping(Client& client) {
   std::cout << "Ping!" << std::endl;
+  beep();
 }
 
 void Server::handle_player_tick(Client& client, sf::Packet& packet) {

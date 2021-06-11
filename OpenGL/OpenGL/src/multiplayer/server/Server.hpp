@@ -24,6 +24,7 @@ private:
   void packet_entity_tick();
   void packet_logout(Identifier uid);
   void packet_ack_login(ClientID const& client, Identifier uid);
+  void beep();
 
   unsigned short port;
   sf::UdpSocket socket;
