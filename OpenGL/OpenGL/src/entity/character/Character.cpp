@@ -1,4 +1,5 @@
 #include "Character.hpp"
+#include "CharacterHitbox.hpp"
 #include "blocks/Debug_Block.hpp"
 #include "blocks/Air_Block.hpp"
 #include "blocks/Dirt_Block.hpp"
@@ -13,7 +14,7 @@ const float godMultiplier = 5;
 const float sprintMultiplier = 2;
 
 Character::Character(vec3 pos)
-    : Entity(Hitbox(-vec3(.3f, .5f, .3f), vec3(.3f, 1.3f, .3f))),
+    : Entity(CharacterHitbox()),
       caster(100), // distance the player can place blocks
       currentBlock(BlockType::Dirt),
       god(true), sprint(false)

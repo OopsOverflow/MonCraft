@@ -2,7 +2,8 @@
 
 #include <SFML/Network.hpp>
 #include <glm/glm.hpp>
-#include "entity/character/Character.hpp"
+#include "ServerEntity.hpp"
+#include "../common/Identifier.hpp"
 
 class ClientID {
 public:
@@ -13,11 +14,12 @@ public:
 
   bool operator==(ClientID const& lhs) const;
   bool operator<(ClientID const& lhs) const;
+
 };
 
 class Client {
 public:
-  Client();
+  Client(Identifier uid);
 
-  // Character player;
+  ServerEntity player;
 };

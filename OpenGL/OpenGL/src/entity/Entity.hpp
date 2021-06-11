@@ -61,6 +61,8 @@ public:
 
 	glm::vec3 getPosition() const;
 
+	void setPosition(glm::vec3 pos);
+
 	View view;
 	State state;
 

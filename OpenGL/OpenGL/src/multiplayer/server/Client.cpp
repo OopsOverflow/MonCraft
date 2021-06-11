@@ -1,5 +1,6 @@
 #include "Client.hpp"
 #include "../common/Config.hpp"
+#include "entity/character/CharacterHitbox.hpp"
 
 
 ClientID::ClientID(sf::IpAddress addr, unsigned short port)
@@ -19,8 +20,6 @@ bool ClientID::operator<(ClientID const& lhs) const {
 }
 
 
-Client::Client()
-  // : player(NetworkConfig::SPAWN_POINT)
-{
-
-}
+Client::Client(Identifier uid)
+  : player(uid, NetworkConfig::SPAWN_POINT, CharacterHitbox())
+{ }

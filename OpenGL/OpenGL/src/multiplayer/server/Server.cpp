@@ -1,18 +1,20 @@
 #include "Server.hpp"
 #include "../common/NetworkError.hpp"
 #include "../common/Config.hpp"
+#include "../common/Identifier.hpp"
 #include "debug/Debug.hpp"
 
 Server::Server(unsigned short port)
   : port(port)
 {
+  socket.setBlocking(false);
   if(socket.bind(port) != sf::Socket::Done) {
     throw NetworkError("Failed to bind to port: " + std::to_string(port));
   }
 }
 
-bool isVerbose(ClientPacketType type) {
-  return type != ClientPacketType::ENTITY_TICK;
+bool isVerbose(PacketType type) {
+  return type != PacketType::ENTITY_TICK;
 }
 
 bool Server::poll() {
@@ -31,8 +33,8 @@ bool Server::poll() {
   bool verbose = isVerbose(type);
   if(verbose) std::cout << "Packet " << header << std::endl;
 
-  if(type == ClientPacketType::LOGIN) handle_login(clientAddr, clientPort);
-  else if(type == ClientPacketType::LOGOUT) handle_logout(clientAddr, clientPort);
+  if(type == PacketType::LOGIN) handle_login(clientAddr, clientPort);
+  else if(type == PacketType::LOGOUT) handle_logout(clientAddr, clientPort);
 
   else {
     ClientID id(clientAddr, clientPort);
@@ -42,8 +44,8 @@ bool Server::poll() {
     }
     else {
 
-      if(type == ClientPacketType::PING) handle_ping(it->second);
-      else if(type == ClientPacketType::ENTITY_TICK) {
+      if(type == PacketType::PING) handle_ping(it->second);
+      else if(type == PacketType::ENTITY_TICK) {
         PacketEntityTick body;
         packet >> body;
         handle_entity_tick(it->second, body);
@@ -82,13 +84,20 @@ void Server::handle_login(sf::IpAddress clientAddr, unsigned short clientPort) {
 
   auto it = clients.find(id);
 
-
   if(it != clients.end()) {
     std::cout << "[WARN] Login of already registered client" << std::endl;
   }
   else {
-    clients.emplace(id, Client());
-    std::cout << "client connected" << std::endl;
+    Identifier uid = Identifier::generate();
+    auto res = clients.emplace(id, Client(uid));
+
+    if(res.second) {
+      packet_ack_login(res.first->first, uid);
+      std::cout << "client connected" << std::endl;
+    }
+    else {
+      std::cout << "[WARN] client insertion failed" << std::endl;
+    }
   }
 }
 
@@ -111,5 +120,13 @@ void Server::handle_ping(Client& client) {
 }
 
 void Server::handle_entity_tick(Client& client, PacketEntityTick& body) {
-  // client.player.s = body.getPlayerPos();
+  client.player.setPosition(body.getPlayerPos());
+}
+
+void Server::packet_ack_login(ClientID const& client, Identifier uid) {
+  sf::Packet packet;
+  PacketHeader header(PacketType::ACK_LOGIN);
+  PacketAckLogin body(uid);
+  packet << header << body;
+  socket.send(packet, client.addr, client.port);
 }

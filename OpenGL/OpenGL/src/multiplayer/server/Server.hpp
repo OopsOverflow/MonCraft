@@ -21,7 +21,7 @@ private:
   void handle_logout(sf::IpAddress clientAddr, unsigned short clientPort);
   void handle_ping(Client& client);
   void handle_entity_tick(Client& client, PacketEntityTick& body);
-  void packet_ack_login(Client& client);
+  void packet_ack_login(ClientID const& client, Identifier uid);
 
   unsigned short port;
   sf::UdpSocket socket;

@@ -1,18 +1,16 @@
 #include "Packet.hpp"
 
-// header
-
-PacketHeader::PacketHeader(ClientPacketType type)
+PacketHeader::PacketHeader(PacketType type)
   : type((sf::Uint8)type)
 { }
 
 PacketHeader::PacketHeader()
-  : PacketHeader(ClientPacketType::NONE)
+  : PacketHeader(PacketType::NONE)
 { }
 
 
-ClientPacketType PacketHeader::getType() const {
-  return (ClientPacketType)type;
+PacketType PacketHeader::getType() const {
+  return (PacketType)type;
 }
 
 sf::Packet& operator<<(sf::Packet& packet, PacketHeader const& header) {
@@ -24,33 +22,13 @@ sf::Packet& operator>>(sf::Packet& packet, PacketHeader& header) {
 }
 
 std::ostream& operator<<(std::ostream& os, PacketHeader const& header) {
-  ClientPacketType type = header.getType();
+  PacketType type = header.getType();
 
-  if(type == ClientPacketType::LOGIN) os << "LOGIN";
-  else if(type == ClientPacketType::LOGOUT) os << "LOGOUT";
-  else if(type == ClientPacketType::ENTITY_TICK) os << "ENTITY_TICK";
-  else if(type == ClientPacketType::PING) os << "PING";
-  else if(type == ClientPacketType::NONE) os << "NONE";
+  if(type == PacketType::LOGIN) os << "LOGIN";
+  else if(type == PacketType::LOGOUT) os << "LOGOUT";
+  else if(type == PacketType::ENTITY_TICK) os << "ENTITY_TICK";
+  else if(type == PacketType::PING) os << "PING";
+  else if(type == PacketType::NONE) os << "NONE";
 
   return os;
-}
-
-// entity tick
-
-PacketEntityTick::PacketEntityTick(glm::vec3 playerPos)
-  : playerPos(playerPos)
-{ }
-
-PacketEntityTick::PacketEntityTick() : PacketEntityTick(glm::vec3(0)) {}
-
-glm::vec3 PacketEntityTick::getPlayerPos() const {
-  return playerPos;
-}
-
-sf::Packet& operator<<(sf::Packet& packet, PacketEntityTick const& body) {
-  return packet << body.playerPos;
-}
-
-sf::Packet& operator>>(sf::Packet& packet, PacketEntityTick& body) {
-  return packet >> body.playerPos;
 }

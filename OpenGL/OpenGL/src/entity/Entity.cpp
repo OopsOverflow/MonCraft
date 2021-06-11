@@ -148,3 +148,7 @@ void Entity::update(Terrain& terrain, float dt) {
 vec3 Entity::getPosition() const {
 	return node.loc;
 }
+
+void Entity::setPosition(glm::vec3 pos) {
+	node.loc = pos;
+}

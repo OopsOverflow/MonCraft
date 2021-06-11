@@ -62,6 +62,9 @@ srcs = files(
 
   'OpenGL/src/multiplayer/common/NetworkError.cpp',
   'OpenGL/src/multiplayer/common/Packet.cpp',
+  'OpenGL/src/multiplayer/common/Identifier.cpp',
+  'OpenGL/src/multiplayer/common/packets/EntityTick.cpp',
+  'OpenGL/src/multiplayer/common/packets/AckLogin.cpp',
 )
 
 client_srcs = files(
@@ -73,6 +76,7 @@ server_srcs = files(
   'OpenGL/src/Server.cpp',
   'OpenGL/src/multiplayer/server/Server.cpp',
   'OpenGL/src/multiplayer/server/Client.cpp',
+  'OpenGL/src/multiplayer/server/ServerEntity.cpp',
 )
 
 deps = [

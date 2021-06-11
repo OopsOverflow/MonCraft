@@ -1,18 +1,15 @@
 #pragma once
 
+#include "packets/EntityTick.hpp"
+#include "packets/AckLogin.hpp"
+
 #include <SFML/Network.hpp>
 #include <glm/glm.hpp>
 
-enum class ClientPacketType {
+enum class PacketType {
   LOGIN,
-  LOGOUT,
-  ENTITY_TICK,
-  PING,
-  NONE
-};
-
-enum class ServerPacketType {
   ACK_LOGIN,
+  LOGOUT,
   ENTITY_TICK,
   PING,
   NONE
@@ -21,10 +18,10 @@ enum class ServerPacketType {
 class PacketHeader {
 
 public:
-  PacketHeader(ClientPacketType type);
+  PacketHeader(PacketType type);
   PacketHeader();
 
-  ClientPacketType getType() const;
+  PacketType getType() const;
 
 private:
   sf::Uint8 type;
@@ -32,19 +29,6 @@ private:
   friend sf::Packet& operator<<(sf::Packet& packet, PacketHeader const& header);
   friend sf::Packet& operator>>(sf::Packet& packet, PacketHeader& header);
   friend std::ostream& operator<<(std::ostream& os, PacketHeader const& header);
-};
-
-class PacketEntityTick {
-public:
-  PacketEntityTick();
-  PacketEntityTick(glm::vec3 playerPos);
-
-  glm::vec3 getPlayerPos() const;
-
-private:
-  glm::vec3 playerPos;
-  friend sf::Packet& operator<<(sf::Packet& packet, PacketEntityTick const& body);
-  friend sf::Packet& operator>>(sf::Packet& packet, PacketEntityTick& body);
 };
 
 // template<typename Container>

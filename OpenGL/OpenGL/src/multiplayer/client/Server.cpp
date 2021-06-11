@@ -6,7 +6,8 @@
 
 Server::Server(std::string url, unsigned short port)
   : addr(url), port(port),
-    frameDuration(sf::milliseconds(NetworkConfig::SERVER_TICK))
+    frameDuration(sf::milliseconds(NetworkConfig::SERVER_TICK)),
+    uid(0)
 {
   lastUpdate = clock.getElapsedTime() - frameDuration - frameDuration; // needs update
   packet_login();
@@ -25,13 +26,17 @@ void Server::update(glm::vec3 playerPos) {
   }
 }
 
+Identifier Server::getPlayerID() const {
+  return uid;
+}
+
 void Server::ping() {
   packet_ping();
 }
 
 void Server::packet_ping() {
   sf::Packet packet;
-  PacketHeader header(ClientPacketType::PING);
+  PacketHeader header(PacketType::PING);
 
   packet << header;
 
@@ -44,7 +49,7 @@ void Server::packet_ping() {
 
 void Server::packet_login() {
   sf::Packet packet;
-  PacketHeader header(ClientPacketType::LOGIN);
+  PacketHeader header(PacketType::LOGIN);
 
   packet << header;
 
@@ -57,7 +62,7 @@ void Server::packet_login() {
 
 void Server::packet_logout() {
   sf::Packet packet;
-  PacketHeader header(ClientPacketType::LOGOUT);
+  PacketHeader header(PacketType::LOGOUT);
 
   packet << header;
 
@@ -70,7 +75,7 @@ void Server::packet_logout() {
 
 void Server::packet_entity_tick(glm::vec3 playerPos) {
   sf::Packet packet;
-  PacketHeader header(ClientPacketType::ENTITY_TICK);
+  PacketHeader header(PacketType::ENTITY_TICK);
   PacketEntityTick body(playerPos);
 
   packet << header << body;
@@ -78,6 +83,30 @@ void Server::packet_entity_tick(glm::vec3 playerPos) {
   auto send_res = socket.send(packet, addr, port);
 
   if(send_res != sf::Socket::Done) {
-    std::cout << "[WARN] logout failed" << std::endl;
+    std::cout << "[WARN] entity_tick failed" << std::endl;
   }
+}
+
+void Server::listen_ack_login() {
+  sf::Packet packet;
+  sf::IpAddress serverAddr;
+  unsigned short serverPort;
+
+  auto recv_res = socket.receive(packet, serverAddr, serverPort);
+
+  if(recv_res != sf::Socket::Done) {
+    throw NetworkError("listen_ack_login failed");
+  }
+
+  PacketHeader header;
+  packet >> header;
+  PacketType type = header.getType();
+
+  if(type != PacketType::ACK_LOGIN) {
+    throw NetworkError("listen_ack_login failed");
+  }
+
+  PacketAckLogin body;
+  packet >> body;
+  uid = body.getIdentifier();
 }
