@@ -5,7 +5,6 @@ if get_option('buildtype').startswith('debug')
 endif
 
 srcs = files(
-  'OpenGL/src/Application.cpp',
   'OpenGL/src/MonCraftScene.cpp',
 
   'OpenGL/src/audio/Music.cpp',
@@ -60,6 +59,20 @@ srcs = files(
   'OpenGL/src/ui/style/Style.cpp',
   'OpenGL/src/ui/style/Type.cpp',
   'OpenGL/src/ui/style/Specification.cpp',
+
+  'OpenGL/src/multiplayer/common/NetworkError.cpp',
+  'OpenGL/src/multiplayer/common/Packet.cpp',
+)
+
+client_srcs = files(
+  'OpenGL/src/Application.cpp',
+  'OpenGL/src/multiplayer/client/Server.cpp',
+)
+
+server_srcs = files(
+  'OpenGL/src/Server.cpp',
+  'OpenGL/src/multiplayer/server/Server.cpp',
+  'OpenGL/src/multiplayer/server/Client.cpp',
 )
 
 deps = [
@@ -73,6 +86,7 @@ deps = [
   dependency('threads'),
   dependency('openmp'),
   dependency('sfml-audio'),
+  dependency('sfml-network'),
   dependency('freetype2'),
 ]
 
@@ -81,7 +95,13 @@ incs = include_directories('OpenGL/src')
 # install_subdir('OpenGL/src/shader', install_dir : 'shader')
 
 exe = executable(
-  'MonCraft', srcs,
+  'MonCraft', [client_srcs, srcs],
+  dependencies: deps,
+  include_directories: incs
+)
+
+exe_server = executable(
+  'MonCraftServer', [server_srcs, srcs],
   dependencies: deps,
   include_directories: incs
 )

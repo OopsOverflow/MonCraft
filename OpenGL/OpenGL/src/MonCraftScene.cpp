@@ -2,6 +2,7 @@
 
 #include "MonCraftScene.hpp"
 #include "gl/ResourceManager.hpp"
+#include "multiplayer/common/Config.hpp"
 
 using namespace glm;
 
@@ -11,10 +12,10 @@ MonCraftScene::MonCraftScene(Viewport* vp)
 
       caster(100.f),
       shadows(4096),
-      character({ 0.0f, 40.0f, 0.0f }),
+      character(NetworkConfig::SPAWN_POINT),
 
       fogEnabled(false),
-      sunSpeed(0.005f), skyboxSpeed(0.005f),
+      sunSpeed(0.005f), skyboxSpeed(0.05f),
       captured(false)
 {
     // load resources

@@ -5,6 +5,8 @@
 #include "ui/ui.hpp"
 #include "MonCraftScene.hpp"
 #include "debug/Debug.hpp"
+#include "multiplayer/client/Server.hpp"
+#include "multiplayer/common/Config.hpp"
 
 using namespace glm;
 
@@ -34,7 +36,7 @@ void loadResources() {
     ResourceManager::loadShader("simple", "simple.vert", "simple.frag");
     ResourceManager::loadShader("skyBox", "skyBox.vert", "skyBox.frag");
     ResourceManager::loadShader("font",   "font.vert",   "font.frag");
-    ResourceManager::loadShader("water",   "water.vert",   "water.frag");
+    ResourceManager::loadShader("water",  "water.vert",  "water.frag");
     ResourceManager::loadShader("fog", "fog.vert", "fog.frag");
     ResourceManager::loadShader("pane", "pane.vert", "pane.frag");
 
@@ -49,6 +51,7 @@ void loadResources() {
 int main(int argc, char* argv[]) {
     std::cout << "---- Main ----" << std::endl;
     Viewport window({800, 800});
+    Server server(NetworkConfig::SERVER_ADDR, NetworkConfig::SERVER_PORT);
     loadResources();
     window.createRoot();
 
@@ -92,10 +95,15 @@ int main(int argc, char* argv[]) {
     btn_fullscreen.setAnchorX(ui::Anchor::END);
     btn_fullscreen.setPadding({15, 10});
 
+    ui::Button btn_ping(&scene, "Ping", font_vt323);
+    btn_ping.setPosition({0, 80}); // TODO: implement a box container
+    btn_fullscreen.setPadding({15, 10});
+
     btn_vsync.onclick([&] { window.toggleVSync(); });
     btn_gen.onclick([&] { scene.terrain.toggleGeneration(); });
     btn_fog.onclick([&] { scene.fogEnabled = !scene.fogEnabled; });
     btn_fullscreen.onclick([&] { window.toggleFullscreen(); });
+    btn_ping.onclick([&] { server.ping(); });
 
     ui::Text text_pos(&scene, "", font_vt323);
     text_pos.setAnchorY(ui::Anchor::END);
@@ -104,6 +112,8 @@ int main(int argc, char* argv[]) {
     // main loop
     for (float dt = 0; window.beginFrame(dt); window.endFrame()) {
         t += dt;
+
+        server.update(scene.character.getPosition());
 
         scene.drawFrame(t, dt);
 
