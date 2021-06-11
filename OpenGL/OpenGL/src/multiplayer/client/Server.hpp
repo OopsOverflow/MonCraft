@@ -25,6 +25,7 @@ private:
   void packet_ping();
   void packet_player_tick();
   bool listen_ack_login();
+  void handle_logout(sf::Packet& packet);
   bool poll();
   void applyEntityTransforms(sf::Packet& packet);
 

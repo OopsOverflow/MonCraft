@@ -15,12 +15,14 @@ public:
   void run();
 
 private:
+  void broadcast(sf::Packet& packet);
   bool poll();
-  void broadcast();
   void handle_login(sf::IpAddress clientAddr, unsigned short clientPort);
   void handle_logout(sf::IpAddress clientAddr, unsigned short clientPort);
   void handle_ping(Client& client);
   void handle_player_tick(Client& client, sf::Packet& packet);
+  void packet_entity_tick();
+  void packet_logout(Identifier uid);
   void packet_ack_login(ClientID const& client, Identifier uid);
 
   unsigned short port;

@@ -55,7 +55,7 @@ bool Server::poll() {
   return true;
 }
 
-void Server::broadcast() {
+void Server::packet_entity_tick() {
   sf::Packet packet;
   PacketHeader header(PacketType::ENTITY_TICK);
   packet << header;
@@ -65,10 +65,20 @@ void Server::broadcast() {
     packet << pair.second.player.getIdentifier();
     packet << pair.second.player;
   }
+  broadcast(packet);
+}
 
+void Server::broadcast(sf::Packet& packet) {
   for(auto const& pair : clients) {
     socket.send(packet, pair.first.getAddr(), pair.first.getPort());
   }
+}
+
+void Server::packet_logout(Identifier uid) {
+  sf::Packet packet;
+  PacketHeader header(PacketType::LOGOUT);
+  packet << header << uid;
+  broadcast(packet);
 }
 
 void Server::run() {
@@ -79,7 +89,7 @@ void Server::run() {
     sf::Time start = clock.getElapsedTime();
 
     while(poll()) {}
-    broadcast();
+    packet_entity_tick();
 
     sf::Time elapsed = clock.getElapsedTime() - start;
     if(elapsed < frameDuration) {
@@ -120,7 +130,9 @@ void Server::handle_logout(sf::IpAddress clientAddr, unsigned short clientPort) 
     std::cout << "[WARN] Logout of unregistered client" << std::endl;
   }
   else {
+    Identifier uid = it->second.player.getIdentifier();
     clients.erase(it);
+    packet_logout(uid);
     std::cout << "client disconnected" << std::endl;
   }
 }

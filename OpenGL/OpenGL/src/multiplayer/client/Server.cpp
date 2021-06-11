@@ -60,6 +60,9 @@ bool Server::poll() {
   if(type == PacketType::ENTITY_TICK) {
     applyEntityTransforms(packet);
   }
+  else if(type == PacketType::LOGOUT) {
+    handle_logout(packet);
+  }
 
   return true;
 }
@@ -169,4 +172,19 @@ bool Server::listen_ack_login() {
   packet >> entities->uid;
 
   return true;
+}
+
+void Server::handle_logout(sf::Packet& packet) {
+  Identifier uid;
+  packet >> uid;
+
+  auto& players = entities->players;
+
+  auto it = players.find(uid);
+  if(it != players.end()) {
+    players.erase(it);
+  }
+  else {
+    std::cout << "[WARN] logout of unknown player" << std::endl;
+  }
 }
