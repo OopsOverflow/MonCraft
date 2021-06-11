@@ -12,10 +12,12 @@
 #include "gl/ShadowMap.hpp"
 #include "gl/Viewport.hpp"
 
+#include "multiplayer/client/SharedEntities.hpp"
+
 class MonCraftScene : public ui::Component {
 
 public:
-  MonCraftScene(Viewport* vp);
+  MonCraftScene(Viewport* vp, entities_ptr_t entities);
 
   void drawFrame(float t, float dt);
 
@@ -49,8 +51,8 @@ public:
   SkyBox sky;
   Raycast caster;
   ShadowMap shadows;
-  Character character;
   Music musicPlayer;
+  entities_ptr_t entities;
 
   // other parameters
   bool fogEnabled;

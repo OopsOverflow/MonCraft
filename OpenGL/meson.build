@@ -64,12 +64,14 @@ srcs = files(
   'OpenGL/src/multiplayer/common/Packet.cpp',
   'OpenGL/src/multiplayer/common/Identifier.cpp',
   'OpenGL/src/multiplayer/common/packets/EntityTick.cpp',
+  'OpenGL/src/multiplayer/common/packets/PlayerTick.cpp',
   'OpenGL/src/multiplayer/common/packets/AckLogin.cpp',
 )
 
 client_srcs = files(
   'OpenGL/src/Application.cpp',
   'OpenGL/src/multiplayer/client/Server.cpp',
+  'OpenGL/src/multiplayer/client/SharedEntities.cpp',
 )
 
 server_srcs = files(

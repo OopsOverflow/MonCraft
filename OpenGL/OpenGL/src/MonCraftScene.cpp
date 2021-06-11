@@ -6,16 +6,16 @@
 
 using namespace glm;
 
-MonCraftScene::MonCraftScene(Viewport* vp)
+MonCraftScene::MonCraftScene(Viewport* vp, entities_ptr_t entities)
     : ui::Component(vp->getRoot()), vp(vp),
       camera(ivec2(1), {0, 32, 10}, {0, 32, 0}),
 
       caster(100.f),
       shadows(4096),
-      character(NetworkConfig::SPAWN_POINT),
+      entities(entities),
 
       fogEnabled(false),
-      sunSpeed(0.005f), skyboxSpeed(0.05f),
+      sunSpeed(0.005f), skyboxSpeed(0.005f),
       captured(false)
 {
     // load resources
@@ -43,7 +43,7 @@ void MonCraftScene::updateShadowMaps() {
     shadows.attach(camera, Frustum::NEAR);
     shadows.beginFrame(Frustum::NEAR);
     terrain.render(shadows.camera);
-    character.render();
+    entities->player.character->render();
 
     shadows.attach(camera, Frustum::MEDIUM);
     shadows.beginFrame(Frustum::MEDIUM);
@@ -107,21 +107,26 @@ void MonCraftScene::drawTerrain() {
 }
 
 void MonCraftScene::drawCharacter() {
-    if (character.view == View::THIRD_PERSON) {
+    if (entities->player.character->view == View::THIRD_PERSON) {
         shader->bindTexture(TEXTURE_COLOR, texCharacter);
-        character.render();
+        entities->player.character->render();
+    }
+    for(auto& other : entities->players) {
+        shader->bindTexture(TEXTURE_COLOR, texCharacter);
+        other.character->render();
     }
 }
 
 void MonCraftScene::drawFrame(float t, float dt) {
     // updates
     musicPlayer.update();
-    vp->keyboardController.apply(character, terrain);
-    vp->mouseController.apply(character, terrain);
-    character.update(terrain, dt);
+    vp->keyboardController.apply(*entities->player.character, terrain);
+    vp->mouseController.apply(*entities->player.character, terrain);
+    entities->player.character->update(terrain, dt);
+    for(auto& other : entities->players) other.character->update(terrain, dt);
     setSize(parent->getSize());
     camera.setSize(getSize());
-    character.cameraToHead(camera);
+    entities->player.character->cameraToHead(camera);
     terrain.update(camera.position);
 
     // update sun

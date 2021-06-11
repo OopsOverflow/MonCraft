@@ -1,5 +1,6 @@
 #pragma once
 
+#include "packets/PlayerTick.hpp"
 #include "packets/EntityTick.hpp"
 #include "packets/AckLogin.hpp"
 
@@ -11,6 +12,7 @@ enum class PacketType {
   ACK_LOGIN,
   LOGOUT,
   ENTITY_TICK,
+  PLAYER_TICK,
   PING,
   NONE
 };
@@ -31,38 +33,26 @@ private:
   friend std::ostream& operator<<(std::ostream& os, PacketHeader const& header);
 };
 
-// template<typename Container>
-// sf::Packet& operator<<(sf::Packet& packet, Container const& cont) {
-//   packet << cont.size();
-//   for(auto const& val : cont) {
-//     packet << val;
-//   }
-// }
-//
-// template<typename Container>
-// sf::Packet& operator>>(sf::Packet& packet, Container& cont) {
-//   sf::Uint64 size;
-//   packet >> size;
-//   cont = Container(size);
-//
-//   for(auto i = 0; i < size; i++) {
-//     packet >> cont[i];
-//   }
-// }
-//
-// template<typename StaticContainer, size_t N>
-// sf::Packet& operator<<(sf::Packet& packet, StaticContainer const& cont) {
-//   for(size_t i = 0; i < N; i++) {
-//     packet << cont[i];
-//   }
-// }
-//
-// template<typename StaticContainer, size_t N>
-// sf::Packet& operator>>(sf::Packet& packet, StaticContainer& vec) {
-//   for(auto i = 0; i < N; i++) {
-//     packet >> vec[i];
-//   }
-// }
+template<typename T>
+sf::Packet& operator<<(sf::Packet& packet, std::vector<T> const& cont) {
+  packet << (sf::Uint64)cont.size();
+  for(auto const& val : cont) {
+    packet << val;
+  }
+  return packet;
+}
+
+template<typename T>
+sf::Packet& operator>>(sf::Packet& packet, std::vector<T>& cont) {
+  sf::Uint64 size;
+  packet >> size;
+  cont = std::vector<T>(size);
+
+  for(sf::Uint64 i = 0; i < size; i++) {
+    packet >> cont[i];
+  }
+  return packet;
+}
 
 template<glm::length_t L, typename T, glm::qualifier Q = glm::defaultp>
 sf::Packet& operator<<(sf::Packet& packet, glm::vec<L, T, Q> const& cont) {

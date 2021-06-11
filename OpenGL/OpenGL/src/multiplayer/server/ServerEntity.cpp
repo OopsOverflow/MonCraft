@@ -6,3 +6,7 @@ ServerEntity::ServerEntity(Identifier uid, glm::vec3 pos, Hitbox box)
 
 void ServerEntity::render()
 { }
+
+Identifier ServerEntity::getIdentifier() const {
+  return uid;
+}

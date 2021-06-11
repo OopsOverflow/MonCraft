@@ -26,9 +26,10 @@ std::ostream& operator<<(std::ostream& os, PacketHeader const& header) {
 
   if(type == PacketType::LOGIN) os << "LOGIN";
   else if(type == PacketType::LOGOUT) os << "LOGOUT";
+  else if(type == PacketType::PLAYER_TICK) os << "PLAYER_TICK";
   else if(type == PacketType::ENTITY_TICK) os << "ENTITY_TICK";
   else if(type == PacketType::PING) os << "PING";
   else if(type == PacketType::NONE) os << "NONE";
-
+  else os << "<unknown>";
   return os;
 }

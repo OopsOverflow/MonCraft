@@ -1,19 +1,35 @@
 #include "../Packet.hpp"
 
-PacketEntityTick::PacketEntityTick(glm::vec3 playerPos)
-  : playerPos(playerPos)
+EntityData::EntityData(glm::vec3 pos, Identifier uid)
+  : pos(pos), uid(uid)
 { }
 
-PacketEntityTick::PacketEntityTick() : PacketEntityTick(glm::vec3(0)) {}
+EntityData::EntityData()
+  : EntityData(glm::vec3(0), Identifier())
+{ }
 
-glm::vec3 PacketEntityTick::getPlayerPos() const {
-  return playerPos;
+PacketEntityTick::PacketEntityTick(std::vector<EntityData> entities)
+  : entities(entities)
+{ }
+
+std::vector<EntityData> PacketEntityTick::getPlayers() const {
+  return entities;
 }
 
+PacketEntityTick::PacketEntityTick() : PacketEntityTick(std::vector<EntityData>{}) {}
+
 sf::Packet& operator<<(sf::Packet& packet, PacketEntityTick const& body) {
-  return packet << body.playerPos;
+  return packet << body.entities;
 }
 
 sf::Packet& operator>>(sf::Packet& packet, PacketEntityTick& body) {
-  return packet >> body.playerPos;
+  return packet >> body.entities;
+}
+
+sf::Packet& operator<<(sf::Packet& packet, EntityData const& entity) {
+  return packet << entity.pos << entity.uid;
+}
+
+sf::Packet& operator>>(sf::Packet& packet, EntityData& entity) {
+  return packet >> entity.pos >> entity.uid;
 }

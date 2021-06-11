@@ -14,20 +14,19 @@ Server::Server(unsigned short port)
 }
 
 bool isVerbose(PacketType type) {
-  return type != PacketType::ENTITY_TICK;
+  return type != PacketType::ENTITY_TICK && type != PacketType::PLAYER_TICK;
 }
 
 bool Server::poll() {
+  sf::Packet packet;
   sf::IpAddress clientAddr;
   unsigned short clientPort;
-
-  sf::Packet packet;
-  PacketHeader header;
 
   auto recv_res = socket.receive(packet, clientAddr, clientPort);
 
   if (recv_res != sf::Socket::Done) return false;
 
+  PacketHeader header;
   packet >> header;
   auto type = header.getType();
   bool verbose = isVerbose(type);
@@ -45,21 +44,38 @@ bool Server::poll() {
     else {
 
       if(type == PacketType::PING) handle_ping(it->second);
-      else if(type == PacketType::ENTITY_TICK) {
-        PacketEntityTick body;
+      else if(type == PacketType::PLAYER_TICK) {
+        PacketPlayerTick body;
         packet >> body;
-        handle_entity_tick(it->second, body);
+        handle_player_tick(it->second, body);
       }
 
     }
   }
 
-  if(verbose) std::cout << "-----------------" << std::endl;
+  if(verbose) std::cout << "----------------" << std::endl;
   return true;
 }
 
 void Server::broadcast() {
+  sf::Packet packet;
+  PacketHeader header(PacketType::ENTITY_TICK);
 
+  std::vector<EntityData> entities;
+
+  for(auto const& pair : clients) {
+    entities.emplace_back(
+      pair.second.player.getPosition(),
+      pair.second.player.getIdentifier()
+    );
+  }
+
+  PacketEntityTick body(entities);
+  packet << header << body;
+
+  for(auto const& pair : clients) {
+    socket.send(packet, pair.first.getAddr(), pair.first.getPort());
+  }
 }
 
 void Server::run() {
@@ -86,6 +102,7 @@ void Server::handle_login(sf::IpAddress clientAddr, unsigned short clientPort) {
 
   if(it != clients.end()) {
     std::cout << "[WARN] Login of already registered client" << std::endl;
+    packet_ack_login(it->first, it->second.player.getIdentifier());
   }
   else {
     Identifier uid = Identifier::generate();
@@ -119,7 +136,7 @@ void Server::handle_ping(Client& client) {
   std::cout << "Ping!" << std::endl;
 }
 
-void Server::handle_entity_tick(Client& client, PacketEntityTick& body) {
+void Server::handle_player_tick(Client& client, PacketPlayerTick& body) {
   client.player.setPosition(body.getPlayerPos());
 }
 
@@ -128,5 +145,5 @@ void Server::packet_ack_login(ClientID const& client, Identifier uid) {
   PacketHeader header(PacketType::ACK_LOGIN);
   PacketAckLogin body(uid);
   packet << header << body;
-  socket.send(packet, client.addr, client.port);
+  socket.send(packet, client.getAddr(), client.getPort());
 }

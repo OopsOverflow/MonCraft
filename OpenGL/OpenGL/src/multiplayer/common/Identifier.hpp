@@ -8,8 +8,12 @@
  */
 class Identifier {
 public:
+  Identifier();
   Identifier(sf::Uint64 id);
   static Identifier generate();
+
+  bool operator==(Identifier const& rhs) const;
+  bool operator!=(Identifier const& rhs) const;
 
 private:
   sf::Uint64 id;

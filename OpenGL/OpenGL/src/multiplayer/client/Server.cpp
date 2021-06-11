@@ -1,33 +1,88 @@
 #include "Server.hpp"
 #include "../common/NetworkError.hpp"
 #include "../common/Config.hpp"
-#include "../common/Packet.hpp"
 #include <iostream>
+#include "debug/Debug.hpp"
 
 Server::Server(std::string url, unsigned short port)
   : addr(url), port(port),
     frameDuration(sf::milliseconds(NetworkConfig::SERVER_TICK)),
-    uid(0)
+    entities(SharedEntities::create())
 {
   lastUpdate = clock.getElapsedTime() - frameDuration - frameDuration; // needs update
-  packet_login();
+  socket.setBlocking(false);
+  if(socket.bind(sf::Socket::AnyPort) != sf::Socket::Done) {
+    throw NetworkError("Failed to bind to any port");
+  }
+
+  bool handshake = false;
+  do {
+    packet_login();
+    std::cout << "waiting for server..." << std::endl;
+    handshake = listen_ack_login();
+    sf::sleep(sf::milliseconds(100));
+  } while(!handshake);
 }
 
 Server::~Server() {
   packet_logout();
 }
 
+entities_ptr_t Server::getEntities() const {
+  return entities;
+}
 
-void Server::update(glm::vec3 playerPos) {
+void Server::update() {
+  while(poll()) {};
+
   sf::Time now = clock.getElapsedTime();
   if(now - lastUpdate > frameDuration) {
-    packet_entity_tick(playerPos);
+    packet_player_tick(entities->player.character->getPosition());
     lastUpdate = now;
   }
 }
 
-Identifier Server::getPlayerID() const {
-  return uid;
+bool Server::poll() {
+  sf::Packet packet;
+  sf::IpAddress serverAddr;
+  unsigned short serverPort;
+
+  auto recv_res = socket.receive(packet, serverAddr, serverPort);
+
+  if(recv_res != sf::Socket::Done) {
+    return false;
+  }
+
+  PacketHeader header;
+  packet >> header;
+  auto type = header.getType();
+
+  if(type == PacketType::ENTITY_TICK) {
+    PacketEntityTick body;
+    packet >> body;
+
+    for(auto const& serverPlayer : body.getPlayers()) {
+      if(serverPlayer.uid == entities->player.uid) {
+        // std::cout << "server pos: " << serverPlayer.pos << std::endl;
+      }
+      else {
+        auto const& players = entities->players;
+
+        auto it = std::find_if(players.begin(), players.end(), [&] (Player const& p) {
+          return p.uid == serverPlayer.uid;
+        });
+
+        if(it != players.end()) {
+          it->character->setPosition(serverPlayer.pos);
+        }
+        else {
+          entities->players.emplace_back(serverPlayer.uid, serverPlayer.pos);
+        }
+      }
+    }
+  }
+
+  return true;
 }
 
 void Server::ping() {
@@ -73,21 +128,21 @@ void Server::packet_logout() {
   }
 }
 
-void Server::packet_entity_tick(glm::vec3 playerPos) {
+void Server::packet_player_tick(glm::vec3 playerPos) {
   sf::Packet packet;
-  PacketHeader header(PacketType::ENTITY_TICK);
-  PacketEntityTick body(playerPos);
+  PacketHeader header(PacketType::PLAYER_TICK);
+  PacketPlayerTick body(playerPos);
 
   packet << header << body;
 
   auto send_res = socket.send(packet, addr, port);
 
   if(send_res != sf::Socket::Done) {
-    std::cout << "[WARN] entity_tick failed" << std::endl;
+    std::cout << "[WARN] player_tick failed" << std::endl;
   }
 }
 
-void Server::listen_ack_login() {
+bool Server::listen_ack_login() {
   sf::Packet packet;
   sf::IpAddress serverAddr;
   unsigned short serverPort;
@@ -95,7 +150,7 @@ void Server::listen_ack_login() {
   auto recv_res = socket.receive(packet, serverAddr, serverPort);
 
   if(recv_res != sf::Socket::Done) {
-    throw NetworkError("listen_ack_login failed");
+    return false;
   }
 
   PacketHeader header;
@@ -108,5 +163,7 @@ void Server::listen_ack_login() {
 
   PacketAckLogin body;
   packet >> body;
-  uid = body.getIdentifier();
+  entities->player.uid = body.getIdentifier();
+
+  return true;
 }

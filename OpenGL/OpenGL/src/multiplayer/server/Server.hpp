@@ -20,7 +20,7 @@ private:
   void handle_login(sf::IpAddress clientAddr, unsigned short clientPort);
   void handle_logout(sf::IpAddress clientAddr, unsigned short clientPort);
   void handle_ping(Client& client);
-  void handle_entity_tick(Client& client, PacketEntityTick& body);
+  void handle_player_tick(Client& client, PacketPlayerTick& body);
   void packet_ack_login(ClientID const& client, Identifier uid);
 
   unsigned short port;

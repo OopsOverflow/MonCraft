@@ -3,7 +3,11 @@
 #include <string>
 #include <SFML/Network.hpp>
 #include <glm/glm.hpp>
+#include <functional>
 #include "../common/Identifier.hpp"
+#include "../common/Packet.hpp"
+#include "entity/character/Character.hpp"
+#include "SharedEntities.hpp"
 
 class Server {
 
@@ -12,15 +16,17 @@ public:
   ~Server();
 
   void ping();
-  void update(glm::vec3 playerPos);
-  Identifier getPlayerID() const;
+  void update();
+  entities_ptr_t getEntities() const;
+
 
 private:
   void packet_login();
   void packet_logout();
   void packet_ping();
-  void packet_entity_tick(glm::vec3 playerPos);
-  void listen_ack_login();
+  void packet_player_tick(glm::vec3 playerPos);
+  bool listen_ack_login();
+  bool poll();
 
   sf::IpAddress addr;
   unsigned short port;
@@ -28,5 +34,6 @@ private:
   sf::Time lastUpdate;
   const sf::Time frameDuration;
   sf::Clock clock;
-  Identifier uid;
+
+  entities_ptr_t entities;
 };

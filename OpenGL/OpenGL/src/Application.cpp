@@ -51,9 +51,9 @@ void loadResources() {
 int main(int argc, char* argv[]) {
     std::cout << "---- Main ----" << std::endl;
     Viewport window({800, 800});
-    Server server(NetworkConfig::SERVER_ADDR, NetworkConfig::SERVER_PORT);
     loadResources();
     window.createRoot();
+    Server server(NetworkConfig::SERVER_ADDR, NetworkConfig::SERVER_PORT);
 
     // game seed
     std::hash<std::string> hashString;
@@ -65,7 +65,7 @@ int main(int argc, char* argv[]) {
     auto font_roboto = std::make_shared<const Font>("Roboto-Regular");
     auto font_vt323 = std::make_shared<const Font>("VT323-Regular");
 
-    MonCraftScene scene(&window);
+    MonCraftScene scene(&window, server.getEntities());
     scene.setPadding({10, 10});
 
     ui::Pane pane_fps(&scene);
@@ -113,7 +113,7 @@ int main(int argc, char* argv[]) {
     for (float dt = 0; window.beginFrame(dt); window.endFrame()) {
         t += dt;
 
-        server.update(scene.character.getPosition());
+        server.update();
 
         scene.drawFrame(t, dt);
 
@@ -122,7 +122,7 @@ int main(int argc, char* argv[]) {
         text_fps.setText(text.str());
 
         text.str(""); // "clears" the string stream
-        text << "Player Pos : " << std::fixed << std::setprecision(3) << scene.character.getPosition();
+        text << "Player Pos : " << std::fixed << std::setprecision(3) << scene.entities->player.character->getPosition();
         text_pos.setText(text.str());
     }
 

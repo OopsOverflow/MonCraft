@@ -7,8 +7,9 @@ class ServerEntity : public Entity {
 public:
   ServerEntity(Identifier uid, glm::vec3 pos, Hitbox box);
 
-  void render() override;
-
+  Identifier getIdentifier() const;
+  
 private:
+  void render() override;
   Identifier uid;
 };
