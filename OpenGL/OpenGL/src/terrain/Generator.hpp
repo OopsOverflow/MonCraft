@@ -41,7 +41,7 @@ private:
   Oak_Tree defaultOakTree;
   Birch_Tree defaultBirchTree;
   Cactus defaultCactus;
-  EditPlaterforme defaultEditPlaterforme;
+  EditPlateforme defaultEditPlaterforme;
 public:
   BiomeMap biomeSampler;
 };

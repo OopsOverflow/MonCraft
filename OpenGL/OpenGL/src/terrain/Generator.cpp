@@ -113,7 +113,7 @@ std::vector<Structure::Slice> Generator::generateStructures(ivec3 cpos, Chunk& c
         if (chunk[dpos]->type == BlockType::Snow && biome.type == BiomeType::TOUNDRA) {
             ivec3 pos = orig + dpos;
             float editPlateforme = valueNoise.sample1D(ivec2(pos.x, pos.z)) / (float)UINT32_MAX;
-            if (editPlateforme < 0.0001f) {
+            if (editPlateforme < 0.0000f) {
                 auto editPlateformeSlice = defaultEditPlaterforme.spawn(chunk, dpos);
                 slices.insert(slices.end(), editPlateformeSlice.begin(), editPlateformeSlice.end());
             }

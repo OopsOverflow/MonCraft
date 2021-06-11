@@ -121,7 +121,7 @@ int main(int argc, char* argv[]) {
         text_posPlayer.setText(text.str());
 
         text.str(""); // "clears" the string stream
-        text << "GameTime : " << std::fixed << std::setprecision(3) << t;
+        text << "Game Time : " << std::fixed << std::setprecision(3) << t;
         text_gameTime.setText(text.str());
     }
 
