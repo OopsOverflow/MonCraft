@@ -24,8 +24,6 @@ Terrain::~Terrain() {
   stopGeneration();
 }
 
-#include "debug/Debug.hpp"
-
 void Terrain::updateWaitingList() {
   waitingChunks.clear();
   auto cpos = getChunkPos();
