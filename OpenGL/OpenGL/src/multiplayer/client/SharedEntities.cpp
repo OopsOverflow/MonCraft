@@ -2,13 +2,29 @@
 #include "../common/Config.hpp"
 
 SharedEntities::SharedEntities()
-  : player(nullptr)
+  : uid(0), player(nullptr), terrain(nullptr)
 { }
 
 entities_ptr_t SharedEntities::create() {
   return std::shared_ptr<SharedEntities>(new SharedEntities());
 }
 
-SharedEntities::player_t SharedEntities::createPlayer() {
-  return player_t(new Character(NetworkConfig::SPAWN_POINT));
+void SharedEntities::createPlayer(Identifier uid) {
+  auto res = players.emplace(uid, player_t(new Character(NetworkConfig::SPAWN_POINT)));
+
+  if(!res.second) {
+    throw std::runtime_error("Failed to create player: uid already taken");
+  }
+}
+
+void SharedEntities::initialize() {
+  if(terrain || player) {
+    throw std::runtime_error("Shared entities already initialized");
+  }
+  if(!uid) {
+    throw std::runtime_error("Cannot initialize Shared entities: no uid set");
+  }
+
+  terrain = terrain_t(new Terrain());
+  player = player_t(new Character(NetworkConfig::SPAWN_POINT));
 }

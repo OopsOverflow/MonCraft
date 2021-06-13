@@ -4,6 +4,7 @@
 #include <map>
 #include <SFML/Network.hpp>
 #include "../common/Packet.hpp"
+#include "terrain/BlockArray.hpp"
 
 #include "Client.hpp"
 
@@ -21,9 +22,11 @@ private:
   void handle_logout(sf::IpAddress clientAddr, unsigned short clientPort);
   void handle_ping(Client& client);
   void handle_player_tick(Client& client, sf::Packet& packet);
+  void handle_blocks(Client const& client, sf::Packet& packet);
   void packet_entity_tick();
   void packet_logout(Identifier uid);
   void packet_ack_login(ClientID const& client, Identifier uid);
+  void packet_blocks(Identifier uid, BlockArray changedBlocks);
   void beep();
 
   unsigned short port;

@@ -27,7 +27,7 @@ MonCraftScene::MonCraftScene(Viewport* vp, entities_ptr_t entities)
         normalMapID[i] = ResourceManager::getTexture("waterNormal" + std::to_string(i));
     }
 
-    entities->player = entities->createPlayer();
+    entities->initialize();
 }
 
 bool MonCraftScene::onMousePressed(glm::ivec2 pos) {
@@ -44,16 +44,16 @@ void MonCraftScene::updateShadowMaps() {
     shadows.update(sunDir);
     shadows.attach(camera, Frustum::NEAR);
     shadows.beginFrame(Frustum::NEAR);
-    terrain.render(shadows.camera);
+    entities->terrain->render(shadows.camera);
     entities->player->render();
 
     shadows.attach(camera, Frustum::MEDIUM);
     shadows.beginFrame(Frustum::MEDIUM);
-    terrain.render(shadows.camera);
+    entities->terrain->render(shadows.camera);
 
     shadows.attach(camera, Frustum::FAR);
     shadows.beginFrame(Frustum::FAR);
-    terrain.render(shadows.camera);
+    entities->terrain->render(shadows.camera);
     shadows.endFrame();
 }
 
@@ -69,7 +69,7 @@ void MonCraftScene::updateUniforms(float t) {
     glUniform1i(shader->getUniformLocation("fog"), (int)fogEnabled); // TODO
     shader->bindTexture(TEXTURE_NORMAL, normalMapID[(size_t)(t*15)%30]);
 
-    Block* block = terrain.getBlock(ivec3(camera.position + vec3(-0.5f,0.6f,-0.5f)));
+    Block* block = entities->terrain->getBlock(ivec3(camera.position + vec3(-0.5f,0.6f,-0.5f)));
     if (block) {
         bool isUnderWater = block->type == BlockType::Water;
         GLint underWater = shader->getUniformLocation("underWater");
@@ -105,7 +105,7 @@ void MonCraftScene::drawSkybox(float t) {
 
 void MonCraftScene::drawTerrain() {
     shader->bindTexture(TEXTURE_COLOR, texAtlas);
-    terrain.render(camera);
+    entities->terrain->render(camera);
 }
 
 void MonCraftScene::drawCharacter() {
@@ -122,14 +122,14 @@ void MonCraftScene::drawCharacter() {
 void MonCraftScene::drawFrame(float t, float dt) {
     // updates
     musicPlayer.update();
-    vp->keyboardController.apply(*entities->player, terrain);
-    vp->mouseController.apply(*entities->player, terrain);
-    entities->player->update(terrain, dt);
-    for(auto& pair : entities->players) pair.second->update(terrain, dt);
+    vp->keyboardController.apply(*entities->player, *entities->terrain);
+    vp->mouseController.apply(*entities->player, *entities->terrain);
+    entities->player->update(*entities->terrain, dt);
+    for(auto& pair : entities->players) pair.second->update(*entities->terrain, dt);
     setSize(parent->getSize());
     camera.setSize(getSize());
     entities->player->cameraToHead(camera);
-    terrain.update(camera.position);
+    entities->terrain->update(camera.position);
 
     // update sun
     float sunTime = quarter_pi<float>() + t * sunSpeed; // sun is fixed

@@ -14,7 +14,10 @@ Server::Server(unsigned short port)
 }
 
 bool isVerbose(PacketType type) {
-  return type != PacketType::ENTITY_TICK && type != PacketType::PLAYER_TICK;
+  return
+    type != PacketType::ENTITY_TICK &&
+    type != PacketType::BLOCKS &&
+    type != PacketType::PLAYER_TICK;
 }
 
 bool Server::poll() {
@@ -44,9 +47,8 @@ bool Server::poll() {
     else {
 
       if(type == PacketType::PING) handle_ping(it->second);
-      else if(type == PacketType::PLAYER_TICK) {
-        handle_player_tick(it->second, packet);
-      }
+      else if(type == PacketType::BLOCKS) handle_blocks(it->second, packet);
+      else if(type == PacketType::PLAYER_TICK) handle_player_tick(it->second, packet);
 
     }
   }
@@ -86,6 +88,13 @@ void Server::packet_logout(Identifier uid) {
   broadcast(packet);
 }
 
+void Server::packet_blocks(Identifier uid, BlockArray changedBlocks) {
+  sf::Packet packet;
+  PacketHeader header(PacketType::BLOCKS);
+  packet << header << uid << changedBlocks;
+  broadcast(packet);
+}
+
 void Server::run() {
   sf::Clock clock;
   const sf::Time frameDuration = sf::milliseconds(NetworkConfig::SERVER_TICK);
@@ -119,7 +128,10 @@ void Server::handle_login(sf::IpAddress clientAddr, unsigned short clientPort) {
     if(res.second) {
       packet_ack_login(res.first->first, uid);
       beep();
-      std::cout << "client connected" << std::endl;
+      std::cout << "client connected: " << std::endl;
+      std::cout << "uid: " << res.first->second.player.getIdentifier() << std::endl;
+      std::cout << "addr: " << res.first->first.getAddr() << std::endl;
+      std::cout << "port: " << res.first->first.getPort() << std::endl;
     }
     else {
       std::cout << "[WARN] client insertion failed" << std::endl;
@@ -158,4 +170,10 @@ void Server::packet_ack_login(ClientID const& client, Identifier uid) {
   PacketHeader header(PacketType::ACK_LOGIN);
   packet << header << uid;
   socket.send(packet, client.getAddr(), client.getPort());
+}
+
+void Server::handle_blocks(Client const& client, sf::Packet& packet) {
+  BlockArray blocks;
+  packet >> blocks;
+  packet_blocks(client.player.getIdentifier(), blocks);
 }

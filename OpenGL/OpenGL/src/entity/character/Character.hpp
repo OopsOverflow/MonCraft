@@ -2,6 +2,7 @@
 
 #include "../Entity.hpp"
 #include "terrain/Terrain.hpp"
+#include "terrain/BlockArray.hpp"
 #include "util/Raycast.hpp"
 
 #include "LeftArm.hpp"
@@ -54,6 +55,11 @@ public:
    */
   void pickBlock(Terrain& terrain);
 
+  /**
+  * Gets the blocks placed since the last call to this method.
+  */
+  BlockArray getRecord();
+
   void enableGodMode();
   void disableGodMode();
   void toggleGodMode();
@@ -74,6 +80,7 @@ private:
 
   Raycast caster;
   BlockType currentBlock;
+  BlockArray record;
 
   bool god;
   bool sprint;

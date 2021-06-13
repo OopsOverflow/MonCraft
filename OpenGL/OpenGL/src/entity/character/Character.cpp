@@ -108,7 +108,9 @@ void Character::placeBlock(Terrain& terrain) {
     Block* block = terrain.getBlock(cast.position + cast.normal);
     if(!block) return;
     if(block->type != BlockType::Air && block->type != BlockType::Water) return;
-    terrain.setBlock(cast.position + cast.normal, AllBlocks::create_static(currentBlock));
+    ivec3 pos = cast.position + cast.normal;
+    terrain.setBlock(pos, AllBlocks::create_static(currentBlock));
+    record.push_back({ pos, currentBlock });
   }
 }
 
@@ -181,4 +183,10 @@ void Character::render() {
   r_arm.draw();
   l_leg.draw();
   r_leg.draw();
+}
+
+BlockArray Character::getRecord() {
+  BlockArray res = record;
+  record.clear();
+  return res;
 }

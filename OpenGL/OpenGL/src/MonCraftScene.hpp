@@ -47,7 +47,6 @@ private:
 
 public:
   // components
-  Terrain terrain;
   SkyBox sky;
   Raycast caster;
   ShadowMap shadows;

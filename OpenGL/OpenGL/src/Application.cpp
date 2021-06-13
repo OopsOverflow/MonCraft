@@ -100,7 +100,7 @@ int main(int argc, char* argv[]) {
     btn_fullscreen.setPadding({15, 10});
 
     btn_vsync.onclick([&] { window.toggleVSync(); });
-    btn_gen.onclick([&] { scene.terrain.toggleGeneration(); });
+    btn_gen.onclick([&] { scene.entities->terrain->toggleGeneration(); });
     btn_fog.onclick([&] { scene.fogEnabled = !scene.fogEnabled; });
     btn_fullscreen.onclick([&] { window.toggleFullscreen(); });
     btn_ping.onclick([&] { server.ping(); });

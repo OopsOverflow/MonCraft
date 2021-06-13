@@ -35,6 +35,8 @@ entities_ptr_t Server::getEntities() const {
 void Server::update() {
   while(poll()) {};
 
+  packet_blocks();
+
   sf::Time now = clock.getElapsedTime();
   if(now - lastUpdate > frameDuration) {
     packet_player_tick();
@@ -57,11 +59,11 @@ bool Server::poll() {
   packet >> header;
   auto type = header.getType();
 
-  if(type == PacketType::ENTITY_TICK) {
-    applyEntityTransforms(packet);
-  }
-  else if(type == PacketType::LOGOUT) {
-    handle_logout(packet);
+  if(type == PacketType::ENTITY_TICK) applyEntityTransforms(packet);
+  else if(type == PacketType::LOGOUT) handle_logout(packet);
+  else if(type == PacketType::BLOCKS) handle_blocks(packet);
+  else {
+    std::cout << "[WARN] unhandled packed: " << header << std::endl;
   }
 
   return true;
@@ -82,21 +84,35 @@ void Server::applyEntityTransforms(sf::Packet& packet) {
     }
     else {
       auto it = players.find(uid);
-      if(it != players.end()) {
-        auto player = entities->createPlayer();
-        packet >> *it->second;
+
+      // create the player if not found
+      if(it == players.end()) {
+        entities->createPlayer(uid);
+        it = players.find(uid);
       }
-      else {
-        auto player = entities->createPlayer();
-        packet >> *player;
-        players.emplace(uid, std::move(player));
-      }
+
+      packet >> *it->second;
     }
   }
 }
 
 void Server::ping() {
   packet_ping();
+}
+
+void Server::packet_blocks() {
+  auto blocks = entities->player->getRecord();
+  if(blocks.size() != 0) {
+    sf::Packet packet;
+    PacketHeader header(PacketType::BLOCKS);
+    packet << header << blocks;
+
+    auto send_res = socket.send(packet, addr, port);
+
+    if(send_res != sf::Socket::Done) {
+      throw NetworkError("failed to send blocks to server");
+    }
+  }
 }
 
 void Server::packet_ping() {
@@ -186,5 +202,23 @@ void Server::handle_logout(sf::Packet& packet) {
   }
   else {
     std::cout << "[WARN] logout of unknown player" << std::endl;
+  }
+}
+
+void Server::handle_blocks(sf::Packet& packet) {
+  Identifier uid;
+  packet >> uid;
+
+  std::cout << uid << std::endl;
+
+  if(uid != entities->uid) {
+    BlockArray blocks;
+    packet >> blocks;
+
+    std::cout << blocks.size() << std::endl;
+
+    for(auto const& blockData : blocks) {
+      entities->terrain->setBlock(blockData.pos, AllBlocks::create_static(blockData.type));
+    }
   }
 }

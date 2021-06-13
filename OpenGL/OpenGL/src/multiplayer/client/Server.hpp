@@ -24,8 +24,10 @@ private:
   void packet_logout();
   void packet_ping();
   void packet_player_tick();
+  void packet_blocks();
   bool listen_ack_login();
   void handle_logout(sf::Packet& packet);
+  void handle_blocks(sf::Packet& packet);
   bool poll();
   void applyEntityTransforms(sf::Packet& packet);
 

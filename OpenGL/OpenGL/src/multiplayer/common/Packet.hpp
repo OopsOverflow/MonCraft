@@ -7,6 +7,7 @@ enum class PacketType {
   ACK_LOGIN,
   LOGOUT,
   ENTITY_TICK,
+  BLOCKS,
   PLAYER_TICK,
   PING,
   NONE
