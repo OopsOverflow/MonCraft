@@ -80,30 +80,29 @@ Block::unique_ptr_t Generator::createBlock(ivec3 pos, Biome const& biome) const 
   return Block::create_static<Stone_Block>();
 }
 
-std::vector<Structure::Slice> Generator::generateStructures(ivec3 cpos, Chunk& chunk) const {
+std::vector<Structure::Slice> Generator::generateStructures(Chunk& chunk) const {
   std::vector<Structure::Slice> slices;
   ivec3 dpos(0);
-  ivec3 orig = cpos * chunkSize;
+  ivec3 orig = chunk.chunkPos * chunkSize;
   for(dpos.x = 0; dpos.x < chunkSize; dpos.x++) {
     for(dpos.z = 0; dpos.z < chunkSize; dpos.z++) {
 
       ivec2 posXZ(orig.x + dpos.x, orig.z + dpos.z);
       auto const& biome = biomeSampler.sampleWeighted(posXZ);
       for(dpos.y = 0; dpos.y < chunkSize; dpos.y++) {
+        ivec3 pos = orig + dpos;
 
         if(chunk[dpos]->type == BlockType::Grass) {
-          ivec3 pos = orig + dpos;
-          float amount = 0.0005f;
+          float amount = 0.005f;
           if (biome.type == BiomeType::FOREST)amount = 0.02f;
-          uint32 tree = valueNoise.sample1D(ivec2(pos.x, pos.z));
+          uint32 tree = valueNoise.sample1D(posXZ);
           if(tree / (float)UINT32_MAX < amount) {
             auto treeSlices = (tree%2?defaultOakTree.spawn(chunk, dpos): defaultBirchTree.spawn(chunk, dpos));
             slices.insert(slices.end(), treeSlices.begin(), treeSlices.end());
           }
         }
         if (chunk[dpos]->type == BlockType::Sand && biome.type==BiomeType::DESERT) {
-            ivec3 pos = orig + dpos;
-            float cactus = valueNoise.sample1D(ivec2(pos.x, pos.z)) / (float)UINT32_MAX;
+            float cactus = valueNoise.sample1D(posXZ) / (float)UINT32_MAX;
             if (cactus < 0.0010f && pos.y>0) {
                 auto cactusSlice = defaultCactus.spawn(chunk, dpos);
                 slices.insert(slices.end(), cactusSlice.begin(), cactusSlice.end());
@@ -111,8 +110,7 @@ std::vector<Structure::Slice> Generator::generateStructures(ivec3 cpos, Chunk& c
         }
 
         if (chunk[dpos]->type == BlockType::Snow && biome.type == BiomeType::TOUNDRA) {
-            ivec3 pos = orig + dpos;
-            float editPlateforme = valueNoise.sample1D(ivec2(pos.x, pos.z)) / (float)UINT32_MAX;
+            float editPlateforme = valueNoise.sample1D(posXZ) / (float)UINT32_MAX;
             if (editPlateforme < 0.0000f) {
                 auto editPlateformeSlice = defaultEditPlaterforme.spawn(chunk, dpos);
                 slices.insert(slices.end(), editPlateformeSlice.begin(), editPlateformeSlice.end());
