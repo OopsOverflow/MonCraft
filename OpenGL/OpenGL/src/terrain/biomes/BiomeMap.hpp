@@ -41,7 +41,7 @@ private:
     SimplexNoise simplexY;       // samples space in y direction
     SimplexNoise simplexBiome;   // samples biome type
     VoronoiNoise voronoi;        // voronoi cells
-    ValueNoise value;            // simple random noise
+    XXHash value;            // simple random noise
 
     // helper types
     struct weightedBiome_t {

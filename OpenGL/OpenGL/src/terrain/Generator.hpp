@@ -37,7 +37,7 @@ private:
   SimplexNoise noiseX;
   SimplexNoise noiseY;
   SimplexNoise noiseZ;
-  ValueNoise valueNoise;
+  XXHash valueNoise;
   Oak_Tree defaultOakTree;
   Birch_Tree defaultBirchTree;
   Cactus defaultCactus;
