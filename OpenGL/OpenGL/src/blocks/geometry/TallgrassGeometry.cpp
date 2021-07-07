@@ -9,13 +9,12 @@ TallgrassGeometry* TallgrassGeometry::get() {
 }
 
 
-void TallgrassGeometry::generateMesh(glm::ivec3 pos, Block* block, std::array<Block*, 26> const& neighbors, MeshData& data) const {
+void TallgrassGeometry::generateMesh(glm::ivec3 pos, Block* block, MeshData& data) const {
   auto& _ind = data.indicesTranspX; // COMBAK: does this have importance ?
   auto& _scheme = data.scheme;
   auto& _pos  = data.positions;
   auto& _norm = data.normals;
   auto& _uvs  = data.textureCoords;
-  auto& _occl = data.occlusion;
   auto& _normm = data.normalMapCoords;
 
   for(size_t i = 0; i < 4; i++) {
@@ -38,10 +37,6 @@ void TallgrassGeometry::generateMesh(glm::ivec3 pos, Block* block, std::array<Bl
     auto indexUV = block->getFaceUVs(BlockFace::FRONT);
     auto uvFace = genFaceUV(indexUV);
     _uvs.insert(_uvs.end(), uvFace.begin(), uvFace.end());
-
-    // occlusion
-    auto const& occl = occlusions[i];
-    _occl.insert(_occl.end(), occl.begin(), occl.end());
 
     // normalMapCoords
     _normm.insert(_normm.end(), faceNormalMap.begin(), faceNormalMap.end());
@@ -109,21 +104,6 @@ const std::array<face_t<3>, 4> TallgrassGeometry::normals {
 };
 
 static const float occl = 2.f;
-
-const std::array<std::array<GLfloat, 4>, 4> TallgrassGeometry::occlusions {
-  std::array<GLfloat, 4>{
-    0.f, 0.f, occl, occl
-  },
-  std::array<GLfloat, 4>{
-    0.f, 0.f, occl, occl
-  },
-  std::array<GLfloat, 4>{
-    0.f, 0.f, occl, occl
-  },
-  std::array<GLfloat, 4>{
-    0.f, 0.f, occl, occl
-  },
-};
 
 const face_t<2> TallgrassGeometry::faceNormalMap = {
     -1.0f, -1.0f,

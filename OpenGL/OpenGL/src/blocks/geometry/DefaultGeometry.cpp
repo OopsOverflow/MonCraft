@@ -12,25 +12,7 @@ DefaultBlockGeometry* DefaultBlockGeometry::get() {
   return &inst;
 }
 
-std::array<GLfloat, 4> DefaultBlockGeometry::genOcclusion(glm::ivec3 pos, std::array<Block*, 26> const& neighbors, BlockFace face) const {
-  std::array<GLfloat, 4> occl{};
-
-  auto const& offsets = blockOcclusionOffsets[static_cast<size_t>(face)];
-  std::array<bool, 8> b{};
-
-  for(int i = 0; i < 8; i++) {
-    b[i] = neighbors[offsets[i]]->isSolid();
-  }
-
-  occl[0] = b[0] + b[1] + b[2];
-  occl[1] = b[2] + b[3] + b[4];
-  occl[2] = b[4] + b[5] + b[6];
-  occl[3] = b[6] + b[7] + b[0];
-
-  return occl;
-}
-
-void DefaultBlockGeometry::genFace(glm::ivec3 pos, BlockFace face, Block* block, std::array<Block*, 26> const& neighbors, MeshData& data) const {
+void DefaultBlockGeometry::genFace(glm::ivec3 pos, BlockFace face, Block* block, MeshData& data) const {
   auto& _ind =
     !block->isTransparent() ? data.indicesSolid :
     face == BlockFace::LEFT || face == BlockFace::RIGHT ? data.indicesTranspX :
@@ -40,7 +22,6 @@ void DefaultBlockGeometry::genFace(glm::ivec3 pos, BlockFace face, Block* block,
   auto& _pos  = data.positions;
   auto& _norm = data.normals;
   auto& _uvs  = data.textureCoords;
-  auto& _occl = data.occlusion;
   auto& _normm = data.normalMapCoords;
 
   // indices
@@ -63,21 +44,14 @@ void DefaultBlockGeometry::genFace(glm::ivec3 pos, BlockFace face, Block* block,
   auto uvFace = genFaceUV(indexUV);
   _uvs.insert(_uvs.end(), uvFace.begin(), uvFace.end());
 
-  // occlusion
-  auto occl = genOcclusion(pos, neighbors, face);
-  _occl.insert(_occl.end(), occl.begin(), occl.end());
-
   // normalMapCoords
   _normm.insert(_normm.end(), faceNormalMap.begin(), faceNormalMap.end());
 
 }
 
-void DefaultBlockGeometry::generateMesh(ivec3 pos, Block* block, std::array<Block*, 26> const& neighbors, MeshData& data) const {
+void DefaultBlockGeometry::generateMesh(ivec3 pos, Block* block, MeshData& data) const {
   for(auto const& off : blockFaceOffsets) {
-    auto neigh = neighbors[off.first];
-    if(!neigh->isSolid() || neigh->isTransparent()) {
-      genFace(pos, off.second, block, neighbors, data);
-    }
+    genFace(pos, off.second, block, data);
   }
 }
 
@@ -149,29 +123,6 @@ const BlockData<3> DefaultBlockGeometry::blockNormals {
     -1.0f, 0.0f, 0.0f,
     -1.0f, 0.0f, 0.0f,
   }
-};
-
-// tells which neighbors to look at when computing a block occlusion
-// the ints stored are indices to a neighbor in a neighbor array (see Chunk.hpp neighbors)
-const std::array<std::array<int, 8>, 6> DefaultBlockGeometry::blockOcclusionOffsets = {
-  std::array<int, 8> { // TOP
-    20, 21, 3, 12, 11, 13, 4, 22,
-  },
-  std::array<int, 8> { // BOTTOM
-    14, 15, 6, 24, 23, 25, 7, 16,
-  },
-  std::array<int, 8> { // FRONT
-    9, 12, 3, 21, 18, 24, 6, 15,
-  },
-  std::array<int, 8> { // RIGHT
-    10, 13, 11, 12, 9, 15, 14, 16,
-  },
-  std::array<int, 8> { // BACK
-    19, 22, 4, 13, 10, 16, 7, 25,
-  },
-  std::array<int, 8> { // LEFT
-    18, 21, 20, 22, 19, 25, 23, 24,
-  },
 };
 
 // tells which neighbor corresponds to which BlockFace

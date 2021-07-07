@@ -14,7 +14,6 @@ enum ShaderLocation {
 	VERTEX_POSITION = 0,
 	VERTEX_NORMAL = 1,
 	VERTEX_TEXTURE = 2,
-	VERTEX_OCCLUSION = 3,
 	VERTEX_NORMALTEXTURE = 4,
 
 	// uniform matrices

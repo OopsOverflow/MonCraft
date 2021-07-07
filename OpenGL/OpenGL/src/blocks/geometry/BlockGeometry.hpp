@@ -29,7 +29,7 @@ public:
    * Generates the mesh part caused by a given block.
    * Writes the data in the MeshData passed by reference.
    */
-  virtual void generateMesh(glm::ivec3 pos, Block* block, std::array<Block*, 26> const& neighbors, MeshData& data) const = 0;
+  virtual void generateMesh(glm::ivec3 pos, Block* block, MeshData& data) const = 0;
 
 protected:
   BlockGeometry();

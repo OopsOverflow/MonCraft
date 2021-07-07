@@ -4,7 +4,6 @@ precision mediump float;
 
 smooth in vec3 vertexPosition;
 smooth in vec3 vertexNormal;
-smooth in float vertexOcclusion;
 smooth in vec2 txrCoords;
 smooth in vec2 normalCoords;
 smooth in vec3 shadowCoords[3];
@@ -96,8 +95,6 @@ void main() {
   outputColor.xyz +=vec3(1.0f) * specular * shadow  * texture(t_normal ,normalCoords).a* 1.0 * sunAmount;
 
 
-  float occl = .7;
-  outputColor.xyz *= 1.0 - (vertexOcclusion * vertexOcclusion / 9.0) * occl;
 
   if(underWater == 1){
     outputColor.rgb *=vec3(127.0f/255, 148.0f/255, 1.0f) ;

@@ -11,7 +11,6 @@ Mesh::Mesh(GLuint vao, GLuint vbo, GLuint ebo, GLuint vertCount)
 Mesh::Mesh(std::vector<GLfloat> const& positions,
      std::vector<GLfloat> const& normals,
      std::vector<GLfloat> const& textureCoords,
-     std::vector<GLfloat> const& occlusion,
      std::vector<GLuint>  const& indices,
      std::vector<GLfloat> const& normalMapCoords)
 {
@@ -44,11 +43,6 @@ Mesh::Mesh(std::vector<GLfloat> const& positions,
   glBufferSubData(GL_ARRAY_BUFFER, size * 6, size * 2, textureCoords.data());
   glVertexAttribPointer(VERTEX_TEXTURE, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)(size * 6));
   glEnableVertexAttribArray(VERTEX_TEXTURE);
-
-  // occlusion
-  glBufferSubData(GL_ARRAY_BUFFER, size * 8, size * 1, occlusion.data());
-  glVertexAttribPointer(VERTEX_OCCLUSION, 1, GL_FLOAT, GL_FALSE, 0, (GLvoid*)(size * 8));
-  glEnableVertexAttribArray(VERTEX_OCCLUSION);
 
   // normalMapCoords
   glBufferSubData(GL_ARRAY_BUFFER, size * 9, size * 2, normalMapCoords.data());
@@ -127,11 +121,6 @@ Mesh::Mesh(MeshData& data)
   glBufferSubData(GL_ARRAY_BUFFER, size * 6, size * 2, data.textureCoords.data());
   glVertexAttribPointer(VERTEX_TEXTURE, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)(size * 6));
   glEnableVertexAttribArray(VERTEX_TEXTURE);
-
-  // occlusion
-  glBufferSubData(GL_ARRAY_BUFFER, size * 8, size * 1, data.occlusion.data());
-  glVertexAttribPointer(VERTEX_OCCLUSION, 1, GL_FLOAT, GL_FALSE, 0, (GLvoid*)(size * 8)); // TODO: smaller type
-  glEnableVertexAttribArray(VERTEX_OCCLUSION);
 
   // normalMapCoords
   glBufferSubData(GL_ARRAY_BUFFER, size * 9, size * 2, data.normalMapCoords.data());

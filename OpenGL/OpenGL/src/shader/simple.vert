@@ -3,7 +3,7 @@
 layout (location = 0) in vec3 v_position;
 layout (location = 1) in vec3 v_normal;
 layout (location = 2) in vec2 v_texture;
-layout (location = 3) in float v_occlusion;
+//3 were for occlusion
 layout (location = 4) in vec2 v_normalMap;
 
 layout (location = 0) uniform mat4 m_model;
@@ -21,7 +21,6 @@ smooth out vec2 txrCoords;
 smooth out vec2 normalCoords;
 smooth out vec3 shadowCoords[3];
 smooth out mat3 TBN;
-smooth out float vertexOcclusion;
 smooth out float clipEndZ;
 
 
@@ -39,8 +38,6 @@ void main() {
   vertexNormal = vec3(m_normal * vec4(v_normal, 0.0));
   // Textures
   txrCoords = v_texture;
-  // Occlusion
-  vertexOcclusion = v_occlusion;
   // NormalCoords
   normalCoords = v_normalMap;
 

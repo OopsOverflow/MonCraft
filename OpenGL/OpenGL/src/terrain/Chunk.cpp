@@ -132,19 +132,8 @@ void Chunk::compute() {
         Block* block = blocksCache[pos + 1];
         if(!block->isVisible()) continue;
 
-        // get the block neighbors
-        bool neighborsValid = true;
-        for(size_t i = 0; i < 26; i++) {
-          ivec3 npos = pos + neighborOffsets[i];
-          auto neigh = blocksCache[npos + 1];
-          if(!neigh) neighborsValid = false; // may happen that a neighbor is unloaded
-          neighbors[i] = neigh;
-        }
-
-        if(!neighborsValid) continue;
-
         // generate this block's geometry
-        block->getGeometry()->generateMesh(pos, block, neighbors, meshData);
+        block->getGeometry()->generateMesh(pos, block, meshData);
       }
     }
   }

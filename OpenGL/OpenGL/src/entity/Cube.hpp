@@ -72,15 +72,6 @@ namespace Cube {
       -1.0f, 0.0f, 0.0f,
     };
 
-    static const std::vector<GLfloat> occlusions = {
-      0.f, 0.f, 0.f, 0.f,
-      0.f, 0.f, 0.f, 0.f,
-      0.f, 0.f, 0.f, 0.f,
-      0.f, 0.f, 0.f, 0.f,
-      0.f, 0.f, 0.f, 0.f,
-      0.f, 0.f, 0.f, 0.f,
-    };
-
     static const std::vector<GLuint> indices = {
       0, 1, 2, 0, 2, 3,
       4, 5, 6, 4, 6, 7,
