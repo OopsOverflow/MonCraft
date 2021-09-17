@@ -22,7 +22,7 @@ void SharedEntities::initialize() {
     throw std::runtime_error("Shared entities already initialized");
   }
   if(!uid) {
-    throw std::runtime_error("Cannot initialize Shared entities: no uid set");
+    std::cout << "[WARN] entities uid is 0" << std::endl;
   }
 
   terrain = terrain_t(new Terrain());

@@ -5,7 +5,7 @@
 #include "ui/ui.hpp"
 #include "MonCraftScene.hpp"
 #include "debug/Debug.hpp"
-#include "multiplayer/client/Server.hpp"
+#include "multiplayer/client/RealServer.hpp"
 #include "multiplayer/common/Config.hpp"
 
 using namespace glm;
@@ -48,9 +48,20 @@ void loadResources() {
     }
 }
 
+std::unique_ptr<Server> createServer() {
+    std::unique_ptr<Server> server;
+    if (!NetworkConfig::LOCAL) {
+        server = std::make_unique<RealServer>(NetworkConfig::SERVER_ADDR, NetworkConfig::SERVER_PORT);
+    } else {
+        server = std::make_unique<Server>();
+    }
+    return server;
+}
+
 int main(int argc, char* argv[]) {
     std::cout << "---- Main ----" << std::endl;
-    Server server(NetworkConfig::SERVER_ADDR, NetworkConfig::SERVER_PORT);
+
+    auto server = createServer();
     Viewport window({800, 800});
     loadResources();
     window.createRoot();
@@ -65,7 +76,7 @@ int main(int argc, char* argv[]) {
     auto font_roboto = std::make_shared<const Font>("Roboto-Regular");
     auto font_vt323 = std::make_shared<const Font>("VT323-Regular");
 
-    MonCraftScene scene(&window, server.getEntities());
+    MonCraftScene scene(&window, server->getEntities());
     scene.setPadding({10, 10});
 
     ui::Pane pane_fps(&scene);
@@ -103,7 +114,7 @@ int main(int argc, char* argv[]) {
     btn_gen.onclick([&] { scene.entities->terrain->toggleGeneration(); });
     btn_fog.onclick([&] { scene.fogEnabled = !scene.fogEnabled; });
     btn_fullscreen.onclick([&] { window.toggleFullscreen(); });
-    btn_ping.onclick([&] { server.ping(); });
+    btn_ping.onclick([&] { server->ping(); });
 
     ui::Text text_pos(&scene, "", font_vt323);
     text_pos.setAnchorY(ui::Anchor::END);
@@ -123,7 +134,7 @@ int main(int argc, char* argv[]) {
     for (float dt = 0; window.beginFrame(dt); window.endFrame()) {
         t += dt;
 
-        server.update();
+        server->update();
 
         scene.drawFrame(t, dt);
 

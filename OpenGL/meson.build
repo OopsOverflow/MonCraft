@@ -69,6 +69,7 @@ client_srcs = files(
   'OpenGL/src/Application.cpp',
   'OpenGL/src/MonCraftScene.cpp',
   'OpenGL/src/multiplayer/client/Server.cpp',
+  'OpenGL/src/multiplayer/client/RealServer.cpp',
   'OpenGL/src/multiplayer/client/SharedEntities.cpp',
 )
 
