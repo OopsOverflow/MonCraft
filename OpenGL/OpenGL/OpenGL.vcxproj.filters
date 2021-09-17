@@ -153,6 +153,9 @@
     <ClCompile Include="src\MonCraftScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\noise\XXHash.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\util\mesh.hpp">
@@ -447,6 +450,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\MonCraftScene.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\noise\XXHash.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

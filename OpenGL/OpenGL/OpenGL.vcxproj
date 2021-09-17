@@ -191,6 +191,7 @@
     <ClCompile Include="src\noise\simplex.cpp" />
     <ClCompile Include="src\noise\value.cpp" />
     <ClCompile Include="src\noise\voronoi.cpp" />
+    <ClCompile Include="src\noise\XXHash.cpp" />
     <ClCompile Include="src\terrain\biomes\BiomeMap.cpp" />
     <ClCompile Include="src\terrain\Chunk.cpp" />
     <ClCompile Include="src\terrain\ChunkMap.cpp" />
@@ -276,6 +277,7 @@
     <ClInclude Include="src\noise\simplex.hpp" />
     <ClInclude Include="src\noise\value.hpp" />
     <ClInclude Include="src\noise\voronoi.hpp" />
+    <ClInclude Include="src\noise\XXHash.hpp" />
     <ClInclude Include="src\shadow\ShadowMap.hpp" />
     <ClInclude Include="src\Noise.hpp" />
     <ClInclude Include="src\terrain\biomes\Biome.hpp" />
