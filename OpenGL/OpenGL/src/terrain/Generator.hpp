@@ -25,7 +25,7 @@ public:
   * Generates the structures inside the given chunk.
   * returns a list of slices to be applied to the chunks.
   */
-  Structure::slices_t generateStructures(glm::ivec3 cpos, Chunk& chunk) const;
+  Structure::slices_t generateStructures(Chunk& chunk) const;
 
 private:
   Block::unique_ptr_t createBlock(glm::ivec3 pos, Biome const& biome) const;
@@ -37,7 +37,7 @@ private:
   SimplexNoise noiseX;
   SimplexNoise noiseY;
   SimplexNoise noiseZ;
-  ValueNoise valueNoise;
+  XXHash valueNoise;
   Oak_Tree defaultOakTree;
   Birch_Tree defaultBirchTree;
   Cactus defaultCactus;

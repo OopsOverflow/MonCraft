@@ -24,8 +24,6 @@ Terrain::~Terrain() {
   stopGeneration();
 }
 
-#include "debug/Debug.hpp"
-
 void Terrain::updateWaitingList() {
   waitingChunks.clear();
   auto cpos = getChunkPos();
@@ -129,7 +127,7 @@ void Terrain::genWorker() {
     }
     else if(addInBusyList(cpos)) {
       auto chunk = chunkMap.insert(cpos, generator.generate(cpos));
-      sliceMap.insert(generator.generateStructures(cpos, *chunk));
+      sliceMap.insert(generator.generateStructures(*chunk));
       remFromBusyList(cpos);
       return chunk;
     }
@@ -158,7 +156,7 @@ void Terrain::genWorker() {
       else if(addInBusyList(thisPos)) {
         {
           auto chunk = chunkMap.insert(thisPos, generator.generate(thisPos));
-          sliceMap.insert(generator.generateStructures(cpos, *chunk));
+          sliceMap.insert(generator.generateStructures(*chunk));
           remFromBusyList(thisPos);
           neighbors[i] = chunk;
           finished[i] = true;
