@@ -7,13 +7,12 @@ class SaveManager
 {
 public:
     SaveManager(std::string save_path);
-    ~SaveManager();
+    SaveManager(SaveManager const&) = delete;
+    SaveManager& operator=(SaveManager const&) = delete;
 
-    bool isStored(glm::ivec3 chunkPos);
     std::unique_ptr<Chunk> getChunk(glm::ivec3 chunkPos);
-    bool saveChunk(Chunk chunk);
+    bool saveChunk(std::shared_ptr<Chunk> chunk);
 
 private:
     std::string save_path;
-    std::fstream openedFile;
 };
