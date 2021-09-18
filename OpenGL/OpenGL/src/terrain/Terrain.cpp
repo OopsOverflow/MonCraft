@@ -234,7 +234,11 @@ void Terrain::render(Camera const& camera) {
   std::vector<std::pair<float, std::shared_ptr<Chunk>>> toRender;
 
   chunkMap.for_each([&](std::shared_ptr<Chunk> chunk) {
-    if(!chunk->hasData()) return;
+    if(!chunk->hasData()) {
+      chunk->update();
+      return;
+    }
+
 
     vec3 worldChunkPos = vec3(chunk->chunkPos * chunkSize);
     vec3 chunkCenter = worldChunkPos + vec3(chunkSize) / 2.f;
