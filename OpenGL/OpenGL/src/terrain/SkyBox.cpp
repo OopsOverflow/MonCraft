@@ -75,6 +75,11 @@ SkyBox::SkyBox() :
 {
   skyDayTxr = ResourceManager::getTexture("skyboxDay");
   skyNightTxr = ResourceManager::getTexture("skyboxNight");
+
+  skyBoxShader->activate();
+  // Set Texture Locations for CubeSamplers.
+  glUniform1i(skyBoxShader->getUniform("skyboxD"), 0);
+  glUniform1i(skyBoxShader->getUniform("skyboxN"), 1);
 }
 
 void SkyBox::calcBlendFactor(float skytime) {
@@ -126,10 +131,6 @@ void SkyBox::render(Camera& camera, float time)
     glUniformMatrix4fv(skyBoxShader->getUniform(MATRIX_VIEW), 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(skyBoxShader->getUniform(MATRIX_PROJECTION), 1, GL_FALSE, glm::value_ptr(camera.projection));
 
-    // Set Texture Locations for CubeSamplers.
-    glUniform1i(skyBoxShader->getUniform("skyboxD"), 0);
-    glUniform1i(skyBoxShader->getUniform("skyboxN"), 1);
-
     // Sampling
     calcBlendFactor(time);
 
@@ -137,5 +138,4 @@ void SkyBox::render(Camera& camera, float time)
     glBindVertexArray(0);
     glDepthFunc(GL_LESS);
     glEnable(GL_CULL_FACE);
-
 }
