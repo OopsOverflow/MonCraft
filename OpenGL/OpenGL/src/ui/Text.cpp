@@ -13,9 +13,8 @@ Text::Text(Component* parent, std::string text, std::shared_ptr<const Font> font
   : Component(parent),
     text(std::move(text)),
     color(0.f, 0.f, 0.f, 1.f), fontSize(1.f),
-    font(std::move(font))
+    font(std::move(font)), shader(ResourceManager::getShader("font"))
 {
-  shader = ResourceManager::getShader("font");
   computeSize();
   Text::getDefaultStyle()->apply(this);
 }
@@ -58,7 +57,8 @@ void Text::draw() {
   auto orig = getAbsoluteOrigin();
   vec3 pos(orig.x, orig.y, 0.f);
   shader->activate();
-  pos.x -= font->characters.at(text.at(0)).bearing.x * fontSize;
+  if(text.size())
+    pos.x -= font->characters.at(text.at(0)).bearing.x * fontSize;
   font->draw(text, pos, fontSize, color);
   Component::draw();
 }
