@@ -37,6 +37,7 @@ void loadResources() {
     ResourceManager::loadShader("water",   "water.vert",   "water.frag");
     ResourceManager::loadShader("fog", "fog.vert", "fog.frag");
     ResourceManager::loadShader("pane", "pane.vert", "pane.frag");
+    ResourceManager::loadShader("shadow", "shadow.vert", "shadow.frag");
 
     ResourceManager::loadTexture("atlas", "Texture_atlas");
     ResourceManager::loadTexture("character", "Character");

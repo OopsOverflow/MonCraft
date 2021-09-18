@@ -80,7 +80,7 @@ void Font::loadAllGlyphs() {
 void Font::draw(std::string text, vec3 pos, float scale, vec4 color) const {
   if(text.size() == 0) return;
   Shader* shader = Shader::getActive();
-  glUniform4fv(shader->getUniformLocation("color"), 1, glm::value_ptr(color));
+  glUniform4fv(shader->getUniform("color"), 1, glm::value_ptr(color));
 
   for(auto c : text) {
     Character const& ch = characters.at(c);
@@ -114,7 +114,7 @@ void Font::draw(std::string text, vec3 pos, float scale, vec4 color) const {
     // update vbo and render
     glBindVertexArray(vao);
 
-    GLint texSampler = Shader::getActive()->getUniformLocation("text");
+    GLint texSampler = Shader::getActive()->getUniform("text");
     glUniform1i(texSampler, 0);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, ch.tex);

@@ -37,7 +37,7 @@ Shader* ResourceManager::addShader(std::string const& name, std::unique_ptr<Shad
 }
 
 Shader* ResourceManager::loadShader(std::string const& name, std::string const& vert, std::string const& frag) {
-
+  std::cout << "loading shader: " << name << std::endl;
   std::unique_ptr<Shader> shader(new Shader(("src/shader/" + vert).c_str(), ("src/shader/" + frag).c_str()));
   return addShader(name, std::move(shader));
 }

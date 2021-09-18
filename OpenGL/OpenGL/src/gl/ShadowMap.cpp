@@ -1,11 +1,12 @@
 #include "ShadowMap.hpp"
+#include "ResourceManager.hpp"
 #include <glm/gtc/type_ptr.hpp>
 
 using namespace glm;
 
 ShadowMap::ShadowMap(int size)
   : camera(ivec2(size), {10, 10, 10}, {0, 0, 0}, Projection::PROJECTION_ORTHOGRAPHIC),
-    shader("src/shader/shadow.vert", "src/shader/shadow.frag"),
+    shader(ResourceManager::getShader("shadow")),
     distance(100.f),
     size(size)
 {
@@ -70,10 +71,10 @@ void ShadowMap::attach(Camera const& cam, Frustum frustum) {
 
 void ShadowMap::beginFrame(Frustum frustum) {
   glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-  shader.activate();
+  shader->activate();
   camera.activate();
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, getTextureID(frustum), 0);
-  glUniformMatrix4fv(MATRIX_SHADOWS, 1, GL_FALSE, value_ptr(shadowMatrices[(size_t)frustum]));
+  glUniformMatrix4fv(shader->getUniform(MATRIX_SHADOWS), 1, GL_FALSE, value_ptr(shadowMatrices[(size_t)frustum]));
   glClear(GL_DEPTH_BUFFER_BIT);
   glDisable(GL_CULL_FACE);
   glCullFace(GL_FRONT);
@@ -91,7 +92,7 @@ void ShadowMap::activate() {
   shader->bindTexture(TEXTURE_SHADOW0, depthTex[0]);
   shader->bindTexture(TEXTURE_SHADOW1, depthTex[1]);
   shader->bindTexture(TEXTURE_SHADOW2, depthTex[2]);
-  glUniformMatrix4fv(MATRIX_SHADOWS, 3, GL_FALSE, (GLfloat*)shadowMatrices);
+  glUniformMatrix4fv(shader->getUniform(MATRIX_SHADOWS), 3, GL_FALSE, (GLfloat*)shadowMatrices);
 }
 
 #include "debug/Debug.hpp"
