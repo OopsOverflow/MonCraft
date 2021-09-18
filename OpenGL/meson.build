@@ -61,6 +61,9 @@ srcs = files(
   'OpenGL/src/ui/style/Style.cpp',
   'OpenGL/src/ui/style/Type.cpp',
   'OpenGL/src/ui/style/Specification.cpp',
+
+  'OpenGL/src/save/SaveManager.cpp',
+
 )
 
 deps = [
