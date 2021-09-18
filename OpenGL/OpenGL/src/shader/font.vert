@@ -1,10 +1,10 @@
 #version 430 core
-layout (location = 0) in vec3 v_position;
-layout (location = 2) in vec2 v_texture;
+in vec3 v_position;
+in vec2 v_texture;
 
-layout (location = 0) uniform mat4 m_model;
-layout (location = 1) uniform mat4 m_view;
-layout (location = 2) uniform mat4 m_projection;
+uniform mat4 m_model;
+uniform mat4 m_view;
+uniform mat4 m_projection;
 
 out vec2 texCoords;
 

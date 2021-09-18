@@ -1,18 +1,16 @@
 #version 430 core
 
-layout (location = 0) in vec3 v_position;
-layout (location = 1) in vec3 v_normal;
-layout (location = 2) in vec2 v_texture;
-layout (location = 3) in float v_occlusion;
-layout (location = 4) in vec2 v_normalMap;
+in vec3 v_position;
+in vec3 v_normal;
+in vec2 v_texture;
+in float v_occlusion;
+in vec2 v_normalMap;
 
-layout (location = 0) uniform mat4 m_model;
-layout (location = 1) uniform mat4 m_view;
-layout (location = 2) uniform mat4 m_projection;
-layout (location = 3) uniform mat4 m_normal;
-layout (location = 4) uniform mat4 m_shadows[3];
-
-layout(location = 10) uniform vec3 lightDirection;
+uniform mat4 m_model;
+uniform mat4 m_view;
+uniform mat4 m_projection;
+uniform mat4 m_normal;
+uniform mat4 m_shadows[3];
 
 smooth out vec3 vertexPosition;
 smooth out vec4 vertexColor;

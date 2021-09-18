@@ -1,15 +1,15 @@
 #version 430 core
-out vec4 res;
+
+precision mediump float;
 
 smooth in vec3 vertexPosition;
 smooth in vec3 fogColor;
 
+out vec4 outputColor;
 
 uniform vec3 lightDirection;
 uniform float lightIntensity;
 uniform float sunTime;
-
-out vec4 outputColor;
 
 float random (in vec2 _st) {
     return fract(sin(dot(_st.xy,

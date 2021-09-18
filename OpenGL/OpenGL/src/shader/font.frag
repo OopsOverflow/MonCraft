@@ -1,4 +1,7 @@
 #version 430 core
+
+precision mediump float;
+
 in vec2 texCoords;
 out vec4 res;
 
