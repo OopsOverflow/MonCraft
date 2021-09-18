@@ -133,7 +133,7 @@ GLuint ResourceManager::loadCubeMap(std::string const& name, std::vector<std::st
         SDL_Surface* rgbImg = SDL_ConvertSurfaceFormat(img, SDL_PIXELFORMAT_RGBA32, 0);
         if (rgbImg) {
             glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-                0, GL_RGB, rgbImg->w, rgbImg->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid*)rgbImg->pixels);
+                0, GL_RGBA, rgbImg->w, rgbImg->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid*)rgbImg->pixels);
             SDL_FreeSurface(img);
             SDL_FreeSurface(rgbImg);
         }

@@ -11,7 +11,7 @@ MonCraftScene::MonCraftScene(Viewport* vp)
 
       caster(100.f),
       shadows(4096),
-      character({ 0.0f, 40.0f, 0.0f }),
+      character({ 0.0f, 100.0f, 0.0f }),
 
       fogEnabled(false),
       sunSpeed(0.0075f), skyboxSpeed(0.0075f),
@@ -38,6 +38,7 @@ bool MonCraftScene::onMouseMove(glm::ivec2 pos) {
 }
 
 void MonCraftScene::updateShadowMaps() {
+    #ifndef EMSCRIPTEN // TODO: COMBAK: we need to find a way to make it work in wasm
     shadows.update(sunDir);
     shadows.attach(camera, Frustum::NEAR);
     shadows.beginFrame(Frustum::NEAR);
@@ -52,6 +53,7 @@ void MonCraftScene::updateShadowMaps() {
     shadows.beginFrame(Frustum::FAR);
     terrain.render(shadows.camera);
     shadows.endFrame();
+    #endif
 }
 
 
@@ -115,7 +117,9 @@ void MonCraftScene::drawCharacter() {
 
 void MonCraftScene::drawFrame(float t, float dt) {
     // updates
+    #ifndef EMSCRIPTEN
     musicPlayer.update();
+    #endif
     vp->keyboardController.apply(character, terrain);
     vp->mouseController.apply(character, terrain);
     character.update(terrain, dt);

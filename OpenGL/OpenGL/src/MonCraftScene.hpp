@@ -6,7 +6,9 @@
 #include "controller/MouseController.hpp"
 #include "controller/KeyboardController.hpp"
 
+#ifndef EMSCRIPTEN
 #include "audio/Music.hpp"
+#endif
 #include "terrain/Terrain.hpp"
 #include "terrain/SkyBox.hpp"
 #include "gl/ShadowMap.hpp"
@@ -50,7 +52,9 @@ public:
   Raycast caster;
   ShadowMap shadows;
   Character character;
+  #ifndef EMSCRIPTEN
   Music musicPlayer;
+  #endif
 
   // other parameters
   bool fogEnabled;

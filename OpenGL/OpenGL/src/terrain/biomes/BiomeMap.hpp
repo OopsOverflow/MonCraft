@@ -29,7 +29,11 @@ public:
   Biome const& sampleWeighted(glm::ivec2 pos) const;
 private:
     // biome gen tuning
-    int size = 1000;               // generated texture size
+    #ifdef EMSCRIPTEN
+    int size = 100;               // generated texture size
+    #else
+    int size = 1000;              // generated texture size
+    #endif
     float cellSize = 150.f;         // voronoi single cell size
     float blendSmoothness = 0.4f;   // amount of smoothing to apply
     float biomeBlend = 40.f; // distance to smooth biomes borders

@@ -82,7 +82,11 @@ private:
 
   // threading
   std::thread mainWorkerThread; // manages the queue of chunks to generate
+  #ifdef EMSCRIPTEN
+  static const int N_THREADS = 2;
+  #else
   static const int N_THREADS = 4;
+  #endif
   std::array<std::thread, N_THREADS> genWorkerThreads; // creates new chunks when it can
   std::mutex workerMutex;
   void mainWorker();

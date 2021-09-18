@@ -24,8 +24,10 @@ ShadowMap::ShadowMap(int size)
   }
 
   glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+  #ifndef EMSCRIPTEN
   glDrawBuffer(GL_NONE);
   glReadBuffer(GL_NONE);
+  #endif
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 

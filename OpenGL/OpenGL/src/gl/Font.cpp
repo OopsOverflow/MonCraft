@@ -53,7 +53,7 @@ void Font::loadAllGlyphs() {
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);
     glTexImage2D(
-      GL_TEXTURE_2D, 0, GL_RED,
+      GL_TEXTURE_2D, 0, GL_R8,
       face->glyph->bitmap.width,
       face->glyph->bitmap.rows,
       0, GL_RED, GL_UNSIGNED_BYTE,

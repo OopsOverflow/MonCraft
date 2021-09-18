@@ -6,6 +6,10 @@
 #include "MonCraftScene.hpp"
 #include "debug/Debug.hpp"
 
+#ifdef EMSCRIPTEN
+#include <emscripten.h>
+#endif
+
 using namespace glm;
 
 void loadResources() {
@@ -47,17 +51,49 @@ void loadResources() {
     }
 }
 
+float t = 0;
+float dt = 0;
+Viewport* pwindow;
+MonCraftScene* pscene;
+ui::Text* ptext_fps;
+ui::Text* ptext_posPlayer;
+ui::Text* ptext_gameTime;
+
+void loop() {
+  t += dt;
+
+  pscene->drawFrame(t, dt);
+
+  std::ostringstream text;
+  text << "FPS : " << (int)(1.f / dt);
+  ptext_fps->setText(text.str());
+
+  text.str(""); // "clears" the string stream
+  text << "Player Pos : " << std::fixed << std::setprecision(3) << pscene->character.getPosition();
+  ptext_posPlayer->setText(text.str());
+
+  text.str(""); // "clears" the string stream
+  text << "Game Time : " << std::fixed << std::setprecision(3) << t;
+  ptext_gameTime->setText(text.str());
+}
+
+#ifdef EMSCRIPTEN
+void em_loop() {
+  pwindow->beginFrame(dt);
+  loop();
+  pwindow->endFrame();
+}
+#endif
+
 int main(int argc, char* argv[]) {
     std::cout << "---- Main ----" << std::endl;
-    Viewport window({800, 800});
+    Viewport window({1200, 800});
     loadResources();
     window.createRoot();
 
     // game seed
     std::hash<std::string> hashString;
     std::srand(hashString("Moncraft"));
-
-    float t = 0;
 
     // UI stuff
     auto font_roboto = std::make_shared<const Font>("Roboto-Regular");
@@ -108,23 +144,19 @@ int main(int argc, char* argv[]) {
     text_gameTime.setFontSize(.5f);
 
     // main loop
-    for (float dt = 0; window.beginFrame(dt); window.endFrame()) {
-        t += dt;
+    pwindow = &window;
+    pscene = &scene;
+    ptext_fps = &text_fps;
+    ptext_posPlayer = &text_posPlayer;
+    ptext_gameTime = &text_gameTime;
 
-        scene.drawFrame(t, dt);
-
-        std::ostringstream text;
-        text << "FPS : " << (int)(1.f / dt);
-        text_fps.setText(text.str());
-
-        text.str(""); // "clears" the string stream
-        text << "Player Pos : " << std::fixed << std::setprecision(3) << scene.character.getPosition();
-        text_posPlayer.setText(text.str());
-
-        text.str(""); // "clears" the string stream
-        text << "Game Time : " << std::fixed << std::setprecision(3) << t;
-        text_gameTime.setText(text.str());
+    #ifdef EMSCRIPTEN
+      emscripten_set_main_loop(em_loop, 0, 1);
+    #else
+    for (dt = 0; window.beginFrame(dt); window.endFrame()) {
+      loop();
     }
+    #endif
 
     ResourceManager::free();
     return 0;

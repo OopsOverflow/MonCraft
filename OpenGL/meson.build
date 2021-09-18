@@ -8,7 +8,6 @@ srcs = files(
   'OpenGL/src/Application.cpp',
   'OpenGL/src/MonCraftScene.cpp',
 
-  'OpenGL/src/audio/Music.cpp',
   'OpenGL/src/debug/Debug.cpp',
 
   'OpenGL/src/controller/KeyboardController.cpp',
@@ -62,26 +61,41 @@ srcs = files(
   'OpenGL/src/ui/style/Specification.cpp',
 )
 
-deps = [
-  dependency('glew'),
-  dependency('gl'),
-  dependency('sdl2'),
-  dependency('SDL2_image'),
-  dependency('OpenGL'),
-  dependency('glfw3'),
-  dependency('glm'),
-  dependency('threads'),
-  dependency('openmp'),
-  dependency('sfml-audio'),
-  dependency('freetype2'),
-]
-
-incs = include_directories('OpenGL/src')
 
 # install_subdir('OpenGL/src/shader', install_dir : 'shader')
 
-exe = executable(
-  'MonCraft', srcs,
-  dependencies: deps,
-  include_directories: incs
-)
+if host_machine.system() == 'emscripten'
+  incs = include_directories('OpenGL/src', 'Dependencies')
+
+  deps = []
+
+  exe = executable(
+    'MonCraft', srcs,
+    dependencies: deps,
+    include_directories: incs
+  )
+else
+  incs = include_directories('OpenGL/src')
+
+  deps = [
+    dependency('glew'),
+    dependency('gl'),
+    dependency('sdl2'),
+    dependency('SDL2_image'),
+    dependency('OpenGL'),
+    dependency('glfw3'),
+    dependency('glm'),
+    dependency('threads'),
+    dependency('openmp'),
+    dependency('sfml-audio'),
+    dependency('freetype2'),
+  ]
+
+  srcs += files('OpenGL/src/audio/Music.cpp')
+
+  exe = executable(
+    'MonCraft', srcs,
+    dependencies: deps,
+    include_directories: incs
+  )
+endif
