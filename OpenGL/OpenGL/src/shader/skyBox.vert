@@ -1,4 +1,4 @@
-#version 430 core
+#version 300 es
 in vec3 v_position;
 
 out vec3 txrCoords;

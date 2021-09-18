@@ -1,4 +1,4 @@
-#version 430 core
+#version 300 es
 in vec2 v_position;
 
 uniform mat4 m_model;
