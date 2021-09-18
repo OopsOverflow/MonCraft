@@ -20,7 +20,7 @@ SaveManager::SaveManager(std::string save_path) {
 
 std::unique_ptr<Chunk> SaveManager::getChunk(glm::ivec3 chunkPos) {
 	std::string filePath = save_path + "/chunk_" + std::to_string(chunkPos.x) + "_" + std::to_string(chunkPos.y) + "_" + std::to_string(chunkPos.z) + ".chunk";
-	std::ifstream openedFile(filePath, std::fstream::binary);
+	std::ifstream openedFile(filePath, std::fstream::binary | std::fstream::in);
 	if (!openedFile.is_open()) 
 		return std::unique_ptr<Chunk>(nullptr);
 
@@ -29,14 +29,14 @@ std::unique_ptr<Chunk> SaveManager::getChunk(glm::ivec3 chunkPos) {
 	//openedFile.read(versionBuffer, 3);
 
 	//Chunk size
-	char chunkSizeBuffer;
-	openedFile.read(&chunkSizeBuffer, 1);
+	uint8_t chunkSizeBuffer;
+	openedFile.read((char*) &chunkSizeBuffer, 1);
 
 	Chunk* newChunk = new Chunk(chunkPos, chunkSizeBuffer);
 
 	int offset = 0;
-	char buffer[3];
-	while (openedFile.read(buffer, 3)) //Block data
+	uint8_t buffer[3];
+	while (openedFile.read((char*) buffer, 3)) //Block data
 	{
 		int blockCount = buffer[0] * 256 + buffer[1];
 		BlockType block = (BlockType)buffer[2];
@@ -60,7 +60,7 @@ std::unique_ptr<Chunk> SaveManager::getChunk(glm::ivec3 chunkPos) {
 bool SaveManager::saveChunk(std::shared_ptr<Chunk> chunk) {
 
 	std::string filePath = save_path + "/chunk_" + std::to_string(chunk->chunkPos.x) + "_" + std::to_string(chunk->chunkPos.y) + "_" + std::to_string(chunk->chunkPos.z) + ".chunk";
-	std::ofstream openedFile(filePath, std::fstream::trunc | std::fstream::binary);
+	std::ofstream openedFile(filePath, std::fstream::trunc | std::fstream::binary | std::fstream::out);
 	if (!openedFile) return 0;
 
 	////MonCraft version
@@ -83,24 +83,24 @@ bool SaveManager::saveChunk(std::shared_ptr<Chunk> chunk) {
 		int x = i % chunk->size.x;
 
 		if (chunk->getBlock(glm::vec3(x, y, z))->type == last) {
-			continuous++;
+			continuous+=1;
 		}
 		else {
-			char buffer[3];
+			unsigned char buffer[3];
 			buffer[0] = continuous / 256;
 			buffer[1] = continuous % 256;
-			buffer[2] = (char)last;
-			openedFile.write(buffer, 3);
+			buffer[2] = (uint8_t)last;
+			openedFile.write((char*) buffer, 3);
 			continuous = 1;
 			last = chunk->getBlock(glm::vec3(x, y, z))->type;
 		}
 
 	}
-	char buffer[3];
+	uint8_t buffer[3];
 	buffer[0] = continuous / 256;
 	buffer[1] = continuous % 256;
-	buffer[2] = (char)last;
-	openedFile.write(buffer, 3);
+	buffer[2] = (uint8_t)last;
+	openedFile.write((char*)buffer, 3);
 
 	openedFile.close();
 	return 1;

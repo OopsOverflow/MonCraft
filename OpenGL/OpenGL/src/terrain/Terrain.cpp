@@ -15,7 +15,7 @@ Terrain::Terrain()
     chunksMaxCount((2*renderDistH+2)*(2*renderDistH+2)*(2*renderDistV+2)),
     generator(chunkSize),
     chunkPos(0),
-    chunkPosChanged(false), save("save/defaultWorld")
+    chunkPosChanged(false), save("save/defaultWorld/chunk")
 {
   startGeneration();
 }
