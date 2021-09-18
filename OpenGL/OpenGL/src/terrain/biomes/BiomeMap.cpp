@@ -32,7 +32,7 @@ const octaves_t waterOctaves = {
 BiomeMap::BiomeMap()
  : voronoi(rand(), size + 2 * displacement, cellSize, ivec2(0)),
    value(rand()),
-   map(size), test(size)
+   map(size)
 {
   simplexX.seed(rand());
   simplexY.seed(rand());
@@ -143,18 +143,9 @@ void BiomeMap::generate() {
   auto step4 = std::bind(&BiomeMap::blendBiomes, this, _1);
   auto pipeline = make_pipeline(step1, step2, step3, step4);
 
-  auto teststep = std::bind(&BiomeMap::teststep, this, _1);
-  auto testpipeline = make_pipeline(step1, step2, teststep);
-
   map.for_each_parallel([&](vec2 pos, Biome& val) {
     val = pipeline(pos);
   });
-
-  test.for_each_parallel([&](vec2 pos, pixel_t& val) {
-    val = testpipeline(pos);
-  });
-
-  testtex.generate(test);
 }
 
 #include "debug/Debug.hpp"

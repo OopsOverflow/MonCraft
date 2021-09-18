@@ -70,8 +70,4 @@ private:
     Biome biomeHills;
     Biome biomeMountains;
     Biome biomeForest;
-
-public:
-    BitmapTex testtex;
-    Bitmap test;
 };
