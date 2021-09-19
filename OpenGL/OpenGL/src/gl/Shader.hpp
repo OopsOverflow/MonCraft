@@ -8,33 +8,36 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <array>
 
 enum ShaderLocation {
-	// vertex attributes
-	VERTEX_POSITION = 0,
-	VERTEX_NORMAL = 1,
-	VERTEX_TEXTURE = 2,
-	VERTEX_OCCLUSION = 3,
-	VERTEX_NORMALTEXTURE = 4,
-
-	// uniform matrices
-	MATRIX_MODEL = 0,
-	MATRIX_VIEW = 1,
-	MATRIX_PROJECTION = 2,
-	MATRIX_NORMAL = 3,
-	MATRIX_SHADOWS = 4,
-
-	// texture sampler uniforms
-	TEXTURE_COLOR = 0,
-	TEXTURE_NORMAL = 1,
-	TEXTURE_SHADOW0 = 2,
-	TEXTURE_SHADOW1 = 3,
-	TEXTURE_SHADOW2 = 4,
-
 	// other uniforms
 	CAMERA_CENTER = -1,
-	SUN_TIME = -1
+	SUN_TIME = -1,
 
+	// vertex attributes
+	VERTEX_POSITION,
+	VERTEX_NORMAL,
+	VERTEX_TEXTURE,
+	VERTEX_OCCLUSION,
+	VERTEX_NORMALTEXTURE,
+
+	// uniform matrices
+	MATRIX_MODEL,
+	MATRIX_VIEW,
+	MATRIX_PROJECTION,
+	MATRIX_NORMAL,
+	MATRIX_SHADOWS,
+
+	// texture sampler uniforms
+	TEXTURE_COLOR,
+	TEXTURE_NORMAL,
+	TEXTURE_SHADOW0,
+	TEXTURE_SHADOW1,
+	TEXTURE_SHADOW2,
+
+	// count (must be last)
+	LOCATION_COUNT
 };
 
 /**
@@ -62,7 +65,9 @@ public:
 	 * -1 means that the location was not found / was optimized away by the
 	 * shader compiler.
 	 */
-  GLint getUniformLocation(const std::string &location) const;
+  GLint getUniform(const std::string &location) const;
+
+  GLint getUniform(ShaderLocation location) const;
 
 	/**
 	 * TODO doc
@@ -81,7 +86,7 @@ public:
 
 private:
   static Shader *activeShader;
-
+	std::array<GLint, LOCATION_COUNT> uniformLookup;
 
   void initLocations();
 

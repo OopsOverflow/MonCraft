@@ -15,6 +15,6 @@ Member::~Member() {}
 void Member::draw() {
   mat4 modelMatrix = mat4(node.model) * geometryModel;
   glBindVertexArray(mesh.getVAO());
-  glUniformMatrix4fv(MATRIX_MODEL, 1, GL_FALSE, glm::value_ptr(modelMatrix));
+  glUniformMatrix4fv(Shader::getActive()->getUniform(MATRIX_MODEL), 1, GL_FALSE, glm::value_ptr(modelMatrix));
   glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_INT, nullptr);
 }

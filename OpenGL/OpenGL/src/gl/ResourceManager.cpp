@@ -37,7 +37,7 @@ Shader* ResourceManager::addShader(std::string const& name, std::unique_ptr<Shad
 }
 
 Shader* ResourceManager::loadShader(std::string const& name, std::string const& vert, std::string const& frag) {
-
+  std::cout << "loading shader: " << name << std::endl;
   std::unique_ptr<Shader> shader(new Shader(("src/shader/" + vert).c_str(), ("src/shader/" + frag).c_str()));
   return addShader(name, std::move(shader));
 }
@@ -102,10 +102,8 @@ GLuint ResourceManager::loadTexture(std::string const& name, std::string const& 
         if(mipmaps.empty()) {
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            float borderColor[] = { 0.5f, 0.5f, 1.0f, 0.0f };//generation for normal map (straight bounce if out of border)
-            glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
             glGenerateMipmap(GL_TEXTURE_2D);
         }
 
@@ -135,7 +133,7 @@ GLuint ResourceManager::loadCubeMap(std::string const& name, std::vector<std::st
         SDL_Surface* rgbImg = SDL_ConvertSurfaceFormat(img, SDL_PIXELFORMAT_RGBA32, 0);
         if (rgbImg) {
             glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-                0, GL_RGB, rgbImg->w, rgbImg->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid*)rgbImg->pixels);
+                0, GL_RGBA, rgbImg->w, rgbImg->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid*)rgbImg->pixels);
             SDL_FreeSurface(img);
             SDL_FreeSurface(rgbImg);
         }

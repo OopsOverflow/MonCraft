@@ -1,4 +1,4 @@
-#version 430 core
+#version 300 es
 
 precision mediump float;
 
@@ -22,34 +22,6 @@ uniform int underWater; //glUniform1b :(
 
 
 out vec4 outputColor;
-
-float computeShadow(int i) {
-  vec3 normal = normalize(vertexNormal);
-  float dotNormal = dot(normalize(lightDirection), normal);
-
-  // float bias = 0.0;
-  float bmin = 0.00035;
-  float bmax = 0.0002;
-  float bias = max(bmax * (1.0 - dotNormal), bmin);
-  float currentDepth = shadowCoords[i].z * 0.5 + 0.5;
-  vec2 texelSize = 1.0 / textureSize(t_shadow[i], 0) / 2;
-
-  // no pcf
-  // float pcfDepth = texture(t_shadow[i], shadowCoords[i].xy * 0.5 + 0.5).r;
-  // return currentDepth - bias > pcfDepth ? 1.0 : 0.0;
-
-  // pcf
-  float shadow = 0.0;
-  for(float x = -1.5; x <= 1.5; ++x) {
-      for(float y = -1.5; y <= 1.5; ++y) {
-          float pcfDepth = texture(t_shadow[i], shadowCoords[i].xy * 0.5 + 0.5 + vec2(x, y) * texelSize).r;
-          shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
-      }
-  }
-  shadow /= 16.0;
-  return shadow;
-}
-
 
 float linearizeDepth(float depth) { // https://learnopengl.com/Advanced-OpenGL/Depth-testing
     float near = 0.1;
@@ -79,13 +51,7 @@ void main() {
   outputColor = texture(t_color, txrCoords);
 
   // shadow
-  float shadow = 0.0;
-  for (int i = 0 ; i < 3; i++) {
-    if (texture(t_shadow[i], shadowCoords[i].xy * 0.5 + 0.5).r != 1.0) {
-      shadow = 1 - computeShadow(i);
-      break;
-    }
-  }
+  float shadow = 1.0;
 
   vec4 color = outputColor;
   outputColor.xyz = color.xyz * (0.5 + 0.5 * (1.0 - sunAmount));

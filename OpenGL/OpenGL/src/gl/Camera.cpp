@@ -21,9 +21,9 @@ void Camera::activate() {
   glm::mat4 normal = glm::transpose(glm::inverse(view));
   Shader *shader = Shader::getActive();
   if (shader) {
-    glUniformMatrix4fv(MATRIX_VIEW, 1, GL_FALSE, glm::value_ptr(view));
-    glUniformMatrix4fv(MATRIX_NORMAL, 1, GL_FALSE, glm::value_ptr(normal));
-    glUniformMatrix4fv(MATRIX_PROJECTION, 1, GL_FALSE, glm::value_ptr(projection));
+    glUniformMatrix4fv(shader->getUniform(MATRIX_VIEW), 1, GL_FALSE, glm::value_ptr(view));
+    glUniformMatrix4fv(shader->getUniform(MATRIX_NORMAL), 1, GL_FALSE, glm::value_ptr(normal));
+    glUniformMatrix4fv(shader->getUniform(MATRIX_PROJECTION), 1, GL_FALSE, glm::value_ptr(projection));
     glm::vec3 c = view * glm::vec4(center, 1.f);
     glUniform3f(CAMERA_CENTER, c.x, c.y, c.z);
   } else {

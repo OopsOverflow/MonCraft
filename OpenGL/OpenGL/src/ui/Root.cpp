@@ -34,9 +34,9 @@ void Root::render() {
 
   for(Shader* shader: shaders) {
     shader->activate();
-    glUniformMatrix4fv(MATRIX_MODEL, 1, GL_FALSE, glm::value_ptr(I));
-    glUniformMatrix4fv(MATRIX_VIEW, 1, GL_FALSE, glm::value_ptr(I));
-    glUniformMatrix4fv(MATRIX_PROJECTION, 1, GL_FALSE, glm::value_ptr(proj));
+    glUniformMatrix4fv(shader->getUniform(MATRIX_MODEL), 1, GL_FALSE, glm::value_ptr(I));
+    glUniformMatrix4fv(shader->getUniform(MATRIX_VIEW), 1, GL_FALSE, glm::value_ptr(I));
+    glUniformMatrix4fv(shader->getUniform(MATRIX_PROJECTION), 1, GL_FALSE, glm::value_ptr(proj));
   }
   recompute();
   glDisable(GL_DEPTH_TEST);

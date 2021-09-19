@@ -92,26 +92,33 @@ Mesh::Mesh(MeshData& data)
   glBufferData(GL_ARRAY_BUFFER, size * 11, nullptr, GL_STATIC_DRAW);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, (data.indicesSolid.size() + 2 * transpCount) * sizeof(GLuint), nullptr, GL_STATIC_DRAW);
   size_t indOff = 0;
-  glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, indOff, data.indicesSolid.size() * sizeof(GLuint), data.indicesSolid.data());
+  if(data.indicesSolid.size() != 0)
+    glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, indOff, data.indicesSolid.size() * sizeof(GLuint), data.indicesSolid.data());
   indOff += data.indicesSolid.size() * sizeof(GLuint);
 
   // indices in positive x/y/z direction
-  glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, indOff, data.indicesTranspX.size() * sizeof(GLuint), data.indicesTranspX.data());
+  if(data.indicesTranspX.size() != 0)
+    glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, indOff, data.indicesTranspX.size() * sizeof(GLuint), data.indicesTranspX.data());
   indOff += data.indicesTranspX.size() * sizeof(GLuint);
-  glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, indOff, data.indicesTranspY.size() * sizeof(GLuint), data.indicesTranspY.data());
+  if(data.indicesTranspY.size() != 0)
+    glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, indOff, data.indicesTranspY.size() * sizeof(GLuint), data.indicesTranspY.data());
   indOff += data.indicesTranspY.size() * sizeof(GLuint);
-  glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, indOff, data.indicesTranspZ.size() * sizeof(GLuint), data.indicesTranspZ.data());
+  if(data.indicesTranspZ.size() != 0)
+    glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, indOff, data.indicesTranspZ.size() * sizeof(GLuint), data.indicesTranspZ.data());
   indOff += data.indicesTranspZ.size() * sizeof(GLuint);
 
   // indices in negative x/y/z direction
   reverseTriangles(data.indicesTranspX);
   reverseTriangles(data.indicesTranspY);
   reverseTriangles(data.indicesTranspZ);
-  glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, indOff, data.indicesTranspX.size() * sizeof(GLuint), data.indicesTranspX.data());
+  if(data.indicesTranspX.size() != 0)
+    glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, indOff, data.indicesTranspX.size() * sizeof(GLuint), data.indicesTranspX.data());
   indOff += data.indicesTranspX.size() * sizeof(GLuint);
-  glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, indOff, data.indicesTranspY.size() * sizeof(GLuint), data.indicesTranspY.data());
+  if(data.indicesTranspY.size() != 0)
+    glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, indOff, data.indicesTranspY.size() * sizeof(GLuint), data.indicesTranspY.data());
   indOff += data.indicesTranspY.size() * sizeof(GLuint);
-  glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, indOff, data.indicesTranspZ.size() * sizeof(GLuint), data.indicesTranspZ.data());
+  if(data.indicesTranspZ.size() != 0)
+    glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, indOff, data.indicesTranspZ.size() * sizeof(GLuint), data.indicesTranspZ.data());
 
   // positions
   glBufferSubData(GL_ARRAY_BUFFER, 0, size * 3, data.positions.data());

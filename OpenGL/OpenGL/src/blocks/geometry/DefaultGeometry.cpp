@@ -187,8 +187,8 @@ const std::array<std::pair<int, BlockFace>, 6> DefaultBlockGeometry::blockFaceOf
 };
 
 const face_t<2> DefaultBlockGeometry::faceNormalMap = {
-    -1.0f, -1.0f,
-    -1.0f, -1.0f,
-    -1.0f, -1.0f,
-    -1.0f, -1.0f,
+  1.f, 0.f,
+  0.5f, 0.f,
+  0.5f, 1.f,
+  1.f, 1.f,
 };

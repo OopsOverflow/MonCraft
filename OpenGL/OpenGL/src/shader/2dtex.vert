@@ -1,4 +1,4 @@
-#version 330 core
+#version 300 es
 
 in vec2 vPosition;
 uniform mat2 uMvp;
