@@ -79,6 +79,20 @@ public:
   */
   void drawTransparent(glm::vec3 dir);
 
+  /**
+  * Tells whether the chunks contains solid faces.
+  */
+  bool hasSolidData() const;
+
+  /**
+  * Tells whether the chunks contains transparent faces.
+  */
+  bool hasTransparentData() const;
+
+  /**
+  * Tells whether the chunks contains transparent or solid faces.
+  */
+  bool hasData() const;
 
   /// Some lookups for efficient code execution ///
 
@@ -120,4 +134,5 @@ private:
   bool computed;
   bool mustRecompute;
   std::mutex computeMutex;
+  glm::mat4 model;
 };

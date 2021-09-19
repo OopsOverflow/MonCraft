@@ -168,7 +168,7 @@ std::vector<Birch_Tree::Slice> Birch_Tree::spawn(Chunk& chunk, ivec3 pos) const 
 }
 
 
-EditPlaterforme::EditPlaterforme()
+EditPlateforme::EditPlateforme()
     : store(std::make_shared<BlockStore>(ivec3(33, 2, 33)))
 {
     ivec3 pos = ivec3(0,0,0);
@@ -193,14 +193,14 @@ EditPlaterforme::EditPlaterforme()
 }
 
 
-std::vector<EditPlaterforme::Slice> EditPlaterforme::spawn(Chunk& chunk, ivec3 pos) const {
-    std::vector<EditPlaterforme::Slice> slices;
+std::vector<EditPlateforme::Slice> EditPlateforme::spawn(Chunk& chunk, ivec3 pos) const {
+    std::vector<EditPlateforme::Slice> slices;
     ivec3 origin(0, -1, 0); // the tree is generated centered on the trunk, one block above
     ivec3 start = pos - origin;
 
     auto genSlice = [&](ivec3 chunkOffset) {
         ivec3 sliceStart = start - chunk.size * chunkOffset; // position of the structure's min corner in this chunk space
-        slices.emplace_back(EditPlaterforme::Slice{
+        slices.emplace_back(EditPlateforme::Slice{
           store,
           chunk.chunkPos + chunkOffset,
           max(sliceStart, ivec3(0)) - sliceStart,

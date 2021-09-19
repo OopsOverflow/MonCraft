@@ -152,6 +152,13 @@ void Chunk::compute() {
   computed = true;
   loaded = true;
   mustRecompute = false;
+
+  solidOffset = meshData.indicesSolid.size();
+  transpOffset.x = solidOffset + meshData.indicesTranspX.size();
+  transpOffset.y = transpOffset.x + meshData.indicesTranspY.size();
+  transpOffset.z  = transpOffset.y + meshData.indicesTranspZ.size();
+
+  model = translate(mat4(1.0), vec3(size * chunkPos));
 }
 
 void Chunk::markToRecompute() {
@@ -169,16 +176,13 @@ void Chunk::update() {
 
     if(computed) {
       computed = false;
-      auto model = translate(mat4(1.0), vec3(size * chunkPos));
-      mesh = std::unique_ptr<Mesh>(nullptr);
-      solidOffset = meshData.indicesSolid.size();
-      transpOffset.x = solidOffset + meshData.indicesTranspX.size();
-      transpOffset.y = transpOffset.x + meshData.indicesTranspY.size();
-      transpOffset.z  = transpOffset.y + meshData.indicesTranspZ.size();
-      if(transpOffset.z != 0) {
+      if(hasData()) {
         mesh = std::make_unique<Mesh>(meshData);
         mesh->model = model;
         meshData = {};
+      }
+      else {
+        mesh = std::unique_ptr<Mesh>(nullptr);
       }
     }
 
@@ -186,8 +190,20 @@ void Chunk::update() {
   }
 }
 
+bool Chunk::hasSolidData() const {
+  return solidOffset != 0;
+}
+
+bool Chunk::hasTransparentData() const {
+  return solidOffset != transpOffset.z;
+}
+
+bool Chunk::hasData() const {
+  return transpOffset.z != 0;
+}
+
 void Chunk::drawSolid() {
-  if(mesh && solidOffset != 0) {
+  if(mesh && hasSolidData()) {
     glBindVertexArray(mesh->getVAO());
     glUniformMatrix4fv(MATRIX_MODEL, 1, GL_FALSE, glm::value_ptr(mesh->model));
     glDrawElements(GL_TRIANGLES, solidOffset, GL_UNSIGNED_INT, nullptr);
@@ -195,7 +211,7 @@ void Chunk::drawSolid() {
 }
 
 void Chunk::drawTransparent(vec3 dir) {
-  if(mesh) {
+  if(mesh && hasTransparentData()) {
     auto signOffset = transpOffset.z - solidOffset;
 
     // find in which order of x/y/z components to draw
@@ -244,10 +260,7 @@ void Chunk::drawTransparent(vec3 dir) {
         if(dir.z > 0) offset += signOffset;
         glDrawElements(GL_TRIANGLES, transpOffset.z - transpOffset.y, GL_UNSIGNED_INT, reinterpret_cast<void*>(offset * sizeof(GLuint)));
       }
-
     }
-
-
   }
 }
 

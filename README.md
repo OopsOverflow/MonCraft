@@ -1,6 +1,6 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://github.com/OopsOverflow/MonCraft/blob/main/LICENSE)
 ![Language](https://img.shields.io/badge/Language-C%2B%2B-0052cf)
-[![Release](https://img.shields.io/badge/Release-v1.0b-red)](https://github.com/OopsOverflow/MonCraft/releases/tag/Beta)
+[![Release](https://img.shields.io/badge/Release-v1.0.1b-red)](https://github.com/OopsOverflow/MonCraft/releases/tag/v1.0.1b)
 
 [![Support Server](https://img.shields.io/discord/591914197219016707.svg?label=Discord&logo=Discord&colorB=7289da&style=for-the-badge)](https://discord.gg/3DTjFNgQ)
 
