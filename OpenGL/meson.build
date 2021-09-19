@@ -1,4 +1,4 @@
-project('MonCraft', 'cpp')
+project('MonCraft', 'cpp', default_options : ['cpp_std=c++17'])
 
 if get_option('buildtype').startswith('debug')
   add_project_arguments('-DDEBUG', language : 'cpp')
@@ -61,6 +61,9 @@ srcs = files(
   'OpenGL/src/ui/style/Style.cpp',
   'OpenGL/src/ui/style/Type.cpp',
   'OpenGL/src/ui/style/Specification.cpp',
+
+  'OpenGL/src/save/SaveManager.cpp',
+
 )
 
 deps = [

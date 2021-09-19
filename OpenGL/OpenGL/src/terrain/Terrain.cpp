@@ -15,7 +15,7 @@ Terrain::Terrain()
     chunksMaxCount((2*renderDistH+2)*(2*renderDistH+2)*(2*renderDistV+2)),
     generator(chunkSize),
     chunkPos(0),
-    chunkPosChanged(false)
+    chunkPosChanged(false), save("save/defaultWorld/chunk")
 {
   startGeneration();
 }
@@ -126,8 +126,17 @@ void Terrain::genWorker() {
       return neigh;
     }
     else if(addInBusyList(cpos)) {
-      auto chunk = chunkMap.insert(cpos, generator.generate(cpos));
-      sliceMap.insert(generator.generateStructures(*chunk));
+        std::shared_ptr<Chunk> chunk;
+        std::unique_ptr<Chunk> savedChunk = save.getChunk(cpos);
+        if (!savedChunk) {
+            chunk = chunkMap.insert(cpos, generator.generate(cpos));
+            sliceMap.insert(generator.generateStructures(*chunk));
+            save.saveChunk(chunk);
+        }
+        else {
+            chunk = chunkMap.insert(cpos, std::move(savedChunk));
+        }
+
       remFromBusyList(cpos);
       return chunk;
     }
@@ -155,8 +164,18 @@ void Terrain::genWorker() {
       }
       else if(addInBusyList(thisPos)) {
         {
-          auto chunk = chunkMap.insert(thisPos, generator.generate(thisPos));
-          sliceMap.insert(generator.generateStructures(*chunk));
+              std::shared_ptr<Chunk> chunk;
+              std::unique_ptr<Chunk> savedChunk = save.getChunk(thisPos);
+              if (!savedChunk) {
+                  chunk = chunkMap.insert(thisPos, generator.generate(thisPos));
+                  sliceMap.insert(generator.generateStructures(*chunk));
+                  save.saveChunk(chunk);
+              }
+              else {
+                  chunk = chunkMap.insert(thisPos, std::move(savedChunk));
+                  //std::cout << cpos.x << " " << cpos.y << " " << cpos.z << " " << chunk->chunkPos.x << " " << chunk->chunkPos.y << " " << chunk->chunkPos.z << std::endl;
+              }
+
           remFromBusyList(thisPos);
           neighbors[i] = chunk;
           finished[i] = true;
@@ -215,7 +234,11 @@ void Terrain::render(Camera const& camera) {
   std::vector<std::pair<float, std::shared_ptr<Chunk>>> toRender;
 
   chunkMap.for_each([&](std::shared_ptr<Chunk> chunk) {
-    if(!chunk->hasData()) return;
+    if(!chunk->hasData()) {
+      chunk->update();
+      return;
+    }
+
 
     vec3 worldChunkPos = vec3(chunk->chunkPos * chunkSize);
     vec3 chunkCenter = worldChunkPos + vec3(chunkSize) / 2.f;
@@ -263,6 +286,7 @@ void Terrain::setBlock(ivec3 pos, Block::unique_ptr_t block) {
 
   ivec3 dpos = pos - cpos * chunkSize;
   chunk->setBlock(dpos, std::move(block));
+  save.saveChunk(chunk);
 }
 
 void Terrain::stopGeneration() {
