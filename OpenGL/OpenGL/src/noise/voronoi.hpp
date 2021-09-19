@@ -2,7 +2,7 @@
 
 #include <array>
 #include "bitmap.hpp"
-#include "value.hpp"
+#include "XXHash.hpp"
 
 /**
  * A grid based voronoi noise.
@@ -25,7 +25,7 @@ public:
 
 
 private:
-  ValueNoise noise;
+  XXHash noise;
   int size;
   float cellSize;
   Grid<glm::vec2> grid;
