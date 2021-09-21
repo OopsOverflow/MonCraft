@@ -191,6 +191,7 @@
     <ClCompile Include="src\gl\ShadowMap.cpp" />
     <ClCompile Include="src\gl\Viewport.cpp" />
     <ClCompile Include="src\MonCraftScene.cpp" />
+    <ClCompile Include="src\multiplayer\client\RealServer.cpp" />
     <ClCompile Include="src\multiplayer\client\Server.cpp" />
     <ClCompile Include="src\multiplayer\client\SharedEntities.cpp" />
     <ClCompile Include="src\multiplayer\common\Identifier.cpp" />
@@ -203,6 +204,7 @@
     <ClCompile Include="src\noise\XXHash.cpp" />
     <ClCompile Include="src\save\SaveManager.cpp" />
     <ClCompile Include="src\terrain\biomes\BiomeMap.cpp" />
+    <ClCompile Include="src\terrain\BlockArray.cpp" />
     <ClCompile Include="src\terrain\Chunk.cpp" />
     <ClCompile Include="src\terrain\ChunkMap.cpp" />
     <ClCompile Include="src\terrain\Generator.cpp" />
@@ -279,6 +281,7 @@
     <ClInclude Include="src\gl\ShadowMap.hpp" />
     <ClInclude Include="src\gl\Viewport.hpp" />
     <ClInclude Include="src\MonCraftScene.hpp" />
+    <ClInclude Include="src\multiplayer\client\RealServer.hpp" />
     <ClInclude Include="src\multiplayer\client\Server.hpp" />
     <ClInclude Include="src\multiplayer\client\SharedEntities.hpp" />
     <ClInclude Include="src\multiplayer\common\Config.hpp" />
@@ -299,6 +302,7 @@
     <ClInclude Include="src\Noise.hpp" />
     <ClInclude Include="src\terrain\biomes\Biome.hpp" />
     <ClInclude Include="src\terrain\biomes\BiomeMap.hpp" />
+    <ClInclude Include="src\terrain\BlockArray.hpp" />
     <ClInclude Include="src\terrain\BlockGeom.hpp" />
     <ClInclude Include="src\terrain\Chunk.hpp" />
     <ClInclude Include="src\terrain\ChunkMap.hpp" />
