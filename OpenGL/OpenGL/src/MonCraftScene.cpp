@@ -2,16 +2,17 @@
 
 #include "MonCraftScene.hpp"
 #include "gl/ResourceManager.hpp"
+#include "multiplayer/common/Config.hpp"
 
 using namespace glm;
 
-MonCraftScene::MonCraftScene(Viewport* vp)
+MonCraftScene::MonCraftScene(Viewport* vp, entities_ptr_t entities)
     : ui::Component(vp->getRoot()), vp(vp),
       camera(ivec2(1), {0, 32, 10}, {0, 32, 0}),
 
       caster(100.f),
       shadows(4096),
-      character({ 0.0f, 40.0f, 0.0f }),
+      entities(entities),
 
       fogEnabled(false),
       sunSpeed(0.0075f), skyboxSpeed(0.0075f),
@@ -25,6 +26,8 @@ MonCraftScene::MonCraftScene(Viewport* vp)
     for (size_t i = 0; i < 30; i += 1) {
         normalMapID[i] = ResourceManager::getTexture("waterNormal" + std::to_string(i));
     }
+
+    entities->initialize();
 }
 
 bool MonCraftScene::onMousePressed(glm::ivec2 pos) {
@@ -41,16 +44,16 @@ void MonCraftScene::updateShadowMaps() {
     shadows.update(sunDir);
     shadows.attach(camera, Frustum::NEAR);
     shadows.beginFrame(Frustum::NEAR);
-    terrain.render(shadows.camera);
-    character.render();
+    entities->terrain->render(shadows.camera);
+    entities->player->render();
 
     shadows.attach(camera, Frustum::MEDIUM);
     shadows.beginFrame(Frustum::MEDIUM);
-    terrain.render(shadows.camera);
+    entities->terrain->render(shadows.camera);
 
     shadows.attach(camera, Frustum::FAR);
     shadows.beginFrame(Frustum::FAR);
-    terrain.render(shadows.camera);
+    entities->terrain->render(shadows.camera);
     shadows.endFrame();
 }
 
@@ -67,7 +70,7 @@ void MonCraftScene::updateUniforms(float t) {
     glUniform1i(shader->getUniformLocation("fog"), (int)fogEnabled); // TODO
     shader->bindTexture(TEXTURE_NORMAL, normalMapID[(size_t)(t*15)%30]);
 
-    Block* block = terrain.getBlock(ivec3(camera.position + vec3(-0.5f,0.6f,-0.5f)));
+    Block* block = entities->terrain->getBlock(ivec3(camera.position + vec3(-0.5f,0.6f,-0.5f)));
     if (block) {
         bool isUnderWater = block->type == BlockType::Water;
         GLint underWater = shader->getUniformLocation("underWater");
@@ -103,26 +106,31 @@ void MonCraftScene::drawSkybox(float t) {
 
 void MonCraftScene::drawTerrain() {
     shader->bindTexture(TEXTURE_COLOR, texAtlas);
-    terrain.render(camera);
+    entities->terrain->render(camera);
 }
 
 void MonCraftScene::drawCharacter() {
-    if (character.view == View::THIRD_PERSON) {
+    if (entities->player->view == View::THIRD_PERSON) {
         shader->bindTexture(TEXTURE_COLOR, texCharacter);
-        character.render();
+        entities->player->render();
+    }
+    for(auto& pair : entities->players) {
+        shader->bindTexture(TEXTURE_COLOR, texCharacter);
+        pair.second->render();
     }
 }
 
 void MonCraftScene::drawFrame(float t, float dt) {
     // updates
     musicPlayer.update();
-    vp->keyboardController.apply(character, terrain);
-    vp->mouseController.apply(character, terrain);
-    character.update(terrain, dt);
+    vp->keyboardController.apply(*entities->player, *entities->terrain);
+    vp->mouseController.apply(*entities->player, *entities->terrain);
+    entities->player->update(*entities->terrain, dt);
+    for(auto& pair : entities->players) pair.second->update(*entities->terrain, dt);
     setSize(parent->getSize());
     camera.setSize(getSize());
-    character.cameraToHead(camera);
-    terrain.update(camera.position);
+    entities->player->cameraToHead(camera);
+    entities->terrain->update(camera.position);
 
     // update sun
     float sunTime = quarter_pi<float>() + t * sunSpeed; // sun is fixed

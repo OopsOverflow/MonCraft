@@ -148,3 +148,50 @@ void Entity::update(Terrain& terrain, float dt) {
 vec3 Entity::getPosition() const {
 	return node.loc;
 }
+
+void Entity::setPosition(glm::vec3 pos) {
+	node.loc = pos;
+}
+
+
+sf::Packet& operator<<(sf::Packet& packet, Entity const& entity) {
+	packet << entity.node.loc;
+	packet << entity.node.rot;
+	packet << entity.headNode.rot;
+	packet << entity.speed;
+	packet << entity.accel;
+	packet << entity.direction;
+	packet << (sf::Uint8)entity.state;
+	return packet;
+}
+
+sf::Packet& operator>>(sf::Packet& packet, Entity& entity) {
+	sf::Uint8 state;
+	packet >> entity.node.loc;
+	packet >> entity.node.rot;
+	packet >> entity.headNode.rot;
+	packet >> entity.speed;
+	packet >> entity.accel;
+	packet >> entity.direction;
+	packet >> state;
+	entity.state = (State)state;
+	return packet;
+}
+
+sf::Packet& Entity::consume(sf::Packet& packet) {
+	decltype(node.loc) loc;
+	decltype(node.rot) rot;
+	decltype(headNode.rot) headRot;
+	decltype(speed) speed;
+	decltype(accel) accel;
+	decltype(direction) direction;
+	sf::Uint8 state;
+	packet >> loc;
+	packet >> rot;
+	packet >> headRot;
+	packet >> speed;
+	packet >> accel;
+	packet >> direction;
+	packet >> state;
+	return packet;
+}

@@ -5,6 +5,8 @@
 #include "ui/ui.hpp"
 #include "MonCraftScene.hpp"
 #include "debug/Debug.hpp"
+#include "multiplayer/client/RealServer.hpp"
+#include "multiplayer/common/Config.hpp"
 
 using namespace glm;
 
@@ -34,7 +36,7 @@ void loadResources() {
     ResourceManager::loadShader("simple", "simple.vert", "simple.frag");
     ResourceManager::loadShader("skyBox", "skyBox.vert", "skyBox.frag");
     ResourceManager::loadShader("font",   "font.vert",   "font.frag");
-    ResourceManager::loadShader("water",   "water.vert",   "water.frag");
+    ResourceManager::loadShader("water",  "water.vert",  "water.frag");
     ResourceManager::loadShader("fog", "fog.vert", "fog.frag");
     ResourceManager::loadShader("pane", "pane.vert", "pane.frag");
 
@@ -46,8 +48,20 @@ void loadResources() {
     }
 }
 
+std::unique_ptr<Server> createServer() {
+    std::unique_ptr<Server> server;
+    if (!NetworkConfig::LOCAL) {
+        server = std::make_unique<RealServer>(NetworkConfig::SERVER_ADDR, NetworkConfig::SERVER_PORT);
+    } else {
+        server = std::make_unique<Server>();
+    }
+    return server;
+}
+
 int main(int argc, char* argv[]) {
     std::cout << "---- Main ----" << std::endl;
+
+    auto server = createServer();
     Viewport window({800, 800});
     loadResources();
     window.createRoot();
@@ -62,7 +76,7 @@ int main(int argc, char* argv[]) {
     auto font_roboto = std::make_shared<const Font>("Roboto-Regular");
     auto font_vt323 = std::make_shared<const Font>("VT323-Regular");
 
-    MonCraftScene scene(&window);
+    MonCraftScene scene(&window, server->getEntities());
     scene.setPadding({10, 10});
 
     ui::Pane pane_fps(&scene);
@@ -92,10 +106,15 @@ int main(int argc, char* argv[]) {
     btn_fullscreen.setAnchorX(ui::Anchor::END);
     btn_fullscreen.setPadding({15, 10});
 
+    ui::Button btn_ping(&scene, "Ping", font_vt323);
+    btn_ping.setPosition({0, 80}); // TODO: implement a box container
+    btn_fullscreen.setPadding({15, 10});
+
     btn_vsync.onclick([&] { window.toggleVSync(); });
-    btn_gen.onclick([&] { scene.terrain.toggleGeneration(); });
+    btn_gen.onclick([&] { scene.entities->terrain->toggleGeneration(); });
     //btn_fog.onclick([&] { scene.fogEnabled = !scene.fogEnabled; });
     btn_fullscreen.onclick([&] { window.toggleFullscreen(); });
+    btn_ping.onclick([&] { server->ping(); });
 
     ui::Text text_posPlayer(&scene, "", font_vt323);
     text_posPlayer.setAnchorY(ui::Anchor::END);
@@ -103,12 +122,24 @@ int main(int argc, char* argv[]) {
 
     ui::Text text_gameTime(&scene, "", font_vt323);
     text_gameTime.setAnchorY(ui::Anchor::END);
-    text_gameTime.setPosition(ivec2(0, -40));
+    text_gameTime.setPosition(ivec2(0, -90)); // TODO: implement a box container
     text_gameTime.setFontSize(.5f);
+
+    ui::Text text_players(&scene, "", font_vt323);
+    text_players.setAnchorY(ui::Anchor::END);
+    text_players.setPosition({0, -30}); // TODO: implement a box container
+    text_players.setFontSize(.5f);
+
+    ui::Text text_uid(&scene, "", font_vt323);
+    text_uid.setAnchorY(ui::Anchor::END);
+    text_uid.setPosition({0, -60}); // TODO: implement a box container
+    text_uid.setFontSize(.5f);
 
     // main loop
     for (float dt = 0; window.beginFrame(dt); window.endFrame()) {
         t += dt;
+
+        server->update();
 
         scene.drawFrame(t, dt);
 
@@ -117,9 +148,17 @@ int main(int argc, char* argv[]) {
         text_fps.setText(text.str());
 
         text.str(""); // "clears" the string stream
-        text << "Player Pos : " << std::fixed << std::setprecision(3) << scene.character.getPosition();
+        text << "Player Pos : " << std::fixed << std::setprecision(3) << scene.entities->player->getPosition();
         text_posPlayer.setText(text.str());
 
+        text.str(""); // "clears" the string stream
+        text << "Players online : " << scene.entities->players.size() + 1;
+        text_players.setText(text.str());
+
+        text.str(""); // "clears" the string stream
+        text << "UID : " << scene.entities->uid;
+        text_uid.setText(text.str());
+      
         text.str(""); // "clears" the string stream
         text << "Game Time : " << std::fixed << std::setprecision(3) << t;
         text_gameTime.setText(text.str());

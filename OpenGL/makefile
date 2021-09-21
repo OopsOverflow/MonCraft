@@ -22,3 +22,7 @@ debug_opti:
 opti:
 	ninja -C DebugOptimized
 	cd OpenGL && ../DebugOptimized/MonCraft
+
+server:
+	ninja -C DebugOptimized
+	cd OpenGL && ../DebugOptimized/MonCraftServer
