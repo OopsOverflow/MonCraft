@@ -1,4 +1,5 @@
 #include "Entity.hpp"
+#include "save/SaveManager.hpp"
 
 using namespace glm;
 static const highp_dmat4 I(1.0);
@@ -13,7 +14,10 @@ Entity::Entity(Hitbox hitbox)
 	hitbox(std::move(hitbox))
 {}
 
-Entity::~Entity() {}
+Entity::~Entity() {
+	SaveManager save("save/defaultWorld/entities");
+	save.saveEntity(*this);
+}
 
 void Entity::walk(vec3 dir) {
 	if(dir == vec3(0)) {
@@ -194,4 +198,8 @@ sf::Packet& Entity::consume(sf::Packet& packet) {
 	packet >> direction;
 	packet >> state;
 	return packet;
+}
+
+Identifier Entity::getIdentifier() const {
+	return uid;
 }

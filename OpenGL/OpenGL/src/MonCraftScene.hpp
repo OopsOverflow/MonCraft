@@ -45,6 +45,8 @@ private:
   GLuint texCharacter;
   GLuint normalMapID[30];
 
+  //SaveManager save;
+
 public:
   // components
   SkyBox sky;
