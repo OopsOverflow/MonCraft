@@ -24,7 +24,8 @@ enum class BlockType
     Birch_Wood,
     Birch_Leaf,
     Gravel,
-    Brick
+    Brick,
+    Cobalt
 };
 
 enum class BlockFace { TOP, BOTTOM, FRONT, RIGHT, BACK, LEFT };
