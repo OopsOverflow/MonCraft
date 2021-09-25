@@ -90,12 +90,6 @@
     <ClCompile Include="src\terrain\ChunkMap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\terrain\SliceMap.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\terrain\Structure.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\blocks\geometry\BlockGeometry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -103,9 +97,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\blocks\geometry\TallgrassGeometry.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\terrain\biomes\BiomeMap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\blocks\geometry\WaterGeometry.cpp">
@@ -171,16 +162,28 @@
     <ClCompile Include="src\util\Identifier.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\terrain\TerrainGenerator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\terrain\World.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\terrain\ChunkGenerator.cpp">
+    <ClCompile Include="src\entity\Entities.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\entity\Entities.cpp">
+    <ClCompile Include="src\multiplayer\terrain\ChunkGenerator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\multiplayer\terrain\PendingChunks.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\multiplayer\terrain\SliceMap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\multiplayer\terrain\Structure.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\multiplayer\terrain\TerrainGenerator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\multiplayer\terrain\BiomeMap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -525,6 +528,27 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\entity\Entities.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\multiplayer\terrain\Biome.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\multiplayer\terrain\BiomeMap.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\multiplayer\terrain\ChunkGenerator.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\multiplayer\terrain\PendingChunks.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\multiplayer\terrain\SliceMap.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\multiplayer\terrain\Structure.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\multiplayer\terrain\TerrainGenerator.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

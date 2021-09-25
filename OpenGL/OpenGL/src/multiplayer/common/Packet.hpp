@@ -31,6 +31,21 @@ private:
   friend std::ostream& operator<<(std::ostream& os, PacketHeader const& header);
 };
 
+template<glm::length_t L, typename T, glm::qualifier Q = glm::defaultp>
+sf::Packet& operator<<(sf::Packet& packet, glm::vec<L, T, Q> const& cont) {
+    for (size_t i = 0; i < L; i++) {
+        packet << cont[i];
+    }
+    return packet;
+}
+
+template<glm::length_t L, typename T, glm::qualifier Q = glm::defaultp>
+sf::Packet& operator>>(sf::Packet& packet, glm::vec<L, T, Q>& vec) {
+    for (auto i = 0; i < L; i++) {
+        packet >> vec[i];
+    }
+    return packet;
+}
 template<typename T>
 sf::Packet& operator<<(sf::Packet& packet, std::vector<T> const& cont) {
   packet << (sf::Uint64)cont.size();
@@ -52,18 +67,4 @@ sf::Packet& operator>>(sf::Packet& packet, std::vector<T>& cont) {
   return packet;
 }
 
-template<glm::length_t L, typename T, glm::qualifier Q = glm::defaultp>
-sf::Packet& operator<<(sf::Packet& packet, glm::vec<L, T, Q> const& cont) {
-  for(size_t i = 0; i < L; i++) {
-    packet << cont[i];
-  }
-  return packet;
-}
 
-template<glm::length_t L, typename T, glm::qualifier Q = glm::defaultp>
-sf::Packet& operator>>(sf::Packet& packet, glm::vec<L, T, Q>& vec) {
-  for(auto i = 0; i < L; i++) {
-    packet >> vec[i];
-  }
-  return packet;
-}

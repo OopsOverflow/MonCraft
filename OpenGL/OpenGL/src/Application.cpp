@@ -146,7 +146,7 @@ int main(int argc, char* argv[]) {
         text_fps.setText(text.str());
 
         text.str(""); // "clears" the string stream
-        // text << "Player Pos : " << std::fixed << std::setprecision(3) << scene.entities->player->getPosition();
+        text << "Player Pos : " << std::fixed << std::setprecision(3) << server->getPlayer()->getPosition();
         text_posPlayer.setText(text.str());
 
         text.str(""); // "clears" the string stream
