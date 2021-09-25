@@ -4,6 +4,8 @@
 using namespace ui;
 using namespace glm;
 
+Component* Component::activeWidget = nullptr;
+
 MAKE_TYPE(Anchor);
 const spec_t Component::SIZE     = MAKE_SPEC("Component::size", ivec2);
 const spec_t Component::POSITION = MAKE_SPEC("Component::position", ivec2);
@@ -26,6 +28,7 @@ Component::Component(Component* parent)
 
 Component::~Component() {
   if(parent) parent->removeChild(this);
+  if(activeWidget == this) activeWidget = nullptr;
 }
 
 void Component::setStyle(prop_t const& prop) {
@@ -184,7 +187,7 @@ bool Component::overlaps(ivec2 point) const {
 }
 
 // COMBAK: not sure if this works well.
-bool Component::bubbleEvent(Event const& evt) {
+bool Component::bubbleEvent(Event const& evt) { // goes to the bottom
   if(!overlaps(evt.getPosition())) {
     if(hover) {
       hover = false;
@@ -200,12 +203,13 @@ bool Component::bubbleEvent(Event const& evt) {
       Component* child = *it;
       if(child->bubbleEvent(evt)) return true;
     }
+    if(evt.getType() == Event::Type::PRESS) makeActive();
     filterEvent(evt);
     return true;
   }
 }
 
-void Component::filterEvent(Event const& evt) {
+void Component::filterEvent(Event const& evt) { // goes bottom-up
   bool stopPropagation = handleEvent(evt);
   if(parent && !stopPropagation) {
     parent->filterEvent(evt);
@@ -218,6 +222,17 @@ bool Component::isHover() {
 
 bool Component::isPressed() {
   return pressed;
+}
+
+bool Component::isActive() {
+  return activeWidget == this;
+}
+
+void Component::unfocus() {
+  if(activeWidget == this) {
+    onDeactivated();
+    activeWidget = nullptr;
+  }
 }
 
 bool Component::handleEvent(Event const& evt) {
@@ -252,6 +267,21 @@ bool Component::handleEvent(Event const& evt) {
 void Component::handleEvents(std::vector<Event> const& events) {
   for(auto const& evt : events)
     bubbleEvent(evt);
+}
+
+void Component::makeActive() {
+  if(activeWidget == this) return;
+  else if(onActivate()) {
+    if(activeWidget) activeWidget->onDeactivated();
+    activeWidget = this;
+  }
+  else if(parent) {
+    parent->makeActive();
+  }
+  else if(activeWidget) {
+    activeWidget->onDeactivated();
+    activeWidget = nullptr;
+  }
 }
 
 // style setters / getters below
@@ -306,6 +336,14 @@ Anchor Component::getAnchorY() const {
   return anchorY;
 }
 
+void Component::keyPress(Key k) {
+  if(activeWidget) activeWidget->onKeyPressed(k);
+}
+
+void Component::keyRelease(Key k) {
+  if(activeWidget) activeWidget->onKeyReleased(k);
+}
+
 // default event handlers
 
 void Component::onMouseIn(glm::ivec2 pos) { }
@@ -313,3 +351,7 @@ void Component::onMouseOut(glm::ivec2 pos) { }
 bool Component::onMouseMove(glm::ivec2 pos) { return false; }
 bool Component::onMousePressed(glm::ivec2 pos) { return false; }
 bool Component::onMouseReleased(glm::ivec2 pos) { return false; }
+bool Component::onActivate() { return false; }
+void Component::onDeactivated() { }
+void Component::onKeyPressed(Key k) { }
+void Component::onKeyReleased(Key k) { }
