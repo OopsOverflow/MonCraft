@@ -21,8 +21,11 @@ bool ClientID::operator<(ClientID const& lhs) const {
 
 
 Client::Client(Identifier uid)
-  : player(uid, NetworkConfig::SPAWN_POINT, CharacterHitbox())
-{ }
+  : player(CharacterHitbox())
+{
+  player.uid = uid;
+  player.setPosition(NetworkConfig::SPAWN_POINT);
+}
 
 
 sf::IpAddress ClientID::getAddr() const {

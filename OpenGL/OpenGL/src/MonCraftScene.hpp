@@ -7,17 +7,15 @@
 #include "controller/KeyboardController.hpp"
 
 #include "audio/Music.hpp"
-#include "terrain/Terrain.hpp"
+#include "terrain/World.hpp"
 #include "terrain/SkyBox.hpp"
 #include "gl/ShadowMap.hpp"
 #include "gl/Viewport.hpp"
 
-#include "multiplayer/client/SharedEntities.hpp"
-
 class MonCraftScene : public ui::Component {
 
 public:
-  MonCraftScene(Viewport* vp, entities_ptr_t entities);
+  MonCraftScene(Viewport* vp, std::shared_ptr<Character> player);
 
   void drawFrame(float t, float dt);
 
@@ -26,14 +24,16 @@ private:
   void updateUniforms(float t);
   void drawMiddleDot();
   void drawSkybox(float t);
-  void drawTerrain();
-  void drawCharacter();
+  void drawEntities();
 
 protected:
   virtual bool onMousePressed(glm::ivec2 pos) override;
   virtual bool onMouseMove(glm::ivec2 pos) override;
 
 private:
+  World& world;
+  std::shared_ptr<Character> player;
+
   // view controls
   Viewport* vp;
   Camera camera;
@@ -45,13 +45,14 @@ private:
   GLuint texCharacter;
   GLuint normalMapID[30];
 
+  //SaveManager save;
+
 public:
   // components
   SkyBox sky;
   Raycast caster;
   ShadowMap shadows;
   Music musicPlayer;
-  entities_ptr_t entities;
 
   // other parameters
   bool fogEnabled;

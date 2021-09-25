@@ -42,7 +42,7 @@ void MouseController::triggerAction(MouseController::Action action) {
   actions.push_back(action);
 }
 
-void MouseController::apply(Character& character, Terrain& terrain) {
+void MouseController::apply(Character& character) {
 
   if (rotation) {
     character.turn(glm::vec2(deltaY, -deltaX) * sensivity);
@@ -55,13 +55,13 @@ void MouseController::apply(Character& character, Terrain& terrain) {
 
   for(auto action : actions) switch (action) {
     case Action::PLACE:
-      character.placeBlock(terrain);
+      character.placeBlock();
       break;
     case Action::DESTROY:
-      character.breakBlock(terrain);
+      character.breakBlock();
       break;
     case Action::PICK:
-      character.pickBlock(terrain);
+      character.pickBlock();
       break;
     default:
       std::cout << "MouseController: Action not supported." << std::endl;

@@ -58,7 +58,8 @@ void Text::draw() {
   auto orig = getAbsoluteOrigin();
   vec3 pos(orig.x, orig.y, 0.f);
   shader->activate();
-  pos.x -= font->characters.at(text.at(0)).bearing.x * fontSize;
+  if(text.size() > 0)
+    pos.x -= font->characters.at(text.at(0)).bearing.x * fontSize;
   font->draw(text, pos, fontSize, color);
   Component::draw();
 }

@@ -6,17 +6,19 @@
 
 using namespace glm;
 
-MonCraftScene::MonCraftScene(Viewport* vp, entities_ptr_t entities)
-    : ui::Component(vp->getRoot()), vp(vp),
+MonCraftScene::MonCraftScene(Viewport* vp, std::shared_ptr<Character> player)
+    : ui::Component(vp->getRoot()),
+      world(World::getInst()),
+      player(player),
+      vp(vp),
       camera(ivec2(1), {0, 32, 10}, {0, 32, 0}),
 
       caster(100.f),
       shadows(4096),
-      entities(entities),
 
       fogEnabled(false),
       sunSpeed(0.0075f), skyboxSpeed(0.0075f),
-      captured(false)
+      captured(false)//, save("save/defaultWorld/entities")
 {
     // load resources
     shader = ResourceManager::getShader("simple");
@@ -26,8 +28,6 @@ MonCraftScene::MonCraftScene(Viewport* vp, entities_ptr_t entities)
     for (size_t i = 0; i < 30; i += 1) {
         normalMapID[i] = ResourceManager::getTexture("waterNormal" + std::to_string(i));
     }
-
-    entities->initialize();
 }
 
 bool MonCraftScene::onMousePressed(glm::ivec2 pos) {
@@ -44,16 +44,16 @@ void MonCraftScene::updateShadowMaps() {
     shadows.update(sunDir);
     shadows.attach(camera, Frustum::NEAR);
     shadows.beginFrame(Frustum::NEAR);
-    entities->terrain->render(shadows.camera);
-    entities->player->render();
+    world.render(shadows.camera);
+    world.entities.renderAll();
 
     shadows.attach(camera, Frustum::MEDIUM);
     shadows.beginFrame(Frustum::MEDIUM);
-    entities->terrain->render(shadows.camera);
+    world.render(shadows.camera);
 
     shadows.attach(camera, Frustum::FAR);
     shadows.beginFrame(Frustum::FAR);
-    entities->terrain->render(shadows.camera);
+    world.render(shadows.camera);
     shadows.endFrame();
 }
 
@@ -70,7 +70,7 @@ void MonCraftScene::updateUniforms(float t) {
     glUniform1i(shader->getUniformLocation("fog"), (int)fogEnabled); // TODO
     shader->bindTexture(TEXTURE_NORMAL, normalMapID[(size_t)(t*15)%30]);
 
-    Block* block = entities->terrain->getBlock(ivec3(camera.position + vec3(-0.5f,0.6f,-0.5f)));
+    Block* block = world.getBlock(ivec3(camera.position + vec3(-0.5f,0.6f,-0.5f)));
     if (block) {
         bool isUnderWater = block->type == BlockType::Water;
         GLint underWater = shader->getUniformLocation("underWater");
@@ -104,33 +104,31 @@ void MonCraftScene::drawSkybox(float t) {
     camera.activate();
 }
 
-void MonCraftScene::drawTerrain() {
-    shader->bindTexture(TEXTURE_COLOR, texAtlas);
-    entities->terrain->render(camera);
-}
-
-void MonCraftScene::drawCharacter() {
-    if (entities->player->view == View::THIRD_PERSON) {
-        shader->bindTexture(TEXTURE_COLOR, texCharacter);
-        entities->player->render();
-    }
-    for(auto& pair : entities->players) {
-        shader->bindTexture(TEXTURE_COLOR, texCharacter);
-        pair.second->render();
+void MonCraftScene::drawEntities() {
+    shader->bindTexture(TEXTURE_COLOR, texCharacter);
+    for(auto pair : world.entities) {
+        if(pair.first == player->uid) {
+            if(player->view == View::THIRD_PERSON)
+                player->render();
+        }
+        else {
+            pair.second->render();
+        }
     }
 }
 
 void MonCraftScene::drawFrame(float t, float dt) {
     // updates
     musicPlayer.update();
-    vp->keyboardController.apply(*entities->player, *entities->terrain);
-    vp->mouseController.apply(*entities->player, *entities->terrain);
-    entities->player->update(*entities->terrain, dt);
-    for(auto& pair : entities->players) pair.second->update(*entities->terrain, dt);
+    vp->keyboardController.apply(*player);
+    vp->mouseController.apply(*player);
+
+    world.entities.updateAll(dt);
+
     setSize(parent->getSize());
     camera.setSize(getSize());
-    entities->player->cameraToHead(camera);
-    entities->terrain->update(camera.position);
+
+    player->cameraToHead(camera);
 
     // update sun
     float sunTime = quarter_pi<float>() + t * sunSpeed; // sun is fixed
@@ -152,11 +150,12 @@ void MonCraftScene::drawFrame(float t, float dt) {
     drawSkybox(t);
 
     // draw the terrain
-    drawTerrain();
+    shader->bindTexture(TEXTURE_COLOR, texAtlas);
+    world.render(camera);
+
+    // draw the entities
+    drawEntities();
 
     // draw dot in the middle of the screen
     drawMiddleDot();
-
-    // draw character
-    drawCharacter();
 }

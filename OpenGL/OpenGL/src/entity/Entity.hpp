@@ -6,9 +6,9 @@
 #include "Member.hpp"
 #include "Node.hpp"
 #include "gl/Camera.hpp"
-#include "terrain/Terrain.hpp"
 #include "audio/SoundEffect.hpp"
 #include "multiplayer/common/Packet.hpp"
+#include "util/Identifier.hpp"
 
 enum class View { FIRST_PERSON, THIRD_PERSON };
 enum class State { Walking, Idle };
@@ -53,7 +53,9 @@ public:
 	/**
 	 * Update the state of the entity
 	 */
-	virtual void update(Terrain& terrain, float dt);
+	virtual void update(float dt);
+
+	virtual void render();
 
 	glm::vec3 getPosition() const;
 
@@ -61,10 +63,17 @@ public:
 
 	View view;
 	State state;
+	Identifier uid;
 
 	friend sf::Packet& operator<<(sf::Packet& packet, Entity const& entity);
 	friend sf::Packet& operator>>(sf::Packet& packet, Entity& entity);
 	sf::Packet& consume(sf::Packet& packet);
+
+	Node getHead() const { return headNode; }
+	Node getNode() const { return node; }
+
+	void setHead(Node node) { this->headNode = node; }
+	void setNode(Node node) { this->node = node; }
 
 protected:
 	float maxSpeed;

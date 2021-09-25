@@ -1,11 +1,11 @@
-#include "SaveManager.hpp"
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <filesystem>
 
-#include <blocks/AllBlocks.hpp>
-
+#include "blocks/AllBlocks.hpp"
+#include "SaveManager.hpp"
+#include "entity/character/Character.hpp"
 
 
 SaveManager::SaveManager(std::string save_path) {
@@ -21,7 +21,7 @@ SaveManager::SaveManager(std::string save_path) {
 std::unique_ptr<Chunk> SaveManager::getChunk(glm::ivec3 chunkPos) {
 	std::string filePath = save_path + "/chunk_" + std::to_string(chunkPos.x) + "_" + std::to_string(chunkPos.y) + "_" + std::to_string(chunkPos.z) + ".chunk";
 	std::ifstream openedFile(filePath, std::fstream::binary | std::fstream::in);
-	if (!openedFile.is_open()) 
+	if (!openedFile.is_open())
 		return std::unique_ptr<Chunk>(nullptr);
 
 	////MonCraft version
@@ -52,7 +52,7 @@ std::unique_ptr<Chunk> SaveManager::getChunk(glm::ivec3 chunkPos) {
 	openedFile.close();
 
 	return std::unique_ptr<Chunk>(newChunk);
-	
+
 }
 
 
@@ -83,14 +83,14 @@ bool SaveManager::saveChunk(std::shared_ptr<Chunk> chunk) {
 		int x = i % chunk->size.x;
 
 		if (chunk->getBlock(glm::vec3(x, y, z))->type == last) {
-			continuous+=1;
+			continuous += 1;
 		}
 		else {
 			unsigned char buffer[3];
 			buffer[0] = continuous / 256;
 			buffer[1] = continuous % 256;
 			buffer[2] = (uint8_t)last;
-			openedFile.write((char*) buffer, 3);
+			openedFile.write((char*)buffer, 3);
 			continuous = 1;
 			last = chunk->getBlock(glm::vec3(x, y, z))->type;
 		}
@@ -104,4 +104,104 @@ bool SaveManager::saveChunk(std::shared_ptr<Chunk> chunk) {
 
 	openedFile.close();
 	return 1;
+}
+
+
+std::ofstream& operator<<(std::ofstream& stream, const glm::vec3& vec) {
+	stream << vec.x << vec.y << vec.z;
+	return stream;
+}
+
+std::ofstream& operator<<(std::ofstream& stream, State state) {
+	stream << (uint8_t)state;
+	return stream;
+}
+
+std::ofstream& operator<<(std::ofstream& stream, EntityClass entityClass) {
+	stream << (uint8_t)entityClass;
+	return stream;
+}
+
+std::ofstream& operator<<(std::ofstream& stream, const Node& node) {
+	stream << node.loc << node.rot << node.sca;
+	return stream;
+}
+
+std::ofstream& operator<<(std::ofstream& stream, const Entity& entity) {
+	stream << entity.getNode() << entity.getHead() << entity.state;
+	return stream;
+}
+
+std::ofstream& operator<<(std::ofstream& stream, const Character& character) {
+	stream << EntityClass::Character << (const Entity&)character;
+	return stream;
+}
+
+
+bool SaveManager::saveEntity(const Entity& entity) {
+
+	std::string filePath = save_path + "/entity_" + std::to_string(entity.uid) + ".entity";
+	std::ofstream openedFile(filePath, std::fstream::trunc | std::fstream::binary | std::fstream::out);
+	if (!openedFile) return 0;
+
+	openedFile << entity;
+	openedFile.close();
+	return 1;
+}
+
+std::ifstream& operator>>(std::ifstream& stream, glm::vec3& vec) {
+	stream >> vec.x >> vec.y >> vec.z;
+	return stream;
+}
+
+std::ifstream& operator>>(std::ifstream& stream, State& state) {
+	uint8_t temp;
+	stream >> temp;
+	state = (State)temp;
+	return stream;
+}
+
+std::ifstream& operator>>(std::ifstream& stream, EntityClass& entityClass) {
+	uint8_t temp;
+	stream >> temp;
+	entityClass = (EntityClass)temp;
+	return stream;
+}
+
+std::ifstream& operator>>(std::ifstream& stream, Node& node) {
+
+	glm::vec3 loc, rot, sca;
+
+	stream >> loc >> rot >> sca;
+	node.loc = loc;
+	node.rot = rot;
+	node.sca = sca;
+	return stream;
+}
+
+std::ifstream& operator>>(std::ifstream& stream, Entity& entity) {
+	Node head, node;
+	stream >> node >> head >> entity.state;
+	entity.setNode(node);
+	entity.setHead(head);
+	return stream;
+}
+
+std::unique_ptr<Entity> SaveManager::getEntity(Identifier uid) {
+	std::string filePath = save_path + "/entity_" + std::to_string(uid) + ".entity";
+	std::ifstream openedFile(filePath, std::fstream::binary | std::fstream::in);
+	if (!openedFile.is_open())
+		return std::unique_ptr<Entity>(nullptr);
+
+	Entity* entity = nullptr;
+	EntityClass entityClass;
+	openedFile >> entityClass;
+	switch (entityClass) {
+	case EntityClass::Character:
+		entity = new Character({});
+	}
+	openedFile >> *entity;
+
+	return std::unique_ptr<Entity>(entity);
+
 }
