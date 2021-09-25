@@ -188,6 +188,7 @@ bool Viewport::isDoubleSpace() {
 }
 
 void Viewport::on_keydown(SDL_Keycode k) {
+  root->keyPress(k); // controllers in ui (MonCraftScene)
   switch (k) {
   case SDLK_z:
     keyboardController.pressedForward();
@@ -231,6 +232,7 @@ void Viewport::on_keydown(SDL_Keycode k) {
 }
 
 void Viewport::on_keyup(SDL_Keycode k) {
+  root->keyRelease(k); // controllers in ui (MonCraftScene) 
   switch (k) {
   case SDLK_z:
     keyboardController.releasedForward();
