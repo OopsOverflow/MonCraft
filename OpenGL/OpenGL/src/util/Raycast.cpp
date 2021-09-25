@@ -8,7 +8,8 @@ Raycast::Raycast(float maxDist) : maxDist(maxDist)
 { }
 
 // credit: http://www.cse.chalmers.se/edu/year/2010/course/TDA361/grid.pdf
-Raycast::CastResult Raycast::cast(vec3 pos, vec3 direction, Terrain& terrain) const {
+Raycast::CastResult Raycast::cast(vec3 pos, vec3 direction) const {
+  auto& world = World::getInst();
 
   CastResult res{
     false,
@@ -28,7 +29,7 @@ Raycast::CastResult Raycast::cast(vec3 pos, vec3 direction, Terrain& terrain) co
   while(t < maxDist) {
 
     // check current block
-    res.block = terrain.getBlock(res.position);
+    res.block = world.getBlock(res.position);
     if (res.block){
         BlockType block = res.block->type;
         if(block != BlockType::Air && block != BlockType::Water) {

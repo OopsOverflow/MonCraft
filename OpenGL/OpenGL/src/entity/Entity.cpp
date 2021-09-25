@@ -11,7 +11,8 @@ Entity::Entity(Hitbox hitbox)
 	playerFovY(45.0f),
 	speed(0), accel(0), direction(0),
   onFloor(false),
-	hitbox(std::move(hitbox))
+	hitbox(std::move(hitbox)),
+	uid(0)
 {}
 
 Entity::~Entity() {
@@ -66,7 +67,7 @@ void Entity::cameraToHead(Camera& camera) {
 
 #include "../debug/Debug.hpp"
 
-void Entity::update(Terrain& terrain, float dt) {
+void Entity::update(float dt) {
 
 	// update forces
 	highp_dvec3 posOffset;
@@ -103,7 +104,7 @@ void Entity::update(Terrain& terrain, float dt) {
 		size_t steps = (size_t)ceil(totalOffset);
 		for (size_t i = 0; i < steps; i++) {
 			vec3 thisOffset = posOffset * 1.0 / (double)steps;
-			newPos = hitbox.computeCollision(newPos, thisOffset, terrain);
+			newPos = hitbox.computeCollision(newPos, thisOffset);
 		}
 
 		// the final entity displacement for this frame.
@@ -147,6 +148,10 @@ void Entity::update(Terrain& terrain, float dt) {
 	playerFovY = playerFovY - (playerFovY - (45.0f + length(speed) / 4.0f)) * 10.0f * dt;
 
 	node.update();
+}
+
+void Entity::render() {
+
 }
 
 vec3 Entity::getPosition() const {
@@ -198,8 +203,4 @@ sf::Packet& Entity::consume(sf::Packet& packet) {
 	packet >> direction;
 	packet >> state;
 	return packet;
-}
-
-Identifier Entity::getIdentifier() const {
-	return uid;
 }

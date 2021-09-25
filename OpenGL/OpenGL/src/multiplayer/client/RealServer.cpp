@@ -3,12 +3,14 @@
 #include "../common/Config.hpp"
 #include <iostream>
 #include "debug/Debug.hpp"
+#include "blocks/AllBlocks.hpp"
 
 RealServer::RealServer(std::string url, unsigned short port)
   : addr(url), port(port),
-    frameDuration(sf::milliseconds(NetworkConfig::SERVER_TICK))
+    frameDuration(sf::milliseconds(NetworkConfig::SERVER_TICK)),
+    world(World::getInst())
 {
-  lastUpdate = clock.getElapsedTime() - frameDuration - frameDuration; // needs update
+  lastUpdate = clock.getElapsedTime() - frameDuration - frameDuration; // nqeeds update
   socket.setBlocking(false);
   if(socket.bind(sf::Socket::AnyPort) != sf::Socket::Done) {
     throw NetworkError("Failed to bind to any port");
@@ -21,6 +23,10 @@ RealServer::RealServer(std::string url, unsigned short port)
     handshake = listen_ack_login();
     sf::sleep(sf::milliseconds(100));
   } while(!handshake);
+
+  auto newPlayer = std::make_unique<Character>(NetworkConfig::SPAWN_POINT);
+  auto entity = world.entities.add(playerUid, std::move(newPlayer));
+  player = std::dynamic_pointer_cast<Character>(entity);
 }
 
 RealServer::~RealServer() {
@@ -65,8 +71,6 @@ bool RealServer::poll() {
 }
 
 void RealServer::applyEntityTransforms(sf::Packet& packet) {
-  auto& players = entities->players;
-
   sf::Uint64 size;
   packet >> size;
 
@@ -74,19 +78,18 @@ void RealServer::applyEntityTransforms(sf::Packet& packet) {
     Identifier uid;
     packet >> uid;
 
-    if(uid == entities->uid) {
-      entities->player->consume(packet);
+    auto entity = world.entities.get(uid);
+
+    if(uid == playerUid) {
+      entity->consume(packet);
     }
     else {
-      auto it = players.find(uid);
-
-      // create the player if not found
-      if(it == players.end()) {
-        entities->createPlayer(uid);
-        it = players.find(uid);
+      if(entity == nullptr) { // create the player if not found
+        world.entities.add(uid, std::make_unique<Character>(NetworkConfig::SPAWN_POINT));
+        entity = world.entities.get(uid);
       }
 
-      packet >> *it->second;
+      packet >> *entity;
     }
   }
 }
@@ -96,7 +99,7 @@ void RealServer::ping() {
 }
 
 void RealServer::packet_blocks() {
-  auto blocks = entities->player->getRecord();
+  auto blocks = player->getRecord();
   if(blocks.size() != 0) {
     sf::Packet packet;
     PacketHeader header(PacketType::BLOCKS);
@@ -152,7 +155,7 @@ void RealServer::packet_logout() {
 void RealServer::packet_player_tick() {
   sf::Packet packet;
   PacketHeader header(PacketType::PLAYER_TICK);
-  packet << header << *entities->player;
+  packet << header << *player;
 
   auto send_res = socket.send(packet, addr, port);
 
@@ -178,8 +181,8 @@ bool RealServer::listen_ack_login() {
   if(type != PacketType::ACK_LOGIN) {
     throw NetworkError("listen_ack_login failed");
   }
-  
-  packet >> entities->uid;
+
+  packet >> playerUid;
 
   return true;
 }
@@ -188,13 +191,7 @@ void RealServer::handle_logout(sf::Packet& packet) {
   Identifier uid;
   packet >> uid;
 
-  auto& players = entities->players;
-
-  auto it = players.find(uid);
-  if(it != players.end()) {
-    players.erase(it);
-  }
-  else {
+  if(!world.entities.remove(uid)) {
     std::cout << "[WARN] logout of unknown player" << std::endl;
   }
 }
@@ -205,14 +202,18 @@ void RealServer::handle_blocks(sf::Packet& packet) {
 
   std::cout << uid << std::endl;
 
-  if(uid != entities->uid) {
+  if(uid != playerUid) {
     BlockArray blocks;
     packet >> blocks;
 
     std::cout << blocks.size() << std::endl;
 
     for(auto const& blockData : blocks) {
-      entities->terrain->setBlock(blockData.pos, AllBlocks::create_static(blockData.type));
+      world.setBlock(blockData.pos, AllBlocks::create_static(blockData.type));
     }
   }
+}
+
+std::shared_ptr<Character> RealServer::getPlayer() {
+  return player;
 }

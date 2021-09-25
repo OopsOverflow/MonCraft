@@ -8,8 +8,6 @@
 #include "entity/character/Character.hpp"
 
 
-
-
 SaveManager::SaveManager(std::string save_path) {
 	this->save_path = save_path;
 	if (!std::filesystem::exists(save_path))
@@ -23,7 +21,7 @@ SaveManager::SaveManager(std::string save_path) {
 std::unique_ptr<Chunk> SaveManager::getChunk(glm::ivec3 chunkPos) {
 	std::string filePath = save_path + "/chunk_" + std::to_string(chunkPos.x) + "_" + std::to_string(chunkPos.y) + "_" + std::to_string(chunkPos.z) + ".chunk";
 	std::ifstream openedFile(filePath, std::fstream::binary | std::fstream::in);
-	if (!openedFile.is_open()) 
+	if (!openedFile.is_open())
 		return std::unique_ptr<Chunk>(nullptr);
 
 	////MonCraft version
@@ -54,7 +52,7 @@ std::unique_ptr<Chunk> SaveManager::getChunk(glm::ivec3 chunkPos) {
 	openedFile.close();
 
 	return std::unique_ptr<Chunk>(newChunk);
-	
+
 }
 
 
@@ -142,7 +140,7 @@ std::ofstream& operator<<(std::ofstream& stream, const Character& character) {
 
 bool SaveManager::saveEntity(const Entity& entity) {
 
-	std::string filePath = save_path + "/entity_" + std::to_string(entity.getIdentifier()) + ".entity";
+	std::string filePath = save_path + "/entity_" + std::to_string(entity.uid) + ".entity";
 	std::ofstream openedFile(filePath, std::fstream::trunc | std::fstream::binary | std::fstream::out);
 	if (!openedFile) return 0;
 
@@ -183,7 +181,6 @@ std::ifstream& operator>>(std::ifstream& stream, Node& node) {
 
 std::ifstream& operator>>(std::ifstream& stream, Entity& entity) {
 	Node head, node;
-	State state;
 	stream >> node >> head >> entity.state;
 	entity.setNode(node);
 	entity.setHead(head);

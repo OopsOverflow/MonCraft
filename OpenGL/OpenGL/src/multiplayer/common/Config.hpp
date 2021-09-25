@@ -3,7 +3,7 @@
 #include <string>
 
 namespace NetworkConfig {
-  static const bool LOCAL = true;
+  static const bool LOCAL = false;
   static const std::string SERVER_ADDR = "pi.thissma.fr";
   static const unsigned short SERVER_PORT = 55000;
   static const unsigned short PACKET_SIZE = 100;

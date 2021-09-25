@@ -2,7 +2,7 @@
 
 #include <glm/glm.hpp>
 #include "terrain/Chunk.hpp"
-#include "multiplayer/common/Identifier.hpp"
+#include "util/Identifier.hpp"
 
 class Entity;
 

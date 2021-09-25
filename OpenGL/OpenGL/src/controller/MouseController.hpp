@@ -1,7 +1,6 @@
 #pragma once
 
 #include "entity/character/Character.hpp"
-#include "terrain/Terrain.hpp"
 
 class MouseController {
 public:
@@ -19,7 +18,7 @@ public:
 
 	void triggerAction(Action action);
 
-  void apply(Character& character, Terrain& terrain);
+  void apply(Character& character);
 
 private:
   int lastX;
