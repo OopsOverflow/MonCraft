@@ -4,6 +4,9 @@
 #include <iostream>
 #include "debug/Debug.hpp"
 #include "blocks/AllBlocks.hpp"
+#include "save/SaveManager.hpp"
+
+using namespace glm;
 
 RealServer::RealServer(std::string url, unsigned short port)
   : addr(url), port(port),
@@ -37,6 +40,7 @@ void RealServer::update() {
   while(poll()) {};
 
   packet_blocks();
+  packet_chunks();
 
   sf::Time now = clock.getElapsedTime();
   if(now - lastUpdate > frameDuration) {
@@ -63,6 +67,7 @@ bool RealServer::poll() {
   if(type == PacketType::ENTITY_TICK) applyEntityTransforms(packet);
   else if(type == PacketType::LOGOUT) handle_logout(packet);
   else if(type == PacketType::BLOCKS) handle_blocks(packet);
+  else if(type == PacketType::CHUNKS) handle_chunks(packet);
   else {
     std::cout << "[WARN] unhandled packed: " << header << std::endl;
   }
@@ -164,6 +169,33 @@ void RealServer::packet_player_tick() {
   }
 }
 
+void RealServer::packet_chunks() {
+  if(!pendingChunks.changed(player->getPosition())) return;
+  sf::Packet packet;
+  PacketHeader header(PacketType::CHUNKS);
+  packet << header << pendingChunks.get();
+
+  auto send_res = socket.send(packet, addr, port);
+
+  if(send_res != sf::Socket::Done) {
+    std::cout << "[WARN] chunks failed" << std::endl;
+  }
+}
+
+void RealServer::packet_ack_chunks(std::vector<glm::ivec3> ack) {
+  if(ack.size() == 0) return;
+
+  sf::Packet packet;
+  PacketHeader header(PacketType::ACK_CHUNKS);
+  packet << header << ack;
+
+  auto send_res = socket.send(packet, addr, port);
+
+  if(send_res != sf::Socket::Done) {
+    std::cout << "[WARN] ack_chunks failed" << std::endl;
+  }
+}
+
 bool RealServer::listen_ack_login() {
   sf::Packet packet;
   sf::IpAddress serverAddr;
@@ -200,8 +232,6 @@ void RealServer::handle_blocks(sf::Packet& packet) {
   Identifier uid;
   packet >> uid;
 
-  std::cout << uid << std::endl;
-
   if(uid != playerUid) {
     BlockArray blocks;
     packet >> blocks;
@@ -212,6 +242,45 @@ void RealServer::handle_blocks(sf::Packet& packet) {
       world.setBlock(blockData.pos, AllBlocks::create_static(blockData.type));
     }
   }
+}
+
+void RealServer::handle_chunks(sf::Packet& packet) {
+  sf::Uint8 chunkCount;
+  packet >> chunkCount;
+  std::vector<glm::ivec3> ack;
+
+  for (size_t i = 0; i < chunkCount; i++) {
+    sf::Uint8 chunkSize;
+    glm::ivec3 chunkPos;
+    packet >> chunkSize >> chunkPos;
+    auto newChunk = std::make_unique<Chunk>(chunkPos, chunkSize);
+    packet >> *newChunk;
+
+    if(!world.chunks.find(chunkPos)) {
+      auto chunk = world.chunks.insert(chunkPos, std::move(newChunk));
+
+      for(size_t j = 0; j < 26; j++) {
+        if(!chunk->neighbors[j].lock()) {
+          ivec3 thisPos = chunkPos + Chunk::neighborOffsets[j];
+          if(auto neigh = world.chunks.find(thisPos)) {
+            chunk->neighbors[j] = neigh;
+            neigh->neighbors[Chunk::neighborOffsetsInverse[j]] = chunk;
+            if(neigh->hasAllNeighbors()) {
+              neigh->compute();
+            }
+          }
+        }
+      }
+
+      if(chunk->hasAllNeighbors()) {
+        chunk->compute();
+      }
+    }
+
+    ack.push_back(chunkPos);
+  }
+
+  packet_ack_chunks(ack);
 }
 
 std::shared_ptr<Character> RealServer::getPlayer() {

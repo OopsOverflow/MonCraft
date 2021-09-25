@@ -3,7 +3,7 @@
 #include <glm/glm.hpp>
 #include "blocks/AllBlocks.hpp"
 #include "noise/Noise.hpp"
-#include "terrain/Structure.hpp"
+#include "Structure.hpp"
 
 
 enum class BiomeType { ICE, SEA, BEACH, TOUNDRA, PLAINS, DESERT, HILLS, MOUNTAINS, FOREST };

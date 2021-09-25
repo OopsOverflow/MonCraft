@@ -22,13 +22,6 @@ public:
   Chunk& operator=(Chunk const&) = delete;
 
   /**
-  * Gets the block at the given position.
-  * The coordinate origin is in chunk space i.e. (0,0,0) is the chunk corner.
-  * /!\ nothing guaranties the Block's longevity (hence the pointer).
-  */
-  Block* getBlock(glm::ivec3 pos);
-
-  /**
   * Sets the block at the given position.
   * The coordinate origin is in chunk space i.e. (0,0,0) is the chunk corner.
   * This will update the mesh and, if possible, neighboring meshes as well.
@@ -93,6 +86,8 @@ public:
   * Tells whether the chunks contains transparent or solid faces.
   */
   bool hasData() const;
+
+  bool hasAllNeighbors() const;
 
   /// Some lookups for efficient code execution ///
 

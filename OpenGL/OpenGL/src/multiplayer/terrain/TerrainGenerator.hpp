@@ -7,14 +7,14 @@
 #include <unordered_map>
 #include <glm/glm.hpp>
 
-#include "ChunkMap.hpp"
+#include "terrain/ChunkMap.hpp"
 #include "SliceMap.hpp"
 #include "ChunkGenerator.hpp"
 #include "gl/Camera.hpp"
 #include "util/PriorityList.hpp"
 #include "util/AtomicCyclicList.hpp"
 #include "save/SaveManager.hpp"
-#include "World.hpp"
+#include "terrain/World.hpp"
 
 
 class TerrainGenerator
@@ -34,7 +34,7 @@ public:
   bool generating;
 
   static const int chunkSize = 16; // TODO: in a config file
-  static const int renderDistH = 16; // horizontal render distance (2n+1 chunks)
+  static const int renderDistH = 5; // horizontal render distance (2n+1 chunks)
   static const int renderDistV = 5; // vertical render distance (2n+1 chunks)
 
 private:
@@ -62,7 +62,7 @@ private:
 
   // threading
   std::thread mainWorkerThread; // manages the queue of chunks to generate
-  static const int N_THREADS = 4;
+  static const int N_THREADS = 1;
   std::array<std::thread, N_THREADS> genWorkerThreads; // creates new chunks when it can
   std::mutex workerMutex;
   void mainWorker();

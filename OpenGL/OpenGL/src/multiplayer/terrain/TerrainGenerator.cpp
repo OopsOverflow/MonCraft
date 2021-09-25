@@ -17,7 +17,7 @@ TerrainGenerator::TerrainGenerator()
     chunkPos(0),
     chunkPosChanged(false),
     world(World::getInst()),
-    save("save/defaultWorld/chunk")
+    save("save/serverWorld/chunk")
 {
   startGeneration();
 }
@@ -94,6 +94,7 @@ bool TerrainGenerator::hasPosChanged() {
 }
 
 void TerrainGenerator::mainWorker() {
+  updateWaitingList();
   do {
     if(hasPosChanged()) updateWaitingList();
   } while(!sleepFor(100ms));
@@ -133,7 +134,6 @@ void TerrainGenerator::genWorker() {
         if (!savedChunk) {
             chunk = world.chunks.insert(cpos, generator.generate(cpos));
             sliceMap.insert(generator.generateStructures(*chunk));
-            save.saveChunk(chunk);
         }
         else {
             chunk = world.chunks.insert(cpos, std::move(savedChunk));
@@ -171,7 +171,7 @@ void TerrainGenerator::genWorker() {
               if (!savedChunk) {
                   chunk = world.chunks.insert(thisPos, generator.generate(thisPos));
                   sliceMap.insert(generator.generateStructures(*chunk));
-                  save.saveChunk(chunk);
+                  save.saveChunk(*chunk);
               }
               else {
                   chunk = world.chunks.insert(thisPos, std::move(savedChunk));

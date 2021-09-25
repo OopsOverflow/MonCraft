@@ -18,8 +18,9 @@ void ClientServer::ping() {
   std::cout << "clientside server ping!" << std::endl;
 }
 
-void ClientServer::update()
-{}
+void ClientServer::update() {
+  generator.update(player->getPosition());
+}
 
 std::shared_ptr<Character> ClientServer::getPlayer() {
   return player;

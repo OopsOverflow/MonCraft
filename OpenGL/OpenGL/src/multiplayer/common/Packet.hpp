@@ -10,6 +10,8 @@ enum class PacketType {
   BLOCKS,
   PLAYER_TICK,
   PING,
+  CHUNKS,
+  ACK_CHUNKS,
   NONE
 };
 

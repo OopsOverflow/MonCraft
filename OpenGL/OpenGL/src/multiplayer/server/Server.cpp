@@ -3,20 +3,26 @@
 #include "../common/Config.hpp"
 #include "util/Identifier.hpp"
 #include "debug/Debug.hpp"
+#include "save/SaveManager.hpp"
+
+using namespace glm;
 
 Server::Server(unsigned short port)
-  : port(port)
+  : port(port), world(World::getInst()), save("save/serverWorld/chunk")
 {
   socket.setBlocking(false);
   if(socket.bind(port) != sf::Socket::Done) {
     throw NetworkError("Failed to bind to port: " + std::to_string(port));
   }
+
+  generator.update(vec3(0));
 }
 
 bool isVerbose(PacketType type) {
   return
     type != PacketType::ENTITY_TICK &&
     type != PacketType::BLOCKS &&
+    type != PacketType::ACK_CHUNKS &&
     type != PacketType::PLAYER_TICK;
 }
 
@@ -45,11 +51,11 @@ bool Server::poll() {
       std::cout << "[WARN] Client not registered" << std::endl;
     }
     else {
-
       if(type == PacketType::PING) handle_ping(it->second);
       else if(type == PacketType::BLOCKS) handle_blocks(it->second, packet);
       else if(type == PacketType::PLAYER_TICK) handle_player_tick(it->second, packet);
-
+      else if(type == PacketType::CHUNKS) handle_chunks(it->second, packet);
+      else if(type == PacketType::ACK_CHUNKS) handle_ack_chunks(it->second, packet);
     }
   }
 
@@ -95,7 +101,40 @@ void Server::packet_blocks(Identifier uid, BlockArray changedBlocks) {
   broadcast(packet);
 }
 
+void Server::packet_ack_login(ClientID const& client, Identifier uid) {
+  sf::Packet packet;
+  PacketHeader header(PacketType::ACK_LOGIN);
+  packet << header << uid;
+  socket.send(packet, client.getAddr(), client.getPort());
+}
+
+void Server::packet_chunks() {
+  static const size_t maxChunks = 5;
+
+  for(auto const& pair : clients) {
+    std::vector<std::shared_ptr<Chunk>> chunks;
+    for(auto const& cpos : pair.second.waitingChunks) {
+      auto chunk = world.chunks.find(cpos);
+      if(chunk) {
+        chunks.push_back(chunk);
+        if(chunks.size() >= maxChunks) break;
+      }
+    }
+
+    if(chunks.size() != 0) {
+      sf::Packet packet;
+      PacketHeader header(PacketType::CHUNKS);
+      packet << header << (sf::Uint8)chunks.size();
+      for(auto const& chunk : chunks)
+        packet << (sf::Uint8)chunk->size.x << chunk->chunkPos << *chunk;
+      socket.send(packet, pair.first.getAddr(), pair.first.getPort());
+    }
+  }
+}
+
 void Server::run() {
+  generator.update(vec3(0));
+
   sf::Clock clock;
   const sf::Time frameDuration = sf::milliseconds(NetworkConfig::SERVER_TICK);
 
@@ -104,6 +143,7 @@ void Server::run() {
 
     while(poll()) {}
     packet_entity_tick();
+    packet_chunks();
 
     sf::Time elapsed = clock.getElapsedTime() - start;
     if(elapsed < frameDuration) {
@@ -165,15 +205,33 @@ void Server::handle_player_tick(Client& client, sf::Packet& packet) {
   packet >> client.player;
 }
 
-void Server::packet_ack_login(ClientID const& client, Identifier uid) {
-  sf::Packet packet;
-  PacketHeader header(PacketType::ACK_LOGIN);
-  packet << header << uid;
-  socket.send(packet, client.getAddr(), client.getPort());
+void Server::handle_chunks(Client& client, sf::Packet& packet) {
+  packet >> client.waitingChunks;
+}
+
+void Server::handle_ack_chunks(Client& client, sf::Packet& packet) {
+  std::vector<ivec3> ack;
+  packet >> ack;
+
+  for(auto const& cpos : ack) {
+    auto it = std::find(client.waitingChunks.begin(), client.waitingChunks.end(), cpos);
+    if(it != client.waitingChunks.end()) client.waitingChunks.erase(it);
+  }
 }
 
 void Server::handle_blocks(Client const& client, sf::Packet& packet) {
   BlockArray blocks;
   packet >> blocks;
+
+  for(auto const& blockData : blocks) {
+    ivec3 cpos = floor(vec3(blockData.pos) / float(world.chunkSize));
+    auto chunk = world.chunks.find(cpos);
+    if(chunk) {
+      ivec3 dpos = blockData.pos - cpos * world.chunkSize;
+      chunk->setBlock(dpos, AllBlocks::create_static(blockData.type));
+      save.saveChunk(*chunk);
+    }
+  }
+
   packet_blocks(client.player.uid, blocks);
 }

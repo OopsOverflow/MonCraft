@@ -8,7 +8,6 @@
 #include "multiplayer/client/ClientServer.hpp"
 #include "multiplayer/client/RealServer.hpp"
 #include "multiplayer/common/Config.hpp"
-#include "terrain/TerrainGenerator.hpp"
 
 using namespace glm;
 
@@ -68,7 +67,6 @@ int main(int argc, char* argv[]) {
     window.createRoot();
 
     auto server = createServer();
-    TerrainGenerator gen;
     World& world = World::getInst();
 
     // game seed
@@ -112,7 +110,7 @@ int main(int argc, char* argv[]) {
     btn_fullscreen.setPadding({15, 10});
 
     btn_vsync.onclick([&] { window.toggleVSync(); });
-    btn_gen.onclick([&] { gen.toggleGeneration(); });
+    // btn_gen.onclick([&] { gen.toggleGeneration(); });
     btn_fullscreen.onclick([&] { window.toggleFullscreen(); });
     btn_ping.onclick([&] { server->ping(); });
 
@@ -139,7 +137,6 @@ int main(int argc, char* argv[]) {
     for (float dt = 0; window.beginFrame(dt); window.endFrame()) {
         t += dt;
 
-        gen.update(server->getPlayer()->getPosition());
         server->update();
 
         scene.drawFrame(t, dt);

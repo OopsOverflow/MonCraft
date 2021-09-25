@@ -6,7 +6,25 @@
 #include "blocks/AllBlocks.hpp"
 #include "SaveManager.hpp"
 #include "entity/character/Character.hpp"
+#include "debug/Debug.hpp"
 
+template<typename T>
+class Binary {
+public:
+	Binary() {  }
+	Binary(T val) : val(val) {  }
+	T val;
+};
+template<typename T>
+std::ostream& operator<<(std::ostream& stream, Binary<T>& bin) {
+	stream.write((char*)&bin.val, sizeof(T));
+	return stream;
+}
+template<typename T>
+std::istream& operator>>(std::istream& stream, Binary<T>& bin) {
+	stream.read((char*)&bin.val, sizeof(T));
+	return stream;
+}
 
 SaveManager::SaveManager(std::string save_path) {
 	this->save_path = save_path;
@@ -17,159 +35,49 @@ SaveManager::SaveManager(std::string save_path) {
 
 }
 
-
-std::unique_ptr<Chunk> SaveManager::getChunk(glm::ivec3 chunkPos) {
-	std::string filePath = save_path + "/chunk_" + std::to_string(chunkPos.x) + "_" + std::to_string(chunkPos.y) + "_" + std::to_string(chunkPos.z) + ".chunk";
-	std::ifstream openedFile(filePath, std::fstream::binary | std::fstream::in);
-	if (!openedFile.is_open())
-		return std::unique_ptr<Chunk>(nullptr);
-
-	////MonCraft version
-	//char versionBuffer[3];
-	//openedFile.read(versionBuffer, 3);
-
-	//Chunk size
-	uint8_t chunkSizeBuffer;
-	openedFile.read((char*) &chunkSizeBuffer, 1);
-
-	Chunk* newChunk = new Chunk(chunkPos, chunkSizeBuffer);
-
-	int offset = 0;
-	uint8_t buffer[3];
-	while (openedFile.read((char*) buffer, 3)) //Block data
-	{
-		int blockCount = buffer[0] * 256 + buffer[1];
-		BlockType block = (BlockType)buffer[2];
-		for (int i = 0; i < blockCount; i += 1) {
-			int y = (i + offset) / (newChunk->size.x * newChunk->size.x);
-			int z = ((i + offset) / newChunk->size.x) % newChunk->size.x;
-			int x = (i + offset) % newChunk->size.x;
-			newChunk->setBlock(glm::ivec3(x, y, z), AllBlocks::create_static(block));
-		}
-		offset += blockCount;
-
-	}
-	openedFile.close();
-
-	return std::unique_ptr<Chunk>(newChunk);
-
+std::ostream& operator<<(std::ostream& stream, const glm::vec3& vec) {
+	Binary<int> x = vec.x, y = vec.y, z = vec.z;
+	stream << x << y << z;
+	return stream;
 }
-
-
-
-bool SaveManager::saveChunk(std::shared_ptr<Chunk> chunk) {
-
-	std::string filePath = save_path + "/chunk_" + std::to_string(chunk->chunkPos.x) + "_" + std::to_string(chunk->chunkPos.y) + "_" + std::to_string(chunk->chunkPos.z) + ".chunk";
-	std::ofstream openedFile(filePath, std::fstream::trunc | std::fstream::binary | std::fstream::out);
-	if (!openedFile) return 0;
-
-	////MonCraft version
-	//char versionBuffer[3];
-	//versionBuffer[0] = 1;
-	//versionBuffer[1] = 0;
-	//versionBuffer[2] = 2;
-	//openedFile.write(versionBuffer, 3);
-
-	//Chunk size
-	char chunkSizeBuffer = chunk->size.x;
-	openedFile.write(&chunkSizeBuffer, 1);
-
-	int chunkSaveLength = chunk->size.x * chunk->size.y * chunk->size.z;
-	int continuous = 1;
-	BlockType last = chunk->getBlock(glm::vec3(0))->type;
-	for (int i = 1; i < chunkSaveLength; i += 1) {
-		int y = i / (chunk->size.x * chunk->size.x);
-		int z = (i / chunk->size.x) % chunk->size.x;
-		int x = i % chunk->size.x;
-
-		if (chunk->getBlock(glm::vec3(x, y, z))->type == last) {
-			continuous += 1;
-		}
-		else {
-			unsigned char buffer[3];
-			buffer[0] = continuous / 256;
-			buffer[1] = continuous % 256;
-			buffer[2] = (uint8_t)last;
-			openedFile.write((char*)buffer, 3);
-			continuous = 1;
-			last = chunk->getBlock(glm::vec3(x, y, z))->type;
-		}
-
-	}
-	uint8_t buffer[3];
-	buffer[0] = continuous / 256;
-	buffer[1] = continuous % 256;
-	buffer[2] = (uint8_t)last;
-	openedFile.write((char*)buffer, 3);
-
-	openedFile.close();
-	return 1;
-}
-
-
-std::ofstream& operator<<(std::ofstream& stream, const glm::vec3& vec) {
-	stream << vec.x << vec.y << vec.z;
+std::istream& operator>>(std::istream& stream, glm::vec3& vec) {
+	Binary<int> x, y, z;
+	stream >> x >> y >> z;
+	vec.x = x.val;
+	vec.y = y.val;
+	vec.z = z.val;
 	return stream;
 }
 
-std::ofstream& operator<<(std::ofstream& stream, State state) {
-	stream << (uint8_t)state;
+std::ostream& operator<<(std::ostream& stream, State state) {
+	Binary temp((uint8_t)state);
+	stream << temp;
+	return stream;
+}
+std::istream& operator>>(std::istream& stream, State& state) {
+	Binary<uint8_t> temp;
+	stream >> temp;
+	state = (State)temp.val;
 	return stream;
 }
 
-std::ofstream& operator<<(std::ofstream& stream, EntityClass entityClass) {
-	stream << (uint8_t)entityClass;
+std::ostream& operator<<(std::ostream& stream, EntityClass entityClass) {
+	Binary temp((uint8_t)entityClass);
+	stream << temp;
+	return stream;
+}
+std::istream& operator>>(std::istream& stream, EntityClass& entityClass) {
+	Binary<uint8_t> temp;
+	stream >> temp;
+	entityClass = (EntityClass)temp.val;
 	return stream;
 }
 
-std::ofstream& operator<<(std::ofstream& stream, const Node& node) {
+std::ostream& operator<<(std::ostream& stream, const Node& node) {
 	stream << node.loc << node.rot << node.sca;
 	return stream;
 }
-
-std::ofstream& operator<<(std::ofstream& stream, const Entity& entity) {
-	stream << entity.getNode() << entity.getHead() << entity.state;
-	return stream;
-}
-
-std::ofstream& operator<<(std::ofstream& stream, const Character& character) {
-	stream << EntityClass::Character << (const Entity&)character;
-	return stream;
-}
-
-
-bool SaveManager::saveEntity(const Entity& entity) {
-
-	std::string filePath = save_path + "/entity_" + std::to_string(entity.uid) + ".entity";
-	std::ofstream openedFile(filePath, std::fstream::trunc | std::fstream::binary | std::fstream::out);
-	if (!openedFile) return 0;
-
-	openedFile << entity;
-	openedFile.close();
-	return 1;
-}
-
-std::ifstream& operator>>(std::ifstream& stream, glm::vec3& vec) {
-	stream >> vec.x >> vec.y >> vec.z;
-	return stream;
-}
-
-std::ifstream& operator>>(std::ifstream& stream, State& state) {
-	uint8_t temp;
-	stream >> temp;
-	state = (State)temp;
-	return stream;
-}
-
-std::ifstream& operator>>(std::ifstream& stream, EntityClass& entityClass) {
-	uint8_t temp;
-	stream >> temp;
-	entityClass = (EntityClass)temp;
-	return stream;
-}
-
-std::ifstream& operator>>(std::ifstream& stream, Node& node) {
-
+std::istream& operator>>(std::istream& stream, Node& node) {
 	glm::vec3 loc, rot, sca;
 
 	stream >> loc >> rot >> sca;
@@ -179,12 +87,31 @@ std::ifstream& operator>>(std::ifstream& stream, Node& node) {
 	return stream;
 }
 
-std::ifstream& operator>>(std::ifstream& stream, Entity& entity) {
+std::ostream& operator<<(std::ostream& stream, const Entity& entity) {
+	stream << entity.getNode() << entity.getHead() << entity.state;
+	return stream;
+}
+std::istream& operator>>(std::istream& stream, Entity& entity) {
 	Node head, node;
 	stream >> node >> head >> entity.state;
 	entity.setNode(node);
 	entity.setHead(head);
 	return stream;
+}
+
+std::ostream& operator<<(std::ostream& stream, const Character& character) {
+	stream << EntityClass::Character << (const Entity&)character;
+	return stream;
+}
+
+bool SaveManager::saveEntity(const Entity& entity) {
+	std::string filePath = save_path + "/entity_" + std::to_string(entity.uid) + ".entity";
+	std::ofstream openedFile(filePath, std::fstream::trunc | std::fstream::binary | std::fstream::out);
+	if (!openedFile) return 0;
+
+	openedFile << entity;
+	openedFile.close();
+	return 1;
 }
 
 std::unique_ptr<Entity> SaveManager::getEntity(Identifier uid) {
@@ -203,5 +130,109 @@ std::unique_ptr<Entity> SaveManager::getEntity(Identifier uid) {
 	openedFile >> *entity;
 
 	return std::unique_ptr<Entity>(entity);
+}
 
+
+
+std::ostream& operator<<(std::ostream& stream, BlockType& type) {
+	Binary bin((uint8_t)type);
+	stream << bin;
+	return stream;
+}
+std::istream& operator>>(std::istream& stream, BlockType& type) {
+	Binary<uint8_t> temp;
+	stream >> temp;
+	type = (BlockType)temp.val;
+	return stream;
+}
+
+std::istream& operator>>(std::istream& stream, Chunk& chunk) {
+	int maxIndex = chunk.size.x * chunk.size.y * chunk.size.z;
+	int offset = 0;
+
+	while(offset != maxIndex) {
+		Binary<uint16_t> blockCount;
+		BlockType type;
+		stream >> blockCount >> type;
+
+		for (int i = offset + 0; i < offset + blockCount.val; i += 1) {
+			chunk.at(i) = AllBlocks::create_static(type);
+		}
+
+		offset += blockCount.val;
+	}
+
+	return stream;
+}
+std::ostream& operator<<(std::ostream& stream, Chunk const& chunk) {
+	int maxIndex = chunk.size.x * chunk.size.y * chunk.size.z;
+	Binary<uint16_t> blockCount(1);
+	BlockType last = chunk.at(0)->type;
+
+	for (int i = 1; i < maxIndex; i += 1) {
+		if (chunk.at(i)->type == last) {
+			blockCount.val += 1;
+		}
+		else {
+			stream << blockCount << last;
+			blockCount.val = 1;
+			last = chunk.at(i)->type;
+		}
+	}
+
+	stream << blockCount << last;
+	return stream;
+}
+
+std::unique_ptr<Chunk> SaveManager::getChunk(glm::ivec3 chunkPos) {
+	std::string filePath = save_path + "/chunk_"
+		+ std::to_string(chunkPos.x) + "_"
+		+ std::to_string(chunkPos.y) + "_"
+		+ std::to_string(chunkPos.z) + ".chunk";
+
+	std::ifstream openedFile(filePath, std::fstream::binary);
+	if (!openedFile.is_open()) return nullptr;
+
+
+	Binary<uint8_t> chunkSize;
+	openedFile >> chunkSize;
+
+	if(chunkPos == glm::ivec3(0, 2, -1)) {
+	}
+
+	Chunk* newChunk = new Chunk(chunkPos, chunkSize.val);
+	openedFile >> *newChunk;
+	openedFile.close();
+
+	return std::unique_ptr<Chunk>(newChunk);
+}
+
+bool SaveManager::saveChunk(Chunk const& chunk) {
+	std::string filePath = save_path + "/chunk_"
+		+ std::to_string(chunk.chunkPos.x) + "_"
+		+ std::to_string(chunk.chunkPos.y) + "_"
+		+ std::to_string(chunk.chunkPos.z) + ".chunk";
+
+	std::ofstream openedFile(filePath, std::fstream::trunc | std::fstream::binary);
+	if (!openedFile) return false;
+
+	Binary<uint8_t> chunkSize(chunk.size.x);
+	openedFile << chunkSize << chunk;
+	openedFile.close();
+	return true;
+}
+
+sf::Packet& operator<<(sf::Packet& packet, Chunk const& chunk) {
+	std::ostringstream stream;
+	stream << chunk;
+	packet << stream.str();
+	return packet;
+}
+
+sf::Packet& operator>>(sf::Packet& packet, Chunk& chunk) {
+	std::string str;
+	packet >> str;
+	std::stringstream stream(str);
+	stream >> chunk;
+	return packet;
 }

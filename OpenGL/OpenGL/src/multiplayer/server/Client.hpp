@@ -25,4 +25,5 @@ public:
   Client(Identifier uid);
 
   Entity player;
+  std::vector<glm::ivec3> waitingChunks;
 };
