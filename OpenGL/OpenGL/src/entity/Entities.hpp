@@ -3,6 +3,8 @@
 #include "util/Identifier.hpp"
 #include "Entity.hpp"
 
+#include <unordered_map>
+
 using entityMap_t = std::unordered_map<Identifier, std::shared_ptr<Entity>>;
 
 class Entities : entityMap_t {
