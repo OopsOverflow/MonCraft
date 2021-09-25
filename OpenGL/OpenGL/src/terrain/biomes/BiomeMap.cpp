@@ -242,7 +242,7 @@ BiomeMap::weightedBiomes_t BiomeMap::offsetVoronoi(ivec2 ipos) {
 pixel_t BiomeMap::teststep(BiomeMap::weightedBiomes_t biomes) {
   pixel_t col(0);
 
-  for(int i = 0; i < biomes.size(); i++) {
+  for(size_t i = 0; i < biomes.size(); i++) {
     col += vec3(value.sample<2, 3>(biomes.at(i).cellPos)) * biomes.at(i).weight;
   }
 

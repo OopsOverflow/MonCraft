@@ -127,7 +127,7 @@ private:
   // the gl mesh and corresponding data.
   std::unique_ptr<Mesh> mesh;
   GLuint solidOffset = 0;
-  glm::ivec3 transpOffset = glm::ivec3(0);
+  glm::uvec3 transpOffset = glm::uvec3(0);
 
   MeshData meshData;
   bool loaded;

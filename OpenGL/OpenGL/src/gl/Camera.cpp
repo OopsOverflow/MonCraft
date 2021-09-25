@@ -199,7 +199,7 @@ void Camera::computeProjection() {
 }
 
 std::vector<glm::vec3> Camera::getBoxCorners(Frustum frustum) const {
-    float z1, z2;
+    float z1 = -near_, z2 = -far_;
     float range = far_ - near_;
 
     switch (frustum)
@@ -235,7 +235,6 @@ std::vector<glm::vec3> Camera::getBoxCorners(Frustum frustum) const {
 
         x1 = z1 * tanFovX;
         x2 = z2 * tanFovX;
-
     }
     else if(projType == Projection::PROJECTION_ORTHOGRAPHIC) {
         float aspect = (float)size.x / (float)size.y;
