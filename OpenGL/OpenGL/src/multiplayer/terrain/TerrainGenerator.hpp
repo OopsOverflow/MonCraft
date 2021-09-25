@@ -34,8 +34,8 @@ public:
   bool generating;
 
   static const int chunkSize = 16; // TODO: in a config file
-  static const int renderDistH = 5; // horizontal render distance (2n+1 chunks)
-  static const int renderDistV = 5; // vertical render distance (2n+1 chunks)
+  static const int renderDistH = 64; // horizontal render distance (2n+1 chunks)
+  static const int renderDistV = 10; // vertical render distance (2n+1 chunks)
 
 private:
   const int chunksMaxCount;
@@ -62,7 +62,7 @@ private:
 
   // threading
   std::thread mainWorkerThread; // manages the queue of chunks to generate
-  static const int N_THREADS = 1;
+  static const int N_THREADS = 8;
   std::array<std::thread, N_THREADS> genWorkerThreads; // creates new chunks when it can
   std::mutex workerMutex;
   void mainWorker();

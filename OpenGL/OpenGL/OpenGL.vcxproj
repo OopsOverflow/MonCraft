@@ -215,6 +215,8 @@
     <ClCompile Include="src\ui\Button.cpp" />
     <ClCompile Include="src\ui\Component.cpp" />
     <ClCompile Include="src\ui\Event.cpp" />
+    <ClCompile Include="src\ui\Input.cpp" />
+    <ClCompile Include="src\ui\Key.cpp" />
     <ClCompile Include="src\ui\Pane.cpp" />
     <ClCompile Include="src\ui\Root.cpp" />
     <ClCompile Include="src\ui\style\Specification.cpp" />
@@ -234,6 +236,7 @@
     <ClInclude Include="src\blocks\Block.hpp" />
     <ClInclude Include="src\blocks\Brick_Block.hpp" />
     <ClInclude Include="src\blocks\Cactus_Block.hpp" />
+    <ClInclude Include="src\blocks\Cobalt_Block.hpp" />
     <ClInclude Include="src\blocks\Debug_Block.hpp" />
     <ClInclude Include="src\blocks\Dirt_Block.hpp" />
     <ClInclude Include="src\blocks\geometry\BlockGeometry.hpp" />
@@ -320,6 +323,8 @@
     <ClInclude Include="src\ui\Button.hpp" />
     <ClInclude Include="src\ui\Component.hpp" />
     <ClInclude Include="src\ui\Event.hpp" />
+    <ClInclude Include="src\ui\Input.hpp" />
+    <ClInclude Include="src\ui\Key.hpp" />
     <ClInclude Include="src\ui\Pane.hpp" />
     <ClInclude Include="src\ui\Root.hpp" />
     <ClInclude Include="src\ui\style\Property.hpp" />

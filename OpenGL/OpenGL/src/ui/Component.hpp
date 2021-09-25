@@ -5,6 +5,7 @@
 
 #include "style/Style.hpp"
 #include "Event.hpp"
+#include "Key.hpp"
 
 namespace ui {
 
@@ -51,6 +52,9 @@ public:
   void setAnchorY(Anchor anchor);
   Anchor getAnchorY() const;
 
+  void keyPress(Key k);
+  void keyRelease(Key k);
+
 protected:
   void addChild(Component* child);
   void removeChild(Component* child);
@@ -67,9 +71,15 @@ protected:
   virtual bool onMouseMove(glm::ivec2 pos);
   virtual bool onMousePressed(glm::ivec2 pos);
   virtual bool onMouseReleased(glm::ivec2 pos);
+  virtual bool onActivate();
+  virtual void onDeactivated();
+  virtual void onKeyPressed(Key k);
+  virtual void onKeyReleased(Key k);
 
   bool isHover();
   bool isPressed();
+  bool isActive();
+  void unfocus();
 
 private:
   void queueRecompute(bool propagate = true);
@@ -79,6 +89,7 @@ private:
   bool bubbleEvent(Event const& evt);
   void filterEvent(Event const& evt);
   bool overlaps(glm::ivec2 point) const;
+  void makeActive();
 
   glm::ivec2 size;
   glm::ivec2 absoluteSize;
@@ -91,6 +102,7 @@ private:
 
   bool hover;
   bool pressed;
+  static Component* activeWidget;
 };
 
 }; // namespace ui

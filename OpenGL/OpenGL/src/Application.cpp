@@ -105,6 +105,10 @@ int main(int argc, char* argv[]) {
     btn_fullscreen.setAnchorX(ui::Anchor::END);
     btn_fullscreen.setPadding({15, 10});
 
+    ui::Input input(&scene, "Input", font_vt323);
+    input.setAnchorX(ui::Anchor::CENTER);
+    input.setPadding({15, 10});
+
     ui::Button btn_ping(&scene, "Ping", font_vt323);
     btn_ping.setPosition({0, 80}); // TODO: implement a box container
     btn_fullscreen.setPadding({15, 10});

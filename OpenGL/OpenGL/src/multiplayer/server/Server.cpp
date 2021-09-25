@@ -22,6 +22,7 @@ bool isVerbose(PacketType type) {
   return
     type != PacketType::ENTITY_TICK &&
     type != PacketType::BLOCKS &&
+    type != PacketType::CHUNKS &&
     type != PacketType::ACK_CHUNKS &&
     type != PacketType::PLAYER_TICK;
 }
