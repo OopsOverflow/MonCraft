@@ -9,6 +9,7 @@
 #include "terrain/Terrain.hpp"
 #include "audio/SoundEffect.hpp"
 #include "multiplayer/common/Packet.hpp"
+#include "multiplayer/common/Identifier.hpp"
 
 enum class View { FIRST_PERSON, THIRD_PERSON };
 enum class State { Walking, Idle };
@@ -66,6 +67,14 @@ public:
 	friend sf::Packet& operator>>(sf::Packet& packet, Entity& entity);
 	sf::Packet& consume(sf::Packet& packet);
 
+	Node getHead() const { return headNode; }
+	Node getNode() const { return node; }
+
+	void setHead(Node node) { this->headNode = node; }
+	void setNode(Node node) { this->node = node; }
+
+	Identifier getIdentifier() const;
+
 protected:
 	float maxSpeed;
 	float maxAccel;
@@ -85,4 +94,7 @@ protected:
 
 	Node node;
 	Node headNode;
+
+private:
+	Identifier uid;
 };

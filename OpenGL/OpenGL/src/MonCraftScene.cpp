@@ -16,7 +16,7 @@ MonCraftScene::MonCraftScene(Viewport* vp, entities_ptr_t entities)
 
       fogEnabled(false),
       sunSpeed(0.0075f), skyboxSpeed(0.0075f),
-      captured(false)
+      captured(false)//, save("save/defaultWorld/entities")
 {
     // load resources
     shader = ResourceManager::getShader("simple");

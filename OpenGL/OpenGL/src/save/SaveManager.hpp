@@ -2,6 +2,11 @@
 
 #include <glm/glm.hpp>
 #include "terrain/Chunk.hpp"
+#include "multiplayer/common/Identifier.hpp"
+
+class Entity;
+
+enum class EntityClass{Character};
 
 class SaveManager
 {
@@ -12,6 +17,9 @@ public:
 
     std::unique_ptr<Chunk> getChunk(glm::ivec3 chunkPos);
     bool saveChunk(std::shared_ptr<Chunk> chunk);
+
+    std::unique_ptr<Entity> getEntity(Identifier uid);
+    bool saveEntity(const Entity& entity);
 
 private:
     std::string save_path;
