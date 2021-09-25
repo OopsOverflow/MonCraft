@@ -2,8 +2,8 @@
 
 #include <SFML/Network.hpp>
 #include <glm/glm.hpp>
-#include "ServerEntity.hpp"
-#include "../common/Identifier.hpp"
+#include "util/Identifier.hpp"
+#include "entity/Entity.hpp"
 
 class ClientID {
 public:
@@ -24,5 +24,5 @@ class Client {
 public:
   Client(Identifier uid);
 
-  ServerEntity player;
+  Entity player;
 };

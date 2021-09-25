@@ -28,18 +28,21 @@ srcs = files(
 
   'OpenGL/src/util/Raycast.cpp',
   'OpenGL/src/util/Random.cpp',
+  'OpenGL/src/util/Identifier.cpp',
 
   'OpenGL/src/entity/Entity.cpp',
   'OpenGL/src/entity/Hitbox.cpp',
   'OpenGL/src/entity/Member.cpp',
   'OpenGL/src/entity/character/Character.cpp',
   'OpenGL/src/entity/Node.cpp',
+  'OpenGL/src/entity/Entities.cpp',
 
-  'OpenGL/src/terrain/Terrain.cpp',
+  'OpenGL/src/terrain/World.cpp',
+  'OpenGL/src/terrain/TerrainGenerator.cpp',
   'OpenGL/src/terrain/Chunk.cpp',
   'OpenGL/src/terrain/ChunkMap.cpp',
   'OpenGL/src/terrain/SliceMap.cpp',
-  'OpenGL/src/terrain/Generator.cpp',
+  'OpenGL/src/terrain/ChunkGenerator.cpp',
   'OpenGL/src/terrain/SkyBox.cpp',
   'OpenGL/src/terrain/Structure.cpp',
   'OpenGL/src/terrain/BlockArray.cpp',
@@ -60,27 +63,24 @@ srcs = files(
   'OpenGL/src/ui/style/Style.cpp',
   'OpenGL/src/ui/style/Type.cpp',
   'OpenGL/src/ui/style/Specification.cpp',
-  
+
   'OpenGL/src/save/SaveManager.cpp',
 
   'OpenGL/src/multiplayer/common/NetworkError.cpp',
   'OpenGL/src/multiplayer/common/Packet.cpp',
-  'OpenGL/src/multiplayer/common/Identifier.cpp',
 )
 
 client_srcs = files(
   'OpenGL/src/Application.cpp',
   'OpenGL/src/MonCraftScene.cpp',
-  'OpenGL/src/multiplayer/client/Server.cpp',
+  'OpenGL/src/multiplayer/client/ClientServer.cpp',
   'OpenGL/src/multiplayer/client/RealServer.cpp',
-  'OpenGL/src/multiplayer/client/SharedEntities.cpp',
 )
 
 server_srcs = files(
   'OpenGL/src/Server.cpp',
   'OpenGL/src/multiplayer/server/Server.cpp',
   'OpenGL/src/multiplayer/server/Client.cpp',
-  'OpenGL/src/multiplayer/server/ServerEntity.cpp',
 )
 
 deps = [

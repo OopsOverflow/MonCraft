@@ -12,9 +12,9 @@
 * Generates new chunks.
 */
 
-class Generator {
+class ChunkGenerator {
 public:
-  Generator(int chunkSize);
+  ChunkGenerator(int chunkSize);
 
   /**
   * Generates a chunk at the given chunk index.

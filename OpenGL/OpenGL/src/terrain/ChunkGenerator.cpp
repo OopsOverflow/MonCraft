@@ -1,4 +1,4 @@
-#include "Generator.hpp"
+#include "ChunkGenerator.hpp"
 #include "blocks/AllBlocks.hpp"
 
 #include <functional>
@@ -6,7 +6,7 @@
 
 using namespace glm;
 
-Generator::Generator(int chunkSize)
+ChunkGenerator::ChunkGenerator(int chunkSize)
   : chunkSize(chunkSize),
     valueNoise(rand())
 {
@@ -14,7 +14,7 @@ Generator::Generator(int chunkSize)
   biomeSampler.generate();
 }
 
-std::unique_ptr<Chunk> Generator::generate(ivec3 cpos) const {
+std::unique_ptr<Chunk> ChunkGenerator::generate(ivec3 cpos) const {
 
   std::unique_ptr<Chunk> chunk(new Chunk(cpos, chunkSize));
 
@@ -36,7 +36,7 @@ std::unique_ptr<Chunk> Generator::generate(ivec3 cpos) const {
   return chunk;
 }
 
-Block::unique_ptr_t Generator::computeSurfaceBlock(ivec3 const& pos, Biome const& biome, int const& blockHeight) const {
+Block::unique_ptr_t ChunkGenerator::computeSurfaceBlock(ivec3 const& pos, Biome const& biome, int const& blockHeight) const {
     if(pos.y<-5.0f)return Block::create_static<Sandstone_Block>();
     if (abs(pos.y) < 3.f && biome.type == BiomeType::SEA) return Block::create_static<Sand_Block>();
     if (biome.type == BiomeType::MOUNTAINS && abs(abs(pos.y) < 2.f))return Block::create_static<Ice_Block>();
@@ -50,7 +50,7 @@ Block::unique_ptr_t Generator::computeSurfaceBlock(ivec3 const& pos, Biome const
     return AllBlocks::create_static(biome.surface);
 }
 
-Block::unique_ptr_t Generator::createBlock(ivec3 pos, Biome const& biome) const {
+Block::unique_ptr_t ChunkGenerator::createBlock(ivec3 pos, Biome const& biome) const {
   float height = noise.fractal2(ivec2(pos.x, pos.z), biome.frequencies);
   int blockHeight = (int)floor(height + biome.elevation);
 
@@ -80,7 +80,7 @@ Block::unique_ptr_t Generator::createBlock(ivec3 pos, Biome const& biome) const 
   return Block::create_static<Stone_Block>();
 }
 
-std::vector<Structure::Slice> Generator::generateStructures(Chunk& chunk) const {
+std::vector<Structure::Slice> ChunkGenerator::generateStructures(Chunk& chunk) const {
   std::vector<Structure::Slice> slices;
   ivec3 dpos(0);
   ivec3 orig = chunk.chunkPos * chunkSize;

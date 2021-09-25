@@ -1,7 +1,7 @@
 #include "Server.hpp"
 #include "../common/NetworkError.hpp"
 #include "../common/Config.hpp"
-#include "../common/Identifier.hpp"
+#include "util/Identifier.hpp"
 #include "debug/Debug.hpp"
 
 Server::Server(unsigned short port)
@@ -64,7 +64,7 @@ void Server::packet_entity_tick() {
   packet << (sf::Uint64)clients.size();
 
   for(auto const& pair : clients) {
-    packet << pair.second.player.getIdentifier();
+    packet << pair.second.player.uid;
     packet << pair.second.player;
   }
   broadcast(packet);
@@ -119,7 +119,7 @@ void Server::handle_login(sf::IpAddress clientAddr, unsigned short clientPort) {
 
   if(it != clients.end()) {
     std::cout << "[WARN] Login of already registered client" << std::endl;
-    packet_ack_login(it->first, it->second.player.getIdentifier());
+    packet_ack_login(it->first, it->second.player.uid);
   }
   else {
     Identifier uid = generateIdentifier();
@@ -129,7 +129,7 @@ void Server::handle_login(sf::IpAddress clientAddr, unsigned short clientPort) {
       packet_ack_login(res.first->first, uid);
       beep();
       std::cout << "client connected: " << std::endl;
-      std::cout << "uid: " << res.first->second.player.getIdentifier() << std::endl;
+      std::cout << "uid: " << res.first->second.player.uid << std::endl;
       std::cout << "addr: " << res.first->first.getAddr() << std::endl;
       std::cout << "port: " << res.first->first.getPort() << std::endl;
     }
@@ -148,7 +148,7 @@ void Server::handle_logout(sf::IpAddress clientAddr, unsigned short clientPort) 
     std::cout << "[WARN] Logout of unregistered client" << std::endl;
   }
   else {
-    Identifier uid = it->second.player.getIdentifier();
+    Identifier uid = it->second.player.uid;
     clients.erase(it);
     packet_logout(uid);
     beep();
@@ -175,5 +175,5 @@ void Server::packet_ack_login(ClientID const& client, Identifier uid) {
 void Server::handle_blocks(Client const& client, sf::Packet& packet) {
   BlockArray blocks;
   packet >> blocks;
-  packet_blocks(client.player.getIdentifier(), blocks);
+  packet_blocks(client.player.uid, blocks);
 }

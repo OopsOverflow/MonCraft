@@ -4,10 +4,9 @@
 #include <SFML/Network.hpp>
 #include <glm/glm.hpp>
 #include <functional>
-#include "../common/Identifier.hpp"
+#include "util/Identifier.hpp"
 #include "../common/Packet.hpp"
 #include "entity/character/Character.hpp"
-#include "SharedEntities.hpp"
 #include "Server.hpp"
 
 class RealServer: public Server {
@@ -18,6 +17,7 @@ public:
 
   void ping() override;
   void update() override;
+  std::shared_ptr<Character> getPlayer() override;
 
 private:
   void packet_login();
@@ -37,4 +37,7 @@ private:
   sf::Time lastUpdate;
   const sf::Time frameDuration;
   sf::Clock clock;
+  World& world;
+  std::shared_ptr<Character> player;
+  Identifier playerUid;
 };

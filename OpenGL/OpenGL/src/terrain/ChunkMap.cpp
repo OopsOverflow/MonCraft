@@ -1,9 +1,8 @@
 #include "ChunkMap.hpp"
 
 
-ChunkMap::ChunkMap() {
-
-}
+ChunkMap::ChunkMap()
+{}
 
 std::shared_ptr<Chunk> ChunkMap::find(glm::ivec3 cpos) {
   std::lock_guard<std::mutex> lck(chunksMutex);
