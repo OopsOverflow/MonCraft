@@ -6,22 +6,157 @@
 #include "blocks/AllBlocks.hpp"
 #include "SaveManager.hpp"
 #include "entity/character/Character.hpp"
+#include <SDL2/include/SDL2/SDL_keyboard.h>
 
+std::string SaveManager::chunk_save_path = "save/defaultWorld/chunk";
+std::string SaveManager::entity_save_path = "save/defaultWorld/entities";
 
+Config SaveManager::getConfig() {
+	std::string filePath = "save/config.txt";
+	std::ifstream openedFile(filePath);
+	bool decode = true;
+	if (!openedFile.is_open()) {
+		Config config;
+		saveConfig(config);
+		return config;
+	}
 
+	Config config;
+	std::string readedLine;
+	std::stringstream iss;
+	std::string trash;
 
-SaveManager::SaveManager(std::string save_path) {
-	this->save_path = save_path;
-	if (!std::filesystem::exists(save_path))
-		std::filesystem::create_directories(save_path);
+	if (getline(openedFile, readedLine)) { //Moncraft version
+	}
+	else { decode = false; }
 
-	//std::cout << "World will be saved at " << std::filesystem::current_path() << " in " save_path << std::endl;
+	if (getline(openedFile, readedLine)) { //Multiplayer
+		iss.str(readedLine);
+		iss >> trash;
+		if (!(iss >> config.multiplayer)) decode = false;
+	}
+	else { decode = false; }
+
+	if (getline(openedFile, readedLine)) { //Server adress
+		iss.str(readedLine);
+		iss >> trash;
+		if (!(iss >> config.SERVER_ADDR)) decode = false;
+	}
+	else { decode = false; }
+
+	if (getline(openedFile, readedLine)) { //Server port
+		iss.str(readedLine);
+		iss >> trash;
+		if (!(iss >> config.SERVER_PORT)) decode = false;
+	}
+	else { decode = false; }
+
+	if (getline(openedFile, readedLine)) { //FoV
+		iss.str(readedLine);
+		iss >> trash;
+		if (!(iss >> config.fov)) decode = false;
+	}
+	else { decode = false; }
+
+	if (getline(openedFile, readedLine)) { //Forward
+		iss.str(readedLine);
+		iss >> trash;
+		if (!(iss >> config.forward)) decode = false;
+	}
+	else { decode = false; }
+
+	if (getline(openedFile, readedLine)) { //Backward
+		iss.str(readedLine);
+		iss >> trash;
+		if (!(iss >> config.backward)) decode = false;
+	}
+	else { decode = false; }
+	
+	if (getline(openedFile, readedLine)) { //Left
+		iss.str(readedLine);
+		iss >> trash;
+		if (!(iss >> config.left)) decode = false;
+	}
+	else { decode = false; }
+
+	if (getline(openedFile, readedLine)) { //Right
+		iss.str(readedLine);
+		iss >> trash;
+		if (!(iss >> config.right)) decode = false;
+	}
+	else { decode = false; }
+
+	if (getline(openedFile, readedLine)) { //Jump
+		iss.str(readedLine);
+		iss >> trash;
+		if (!(iss >> config.jump)) decode = false;
+	}
+	else { decode = false; }
+
+	if (getline(openedFile, readedLine)) { //Sneak
+		iss.str(readedLine);
+		iss >> trash;
+		if (!(iss >> config.sneak)) decode = false;
+	}
+	else { decode = false; }
+
+	if (getline(openedFile, readedLine)) { //View
+		iss.str(readedLine);
+		iss >> trash;
+		if (!(iss >> config.view)) decode = false;
+	}
+	else { decode = false; }
+
+	if (getline(openedFile, readedLine)) { //Sprint
+		iss.str(readedLine);
+		iss >> trash;
+		if (!(iss >> config.sprint)) decode = false;
+	}
+	else { decode = false; }
+
+	if (getline(openedFile, readedLine)) { //Menu
+		iss.str(readedLine);
+		iss >> trash;
+		if (!(iss >> config.menu)) decode = false;
+	}
+	else { decode = false; }
+
+	if (!decode) {
+		Config config;
+		saveConfig(config);
+		return config;
+	}
+	return config;
 
 }
 
 
+bool SaveManager::saveConfig(const Config& config) {
+	std::string filePath = "save/config.txt";
+	std::ofstream openedFile(filePath, std::fstream::trunc);
+	if (!openedFile) return 0;
+
+	openedFile << "MonCraft v1.1.0" << std::endl;
+	openedFile << "		Multiplayer: " << (config.multiplayer ? "true" : "false") << std::endl;
+	openedFile << "		Server_adress: " << config.SERVER_ADDR << std::endl;
+	openedFile << "		Server_port: " << std::to_string((int)config.SERVER_PORT) << std::endl;
+	openedFile << "		FoV: " << std::to_string(config.fov) << std::endl;
+	openedFile << "		Forward: " << SDL_GetKeyName(config.forward) << std::endl;
+	openedFile << "		Backward: " << SDL_GetKeyName(config.backward) << std::endl;
+	openedFile << "		Left: " << SDL_GetKeyName(config.left) << std::endl;
+	openedFile << "		Right: " << SDL_GetKeyName(config.right) << std::endl;
+	openedFile << "		Jump: " << SDL_GetKeyName(config.jump) << std::endl;
+	openedFile << "		Sneak: " << SDL_GetKeyName(config.sneak) << std::endl;
+	openedFile << "		View: " << SDL_GetKeyName(config.view) << std::endl;
+	openedFile << "		Sprint: " << SDL_GetKeyName(config.sprint) << std::endl;
+	openedFile << "		Menu: " << SDL_GetKeyName(config.menu) << std::endl;
+
+	return true;
+}
+
+
 std::unique_ptr<Chunk> SaveManager::getChunk(glm::ivec3 chunkPos) {
-	std::string filePath = save_path + "/chunk_" + std::to_string(chunkPos.x) + "_" + std::to_string(chunkPos.y) + "_" + std::to_string(chunkPos.z) + ".chunk";
+	std::string filePath = chunk_save_path + "/chunk_" + std::to_string(chunkPos.x) + "_" + std::to_string(chunkPos.y) + "_" + std::to_string(chunkPos.z) + ".chunk";
 	std::ifstream openedFile(filePath, std::fstream::binary | std::fstream::in);
 	if (!openedFile.is_open()) 
 		return std::unique_ptr<Chunk>(nullptr);
@@ -61,7 +196,7 @@ std::unique_ptr<Chunk> SaveManager::getChunk(glm::ivec3 chunkPos) {
 
 bool SaveManager::saveChunk(std::shared_ptr<Chunk> chunk) {
 
-	std::string filePath = save_path + "/chunk_" + std::to_string(chunk->chunkPos.x) + "_" + std::to_string(chunk->chunkPos.y) + "_" + std::to_string(chunk->chunkPos.z) + ".chunk";
+	std::string filePath = chunk_save_path + "/chunk_" + std::to_string(chunk->chunkPos.x) + "_" + std::to_string(chunk->chunkPos.y) + "_" + std::to_string(chunk->chunkPos.z) + ".chunk";
 	std::ofstream openedFile(filePath, std::fstream::trunc | std::fstream::binary | std::fstream::out);
 	if (!openedFile) return 0;
 
@@ -142,7 +277,7 @@ std::ofstream& operator<<(std::ofstream& stream, const Character& character) {
 
 bool SaveManager::saveEntity(const Entity& entity) {
 
-	std::string filePath = save_path + "/entity_" + std::to_string(entity.getIdentifier()) + ".entity";
+	std::string filePath = entity_save_path + "/entity_" + std::to_string(entity.getIdentifier()) + ".entity";
 	std::ofstream openedFile(filePath, std::fstream::trunc | std::fstream::binary | std::fstream::out);
 	if (!openedFile) return 0;
 
@@ -191,7 +326,7 @@ std::ifstream& operator>>(std::ifstream& stream, Entity& entity) {
 }
 
 std::unique_ptr<Entity> SaveManager::getEntity(Identifier uid) {
-	std::string filePath = save_path + "/entity_" + std::to_string(uid) + ".entity";
+	std::string filePath = entity_save_path + "/entity_" + std::to_string(uid) + ".entity";
 	std::ifstream openedFile(filePath, std::fstream::binary | std::fstream::in);
 	if (!openedFile.is_open())
 		return std::unique_ptr<Entity>(nullptr);

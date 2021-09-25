@@ -73,4 +73,6 @@ private:
   bool fullscreen;
 
   std::unique_ptr<ui::Root> root;
+
+  Config config;
 };

@@ -8,15 +8,14 @@ Entity::Entity(Hitbox hitbox)
 : view(View::FIRST_PERSON), state(State::Idle),
 	maxSpeed(4.3f), maxAccel(10.f), verticalFriction(0.f), horizontalFriction(5.f),
 	gravity(32.f), jumpSpeed(10.5f), maxFallSpeed(78.4f),
-	playerFovY(45.0f),
+	playerFovY(SaveManager::getConfig().fov),
 	speed(0), accel(0), direction(0),
   onFloor(false),
 	hitbox(std::move(hitbox))
 {}
 
 Entity::~Entity() {
-	SaveManager save("save/defaultWorld/entities");
-	save.saveEntity(*this);
+	SaveManager::saveEntity(*this);
 }
 
 void Entity::walk(vec3 dir) {

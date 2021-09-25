@@ -1,5 +1,6 @@
 #include "Camera.hpp"
 #include "../gl/Shader.hpp"
+#include "save/SaveManager.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -9,7 +10,7 @@ Camera::Camera(glm::ivec2 size, const glm::vec3 &position,
                const glm::vec3 &center, Projection projType)
  : view(1.f), projection(1.f),
    position(position), center(center),
-   near_(0.1f), far_(200.f), fovY(45.f),
+   near_(0.1f), far_(200.f), fovY(SaveManager::getConfig().fov),
    size(size), projType(projType)
 {
   computeView();

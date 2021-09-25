@@ -15,7 +15,7 @@ Terrain::Terrain()
     chunksMaxCount((2*renderDistH+2)*(2*renderDistH+2)*(2*renderDistV+2)),
     generator(chunkSize),
     chunkPos(0),
-    chunkPosChanged(false), save("save/defaultWorld/chunk")
+    chunkPosChanged(false)
 {
   startGeneration();
 }
@@ -127,11 +127,11 @@ void Terrain::genWorker() {
     }
     else if(addInBusyList(cpos)) {
         std::shared_ptr<Chunk> chunk;
-        std::unique_ptr<Chunk> savedChunk = save.getChunk(cpos);
+        std::unique_ptr<Chunk> savedChunk = SaveManager::getChunk(cpos);
         if (!savedChunk) {
             chunk = chunkMap.insert(cpos, generator.generate(cpos));
             sliceMap.insert(generator.generateStructures(*chunk));
-            save.saveChunk(chunk);
+            SaveManager::saveChunk(chunk);
         }
         else {
             chunk = chunkMap.insert(cpos, std::move(savedChunk));
@@ -165,11 +165,11 @@ void Terrain::genWorker() {
       else if(addInBusyList(thisPos)) {
         {
               std::shared_ptr<Chunk> chunk;
-              std::unique_ptr<Chunk> savedChunk = save.getChunk(thisPos);
+              std::unique_ptr<Chunk> savedChunk = SaveManager::getChunk(thisPos);
               if (!savedChunk) {
                   chunk = chunkMap.insert(thisPos, generator.generate(thisPos));
                   sliceMap.insert(generator.generateStructures(*chunk));
-                  save.saveChunk(chunk);
+                  SaveManager::saveChunk(chunk);
               }
               else {
                   chunk = chunkMap.insert(thisPos, std::move(savedChunk));
@@ -286,7 +286,7 @@ void Terrain::setBlock(ivec3 pos, Block::unique_ptr_t block) {
 
   ivec3 dpos = pos - cpos * chunkSize;
   chunk->setBlock(dpos, std::move(block));
-  save.saveChunk(chunk);
+  SaveManager::saveChunk(chunk);
 }
 
 void Terrain::stopGeneration() {
