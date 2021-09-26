@@ -1,10 +1,15 @@
 #include "PendingChunks.hpp"
+#include "save/SaveManager.hpp"
 
 using namespace glm;
 
 PendingChunks::PendingChunks()
   : world(World::getInst())
 {
+  auto& config = SaveManager::getInst().getConfig();
+  renderDistH = config.renderDistH;
+  renderDistV = config.renderDistV;
+  maxChunks = renderDistH * renderDistH * renderDistV;
   updateWaitingChunks();
 }
 

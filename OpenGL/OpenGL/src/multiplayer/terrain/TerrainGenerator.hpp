@@ -33,19 +33,17 @@ public:
   void remOldChunks(glm::vec3 pos);
 
   static const int chunkSize = 16; // TODO: in a config file
-  static const int renderDistH = 10; // horizontal render distance (2n+1 chunks)
-  static const int renderDistV = 10; // vertical render distance (2n+1 chunks)
 
   // TODO: should we use runtime alloc instead of compile-time ? Post release
-  using WaitingList = AtomicCyclicList<glm::ivec3, 1000>;
+  using WaitingList = AtomicCyclicList<glm::ivec3, 100000>;
   WaitingList waitingChunks; // chunk positions yet to be loaded
 
 private:
   ChunkGenerator generator;
 
   // threading
-  static const int N_THREADS = 8;
-  std::array<std::thread, N_THREADS> genWorkerThreads; // creates new chunks when it can
+  unsigned int threadCount;
+  std::vector<std::thread> genWorkerThreads; // creates new chunks when it can
   std::mutex workerMutex;
   void genWorker();
 

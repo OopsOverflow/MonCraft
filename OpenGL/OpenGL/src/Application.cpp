@@ -53,7 +53,7 @@ void loadResources() {
 std::unique_ptr<Server> createServer(Config const& config) {
     std::unique_ptr<Server> server;
     if (config.multiplayer) {
-        server = std::make_unique<RealServer>(config.SERVER_ADDR, config.SERVER_PORT);
+        server = std::make_unique<RealServer>(config.serverAddr, config.serverPort);
     } else {
         server = std::make_unique<ClientServer>();
     }

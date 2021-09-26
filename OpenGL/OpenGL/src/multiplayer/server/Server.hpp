@@ -43,5 +43,6 @@ private:
   World& world;
   TerrainGenerator generator;
 
-  static const size_t maxChunks = 50;
+  int renderDistH, renderDistV;
+  static const unsigned int maxChunks = 50;
 };

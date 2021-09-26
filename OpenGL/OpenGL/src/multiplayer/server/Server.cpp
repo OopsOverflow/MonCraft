@@ -10,6 +10,10 @@ using namespace glm;
 Server::Server(unsigned short port)
   : port(port), world(World::getInst())
 {
+  auto& config = SaveManager::getInst().getConfig();
+  renderDistH = config.renderDistH;
+  renderDistV = config.renderDistV;
+
   socket.setBlocking(false);
   if(socket.bind(port) != sf::Socket::Done) {
     throw NetworkError("Failed to bind to port: " + std::to_string(port));
@@ -269,9 +273,9 @@ void Server::remOldChunks() {
     for(auto const& cpos : playersCpos) {
       ivec3 dist = abs(cpos - thisChunkPos);
       bool cond = true;
-      cond &= dist.x <= generator.renderDistH + 1;
-      cond &= dist.z <= generator.renderDistH + 1;
-      cond &= dist.y <= generator.renderDistV + 1;
+      cond &= dist.x <= renderDistH + 1;
+      cond &= dist.z <= renderDistH + 1;
+      cond &= dist.y <= renderDistV + 1;
       if(cond) return false;
     }
     return true;

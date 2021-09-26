@@ -12,8 +12,12 @@ enum class EntityClass{Character};
 
 struct Config {
     bool multiplayer = false;
-    std::string SERVER_ADDR = "pi.thissma.fr";
-    unsigned short SERVER_PORT = 55000;
+    std::string serverAddr = "pi.thissma.fr";
+    unsigned short serverPort = 55000;
+
+    unsigned int renderDistH = 16;
+    unsigned int renderDistV = 5;
+    unsigned int threadCount = 8;
 
     float fov = 45.0;
     SDL_Keycode forward = SDLK_z;
@@ -25,7 +29,6 @@ struct Config {
     SDL_Keycode view = SDLK_F5;
     SDL_Keycode sprint = SDLK_LCTRL;
     SDL_Keycode menu = SDLK_ESCAPE;
-
 };
 
 

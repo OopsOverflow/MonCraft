@@ -5,7 +5,7 @@
 
 int main() {
   std::cout << "---- Server ----" << std::endl;
-  Server server(SaveManager::getInst().getConfig().SERVER_PORT);
+  Server server(SaveManager::getInst().getConfig().serverPort);
   server.run();
   return 0;
 }

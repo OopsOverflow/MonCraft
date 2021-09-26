@@ -16,6 +16,8 @@ TerrainGenerator::TerrainGenerator()
     generator(chunkSize),
     world(World::getInst())
 {
+  auto& config = SaveManager::getInst().getConfig();
+  threadCount = config.threadCount;
   startGeneration();
 }
 
@@ -23,79 +25,10 @@ TerrainGenerator::~TerrainGenerator() {
   stopGeneration();
 }
 
-// void TerrainGenerator::updateWaitingList() {
-//   waitingChunks.clear();
-//   auto cpos = getChunkPos();
-//
-//   auto insert = [&](ivec2 const& pos) {
-//     for(int i = -renderDistV; i <= renderDistV; i++) {
-//       ivec3 p = cpos + ivec3(pos.x, i, pos.y);
-//       auto chunk = world.chunks.find(p);
-//       if(!chunk || !chunk->isLoaded()) {
-//         waitingChunks.push(p);
-//       }
-//     }
-//   };
-//
-//   insert({0, 0});
-//
-//   for(int dist = 1; dist < renderDistH+1; dist++) {
-//     insert({dist, 0});
-//     insert({0, dist});
-//     insert({-dist, 0});
-//     insert({0, -dist});
-//
-//     for(int off = 1; off < dist; off++) {
-//       insert({dist, off});
-//       insert({off, dist});
-//       insert({-off, dist});
-//       insert({-dist, off});
-//       insert({-dist, -off});
-//       insert({-off, -dist});
-//       insert({off, -dist});
-//       insert({dist, -off});
-//     }
-//
-//     insert({dist, dist});
-//     insert({-dist, dist});
-//     insert({-dist, -dist});
-//     insert({dist, -dist});
-//   }
-// }
-
 bool TerrainGenerator::sleepFor(std::chrono::milliseconds millis) {
   std::unique_lock<std::mutex> stopLck(stopMutex);
   return stopSignal.wait_for(stopLck, millis, [&]{return stopFlag;});
 }
-
-// glm::ivec3 TerrainGenerator::getChunkPos() {
-//   std::lock_guard<std::mutex> lck(posMutex);
-//   return chunkPos;
-// }
-//
-// void TerrainGenerator::setChunkPos(glm::ivec3 cpos) {
-//   std::lock_guard<std::mutex> lck(posMutex);
-//   if(cpos != chunkPos) {
-//     chunkPos = cpos;
-//     chunkPosChanged = true;
-//   }
-// }
-//
-// bool TerrainGenerator::hasPosChanged() {
-//   std::lock_guard<std::mutex> lck(posMutex);
-//   if(chunkPosChanged) {
-//     chunkPosChanged = false;
-//     return true;
-//   }
-//   return false;
-// }
-
-// void TerrainGenerator::mainWorker() {
-//   updateWaitingList();
-//   do {
-//     if(hasPosChanged()) updateWaitingList();
-//   } while(!sleepFor(100ms));
-// }
 
 bool TerrainGenerator::addToBusyList(ivec3 cpos) {
   std::lock_guard<std::mutex> lck(busyListMutex);
@@ -212,8 +145,8 @@ void TerrainGenerator::startGeneration() {
     stopFlag = false;
   }
   std::cout << "starting generation" << std::endl;
-  for(auto& thread : genWorkerThreads) {
-    thread = std::thread(&TerrainGenerator::genWorker, this);
+  for(size_t i = 0; i < threadCount; i++) {
+    genWorkerThreads.push_back(std::thread(&TerrainGenerator::genWorker, this));
   }
   generating = true;
 }
