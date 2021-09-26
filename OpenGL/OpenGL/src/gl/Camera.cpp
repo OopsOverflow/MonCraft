@@ -6,13 +6,15 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 
-Camera::Camera(glm::ivec2 size, const glm::vec3 &position,
-               const glm::vec3 &center, Projection projType)
- : view(1.f), projection(1.f),
-   position(position), center(center),
-   near_(0.1f), far_(200.f), fovY(SaveManager::getInst().getConfig().fov),
-   size(size), projType(projType)
+Camera::Camera(glm::ivec2 size, const glm::vec3& position, const glm::vec3& center, Projection projType)
+  : view(1.f), projection(1.f),
+    position(position), center(center),
+    near_(0.1f),
+    size(size), projType(projType)
 {
+  auto const& config = SaveManager::getInst().getConfig();
+  far_ = 16.0f* sqrt(2 * pow(config.renderDistH, 2) + pow(config.renderDistV, 2));
+  fovY = config.fov;
   computeView();
   computeProjection();
 }
