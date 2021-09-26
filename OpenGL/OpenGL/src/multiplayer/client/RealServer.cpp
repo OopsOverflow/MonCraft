@@ -21,7 +21,7 @@ RealServer::RealServer(std::string url, unsigned short port)
 
   bool handshake = false;
   int i = 0;
-  const int maxTries = 10;
+  const int maxTries = 50;
   do {
     packet_login();
     std::cout << "waiting for server..." << std::endl;
@@ -33,6 +33,8 @@ RealServer::RealServer(std::string url, unsigned short port)
     throw std::runtime_error("Server not found");
   }
 
+  lastServerUpdate = std::time(nullptr);
+
   auto newPlayer = std::make_unique<Character>(NetworkConfig::SPAWN_POINT);
   auto entity = world.entities.add(playerUid, std::move(newPlayer));
   player = std::dynamic_pointer_cast<Character>(entity);
@@ -43,6 +45,10 @@ RealServer::~RealServer() {
 }
 
 void RealServer::update() {
+  if(std::time(nullptr) - lastServerUpdate > timeout) {
+    throw std::runtime_error("server timeout");
+  }
+
   while(poll()) {};
 
   packet_blocks();
@@ -71,6 +77,7 @@ bool RealServer::poll() {
   PacketHeader header;
   packet >> header;
   auto type = header.getType();
+  lastServerUpdate = std::time(nullptr);
 
   if(type == PacketType::ENTITY_TICK) applyEntityTransforms(packet);
   else if(type == PacketType::LOGOUT) handle_logout(packet);
