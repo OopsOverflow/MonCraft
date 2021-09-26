@@ -84,6 +84,7 @@ protected:
 	float jumpSpeed;
 	float maxFallSpeed;
 	float playerFovY;
+	float defaultFovY;
 
 	glm::vec3 speed;
 	glm::vec3 accel;

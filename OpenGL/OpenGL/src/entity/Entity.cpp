@@ -9,6 +9,7 @@ Entity::Entity(Hitbox hitbox)
 	maxSpeed(4.3f), maxAccel(10.f), verticalFriction(0.f), horizontalFriction(5.f),
 	gravity(32.f), jumpSpeed(10.5f), maxFallSpeed(78.4f),
 	playerFovY(SaveManager::getConfig().fov),
+	defaultFovY(playerFovY),
 	speed(0), accel(0), direction(0),
   onFloor(false),
 	hitbox(std::move(hitbox))
@@ -143,7 +144,7 @@ void Entity::update(Terrain& terrain, float dt) {
 	  headNode.rot.y -= delta;
 	}
 
-	playerFovY = playerFovY - (playerFovY - (45.0f + length(speed) / 4.0f)) * 10.0f * dt;
+	playerFovY = min(179.9f, playerFovY - (playerFovY - (defaultFovY + length(speed) / 2.0f)) * 10.0f * dt);
 
 	node.update();
 }
