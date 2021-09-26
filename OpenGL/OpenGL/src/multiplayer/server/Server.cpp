@@ -8,7 +8,7 @@
 using namespace glm;
 
 Server::Server(unsigned short port)
-  : port(port), world(World::getInst()), save("save/serverWorld/chunk")
+  : port(port), world(World::getInst())
 {
   socket.setBlocking(false);
   if(socket.bind(port) != sf::Socket::Done) {
@@ -228,7 +228,7 @@ void Server::handle_blocks(Client const& client, sf::Packet& packet) {
     if(chunk) {
       ivec3 dpos = blockData.pos - cpos * world.chunkSize;
       chunk->setBlock(dpos, AllBlocks::create_static(blockData.type));
-      save.saveChunk(*chunk);
+      SaveManager::saveChunk(*chunk);
     }
   }
 

@@ -238,8 +238,6 @@ void RealServer::handle_blocks(sf::Packet& packet) {
     BlockArray blocks;
     packet >> blocks;
 
-    std::cout << blocks.size() << std::endl;
-
     for(auto const& blockData : blocks) {
       world.setBlock(blockData.pos, AllBlocks::create_static(blockData.type));
     }

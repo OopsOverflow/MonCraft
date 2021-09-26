@@ -2,6 +2,7 @@
 #include <algorithm>
 
 #include "TerrainGenerator.hpp"
+#include "save/SaveManager.hpp"
 
 using namespace glm;
 using namespace std::chrono_literals;
@@ -13,7 +14,6 @@ using namespace std::chrono_literals;
 TerrainGenerator::TerrainGenerator()
   : generating(false),
     generator(chunkSize),
-    save("save/serverWorld/chunk"),
     world(World::getInst())
 {
   startGeneration();
@@ -124,7 +124,7 @@ std::shared_ptr<Chunk> TerrainGenerator::getOrGen(ivec3 cpos) {
   }
   else if(addToBusyList(cpos)) {
       std::shared_ptr<Chunk> chunk;
-      std::unique_ptr<Chunk> savedChunk = save.getChunk(cpos);
+      std::unique_ptr<Chunk> savedChunk = SaveManager::getChunk(cpos);
       if (!savedChunk) {
         chunk = world.chunks.insert(cpos, generator.generate(cpos));
         sliceMap.insert(generator.generateStructures(*chunk));

@@ -13,7 +13,6 @@
 #include "gl/Camera.hpp"
 #include "util/PriorityList.hpp"
 #include "util/AtomicCyclicList.hpp"
-#include "save/SaveManager.hpp"
 #include "terrain/World.hpp"
 
 
@@ -43,7 +42,6 @@ public:
 
 private:
   ChunkGenerator generator;
-  SaveManager save;
 
   // threading
   static const int N_THREADS = 8;

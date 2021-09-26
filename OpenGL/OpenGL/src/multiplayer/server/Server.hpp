@@ -42,7 +42,6 @@ private:
   std::map<ClientID, Client> clients;
   World& world;
   TerrainGenerator generator;
-  SaveManager save;
 
   static const size_t maxChunks = 50;
 };

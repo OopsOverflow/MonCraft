@@ -8,6 +8,7 @@
 #include "multiplayer/client/ClientServer.hpp"
 #include "multiplayer/client/RealServer.hpp"
 #include "multiplayer/common/Config.hpp"
+#include "save/SaveManager.hpp"
 
 using namespace glm;
 
@@ -49,10 +50,10 @@ void loadResources() {
     }
 }
 
-std::unique_ptr<Server> createServer() {
+std::unique_ptr<Server> createServer(Config const& config) {
     std::unique_ptr<Server> server;
-    if (!NetworkConfig::LOCAL) {
-        server = std::make_unique<RealServer>(NetworkConfig::SERVER_ADDR, NetworkConfig::SERVER_PORT);
+    if (config.multiplayer) {
+        server = std::make_unique<RealServer>(config.SERVER_ADDR, config.SERVER_PORT);
     } else {
         server = std::make_unique<ClientServer>();
     }
@@ -61,12 +62,13 @@ std::unique_ptr<Server> createServer() {
 
 int main(int argc, char* argv[]) {
     std::cout << "---- Main ----" << std::endl;
+    Config config = SaveManager::getConfig();
 
     Viewport window({800, 800});
     loadResources();
     window.createRoot();
 
-    auto server = createServer();
+    auto server = createServer(config);
     World& world = World::getInst();
 
     // game seed
