@@ -4,6 +4,7 @@
 #include "util/Identifier.hpp"
 #include "debug/Debug.hpp"
 #include "save/SaveManager.hpp"
+#include <csignal>
 
 using namespace glm;
 

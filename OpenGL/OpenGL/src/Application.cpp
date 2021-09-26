@@ -102,24 +102,15 @@ int main(int argc, char* argv[]) {
     ui::Button btn_vsync(&scene, "VSync", font_vt323);
     btn_vsync.setPadding({15, 10});
 
-    ui::Button btn_gen(&scene, "Generation", font_vt323);
-    btn_gen.setPosition({133, 0}); // TODO: implement a box container
-    btn_gen.setPadding({15, 10});
-
     ui::Button btn_fullscreen(&scene, "Fullscreen", font_vt323);
     btn_fullscreen.setAnchorX(ui::Anchor::END);
     btn_fullscreen.setPadding({15, 10});
-
-    ui::Input input(&scene, "Input", font_vt323);
-    input.setAnchorX(ui::Anchor::CENTER);
-    input.setPadding({15, 10});
 
     ui::Button btn_ping(&scene, "Ping", font_vt323);
     btn_ping.setPosition({0, 80}); // TODO: implement a box container
     btn_fullscreen.setPadding({15, 10});
 
     btn_vsync.onclick([&] { window.toggleVSync(); });
-    // btn_gen.onclick([&] { gen.toggleGeneration(); });
     btn_fullscreen.onclick([&] { window.toggleFullscreen(); });
     btn_ping.onclick([&] { server->ping(); });
 
