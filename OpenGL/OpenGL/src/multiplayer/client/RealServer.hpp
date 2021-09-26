@@ -33,6 +33,7 @@ private:
   void handle_blocks(sf::Packet& packet);
   void handle_chunks(sf::Packet& packet);
   bool poll();
+
   void applyEntityTransforms(sf::Packet& packet);
 
   sf::IpAddress addr;

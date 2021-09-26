@@ -32,7 +32,9 @@ private:
   void packet_ack_login(ClientID const& client, Identifier uid);
   void packet_blocks(Identifier uid, BlockArray changedBlocks);
   void packet_chunks();
+
   void beep();
+  void updateWaitingChunks();
 
   unsigned short port;
   sf::UdpSocket socket;

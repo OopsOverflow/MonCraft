@@ -19,7 +19,15 @@ void ClientServer::ping() {
 }
 
 void ClientServer::update() {
-  generator.update(player->getPosition());
+  if(pendingChunks.changed(player->getPosition())) {
+    auto waiting = pendingChunks.get();
+    auto count = std::min(waiting.size(), generator.waitingChunks.capacity());
+    generator.waitingChunks.clear();
+    for (size_t i = 0; i < count; i++) {
+      generator.waitingChunks.push(waiting.at(i));
+    }
+  }
+  pendingChunks.remOldChunks();
 }
 
 std::shared_ptr<Character> ClientServer::getPlayer() {

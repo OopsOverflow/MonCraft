@@ -14,8 +14,6 @@ Server::Server(unsigned short port)
   if(socket.bind(port) != sf::Socket::Done) {
     throw NetworkError("Failed to bind to port: " + std::to_string(port));
   }
-
-  generator.update(vec3(0));
 }
 
 bool isVerbose(PacketType type) {
@@ -134,8 +132,6 @@ void Server::packet_chunks() {
 }
 
 void Server::run() {
-  generator.update(vec3(0));
-
   sf::Clock clock;
   const sf::Time frameDuration = sf::milliseconds(NetworkConfig::SERVER_TICK);
 
@@ -208,6 +204,7 @@ void Server::handle_player_tick(Client& client, sf::Packet& packet) {
 
 void Server::handle_chunks(Client& client, sf::Packet& packet) {
   packet >> client.waitingChunks;
+  updateWaitingChunks();
 }
 
 void Server::handle_ack_chunks(Client& client, sf::Packet& packet) {
@@ -235,4 +232,26 @@ void Server::handle_blocks(Client const& client, sf::Packet& packet) {
   }
 
   packet_blocks(client.player.uid, blocks);
+}
+
+void Server::updateWaitingChunks() {
+  generator.waitingChunks.clear();
+  size_t i = 0, j = 0;
+  size_t count = 0;
+
+  for(auto const& pair : clients) {
+    count += pair.second.waitingChunks.size();
+  }
+  count = std::min(count, generator.waitingChunks.capacity());
+
+  while(i < count) {
+    for(auto const& pair : clients) {
+      auto const& waiting = pair.second.waitingChunks;
+      if(j < waiting.size()) {
+        generator.waitingChunks.push(waiting.at(j));
+        i++;
+      }
+    }
+    j++;
+  }
 }
