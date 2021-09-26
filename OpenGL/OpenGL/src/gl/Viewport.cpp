@@ -189,6 +189,8 @@ bool Viewport::isDoubleSpace() {
 }
 
 void Viewport::on_keydown(SDL_Keycode k) {
+  root->keyPress(k); // controllers in ui (MonCraftScene)
+
   if (k == config.forward) {
       keyboardController.pressedForward();
   }
@@ -230,28 +232,30 @@ void Viewport::on_keydown(SDL_Keycode k) {
 }
 
 void Viewport::on_keyup(SDL_Keycode k) {
-    if (k == config.forward) {
-        keyboardController.releasedForward();
-    }
-    else if (k == config.backward) {
-        keyboardController.releasedBackward();
-    }
-    else if (k == config.right) {
-        keyboardController.releasedRight();
-    }
-    else if (k == config.left) {
-        keyboardController.releasedLeft();
-    }
-    else if (k == config.jump) {
-        keyboardController.releasedUp();
-        spaceIsPressed = false;
-    }
-    else if (k == config.sneak) {
-        keyboardController.releasedDown();
-    }
-    else if (k == config.sprint) {
-        keyboardController.releasedControl();
-    }
+  root->keyRelease(k); // controllers in ui (MonCraftScene)
+
+  if (k == config.forward) {
+      keyboardController.releasedForward();
+  }
+  else if (k == config.backward) {
+      keyboardController.releasedBackward();
+  }
+  else if (k == config.right) {
+      keyboardController.releasedRight();
+  }
+  else if (k == config.left) {
+      keyboardController.releasedLeft();
+  }
+  else if (k == config.jump) {
+      keyboardController.releasedUp();
+      spaceIsPressed = false;
+  }
+  else if (k == config.sneak) {
+      keyboardController.releasedDown();
+  }
+  else if (k == config.sprint) {
+      keyboardController.releasedControl();
+  }
 }
 
 void Viewport::on_mousedown(SDL_MouseButtonEvent const& e) {
