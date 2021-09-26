@@ -64,12 +64,13 @@ Block* World::getBlock(ivec3 pos) {
   return nullptr;
 }
 
-void World::setBlock(ivec3 pos, Block::unique_ptr_t block) {
+bool World::setBlock(ivec3 pos, Block::unique_ptr_t block) {
   ivec3 cpos = floor(vec3(pos) / float(chunkSize));
 
   auto chunk = chunks.find(cpos);
-  if(!chunk) throw std::runtime_error("setBlock: chunk not found");
+  if(!chunk) return false;
 
   ivec3 dpos = pos - cpos * chunkSize;
   chunk->setBlock(dpos, std::move(block));
+  return true;
 }

@@ -18,7 +18,7 @@ MonCraftScene::MonCraftScene(Viewport* vp, std::shared_ptr<Character> player)
 
       fogEnabled(false),
       sunSpeed(0.0075f), skyboxSpeed(0.0075f),
-      captured(false)//, save("save/defaultWorld/entities")
+      captured(false)
 {
     // load resources
     shader = ResourceManager::getShader("simple");

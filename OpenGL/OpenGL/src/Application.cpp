@@ -8,7 +8,7 @@
 #include "multiplayer/client/ClientServer.hpp"
 #include "multiplayer/client/RealServer.hpp"
 #include "multiplayer/common/Config.hpp"
-#include "terrain/TerrainGenerator.hpp"
+#include "save/SaveManager.hpp"
 
 using namespace glm;
 
@@ -50,10 +50,10 @@ void loadResources() {
     }
 }
 
-std::unique_ptr<Server> createServer() {
+std::unique_ptr<Server> createServer(Config const& config) {
     std::unique_ptr<Server> server;
-    if (!NetworkConfig::LOCAL) {
-        server = std::make_unique<RealServer>(NetworkConfig::SERVER_ADDR, NetworkConfig::SERVER_PORT);
+    if (config.multiplayer) {
+        server = std::make_unique<RealServer>(config.serverAddr, config.serverPort);
     } else {
         server = std::make_unique<ClientServer>();
     }
@@ -62,18 +62,21 @@ std::unique_ptr<Server> createServer() {
 
 int main(int argc, char* argv[]) {
     std::cout << "---- Main ----" << std::endl;
+    Config config = SaveManager::getInst().getConfig();
+
+    // game seed
+    std::hash<std::string> hashString;
+    auto seed = hashString(config.seed);
+    std::srand(seed);
+    std::cout << "seed : " << config.seed << " (" << seed << ")" << std::endl;
 
     Viewport window({800, 800});
     loadResources();
     window.createRoot();
 
-    auto server = createServer();
-    TerrainGenerator gen;
+    auto server = createServer(config);
     World& world = World::getInst();
 
-    // game seed
-    std::hash<std::string> hashString;
-    std::srand(hashString("Moncraft"));
 
     float t = 0;
 
@@ -116,7 +119,7 @@ int main(int argc, char* argv[]) {
     btn_fullscreen.setPadding({15, 10});
 
     btn_vsync.onclick([&] { window.toggleVSync(); });
-    btn_gen.onclick([&] { gen.toggleGeneration(); });
+    // btn_gen.onclick([&] { gen.toggleGeneration(); });
     btn_fullscreen.onclick([&] { window.toggleFullscreen(); });
     btn_ping.onclick([&] { server->ping(); });
 
@@ -143,7 +146,6 @@ int main(int argc, char* argv[]) {
     for (float dt = 0; window.beginFrame(dt); window.endFrame()) {
         t += dt;
 
-        gen.update(server->getPlayer()->getPosition());
         server->update();
 
         scene.drawFrame(t, dt);
@@ -153,7 +155,7 @@ int main(int argc, char* argv[]) {
         text_fps.setText(text.str());
 
         text.str(""); // "clears" the string stream
-        // text << "Player Pos : " << std::fixed << std::setprecision(3) << scene.entities->player->getPosition();
+        text << "Player Pos : " << std::fixed << std::setprecision(3) << server->getPlayer()->getPosition();
         text_posPlayer.setText(text.str());
 
         text.str(""); // "clears" the string stream

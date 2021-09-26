@@ -96,6 +96,7 @@ void Character::breakBlock() {
       BlockType block = cast.block->type;
       if (block != BlockType::Air && block != BlockType::Water) {
           World::getInst().setBlock(cast.position, Block::create_static<Air_Block>());
+          record.push_back({ cast.position, BlockType::Air });
       }
   }
 }

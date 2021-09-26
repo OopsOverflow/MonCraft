@@ -38,16 +38,11 @@ srcs = files(
   'OpenGL/src/entity/Entities.cpp',
 
   'OpenGL/src/terrain/World.cpp',
-  'OpenGL/src/terrain/TerrainGenerator.cpp',
   'OpenGL/src/terrain/Chunk.cpp',
   'OpenGL/src/terrain/ChunkMap.cpp',
-  'OpenGL/src/terrain/SliceMap.cpp',
-  'OpenGL/src/terrain/ChunkGenerator.cpp',
   'OpenGL/src/terrain/SkyBox.cpp',
-  'OpenGL/src/terrain/Structure.cpp',
   'OpenGL/src/terrain/BlockArray.cpp',
 
-  'OpenGL/src/terrain/biomes/BiomeMap.cpp',
   'OpenGL/src/blocks/Block.cpp',
   'OpenGL/src/blocks/geometry/BlockGeometry.cpp',
   'OpenGL/src/blocks/geometry/DefaultGeometry.cpp',
@@ -70,6 +65,13 @@ srcs = files(
 
   'OpenGL/src/multiplayer/common/NetworkError.cpp',
   'OpenGL/src/multiplayer/common/Packet.cpp',
+
+  'OpenGL/src/multiplayer/terrain/TerrainGenerator.cpp',
+  'OpenGL/src/multiplayer/terrain/SliceMap.cpp',
+  'OpenGL/src/multiplayer/terrain/ChunkGenerator.cpp',
+  'OpenGL/src/multiplayer/terrain/Structure.cpp',
+  'OpenGL/src/multiplayer/terrain/BiomeMap.cpp',
+  'OpenGL/src/multiplayer/terrain/PendingChunks.cpp',
 )
 
 client_srcs = files(

@@ -3,10 +3,10 @@
 #include <glm/glm.hpp>
 #include <array>
 
-#include "Chunk.hpp"
+#include "terrain/Chunk.hpp"
 #include "noise/Noise.hpp"
 #include "Structure.hpp"
-#include "biomes/BiomeMap.hpp"
+#include "BiomeMap.hpp"
 
 /**
 * Generates new chunks.

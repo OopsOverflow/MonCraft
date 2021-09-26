@@ -11,7 +11,7 @@
  * All operations are constant-time. (O(1))
  */
 
-template<class T, int N>
+template<class T, size_t N>
 class AtomicCyclicList {
 public:
   AtomicCyclicList()
@@ -22,9 +22,13 @@ public:
    * Gives the number of elements stored it the queue.
    * O(1)
    */
-  int size() {
+  size_t size() {
     std::lock_guard<std::mutex> lck(mutex);
     return size_;
+  }
+
+  constexpr size_t capacity() {
+    return N;
   }
 
   /**
@@ -67,6 +71,6 @@ public:
 
 private:
   std::array<T, N> array;
-  int head, tail, size_;
+  size_t head, tail, size_;
   std::mutex mutex;
 };

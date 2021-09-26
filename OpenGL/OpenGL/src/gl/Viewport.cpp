@@ -1,4 +1,5 @@
 #include "Viewport.hpp"
+#include "save/SaveManager.hpp"
 
 //SDL Libraries
 #include <SDL2/SDL.h>
@@ -27,7 +28,7 @@ Viewport::Viewport(glm::ivec2 size)
       lastSpacePress(0), spaceIsPressed(false),
       timeBegin(0), lastTime(0),
       mouseCaptured(false), vsync(true),
-      root(nullptr)
+      root(nullptr), config(SaveManager::getInst().getConfig())
 {
   //Initialize SDL2
   if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -189,73 +190,71 @@ bool Viewport::isDoubleSpace() {
 
 void Viewport::on_keydown(SDL_Keycode k) {
   root->keyPress(k); // controllers in ui (MonCraftScene)
-  switch (k) {
-  case SDLK_z:
-    keyboardController.pressedForward();
-    break;
-  case SDLK_s:
-    keyboardController.pressedBackward();
-    break;
-  case SDLK_d:
-    keyboardController.pressedRight();
-    break;
-  case SDLK_q:
-    keyboardController.pressedLeft();
-    break;
-  case SDLK_SPACE:
-    if(isDoubleSpace()) keyboardController.changedMod();
-    else keyboardController.pressedUp();
-    break;
-  case SDLK_LSHIFT:
-    keyboardController.pressedDown();
-    break;
-  case SDLK_F5:
+
+  if (k == config.forward) {
+      keyboardController.pressedForward();
+  }
+  else if(k == config.backward){
+      keyboardController.pressedBackward();
+  }
+  else if (k == config.right) {
+      keyboardController.pressedRight();
+  }
+  else if (k == config.left) {
+      keyboardController.pressedLeft();
+  }
+  else if (k == config.jump) {
+      if (isDoubleSpace()) keyboardController.changedMod();
+      else keyboardController.pressedUp();
+  }
+  else if (k == config.sneak) {
+      keyboardController.pressedDown();
+  }
+  else if (k == config.view) {
       keyboardController.pressedF5();
-      break;
-  case SDLK_LCTRL:
+  }
+  else if (k == config.sprint) {
       keyboardController.pressedControl();
-      break;
-  case SDLK_ESCAPE:
+  }
+  else if (k == config.menu) {
       SDL_SetRelativeMouseMode(SDL_FALSE);
       int x, y;
       SDL_GetMouseState(&x, &y);
       mouseController.rotateEnd(x, y);
       mouseCaptured = false;
-      break;
-  case SDLK_p:
+  }
+  else if (k == SDLK_p) {
       keyboardController.pressedPause();
-      break;
-  case SDLK_f:
+  }
+  else if (k == SDLK_f) {
       toggleVSync();
-      break;
   }
 }
 
 void Viewport::on_keyup(SDL_Keycode k) {
-  root->keyRelease(k); // controllers in ui (MonCraftScene) 
-  switch (k) {
-  case SDLK_z:
-    keyboardController.releasedForward();
-    break;
-  case SDLK_s:
-    keyboardController.releasedBackward();
-    break;
-  case SDLK_d:
-    keyboardController.releasedRight();
-    break;
-  case SDLK_q:
-    keyboardController.releasedLeft();
-    break;
-  case SDLK_SPACE:
-    keyboardController.releasedUp();
-    spaceIsPressed = false;
-    break;
-  case SDLK_LSHIFT:
-    keyboardController.releasedDown();
-    break;
-  case SDLK_LCTRL:
-    keyboardController.releasedControl();
-    break;
+  root->keyRelease(k); // controllers in ui (MonCraftScene)
+
+  if (k == config.forward) {
+      keyboardController.releasedForward();
+  }
+  else if (k == config.backward) {
+      keyboardController.releasedBackward();
+  }
+  else if (k == config.right) {
+      keyboardController.releasedRight();
+  }
+  else if (k == config.left) {
+      keyboardController.releasedLeft();
+  }
+  else if (k == config.jump) {
+      keyboardController.releasedUp();
+      spaceIsPressed = false;
+  }
+  else if (k == config.sneak) {
+      keyboardController.releasedDown();
+  }
+  else if (k == config.sprint) {
+      keyboardController.releasedControl();
   }
 }
 

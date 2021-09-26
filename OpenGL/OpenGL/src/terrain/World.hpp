@@ -31,9 +31,9 @@ public:
 
   /**
   * Sets a block in the world.
-  * throws if the block is unavailable.
+  * return false if the block is unavailable.
   */
-  void setBlock(glm::ivec3 pos, Block::unique_ptr_t block);
+  bool setBlock(glm::ivec3 pos, Block::unique_ptr_t block);
 
   static const int chunkSize = 16;
 

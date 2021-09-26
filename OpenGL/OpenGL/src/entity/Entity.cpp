@@ -5,19 +5,20 @@ using namespace glm;
 static const highp_dmat4 I(1.0);
 
 Entity::Entity(Hitbox hitbox)
-: view(View::FIRST_PERSON), state(State::Idle),
+: view(View::FIRST_PERSON),
+	state(State::Idle),
+	uid(0),
 	maxSpeed(4.3f), maxAccel(10.f), verticalFriction(0.f), horizontalFriction(5.f),
 	gravity(32.f), jumpSpeed(10.5f), maxFallSpeed(78.4f),
-	playerFovY(45.0f),
+	playerFovY(SaveManager::getInst().getConfig().fov),
+	defaultFovY(playerFovY),
 	speed(0), accel(0), direction(0),
   onFloor(false),
-	hitbox(std::move(hitbox)),
-	uid(0)
+	hitbox(std::move(hitbox))
 {}
 
 Entity::~Entity() {
-	SaveManager save("save/defaultWorld/entities");
-	save.saveEntity(*this);
+	SaveManager::saveEntity(*this);
 }
 
 void Entity::walk(vec3 dir) {
@@ -145,7 +146,12 @@ void Entity::update(float dt) {
 	  headNode.rot.y -= delta;
 	}
 
-	playerFovY = playerFovY - (playerFovY - (45.0f + length(speed) / 4.0f)) * 10.0f * dt;
+	// fov function of speed
+	const auto maxFov = 180.0;
+	const auto smoothing = 0.005f;
+	const auto transition = 10.f;
+	const auto targetFov = playerFovY - (maxFov + (defaultFovY - maxFov) * exp(-smoothing * length(speed)));
+	playerFovY = playerFovY - targetFov * transition * dt;
 
 	node.update();
 }

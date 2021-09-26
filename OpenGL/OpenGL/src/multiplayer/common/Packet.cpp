@@ -30,6 +30,8 @@ std::ostream& operator<<(std::ostream& os, PacketHeader const& header) {
   else if(type == PacketType::ENTITY_TICK) os << "ENTITY_TICK";
   else if(type == PacketType::BLOCKS) os << "BLOCKS";
   else if(type == PacketType::PING) os << "PING";
+  else if(type == PacketType::CHUNKS) os << "CHUNKS";
+  else if(type == PacketType::ACK_CHUNKS) os << "ACK_CHUNKS";
   else if(type == PacketType::NONE) os << "NONE";
   else os << "<unknown>";
   return os;

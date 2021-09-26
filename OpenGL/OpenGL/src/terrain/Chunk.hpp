@@ -22,13 +22,6 @@ public:
   Chunk& operator=(Chunk const&) = delete;
 
   /**
-  * Gets the block at the given position.
-  * The coordinate origin is in chunk space i.e. (0,0,0) is the chunk corner.
-  * /!\ nothing guaranties the Block's longevity (hence the pointer).
-  */
-  Block* getBlock(glm::ivec3 pos);
-
-  /**
   * Sets the block at the given position.
   * The coordinate origin is in chunk space i.e. (0,0,0) is the chunk corner.
   * This will update the mesh and, if possible, neighboring meshes as well.
@@ -94,6 +87,8 @@ public:
   */
   bool hasData() const;
 
+  bool hasAllNeighbors() const;
+
   /// Some lookups for efficient code execution ///
 
   /**
@@ -127,7 +122,7 @@ private:
   // the gl mesh and corresponding data.
   std::unique_ptr<Mesh> mesh;
   GLuint solidOffset = 0;
-  glm::ivec3 transpOffset = glm::ivec3(0);
+  glm::uvec3 transpOffset = glm::uvec3(0);
 
   MeshData meshData;
   bool loaded;
