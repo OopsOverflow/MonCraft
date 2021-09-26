@@ -17,4 +17,5 @@ private:
   std::shared_ptr<Character> player;
   TerrainGenerator generator;
   PendingChunks pendingChunks;
+  World& world;
 };

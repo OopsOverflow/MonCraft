@@ -3,8 +3,12 @@
 #include "multiplayer/common/Config.hpp"
 #include "terrain/World.hpp"
 #include "entity/character/Character.hpp"
+#include "save/SaveManager.hpp"
+
+using namespace glm;
 
 ClientServer::ClientServer()
+  : world(World::getInst())
 {
   auto newPlayer = std::make_unique<Character>(NetworkConfig::SPAWN_POINT);
   auto entity = World::getInst().entities.add(0, std::move(newPlayer));
@@ -28,6 +32,18 @@ void ClientServer::update() {
     }
   }
   pendingChunks.remOldChunks();
+
+  // save changes since last update
+  auto rec = player->getRecord();
+  for(auto const& blockData : rec) {
+    ivec3 cpos = floor(vec3(blockData.pos) / float(world.chunkSize));
+    auto chunk = world.chunks.find(cpos);
+    if(chunk) {
+      ivec3 dpos = blockData.pos - cpos * world.chunkSize;
+      chunk->setBlock(dpos, AllBlocks::create_static(blockData.type));
+      SaveManager::saveChunk(*chunk);
+    }
+  }
 }
 
 std::shared_ptr<Character> ClientServer::getPlayer() {

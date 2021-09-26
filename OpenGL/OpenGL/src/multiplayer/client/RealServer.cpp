@@ -29,6 +29,10 @@ RealServer::RealServer(std::string url, unsigned short port)
     sf::sleep(sf::milliseconds(100));
   } while(!handshake && i++ < maxTries);
 
+  if(i == maxTries) {
+    throw std::runtime_error("Server not found");
+  }
+
   auto newPlayer = std::make_unique<Character>(NetworkConfig::SPAWN_POINT);
   auto entity = world.entities.add(playerUid, std::move(newPlayer));
   player = std::dynamic_pointer_cast<Character>(entity);

@@ -15,7 +15,7 @@ struct Config {
     std::string serverAddr = "pi.thissma.fr";
     unsigned short serverPort = 55000;
 
-    unsigned int renderDistH = 16;
+    unsigned int renderDistH = 10;
     unsigned int renderDistV = 5;
     unsigned int threadCount = 8;
 
