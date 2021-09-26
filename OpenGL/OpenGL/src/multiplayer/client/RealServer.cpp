@@ -13,7 +13,7 @@ RealServer::RealServer(std::string url, unsigned short port)
     frameDuration(sf::milliseconds(NetworkConfig::SERVER_TICK)),
     world(World::getInst())
 {
-  lastUpdate = clock.getElapsedTime() - frameDuration - frameDuration; // nqeeds update
+  lastUpdate = clock.getElapsedTime() - frameDuration - frameDuration; // needs update
   socket.setBlocking(false);
   if(socket.bind(sf::Socket::AnyPort) != sf::Socket::Done) {
     throw NetworkError("Failed to bind to any port");

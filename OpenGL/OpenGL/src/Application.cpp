@@ -64,6 +64,12 @@ int main(int argc, char* argv[]) {
     std::cout << "---- Main ----" << std::endl;
     Config config = SaveManager::getInst().getConfig();
 
+    // game seed
+    std::hash<std::string> hashString;
+    auto seed = hashString(config.seed);
+    std::srand(seed);
+    std::cout << "seed : " << config.seed << " (" << seed << ")" << std::endl;
+
     Viewport window({800, 800});
     loadResources();
     window.createRoot();
@@ -71,9 +77,6 @@ int main(int argc, char* argv[]) {
     auto server = createServer(config);
     World& world = World::getInst();
 
-    // game seed
-    std::hash<std::string> hashString;
-    std::srand(hashString(config.seed));
 
     float t = 0;
 
