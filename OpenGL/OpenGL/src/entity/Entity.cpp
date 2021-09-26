@@ -10,7 +10,7 @@ Entity::Entity(Hitbox hitbox)
 	uid(0),
 	maxSpeed(4.3f), maxAccel(10.f), verticalFriction(0.f), horizontalFriction(5.f),
 	gravity(32.f), jumpSpeed(10.5f), maxFallSpeed(78.4f),
-	playerFovY(SaveManager::getConfig().fov),
+	playerFovY(SaveManager::getInst().getConfig().fov),
 	defaultFovY(playerFovY),
 	speed(0), accel(0), direction(0),
   onFloor(false),

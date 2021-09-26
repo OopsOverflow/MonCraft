@@ -32,8 +32,10 @@ struct Config {
 class SaveManager
 {
 public:
-    static Config getConfig();
-    static bool saveConfig(const Config& config);
+
+    static SaveManager& getInst();
+    Config& getConfig();
+    bool saveConfig();
 
     static std::unique_ptr<Chunk> getChunk(glm::ivec3 chunkPos);
     static bool saveChunk(Chunk const& chunk);
@@ -46,7 +48,10 @@ private:
     static std::string chunkSavePath;
     static std::string entitySavePath;
 
-    SaveManager() = delete;
+    Config config;
+    static Config loadConfig();
+    SaveManager();
+    ~SaveManager();
     SaveManager(SaveManager const&) = delete;
     SaveManager& operator=(SaveManager const&) = delete;
 };

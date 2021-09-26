@@ -28,7 +28,7 @@ Viewport::Viewport(glm::ivec2 size)
       lastSpacePress(0), spaceIsPressed(false),
       timeBegin(0), lastTime(0),
       mouseCaptured(false), vsync(true),
-      root(nullptr), config(SaveManager::getConfig())
+      root(nullptr), config(SaveManager::getInst().getConfig())
 {
   //Initialize SDL2
   if (SDL_Init(SDL_INIT_VIDEO) < 0) {

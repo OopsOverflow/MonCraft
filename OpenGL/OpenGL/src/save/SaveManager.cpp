@@ -41,12 +41,28 @@ std::string remainder(std::stringstream& iss) {
 	return res;
 }
 
-Config SaveManager::getConfig() {
+SaveManager::SaveManager()
+: config(loadConfig())
+{}
+
+SaveManager::~SaveManager() {
+	saveConfig();
+}
+
+SaveManager& SaveManager::getInst() {
+	static SaveManager inst;
+	return inst;
+}
+
+Config& SaveManager::getConfig() {
+	return config;
+}
+
+Config SaveManager::loadConfig() {
 	std::string filePath = "save/config.txt";
 	std::ifstream openedFile(filePath);
 	if (!openedFile.is_open()) {
 		Config config;
-		saveConfig(config);
 		return config;
 	}
 
@@ -88,14 +104,11 @@ Config SaveManager::getConfig() {
 	}
 
 	config.fov = std::min(180.0f, std::max(0.0f, config.fov));
-	//std::cout << SDL_GetKeyName(config.backward) << std::endl;
-	saveConfig(config);
 	return config;
-
 }
 
 
-bool SaveManager::saveConfig(const Config& config) {
+bool SaveManager::saveConfig() {
 	std::string filePath = "save/config.txt";
 	std::ofstream openedFile(filePath, std::fstream::trunc);
 	if (!openedFile) return 0;

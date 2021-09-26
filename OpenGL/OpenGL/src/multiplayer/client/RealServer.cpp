@@ -20,12 +20,14 @@ RealServer::RealServer(std::string url, unsigned short port)
   }
 
   bool handshake = false;
+  int i = 0;
+  const int maxTries = 10;
   do {
     packet_login();
     std::cout << "waiting for server..." << std::endl;
     handshake = listen_ack_login();
     sf::sleep(sf::milliseconds(100));
-  } while(!handshake);
+  } while(!handshake && i++ < maxTries);
 
   auto newPlayer = std::make_unique<Character>(NetworkConfig::SPAWN_POINT);
   auto entity = world.entities.add(playerUid, std::move(newPlayer));

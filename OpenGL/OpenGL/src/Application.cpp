@@ -62,7 +62,7 @@ std::unique_ptr<Server> createServer(Config const& config) {
 
 int main(int argc, char* argv[]) {
     std::cout << "---- Main ----" << std::endl;
-    Config config = SaveManager::getConfig();
+    Config config = SaveManager::getInst().getConfig();
 
     Viewport window({800, 800});
     loadResources();
