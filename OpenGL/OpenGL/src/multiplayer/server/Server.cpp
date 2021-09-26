@@ -7,6 +7,8 @@
 
 using namespace glm;
 
+bool Server::stopSignal = false;
+
 Server::Server(unsigned short port)
   : port(port), world(World::getInst())
 {
@@ -135,11 +137,17 @@ void Server::packet_chunks() {
   }
 }
 
+void Server::sigStop(int signal) {
+  stopSignal = true;
+}
+
 void Server::run() {
   sf::Clock clock;
   const sf::Time frameDuration = sf::milliseconds(NetworkConfig::SERVER_TICK);
 
-  while(1) {
+  std::signal(SIGINT, Server::sigStop);
+
+  while(!stopSignal) {
     sf::Time start = clock.getElapsedTime();
 
     while(poll()) {}

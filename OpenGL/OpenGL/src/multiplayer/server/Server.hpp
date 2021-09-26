@@ -45,4 +45,7 @@ private:
 
   int renderDistH, renderDistV;
   static const unsigned int maxChunks = 50;
+
+  static void sigStop(int signal);
+  static bool stopSignal;
 };
