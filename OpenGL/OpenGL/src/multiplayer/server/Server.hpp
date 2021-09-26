@@ -36,6 +36,7 @@ private:
   void beep();
   void updateWaitingChunks();
   void remOldChunks();
+  void handleTimeouts();
 
   unsigned short port;
   sf::UdpSocket socket;
@@ -48,4 +49,6 @@ private:
 
   static void sigStop(int signal);
   static bool stopSignal;
+
+  static const time_t timeout = 5;
 };

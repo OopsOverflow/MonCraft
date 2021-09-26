@@ -56,6 +56,7 @@ bool Server::poll() {
       std::cout << "[WARN] Client not registered" << std::endl;
     }
     else {
+      it->second.lastUpdate = std::time(nullptr);
       if(type == PacketType::PING) handle_ping(it->second);
       else if(type == PacketType::BLOCKS) handle_blocks(it->second, packet);
       else if(type == PacketType::PLAYER_TICK) handle_player_tick(it->second, packet);
@@ -154,6 +155,7 @@ void Server::run() {
     packet_entity_tick();
     packet_chunks();
     remOldChunks();
+    handleTimeouts();
 
     sf::Time elapsed = clock.getElapsedTime() - start;
     if(elapsed < frameDuration) {
@@ -202,7 +204,7 @@ void Server::handle_logout(sf::IpAddress clientAddr, unsigned short clientPort) 
     clients.erase(it);
     packet_logout(uid);
     beep();
-    std::cout << "client disconnected" << std::endl;
+    std::cout << "Client disconnected" << std::endl;
   }
 }
 
@@ -288,4 +290,18 @@ void Server::remOldChunks() {
     }
     return true;
   });
+}
+
+void Server::handleTimeouts() {
+  std::time_t curTime = std::time(nullptr);
+  for(auto it = clients.begin(); it != clients.end(); ++it) {
+    auto client = *it;
+    if(curTime - it->second.lastUpdate > timeout) {
+      Identifier uid = it->second.player.uid;
+      std::cout << "Client timeout: uid " << uid << std::endl;
+      it = clients.erase(it);
+      packet_logout(uid);
+      beep();
+    }
+  }
 }
