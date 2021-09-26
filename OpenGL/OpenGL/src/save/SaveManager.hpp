@@ -11,7 +11,7 @@ enum class EntityClass{Character};
 
 
 struct Config {
-    bool multiplayer = true;
+    bool multiplayer = false;
     std::string SERVER_ADDR = "pi.thissma.fr";
     unsigned short SERVER_PORT = 55000;
 

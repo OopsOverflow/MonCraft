@@ -31,10 +31,19 @@ std::istream& operator>>(std::istream& stream, Binary<T>& bin) {
 	return stream;
 }
 
+std::string remainder(std::stringstream& iss) {
+	std::string s;
+	std::string res;
+	iss >> res;
+	while (iss >> s) {
+		res += " " + s;
+	}
+	return res;
+}
+
 Config SaveManager::getConfig() {
 	std::string filePath = "save/config.txt";
 	std::ifstream openedFile(filePath);
-	bool decode = true;
 	if (!openedFile.is_open()) {
 		Config config;
 		saveConfig(config);
@@ -42,110 +51,45 @@ Config SaveManager::getConfig() {
 	}
 
 	Config config;
-	std::string readedLine;
-	std::stringstream iss;
-	std::string trash;
+	std::string readLine;
+	std::string param;
+	std::string tmp;
 
-	if (getline(openedFile, readedLine)) { //Moncraft version
+	while (getline(openedFile, readLine)) {
+		std::stringstream iss;
+		iss.str(readLine);
+		iss >> param;
+		if (param == "Multiplayer:")
+			iss >> std::boolalpha >> config.multiplayer;
+		else if (param == "Server_adress:")
+			config.SERVER_ADDR = remainder(iss);
+		else if (param == "Server_port:")
+			iss >> config.SERVER_PORT;
+		else if (param == "FoV:")
+			iss >> config.fov;
+		else if (param == "Forward:")
+			config.forward = SDL_GetKeyFromName(remainder(iss).c_str());
+		else if (param == "Backward:")
+			config.backward = SDL_GetKeyFromName(remainder(iss).c_str());
+		else if (param == "Left:")
+			config.left = SDL_GetKeyFromName(remainder(iss).c_str());
+		else if (param == "Right:")
+			config.right = SDL_GetKeyFromName(remainder(iss).c_str());
+		else if (param == "Jump:")
+			config.jump = SDL_GetKeyFromName(remainder(iss).c_str());
+		else if (param == "Sneak:")
+			config.sneak = SDL_GetKeyFromName(remainder(iss).c_str());
+		else if (param == "View:")
+			config.view = SDL_GetKeyFromName(remainder(iss).c_str());
+		else if (param == "Sprint:")
+			config.sprint = SDL_GetKeyFromName(remainder(iss).c_str());
+		else if (param == "Menu:")
+			config.menu = SDL_GetKeyFromName(remainder(iss).c_str());
 	}
-	else { decode = false; }
 
-	if (getline(openedFile, readedLine)) { //Multiplayer
-		iss.str(readedLine);
-		iss >> trash;
-		if (!(iss >> config.multiplayer)) decode = false;
-	}
-	else { decode = false; }
-
-	if (getline(openedFile, readedLine)) { //Server adress
-		iss.str(readedLine);
-		iss >> trash;
-		if (!(iss >> config.SERVER_ADDR)) decode = false;
-	}
-	else { decode = false; }
-
-	if (getline(openedFile, readedLine)) { //Server port
-		iss.str(readedLine);
-		iss >> trash;
-		if (!(iss >> config.SERVER_PORT)) decode = false;
-	}
-	else { decode = false; }
-
-	if (getline(openedFile, readedLine)) { //FoV
-		iss.str(readedLine);
-		iss >> trash;
-		if (!(iss >> config.fov)) decode = false;
-	}
-	else { decode = false; }
-
-	if (getline(openedFile, readedLine)) { //Forward
-		iss.str(readedLine);
-		iss >> trash;
-		if (!(iss >> config.forward)) decode = false;
-	}
-	else { decode = false; }
-
-	if (getline(openedFile, readedLine)) { //Backward
-		iss.str(readedLine);
-		iss >> trash;
-		if (!(iss >> config.backward)) decode = false;
-	}
-	else { decode = false; }
-
-	if (getline(openedFile, readedLine)) { //Left
-		iss.str(readedLine);
-		iss >> trash;
-		if (!(iss >> config.left)) decode = false;
-	}
-	else { decode = false; }
-
-	if (getline(openedFile, readedLine)) { //Right
-		iss.str(readedLine);
-		iss >> trash;
-		if (!(iss >> config.right)) decode = false;
-	}
-	else { decode = false; }
-
-	if (getline(openedFile, readedLine)) { //Jump
-		iss.str(readedLine);
-		iss >> trash;
-		if (!(iss >> config.jump)) decode = false;
-	}
-	else { decode = false; }
-
-	if (getline(openedFile, readedLine)) { //Sneak
-		iss.str(readedLine);
-		iss >> trash;
-		if (!(iss >> config.sneak)) decode = false;
-	}
-	else { decode = false; }
-
-	if (getline(openedFile, readedLine)) { //View
-		iss.str(readedLine);
-		iss >> trash;
-		if (!(iss >> config.view)) decode = false;
-	}
-	else { decode = false; }
-
-	if (getline(openedFile, readedLine)) { //Sprint
-		iss.str(readedLine);
-		iss >> trash;
-		if (!(iss >> config.sprint)) decode = false;
-	}
-	else { decode = false; }
-
-	if (getline(openedFile, readedLine)) { //Menu
-		iss.str(readedLine);
-		iss >> trash;
-		if (!(iss >> config.menu)) decode = false;
-	}
-	else { decode = false; }
-
-	if (!decode) {
-		Config config;
-		saveConfig(config);
-		return config;
-	}
+	config.fov = std::min(180.0f, std::max(0.0f, config.fov));
+	//std::cout << SDL_GetKeyName(config.backward) << std::endl;
+	saveConfig(config);
 	return config;
 
 }
@@ -157,19 +101,19 @@ bool SaveManager::saveConfig(const Config& config) {
 	if (!openedFile) return 0;
 
 	openedFile << "MonCraft v1.1.0" << std::endl;
-	openedFile << "		Multiplayer: " << (config.multiplayer ? "true" : "false") << std::endl;
-	openedFile << "		Server_adress: " << config.SERVER_ADDR << std::endl;
-	openedFile << "		Server_port: " << std::to_string((int)config.SERVER_PORT) << std::endl;
-	openedFile << "		FoV: " << std::to_string(config.fov) << std::endl;
-	openedFile << "		Forward: " << SDL_GetKeyName(config.forward) << std::endl;
-	openedFile << "		Backward: " << SDL_GetKeyName(config.backward) << std::endl;
-	openedFile << "		Left: " << SDL_GetKeyName(config.left) << std::endl;
-	openedFile << "		Right: " << SDL_GetKeyName(config.right) << std::endl;
-	openedFile << "		Jump: " << SDL_GetKeyName(config.jump) << std::endl;
-	openedFile << "		Sneak: " << SDL_GetKeyName(config.sneak) << std::endl;
-	openedFile << "		View: " << SDL_GetKeyName(config.view) << std::endl;
-	openedFile << "		Sprint: " << SDL_GetKeyName(config.sprint) << std::endl;
-	openedFile << "		Menu: " << SDL_GetKeyName(config.menu) << std::endl;
+	openedFile << "	Multiplayer: " << std::boolalpha << config.multiplayer << std::endl;
+	openedFile << "	Server_adress: " << config.SERVER_ADDR << std::endl;
+	openedFile << "	Server_port: " << std::to_string((int)config.SERVER_PORT) << std::endl;
+	openedFile << "	FoV: " << std::to_string(config.fov) << std::endl;
+	openedFile << "	Forward: " << SDL_GetKeyName(config.forward) << std::endl;
+	openedFile << "	Backward: " << SDL_GetKeyName(config.backward) << std::endl;
+	openedFile << "	Left: " << SDL_GetKeyName(config.left) << std::endl;
+	openedFile << "	Right: " << SDL_GetKeyName(config.right) << std::endl;
+	openedFile << "	Jump: " << SDL_GetKeyName(config.jump) << std::endl;
+	openedFile << "	Sneak: " << SDL_GetKeyName(config.sneak) << std::endl;
+	openedFile << "	View: " << SDL_GetKeyName(config.view) << std::endl;
+	openedFile << "	Sprint: " << SDL_GetKeyName(config.sprint) << std::endl;
+	openedFile << "	Menu: " << SDL_GetKeyName(config.menu) << std::endl;
 
 	return true;
 }
