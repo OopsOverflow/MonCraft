@@ -35,7 +35,6 @@ struct Config {
 class SaveManager
 {
 public:
-
     static SaveManager& getInst();
     Config& getConfig();
     bool saveConfig();
@@ -46,11 +45,10 @@ public:
     static std::unique_ptr<Entity> getEntity(Identifier uid);
     static bool saveEntity(const Entity& entity);
 
+    static std::string chunkSaveDir, entitySaveDir, configSaveDir;
+    static std::string configFilename;
 
 private:
-    static std::string chunkSavePath;
-    static std::string entitySavePath;
-
     Config config;
     static Config loadConfig();
     SaveManager();

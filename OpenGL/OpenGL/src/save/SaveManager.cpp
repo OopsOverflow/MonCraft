@@ -9,8 +9,10 @@
 #include "entity/character/Character.hpp"
 #include <SDL2/SDL_keyboard.h>
 
-std::string SaveManager::chunkSavePath = "save/defaultWorld/chunk";
-std::string SaveManager::entitySavePath = "save/defaultWorld/entities";
+std::string SaveManager::chunkSaveDir = "save/defaultWorld/chunks";
+std::string SaveManager::entitySaveDir = "save/defaultWorld/entities";
+std::string SaveManager::configSaveDir = "save";
+std::string SaveManager::configFilename = "config.txt";
 
 template <typename T> class Binary {
 public:
@@ -39,9 +41,13 @@ std::string remainder(std::stringstream &ss) {
   return res;
 }
 
-SaveManager::SaveManager() : config(loadConfig()) {}
+SaveManager::SaveManager()
+  : config(loadConfig())
+{}
 
-SaveManager::~SaveManager() { saveConfig(); }
+SaveManager::~SaveManager() {
+  saveConfig();
+}
 
 SaveManager &SaveManager::getInst() {
   static SaveManager inst;
@@ -51,8 +57,7 @@ SaveManager &SaveManager::getInst() {
 Config &SaveManager::getConfig() { return config; }
 
 Config SaveManager::loadConfig() {
-  std::string filePath = "save/config.txt";
-  std::ifstream openedFile(filePath);
+  std::ifstream openedFile(configSaveDir + "/" + configFilename);
   if (!openedFile.is_open())
     return Config();
 
@@ -101,10 +106,13 @@ Config SaveManager::loadConfig() {
 }
 
 bool SaveManager::saveConfig() {
-  std::string filePath = "save/config.txt";
+  std::filesystem::create_directories(configSaveDir);
+  std::string filePath = configSaveDir + "/" + configFilename;
   std::ofstream openedFile(filePath, std::fstream::trunc);
-  if (!openedFile)
-    return 0;
+  if (!openedFile) {
+    std::cout << "[WARN] failed to open file: " << filePath << std::endl;
+    return false;
+  }
   openedFile << std::boolalpha << "MonCraft v1.1.0" << std::endl;
 
   #define KEY_PARAM(NAME)                                                      \
@@ -203,21 +211,24 @@ std::ostream &operator<<(std::ostream &stream, const Character &character) {
 }
 
 bool SaveManager::saveEntity(const Entity &entity) {
+  std::filesystem::create_directories(entitySaveDir);
   std::string filePath =
-      entitySavePath + "/entity_" + std::to_string(entity.uid) + ".entity";
+      entitySaveDir + "/entity_" + std::to_string(entity.uid) + ".entity";
   std::ofstream openedFile(
       filePath, std::fstream::trunc | std::fstream::binary | std::fstream::out);
-  if (!openedFile)
-    return 0;
+  if (!openedFile) {
+    std::cout << "[WARN] failed to open file: " << filePath << std::endl;
+    return false;
+  }
 
   openedFile << entity;
   openedFile.close();
-  return 1;
+  return true;
 }
 
 std::unique_ptr<Entity> SaveManager::getEntity(Identifier uid) {
   std::string filePath =
-      entitySavePath + "/entity_" + std::to_string(uid) + ".entity";
+      entitySaveDir + "/entity_" + std::to_string(uid) + ".entity";
   std::ifstream openedFile(filePath, std::fstream::binary | std::fstream::in);
   if (!openedFile.is_open())
     return std::unique_ptr<Entity>(nullptr);
@@ -284,9 +295,10 @@ std::ostream &operator<<(std::ostream &stream, Chunk const &chunk) {
 }
 
 std::unique_ptr<Chunk> SaveManager::getChunk(glm::ivec3 chunkPos) {
-  std::string filePath =
-      chunkSavePath + "/chunk_" + std::to_string(chunkPos.x) + "_" +
-      std::to_string(chunkPos.y) + "_" + std::to_string(chunkPos.z) + ".chunk";
+  std::string filePath = chunkSaveDir + "/chunk_" +
+                         std::to_string(chunkPos.x) + "_" +
+                         std::to_string(chunkPos.y) + "_" +
+                         std::to_string(chunkPos.z) + ".chunk";
 
   std::ifstream openedFile(filePath, std::fstream::binary);
   if (!openedFile.is_open())
@@ -307,15 +319,17 @@ std::unique_ptr<Chunk> SaveManager::getChunk(glm::ivec3 chunkPos) {
 }
 
 bool SaveManager::saveChunk(Chunk const &chunk) {
-  std::string filePath = chunkSavePath + "/chunk_" +
+  std::filesystem::create_directories(chunkSaveDir);
+  std::string filePath = chunkSaveDir + "/chunk_" +
                          std::to_string(chunk.chunkPos.x) + "_" +
                          std::to_string(chunk.chunkPos.y) + "_" +
                          std::to_string(chunk.chunkPos.z) + ".chunk";
 
-  std::ofstream openedFile(filePath,
-                           std::fstream::trunc | std::fstream::binary);
-  if (!openedFile)
+  std::ofstream openedFile(filePath, std::fstream::trunc | std::fstream::binary);
+  if (!openedFile) {
+    std::cout << "[WARN] failed to open file: " << filePath << std::endl;
     return false;
+  }
 
   Binary<uint8_t> chunkSize(chunk.size.x);
   openedFile << chunkSize << chunk;
