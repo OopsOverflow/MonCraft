@@ -42,7 +42,7 @@ void Entity::jump() {
 
 void Entity::turn(vec2 rot) {
 	headNode.rot.x += rot.x;
-	auto maxRotX = radians(89.0);
+	auto maxRotX = radians(89.9);
 	headNode.rot.x = clamp(headNode.rot.x, -maxRotX, maxRotX);
 
 	auto thresold = quarter_pi<double>();
