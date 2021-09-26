@@ -20,7 +20,7 @@ struct Config {
     unsigned int renderDistV = 5;
     unsigned int threadCount = 8;
 
-    float fov = 45.0;
+    float fov = 70.0;
     SDL_Keycode forward = SDLK_z;
     SDL_Keycode backward = SDLK_s;
     SDL_Keycode left = SDLK_q;
