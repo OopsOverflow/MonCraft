@@ -141,6 +141,7 @@ void Server::run() {
     while(poll()) {}
     packet_entity_tick();
     packet_chunks();
+    remOldChunks();
 
     sf::Time elapsed = clock.getElapsedTime() - start;
     if(elapsed < frameDuration) {
@@ -254,4 +255,25 @@ void Server::updateWaitingChunks() {
     }
     j++;
   }
+}
+
+void Server::remOldChunks() {
+  std::vector<ivec3> playersCpos;
+  for(auto const& pair : clients) {
+    ivec3 cpos = floor(pair.second.player.getPosition() / float(generator.chunkSize));
+    playersCpos.push_back(cpos);
+  }
+
+  int delCount = std::max<int>(world.chunks.size() - maxChunks, 0);
+  world.chunks.eraseChunks(delCount, [&](ivec3 thisChunkPos) {
+    for(auto const& cpos : playersCpos) {
+      ivec3 dist = abs(cpos - thisChunkPos);
+      bool cond = true;
+      cond &= dist.x <= generator.renderDistH + 1;
+      cond &= dist.z <= generator.renderDistH + 1;
+      cond &= dist.y <= generator.renderDistV + 1;
+      if(cond) return false;
+    }
+    return true;
+  });
 }

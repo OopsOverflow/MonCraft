@@ -34,7 +34,7 @@ public:
   void remOldChunks(glm::vec3 pos);
 
   static const int chunkSize = 16; // TODO: in a config file
-  static const int renderDistH = 30; // horizontal render distance (2n+1 chunks)
+  static const int renderDistH = 10; // horizontal render distance (2n+1 chunks)
   static const int renderDistV = 10; // vertical render distance (2n+1 chunks)
 
   // TODO: should we use runtime alloc instead of compile-time ? Post release

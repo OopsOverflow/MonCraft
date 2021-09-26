@@ -35,6 +35,7 @@ private:
 
   void beep();
   void updateWaitingChunks();
+  void remOldChunks();
 
   unsigned short port;
   sf::UdpSocket socket;
@@ -42,4 +43,6 @@ private:
   World& world;
   TerrainGenerator generator;
   SaveManager save;
+
+  static const size_t maxChunks = 50;
 };

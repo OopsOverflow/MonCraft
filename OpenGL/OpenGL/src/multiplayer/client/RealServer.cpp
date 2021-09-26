@@ -41,7 +41,7 @@ void RealServer::update() {
 
   packet_blocks();
   packet_chunks();
-  
+
   pendingChunks.remOldChunks();
 
   sf::Time now = clock.getElapsedTime();
