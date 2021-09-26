@@ -5,6 +5,14 @@
 
 int main() {
   std::cout << "---- Server ----" << std::endl;
+  Config config = SaveManager::getInst().getConfig();
+  
+  // game seed
+  std::hash<std::string> hashString;
+  auto seed = hashString(config.seed);
+  std::srand(seed);
+  std::cout << "seed : " << config.seed << " (" << seed << ")" << std::endl;
+
   SaveManager::configSaveDir = "save";
   SaveManager::configFilename = "serverConfig.txt";
   SaveManager::entitySaveDir = "save/serverWorld/entities";
