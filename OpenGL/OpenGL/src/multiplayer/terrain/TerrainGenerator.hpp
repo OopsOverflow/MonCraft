@@ -34,23 +34,11 @@ public:
   bool generating;
 
   static const int chunkSize = 16; // TODO: in a config file
-  static const int renderDistH = 64; // horizontal render distance (2n+1 chunks)
+  static const int renderDistH = 30; // horizontal render distance (2n+1 chunks)
   static const int renderDistV = 10; // vertical render distance (2n+1 chunks)
 
 private:
   const int chunksMaxCount;
-
-  // dirty hash function for the chunks hashmap
-  // (this may need to be improved ?)
-  struct ivec3_hash
-  {
-    size_t operator()(glm::ivec3 const& k) const {
-      return std::hash<int>()(k.x) ^ std::hash<int>()(k.y) ^  std::hash<int>()(k.z);
-    }
-    bool operator()(glm::ivec3 const& a, glm::ivec3 const& b) const {
-      return a == b;
-    }
-  };
 
   // TODO: should we use runtime alloc instead of compile-time ? Post release
   using WaitingList = AtomicCyclicList<glm::ivec3, (2*renderDistH+1)*(2*renderDistH+1)*(2*renderDistV+1)>;
@@ -67,6 +55,9 @@ private:
   std::mutex workerMutex;
   void mainWorker();
   void genWorker();
+
+  std::shared_ptr<Chunk> getOrGen(glm::ivec3 cpos);
+  void setupNeighbors(std::shared_ptr<Chunk> chunk);
 
   // utilities for workers
   bool sleepFor(std::chrono::milliseconds);

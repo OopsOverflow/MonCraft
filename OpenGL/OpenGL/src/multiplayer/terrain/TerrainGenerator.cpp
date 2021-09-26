@@ -119,97 +119,67 @@ void TerrainGenerator::remFromBusyList(ivec3 cpos) {
   else throw std::runtime_error("remFromBusyList failed");
 }
 
-void TerrainGenerator::genWorker() {
-  auto sleep = 10ms;
-  auto longSleep = 500ms;
-  bool stop;
+std::shared_ptr<Chunk> TerrainGenerator::getOrGen(ivec3 cpos) {
+  static const auto sleep = 10ms;
 
-  auto getOrGen = [&](ivec3 cpos) {
-    if(auto neigh = world.chunks.find(cpos)) {
-      return neigh;
-    }
-    else if(addInBusyList(cpos)) {
-        std::shared_ptr<Chunk> chunk;
-        std::unique_ptr<Chunk> savedChunk = save.getChunk(cpos);
-        if (!savedChunk) {
-            chunk = world.chunks.insert(cpos, generator.generate(cpos));
-            sliceMap.insert(generator.generateStructures(*chunk));
-        }
-        else {
-            chunk = world.chunks.insert(cpos, std::move(savedChunk));
-        }
+  if(auto neigh = world.chunks.find(cpos)) {
+    return neigh;
+  }
+  else if(addInBusyList(cpos)) {
+      std::shared_ptr<Chunk> chunk;
+      std::unique_ptr<Chunk> savedChunk = save.getChunk(cpos);
+      if (!savedChunk) {
+        chunk = world.chunks.insert(cpos, generator.generate(cpos));
+        sliceMap.insert(generator.generateStructures(*chunk));
+      }
+      else {
+        chunk = world.chunks.insert(cpos, std::move(savedChunk));
+      }
 
-      remFromBusyList(cpos);
-      return chunk;
-    }
-    else while(1) {
-      sleepFor(sleep);
-      if(auto neigh = world.chunks.find(cpos)) return neigh;
-    }
-  };
+    remFromBusyList(cpos);
+    return chunk;
+  }
+  else while(1) {
+    sleepFor(sleep);
+    if(auto neigh = world.chunks.find(cpos)) return neigh;
+  }
+}
 
-  auto getOrGenN = [&](ivec3 cpos) {
-    int count = 0;
-    std::array<bool, 26> finished{};
-    for(int i = 0; i < 26; i++) finished[i] = false;
-    std::array<std::weak_ptr<Chunk>, 26> neighbors;
-    int i = 0;
-
-    while(count < 26) {
-      while(finished[i]) i = (i + 1) % 26;
-      ivec3 thisPos = cpos + Chunk::neighborOffsets[i];
-
+void TerrainGenerator::setupNeighbors(std::shared_ptr<Chunk> chunk) {
+  for(size_t j = 0; j < 26; j++) {
+    if(!chunk->neighbors[j].lock()) {
+      ivec3 thisPos = chunk->chunkPos + Chunk::neighborOffsets[j];
       if(auto neigh = world.chunks.find(thisPos)) {
-        neighbors[i] = neigh;
-        finished[i] = true;
-        count++;
-      }
-      else if(addInBusyList(thisPos)) {
-        {
-              std::shared_ptr<Chunk> chunk;
-              std::unique_ptr<Chunk> savedChunk = save.getChunk(thisPos);
-              if (!savedChunk) {
-                  chunk = world.chunks.insert(thisPos, generator.generate(thisPos));
-                  sliceMap.insert(generator.generateStructures(*chunk));
-                  save.saveChunk(*chunk);
-              }
-              else {
-                  chunk = world.chunks.insert(thisPos, std::move(savedChunk));
-                  //std::cout << cpos.x << " " << cpos.y << " " << cpos.z << " " << chunk->chunkPos.x << " " << chunk->chunkPos.y << " " << chunk->chunkPos.z << std::endl;
-              }
-
-          remFromBusyList(thisPos);
-          neighbors[i] = chunk;
-          finished[i] = true;
-          count++;
+        chunk->neighbors[j] = neigh;
+        neigh->neighbors[Chunk::neighborOffsetsInverse[j]] = chunk;
+        if(neigh->hasAllNeighbors()) {
+          neigh->compute();
         }
       }
-      else sleepFor(sleep);
     }
+  }
 
-    return neighbors;
-  };
+  if(chunk->hasAllNeighbors()) {
+    chunk->compute();
+  }
+}
+
+void TerrainGenerator::genWorker() {
+  static const auto sleep = 1ms;
+  static const auto longSleep = 500ms;
+  bool stop;
+  ivec3 cpos;
 
   do {
-
-    ivec3 cpos;
     if(waitingChunks.pop(cpos)) {
-
       auto chunk = getOrGen(cpos);
-
-      chunk->neighbors = getOrGenN(cpos);
-      for(size_t i = 0; i < 26; i++) {
-        if(auto neigh = chunk->neighbors[i].lock()) {
-          neigh->neighbors[Chunk::neighborOffsetsInverse[i]] = chunk;
-        }
-      }
 
       auto slices = sliceMap.pop(cpos);
       for(auto const& slice : slices) {
         Structure::applySlice(*chunk, slice);
       }
 
-      chunk->compute();
+      setupNeighbors(chunk);
 
       stop = sleepFor(sleep);
     }
