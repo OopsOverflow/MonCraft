@@ -82,6 +82,7 @@ Config SaveManager::loadConfig() {
     ss.str(readLine);
     ss >> param;
 
+    PARAM(seed)
     PARAM(multiplayer)
     PARAM(serverAddr)
     PARAM(serverPort)
@@ -120,6 +121,7 @@ bool SaveManager::saveConfig() {
   #define PARAM(NAME)                                                          \
     openedFile << "\t" #NAME ": " << config.NAME << std::endl;
 
+  PARAM(seed)
   PARAM(multiplayer)
   PARAM(serverAddr)
   PARAM(serverPort)

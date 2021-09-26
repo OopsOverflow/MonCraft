@@ -73,7 +73,7 @@ int main(int argc, char* argv[]) {
 
     // game seed
     std::hash<std::string> hashString;
-    std::srand(hashString("Moncraft"));
+    std::srand(hashString(config.seed));
 
     float t = 0;
 

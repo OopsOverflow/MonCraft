@@ -11,6 +11,7 @@ enum class EntityClass{Character};
 
 
 struct Config {
+    std::string seed = "Moncraft";
     bool multiplayer = false;
     std::string serverAddr = "pi.thissma.fr";
     unsigned short serverPort = 55000;
