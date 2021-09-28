@@ -118,22 +118,32 @@ void Server::packet_ack_login(ClientID const& client, Identifier uid) {
 void Server::packet_chunks() {
   static const size_t maxChunks = 5;
 
-  for(auto const& pair : clients) {
+  for(auto& pair : clients) {
+    auto& client = pair.second;
+    auto count = std::min(client.waitingChunks.size(), maxChunks);
+
     std::vector<std::shared_ptr<Chunk>> chunks;
-    for(auto const& cpos : pair.second.waitingChunks) {
+    for(int i = 0, j = 0; i < count; i++) {
+      ivec3 cpos = client.waitingChunks.at(j);
       auto chunk = world.chunks.find(cpos);
-      if(chunk) {
+
+      if(chunk && chunk->isComputed()) {
         chunks.push_back(chunk);
-        if(chunks.size() >= maxChunks) break;
+        client.waitingChunks.pop_front(); // move chunk to the back (low priority)
+        client.waitingChunks.push_back(cpos);
       }
+      else j++;
     }
 
-    if(chunks.size() != 0) {
+    if(chunks.size() > 0) {
       sf::Packet packet;
       PacketHeader header(PacketType::CHUNKS);
       packet << header << (sf::Uint8)chunks.size();
-      for(auto const& chunk : chunks)
+
+      for(auto const& chunk : chunks) {
         packet << (sf::Uint8)chunk->size.x << chunk->chunkPos << *chunk;
+      }
+
       socket.send(packet, pair.first.getAddr(), pair.first.getPort());
     }
   }

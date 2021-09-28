@@ -35,7 +35,7 @@ void PendingChunks::updateWaitingChunks() {
     for(int i = -renderDistV; i <= renderDistV; i++) {
       ivec3 p = cpos + ivec3(pos.x, i, pos.y);
       auto chunk = world.chunks.find(p);
-      if(!chunk || !chunk->isLoaded()) {
+      if(!chunk || !chunk->isComputed()) {
         waitingChunks.push_back(p);
       }
     }

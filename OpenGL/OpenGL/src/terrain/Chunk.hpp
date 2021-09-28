@@ -37,14 +37,14 @@ public:
 
   /**
   * Signals the chunk that it must be recomputed on next update.
-  * The chunk will be recomputed only if it was loaded (see isLoaded).
+  * The chunk will be recomputed only if it was loaded (see isComputed).
   */
   void markToRecompute();
 
   /**
   * If the chunk has been computed at least once.
   */
-  bool isLoaded();
+  bool isComputed();
 
   /**
   * (re)calculates the mesh data from the blocks.

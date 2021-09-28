@@ -271,7 +271,7 @@ void Chunk::drawTransparent(vec3 dir) {
   }
 }
 
-bool Chunk::isLoaded() {
+bool Chunk::isComputed() {
   std::lock_guard<std::mutex> lck(computeMutex);
   return loaded;
 }

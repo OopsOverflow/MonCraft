@@ -15,6 +15,17 @@ enum class PacketType {
   NONE
 };
 
+template <typename T, typename = void>
+struct is_valid_cont : std::false_type {};
+
+template <typename T>
+struct is_valid_cont<T, std::void_t<
+  decltype(std::declval<T>().size()),
+  decltype(std::declval<T>().begin()),
+  decltype(std::declval<T>().end())
+>> : std::true_type {};
+
+
 class PacketHeader {
 
 public:
@@ -46,8 +57,8 @@ sf::Packet& operator>>(sf::Packet& packet, glm::vec<L, T, Q>& vec) {
     }
     return packet;
 }
-template<typename T>
-sf::Packet& operator<<(sf::Packet& packet, std::vector<T> const& cont) {
+template<typename Container, typename = std::enable_if_t<is_valid_cont<Container>::value>>
+sf::Packet& operator<<(sf::Packet& packet, Container const& cont) {
   packet << (sf::Uint64)cont.size();
   for(auto const& val : cont) {
     packet << val;
@@ -55,16 +66,14 @@ sf::Packet& operator<<(sf::Packet& packet, std::vector<T> const& cont) {
   return packet;
 }
 
-template<typename T>
-sf::Packet& operator>>(sf::Packet& packet, std::vector<T>& cont) {
+template<typename Container, typename = std::enable_if_t<is_valid_cont<Container>::value>>
+sf::Packet& operator>>(sf::Packet& packet, Container& cont) {
   sf::Uint64 size;
   packet >> size;
-  cont = std::vector<T>(size);
+  cont = Container(size);
 
   for(sf::Uint64 i = 0; i < size; i++) {
     packet >> cont[i];
   }
   return packet;
 }
-
-
