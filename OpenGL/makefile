@@ -23,6 +23,22 @@ opti:
 	ninja -C DebugOptimized
 	cd OpenGL && ../DebugOptimized/MonCraft
 
+server:
+	ninja -C DebugOptimized
+	cd OpenGL && ../DebugOptimized/MonCraftServer
+
+release:
+	rm -rf Release
+	rm -rf dist
+	meson Release --buildtype release
+	ninja -C Release
+	mkdir dist
+	cp Release/MonCraft dist
+	mkdir dist/src
+	cp -r OpenGL/src/shader dist/src
+	cp -r OpenGL/data dist
+	rm -r Release
+
 
 CFLAGS = -O3 -s WASM=1 -pthread -s PTHREAD_POOL_SIZE=4 -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s SDL2_IMAGE_FORMATS='["png"]' -s USE_SDL_GFX=2 -s USE_FREETYPE=2 -s ALLOW_MEMORY_GROWTH=1 -s MAX_WEBGL_VERSION=2 -s MIN_WEBGL_VERSION=2 -s FULL_ES2=1 -s FULL_ES3=1 --preload-file data --preload-file src
 # CFLAGS = --source-map-base http://localhost:6931/sources/__SOURCE_MAP_BASE__/ -gsource-map -O0 -s WASM=1 -pthread -s PTHREAD_POOL_SIZE=4 -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s SDL2_IMAGE_FORMATS='["png"]' -s USE_SDL_GFX=2 -s USE_FREETYPE=2 -s NO_DISABLE_EXCEPTION_CATCHING -s ALLOW_MEMORY_GROWTH=1 -s MAX_WEBGL_VERSION=2 -s MIN_WEBGL_VERSION=2 -s FULL_ES2=1 -s FULL_ES3=1 -s OFFSCREENCANVAS_SUPPORT=1 --preload-file data --preload-file src

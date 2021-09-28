@@ -1,5 +1,6 @@
 #include "Type.hpp"
 #include "StyleError.hpp"
+#include <string>
 
 using namespace ui;
 

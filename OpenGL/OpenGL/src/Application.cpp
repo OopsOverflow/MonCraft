@@ -5,6 +5,10 @@
 #include "ui/ui.hpp"
 #include "MonCraftScene.hpp"
 #include "debug/Debug.hpp"
+#include "multiplayer/client/ClientServer.hpp"
+#include "multiplayer/client/RealServer.hpp"
+#include "multiplayer/common/Config.hpp"
+#include "save/SaveManager.hpp"
 
 #ifdef EMSCRIPTEN
 #include <emscripten.h>
@@ -42,7 +46,7 @@ void loadResources() {
     #endif
     ResourceManager::loadShader("skyBox", "skyBox.vert", "skyBox.frag");
     ResourceManager::loadShader("font",   "font.vert",   "font.frag");
-    ResourceManager::loadShader("water",   "water.vert",   "water.frag");
+    ResourceManager::loadShader("water",  "water.vert",  "water.frag");
     ResourceManager::loadShader("fog", "fog.vert", "fog.frag");
     ResourceManager::loadShader("pane", "pane.vert", "pane.frag");
     ResourceManager::loadShader("shadow", "shadow.vert", "shadow.frag");
@@ -55,55 +59,77 @@ void loadResources() {
     }
 }
 
-float t = 0;
-float dt = 0;
-Viewport* pwindow;
-MonCraftScene* pscene;
-ui::Text* ptext_fps;
-ui::Text* ptext_posPlayer;
-ui::Text* ptext_gameTime;
+// float t = 0;
+// float dt = 0;
+// Viewport* pwindow;
+// MonCraftScene* pscene;
+// ui::Text* ptext_fps;
+// ui::Text* ptext_posPlayer;
+// ui::Text* ptext_gameTime;
+//
+// void loop() {
+//   t += dt;
+//
+//   pscene->drawFrame(t, dt);
+//
+//   std::ostringstream text;
+//   text << "FPS : " << (int)(1.f / dt);
+//   ptext_fps->setText(text.str());
+//
+//   text.str(""); // "clears" the string stream
+//   text << "Player Pos : " << std::fixed << std::setprecision(3) << pscene->character.getPosition();
+//   ptext_posPlayer->setText(text.str());
+//
+//   text.str(""); // "clears" the string stream
+//   text << "Game Time : " << std::fixed << std::setprecision(3) << t;
+//   ptext_gameTime->setText(text.str());
+// }
+//
+// #ifdef EMSCRIPTEN
+// void em_loop() {
+//   pwindow->beginFrame(dt);
+//   loop();
+//   pwindow->endFrame();
+// }
+// #endif
+//
+// int main(int argc, char* argv[]) {
+//     std::cout << "---- Main ----" << std::endl;
+//     Viewport window({1200, 800});
 
-void loop() {
-  t += dt;
-
-  pscene->drawFrame(t, dt);
-
-  std::ostringstream text;
-  text << "FPS : " << (int)(1.f / dt);
-  ptext_fps->setText(text.str());
-
-  text.str(""); // "clears" the string stream
-  text << "Player Pos : " << std::fixed << std::setprecision(3) << pscene->character.getPosition();
-  ptext_posPlayer->setText(text.str());
-
-  text.str(""); // "clears" the string stream
-  text << "Game Time : " << std::fixed << std::setprecision(3) << t;
-  ptext_gameTime->setText(text.str());
+std::unique_ptr<Server> createServer(Config const& config) {
+    std::unique_ptr<Server> server;
+    if (config.multiplayer) {
+        server = std::make_unique<RealServer>(config.serverAddr, config.serverPort);
+    } else {
+        server = std::make_unique<ClientServer>();
+    }
+    return server;
 }
-
-#ifdef EMSCRIPTEN
-void em_loop() {
-  pwindow->beginFrame(dt);
-  loop();
-  pwindow->endFrame();
-}
-#endif
 
 int main(int argc, char* argv[]) {
     std::cout << "---- Main ----" << std::endl;
-    Viewport window({1200, 800});
-    loadResources();
-    window.createRoot();
+    Config config = SaveManager::getInst().getConfig();
 
     // game seed
     std::hash<std::string> hashString;
-    std::srand(hashString("Moncraft"));
+    auto seed = hashString(config.seed);
+    std::srand(seed);
+    std::cout << "seed : " << config.seed << " (" << seed << ")" << std::endl;
+
+    Viewport window({800, 800});
+    loadResources();
+    window.createRoot();
+
+    auto server = createServer(config);
+    World& world = World::getInst();
+
 
     // UI stuff
     auto font_roboto = std::make_shared<const Font>("Roboto-Regular");
     auto font_vt323 = std::make_shared<const Font>("VT323-Regular");
 
-    MonCraftScene scene(&window);
+    MonCraftScene scene(&window, server->getPlayer());
     scene.setPadding({10, 10});
 
     ui::Pane pane_fps(&scene);
@@ -121,22 +147,17 @@ int main(int argc, char* argv[]) {
     ui::Button btn_vsync(&scene, "VSync", font_vt323);
     btn_vsync.setPadding({15, 10});
 
-    ui::Button btn_gen(&scene, "Generation", font_vt323);
-    btn_gen.setPosition({133, 0}); // TODO: implement a box container
-    btn_gen.setPadding({15, 10});
-    /*
-    ui::Button btn_fog(&scene, "Fog", font_vt323);
-    btn_fog.setPosition({360, 0}); // TODO: implement a box container
-    btn_fog.setPadding({15, 10});
-    */
     ui::Button btn_fullscreen(&scene, "Fullscreen", font_vt323);
     btn_fullscreen.setAnchorX(ui::Anchor::END);
     btn_fullscreen.setPadding({15, 10});
 
+    ui::Button btn_ping(&scene, "Ping", font_vt323);
+    btn_ping.setPosition({0, 80}); // TODO: implement a box container
+    btn_fullscreen.setPadding({15, 10});
+
     btn_vsync.onclick([&] { window.toggleVSync(); });
-    btn_gen.onclick([&] { scene.terrain.toggleGeneration(); });
-    //btn_fog.onclick([&] { scene.fogEnabled = !scene.fogEnabled; });
     btn_fullscreen.onclick([&] { window.toggleFullscreen(); });
+    btn_ping.onclick([&] { server->ping(); });
 
     ui::Text text_posPlayer(&scene, "", font_vt323);
     text_posPlayer.setAnchorY(ui::Anchor::END);
@@ -144,23 +165,60 @@ int main(int argc, char* argv[]) {
 
     ui::Text text_gameTime(&scene, "", font_vt323);
     text_gameTime.setAnchorY(ui::Anchor::END);
-    text_gameTime.setPosition(ivec2(0, -40));
+    text_gameTime.setPosition(ivec2(0, -90)); // TODO: implement a box container
     text_gameTime.setFontSize(.5f);
 
-    // main loop
-    pwindow = &window;
-    pscene = &scene;
-    ptext_fps = &text_fps;
-    ptext_posPlayer = &text_posPlayer;
-    ptext_gameTime = &text_gameTime;
+    ui::Text text_players(&scene, "", font_vt323);
+    text_players.setAnchorY(ui::Anchor::END);
+    text_players.setPosition({0, -30}); // TODO: implement a box container
+    text_players.setFontSize(.5f);
 
-    #ifdef EMSCRIPTEN
-      emscripten_set_main_loop(em_loop, 0, 1);
-    #else
-    for (dt = 0; window.beginFrame(dt); window.endFrame()) {
-      loop();
+    ui::Text text_uid(&scene, "", font_vt323);
+    text_uid.setAnchorY(ui::Anchor::END);
+    text_uid.setPosition({0, -60}); // TODO: implement a box container
+    text_uid.setFontSize(.5f);
+
+    // main loop
+    // pwindow = &window;
+    // pscene = &scene;
+    // ptext_fps = &text_fps;
+    // ptext_posPlayer = &text_posPlayer;
+    // ptext_gameTime = &text_gameTime;
+    //
+    // #ifdef EMSCRIPTEN
+    //   emscripten_set_main_loop(em_loop, 0, 1);
+    // #else
+    // for (dt = 0; window.beginFrame(dt); window.endFrame()) {
+    //   loop();
+    // #endif
+
+    for (float t = 0, dt = 0; window.beginFrame(dt); window.endFrame()) {
+        t += dt;
+
+        server->update();
+
+        scene.drawFrame(t, dt);
+
+        std::ostringstream text;
+        text << "FPS : " << (int)(1.f / dt);
+        text_fps.setText(text.str());
+
+        text.str(""); // "clears" the string stream
+        text << "Player Pos : " << std::fixed << std::setprecision(3) << server->getPlayer()->getPosition();
+        text_posPlayer.setText(text.str());
+
+        text.str(""); // "clears" the string stream
+        text << "Players online : " << world.entities.count();
+        text_players.setText(text.str());
+
+        text.str(""); // "clears" the string stream
+        text << "UID : " << server->getPlayer()->uid;
+        text_uid.setText(text.str());
+
+        text.str(""); // "clears" the string stream
+        text << "Game Time : " << std::fixed << std::setprecision(3) << t;
+        text_gameTime.setText(text.str());
     }
-    #endif
 
     ResourceManager::free();
     return 0;

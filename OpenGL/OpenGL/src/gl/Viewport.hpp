@@ -5,6 +5,7 @@
 #include "controller/MouseController.hpp"
 #include "controller/KeyboardController.hpp"
 #include "ui/Root.hpp"
+#include "save/SaveManager.hpp"
 
 #include <SDL2/SDL.h>
 
@@ -73,4 +74,6 @@ private:
   bool fullscreen;
 
   std::unique_ptr<ui::Root> root;
+
+  Config config;
 };

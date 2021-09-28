@@ -2,7 +2,7 @@
 
 #include "util/DataStore.hpp"
 #include "blocks/Block.hpp"
-#include "Chunk.hpp"
+#include "terrain/Chunk.hpp"
 
 /**
  * A structure allows the generation of complex block structures

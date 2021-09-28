@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../terrain/Terrain.hpp"
+#include "../terrain/World.hpp"
 
 /**
  * Raycast checks for solid blocks along a ray.
@@ -25,7 +25,7 @@ public:
    * Performs a ray cast.
    * credit: http://www.cse.chalmers.se/edu/year/2010/course/TDA361/grid.pdf
    */
-  CastResult cast(glm::vec3 pos, glm::vec3 direction, Terrain& terrain) const;
+  CastResult cast(glm::vec3 pos, glm::vec3 direction) const;
 
   float maxDist;
 };

@@ -4,6 +4,7 @@
 
 #include "Chunk.hpp"
 #include "gl/Shader.hpp"
+#include "save/SaveManager.hpp"
 
 using namespace glm;
 using std::move;
@@ -82,7 +83,7 @@ Block* Chunk::getBlockAccrossChunks(ivec3 pos) {
 
     if(auto neigh = neighbors[index].lock()) {
       ivec3 otherChunkPos = pos - size * (ivec3(greater) - ivec3(lesser));
-      return neigh->getBlock(otherChunkPos);
+      return neigh->at(otherChunkPos).get();
     }
     else return nullptr;
   }
@@ -202,6 +203,12 @@ bool Chunk::hasData() const {
   return transpOffset.z != 0;
 }
 
+bool Chunk::hasAllNeighbors() const {
+  return std::all_of(neighbors.begin(), neighbors.end(), [](auto neigh) {
+    return neigh.lock() != nullptr;
+  });
+}
+
 void Chunk::drawSolid() {
   if(mesh && hasSolidData()) {
     glBindVertexArray(mesh->getVAO());
@@ -266,13 +273,9 @@ void Chunk::drawTransparent(vec3 dir) {
   }
 }
 
-bool Chunk::isLoaded() {
+bool Chunk::isComputed() {
   std::lock_guard<std::mutex> lck(computeMutex);
   return loaded;
-}
-
-Block* Chunk::getBlock(ivec3 pos) {
-  return at(pos).get();
 }
 
 void Chunk::setBlock(ivec3 pos, Block::unique_ptr_t block) {

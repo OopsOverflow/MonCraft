@@ -1,6 +1,6 @@
 #pragma once
 
-#include "terrain/Terrain.hpp"
+#include <glm/glm.hpp>
 
 /**
  * Manages collisions between an entity and the terrain.
@@ -19,7 +19,7 @@ public:
    * Computes the offset the hitbox has to move in order not to go in the wall.
    * 0 means no offset of course.
    */
-  glm::highp_dvec3 computeCollision(glm::highp_dvec3 pos, glm::highp_dvec3 displ, Terrain& terrain);
+  glm::highp_dvec3 computeCollision(glm::highp_dvec3 pos, glm::highp_dvec3 displ);
 
   /**
    * Checks if the hitbox collides with slid blocks.

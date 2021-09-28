@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../Entity.hpp"
-#include "terrain/Terrain.hpp"
+#include "terrain/BlockArray.hpp"
 #include "util/Raycast.hpp"
 
 #include "LeftArm.hpp"
@@ -36,23 +36,28 @@ public:
   /**
    * Update the character state.
    */
-	void update(Terrain& terrain, float dt) override;
+	void update(float dt) override;
 
   /**
    * Breaks the block in line of sight if within reach of the character.
    */
-  void breakBlock(Terrain& terrain);
+  void breakBlock();
 
   /**
    * Place a block in front of the player, next to the nearest block face in
    * line of sight, if any.
    */
-  void placeBlock(Terrain& terrain);
+  void placeBlock();
 
   /**
    * Choose the block in line of sight to be placed.
    */
-  void pickBlock(Terrain& terrain);
+  void pickBlock();
+
+  /**
+  * Gets the blocks placed since the last call to this method.
+  */
+  BlockArray getRecord();
 
   void enableGodMode();
   void disableGodMode();
@@ -74,6 +79,7 @@ private:
 
   Raycast caster;
   BlockType currentBlock;
+  BlockArray record;
 
   bool god;
   bool sprint;

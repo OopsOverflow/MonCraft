@@ -1,17 +1,20 @@
 #include "Camera.hpp"
 #include "../gl/Shader.hpp"
+#include "save/SaveManager.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 
-Camera::Camera(glm::ivec2 size, const glm::vec3 &position,
-               const glm::vec3 &center, Projection projType)
- : view(1.f), projection(1.f),
-   position(position), center(center),
-   near_(0.1f), far_(200.f), fovY(45.f),
-   size(size), projType(projType)
+Camera::Camera(glm::ivec2 size, const glm::vec3& position, const glm::vec3& center, Projection projType)
+  : view(1.f), projection(1.f),
+    position(position), center(center),
+    near_(0.1f),
+    size(size), projType(projType)
 {
+  auto const& config = SaveManager::getInst().getConfig();
+  far_ = 16.0f* sqrt(2 * pow(config.renderDistH, 2) + pow(config.renderDistV, 2));
+  fovY = config.fov;
   computeView();
   computeProjection();
 }
@@ -199,7 +202,7 @@ void Camera::computeProjection() {
 }
 
 std::vector<glm::vec3> Camera::getBoxCorners(Frustum frustum) const {
-    float z1, z2;
+    float z1 = -near_, z2 = -far_;
     float range = far_ - near_;
 
     switch (frustum)
@@ -235,7 +238,6 @@ std::vector<glm::vec3> Camera::getBoxCorners(Frustum frustum) const {
 
         x1 = z1 * tanFovX;
         x2 = z2 * tanFovX;
-
     }
     else if(projType == Projection::PROJECTION_ORTHOGRAPHIC) {
         float aspect = (float)size.x / (float)size.y;

@@ -5,8 +5,6 @@ if get_option('buildtype').startswith('debug')
 endif
 
 srcs = files(
-  'OpenGL/src/Application.cpp',
-  'OpenGL/src/MonCraftScene.cpp',
 
   'OpenGL/src/debug/Debug.cpp',
 
@@ -29,22 +27,21 @@ srcs = files(
 
   'OpenGL/src/util/Raycast.cpp',
   'OpenGL/src/util/Random.cpp',
+  'OpenGL/src/util/Identifier.cpp',
 
   'OpenGL/src/entity/Entity.cpp',
   'OpenGL/src/entity/Hitbox.cpp',
   'OpenGL/src/entity/Member.cpp',
   'OpenGL/src/entity/character/Character.cpp',
   'OpenGL/src/entity/Node.cpp',
+  'OpenGL/src/entity/Entities.cpp',
 
-  'OpenGL/src/terrain/Terrain.cpp',
+  'OpenGL/src/terrain/World.cpp',
   'OpenGL/src/terrain/Chunk.cpp',
   'OpenGL/src/terrain/ChunkMap.cpp',
-  'OpenGL/src/terrain/SliceMap.cpp',
-  'OpenGL/src/terrain/Generator.cpp',
   'OpenGL/src/terrain/SkyBox.cpp',
-  'OpenGL/src/terrain/Structure.cpp',
+  'OpenGL/src/terrain/BlockArray.cpp',
 
-  'OpenGL/src/terrain/biomes/BiomeMap.cpp',
   'OpenGL/src/blocks/Block.cpp',
   'OpenGL/src/blocks/geometry/BlockGeometry.cpp',
   'OpenGL/src/blocks/geometry/DefaultGeometry.cpp',
@@ -56,15 +53,38 @@ srcs = files(
   'OpenGL/src/ui/Pane.cpp',
   'OpenGL/src/ui/Text.cpp',
   'OpenGL/src/ui/Button.cpp',
+  'OpenGL/src/ui/Input.cpp',
   'OpenGL/src/ui/Event.cpp',
+  'OpenGL/src/ui/Key.cpp',
   'OpenGL/src/ui/style/Style.cpp',
   'OpenGL/src/ui/style/Type.cpp',
   'OpenGL/src/ui/style/Specification.cpp',
 
   'OpenGL/src/save/SaveManager.cpp',
 
+  'OpenGL/src/multiplayer/common/NetworkError.cpp',
+  'OpenGL/src/multiplayer/common/Packet.cpp',
+
+  'OpenGL/src/multiplayer/terrain/TerrainGenerator.cpp',
+  'OpenGL/src/multiplayer/terrain/SliceMap.cpp',
+  'OpenGL/src/multiplayer/terrain/ChunkGenerator.cpp',
+  'OpenGL/src/multiplayer/terrain/Structure.cpp',
+  'OpenGL/src/multiplayer/terrain/BiomeMap.cpp',
+  'OpenGL/src/multiplayer/terrain/PendingChunks.cpp',
 )
 
+client_srcs = files(
+  'OpenGL/src/Application.cpp',
+  'OpenGL/src/MonCraftScene.cpp',
+  'OpenGL/src/multiplayer/client/ClientServer.cpp',
+  'OpenGL/src/multiplayer/client/RealServer.cpp',
+)
+
+server_srcs = files(
+  'OpenGL/src/Server.cpp',
+  'OpenGL/src/multiplayer/server/Server.cpp',
+  'OpenGL/src/multiplayer/server/Client.cpp',
+)
 
 # install_subdir('OpenGL/src/shader', install_dir : 'shader')
 
@@ -79,8 +99,6 @@ if host_machine.system() == 'emscripten'
     include_directories: incs
   )
 else
-  incs = include_directories('OpenGL/src')
-
   deps = [
     dependency('glew'),
     dependency('gl'),
@@ -92,13 +110,22 @@ else
     dependency('threads'),
     dependency('openmp'),
     dependency('sfml-audio'),
+    dependency('sfml-network'),
     dependency('freetype2'),
   ]
 
-  srcs += files('OpenGL/src/audio/Music.cpp')
+  incs = include_directories('OpenGL/src')
+
+  # install_subdir('OpenGL/src/shader', install_dir : 'shader')
 
   exe = executable(
-    'MonCraft', srcs,
+    'MonCraft', [client_srcs, srcs],
+    dependencies: deps,
+    include_directories: incs
+  )
+
+  exe_server = executable(
+    'MonCraftServer', [server_srcs, srcs],
     dependencies: deps,
     include_directories: incs
   )

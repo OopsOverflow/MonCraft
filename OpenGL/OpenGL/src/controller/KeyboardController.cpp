@@ -88,7 +88,7 @@ void KeyboardController::pressedPause() {
     paused = true;
 }
 
-void KeyboardController::apply(Character& character, Terrain& terrain) {
+void KeyboardController::apply(Character& character) {
   character.view = view;
   character.setSprint(sprint);
   if (change) {
@@ -101,10 +101,5 @@ void KeyboardController::apply(Character& character, Terrain& terrain) {
   else {
     character.walk({direction.x, 0, direction.z});
     if(direction.y > 0) character.jump();
-  }
-
-  if(paused) {
-    terrain.toggleGeneration();
-    paused = false;
   }
 }

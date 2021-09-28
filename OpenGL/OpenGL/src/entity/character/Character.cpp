@@ -1,10 +1,13 @@
 #include "Character.hpp"
+#include "CharacterHitbox.hpp"
 #include "blocks/Debug_Block.hpp"
 #include "blocks/Air_Block.hpp"
 #include "blocks/Dirt_Block.hpp"
 #include "blocks/Tallgrass_Block.hpp"
 #include "blocks/Water_Block.hpp"
+#include "blocks/AllBlocks.hpp"
 #include "gl/ResourceManager.hpp"
+#include "terrain/World.hpp"
 
 using namespace glm;
 
@@ -13,7 +16,7 @@ const float godMultiplier = 5;
 const float sprintMultiplier = 2;
 
 Character::Character(vec3 pos)
-    : Entity(Hitbox(-vec3(.3f, .5f, .3f), vec3(.3f, 1.3f, .3f))),
+    : Entity(CharacterHitbox()),
       caster(100), // distance the player can place blocks
       currentBlock(BlockType::Dirt),
       god(true), sprint(false)
@@ -85,41 +88,45 @@ void Character::setSprint(bool sprint) {
 }
 
 
-void Character::breakBlock(Terrain& terrain) {
+void Character::breakBlock() {
   vec3 eyePos = headNode.model * vec4(0, 4, 0, 1);
   vec3 eyeTarget = headNode.model * vec4(0, 4, 5, 1);
-  auto cast = caster.cast(eyePos + .5f, eyeTarget - eyePos, terrain);
+  auto cast = caster.cast(eyePos + .5f, eyeTarget - eyePos);
   if (cast.success) {
       BlockType block = cast.block->type;
       if (block != BlockType::Air && block != BlockType::Water) {
-          terrain.setBlock(cast.position, Block::create_static<Air_Block>());
+          World::getInst().setBlock(cast.position, Block::create_static<Air_Block>());
+          record.push_back({ cast.position, BlockType::Air });
       }
   }
 }
 
-void Character::placeBlock(Terrain& terrain) {
+void Character::placeBlock() {
+  auto& world = World::getInst();
   vec3 eyePos = headNode.model * vec4(0, 4, 4, 1);
   vec3 eyeTarget = headNode.model * vec4(0, 4, 5, 1);
-  auto cast = caster.cast(eyePos + .5f, eyeTarget - eyePos, terrain);
+  auto cast = caster.cast(eyePos + .5f, eyeTarget - eyePos);
 
   if(cast.success) {
     if(hitbox.collides(node.loc, cast.position + cast.normal)) return;
-    Block* block = terrain.getBlock(cast.position + cast.normal);
+    Block* block = world.getBlock(cast.position + cast.normal);
     if(!block) return;
     if(block->type != BlockType::Air && block->type != BlockType::Water) return;
-    terrain.setBlock(cast.position + cast.normal, AllBlocks::create_static(currentBlock));
+    ivec3 pos = cast.position + cast.normal;
+    world.setBlock(pos, AllBlocks::create_static(currentBlock));
+    record.push_back({ pos, currentBlock });
   }
 }
 
-void Character::pickBlock(Terrain& terrain) {
+void Character::pickBlock() {
   vec3 eyePos = headNode.model * vec4(0, 4, 0, 1);
   vec3 eyeTarget = headNode.model * vec4(0, 4, 5, 1);
-  auto cast = caster.cast(eyePos + .5f, eyeTarget - eyePos, terrain);
+  auto cast = caster.cast(eyePos + .5f, eyeTarget - eyePos);
   if(cast.success) currentBlock = cast.block->type;
 }
 
-void Character::update(Terrain& terrain, float dt) {
-  Entity::update(terrain, dt);
+void Character::update(float dt) {
+  Entity::update(dt);
 
   // smooth head rot with constant speed
   {
@@ -180,4 +187,10 @@ void Character::render() {
   r_arm.draw();
   l_leg.draw();
   r_leg.draw();
+}
+
+BlockArray Character::getRecord() {
+  BlockArray res = record;
+  record.clear();
+  return res;
 }

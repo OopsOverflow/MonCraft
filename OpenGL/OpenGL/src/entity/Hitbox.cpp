@@ -1,5 +1,6 @@
 #include "Hitbox.hpp"
 #include "debug/Debug.hpp"
+#include "terrain/World.hpp"
 
 using namespace glm;
 
@@ -8,12 +9,12 @@ Hitbox::Hitbox(glm::highp_dvec3 c1, glm::highp_dvec3 c2)
 {}
 
 
-highp_dvec3 Hitbox::computeCollision(highp_dvec3 pos, highp_dvec3 displ, Terrain& terrain) {
-
+highp_dvec3 Hitbox::computeCollision(highp_dvec3 pos, highp_dvec3 displ) {
+  World& world = World::getInst();
   double thresold = 0.0001; // histeresis
 
   auto isSolid = [&](ivec3 ipos) {
-    Block* block = terrain.getBlock(ipos);
+    Block* block = world.getBlock(ipos);
     if(block && block->isSolid()) {
       return true;
     }

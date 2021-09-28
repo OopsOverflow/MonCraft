@@ -4,6 +4,7 @@
 #include <glm/glm.hpp>
 #include <stdexcept>
 #include <iostream>
+#include <numeric>
 
 
 /**
@@ -56,6 +57,36 @@ public:
       size = other.size;
     }
     return *this;
+  }
+
+  /**
+   * Gets the data stored at pos.
+   * @throws std::out_of_range
+   */
+  T &at(int index) {
+    int maxIndex = 1;
+    for(int i = 0; i < N; i++)
+      maxIndex *= size[i];
+
+    if(index >= maxIndex)
+      throw std::out_of_range("DataStore index is out of range");
+
+    return map[index];
+  }
+
+  /**
+   * Gets the data stored at pos.
+   * @throws std::out_of_range
+   */
+  T const& at(int index) const {
+    int maxIndex = 1;
+    for(int i = 0; i < N; i++)
+      maxIndex *= size[i];
+
+    if(index >= maxIndex)
+      throw std::out_of_range("DataStore index is out of range");
+
+    return map[index];
   }
 
   /**

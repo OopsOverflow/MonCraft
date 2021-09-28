@@ -2,6 +2,8 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
+#define SHADER_ENABLE_DEBUG 0
+
 Shader *Shader::activeShader = nullptr;
 
 Shader::Shader(const char *vertexPath, const char *fragmentPath) {
@@ -60,25 +62,27 @@ void Shader::initLocations() {
   glUniform1i(uniformLookup[TEXTURE_SHADOW1], 3);
   glUniform1i(uniformLookup[TEXTURE_SHADOW2], 4);
 
-#define ATTRLOC(str) glGetAttribLocation(program, str)
-  std::cout << "---- SHADER ----" << std::endl
-            << "v_position: " << ATTRLOC("v_position") << std::endl
-            << "v_color: " << ATTRLOC("v_color") << std::endl
-            << "v_normal: " << ATTRLOC("v_normal") << std::endl
-            << "v_texture: " << ATTRLOC("v_texture") << std::endl
-            << "v_occlusion: " << ATTRLOC("v_occlusion") << std::endl
-            << "v_normalMap: " << ATTRLOC("v_normalMap") << std::endl
-            << "m_model: " << uniformLookup[MATRIX_MODEL] << std::endl
-            << "m_view: " << uniformLookup[MATRIX_VIEW] << std::endl
-            << "m_projection: " << uniformLookup[MATRIX_PROJECTION] << std::endl
-            << "m_normal: " << uniformLookup[MATRIX_NORMAL] << std::endl
-            << "m_shadows: " << uniformLookup[MATRIX_SHADOWS] << std::endl
-            << "t_color: " << uniformLookup[TEXTURE_COLOR] << std::endl
-            << "t_normal: " << uniformLookup[TEXTURE_NORMAL] << std::endl
-            << "t_shadow0: " << uniformLookup[TEXTURE_SHADOW0] << std::endl
-            << "t_shadow1: " << uniformLookup[TEXTURE_SHADOW1] << std::endl
-            << "t_shadow2: " << uniformLookup[TEXTURE_SHADOW2] << std::endl;
-  #undef ATTRLOC
+  #if defined(DEBUG) && SHADER_ENABLE_DEBUG == 1
+    #define ATTRLOC(str) glGetAttribLocation(program, str)
+      std::cout << "---- SHADER ----" << std::endl
+                << "v_position: " << ATTRLOC("v_position") << std::endl
+                << "v_color: " << ATTRLOC("v_color") << std::endl
+                << "v_normal: " << ATTRLOC("v_normal") << std::endl
+                << "v_texture: " << ATTRLOC("v_texture") << std::endl
+                << "v_occlusion: " << ATTRLOC("v_occlusion") << std::endl
+                << "v_normalMap: " << ATTRLOC("v_normalMap") << std::endl
+                << "m_model: " << uniformLookup[MATRIX_MODEL] << std::endl
+                << "m_view: " << uniformLookup[MATRIX_VIEW] << std::endl
+                << "m_projection: " << uniformLookup[MATRIX_PROJECTION] << std::endl
+                << "m_normal: " << uniformLookup[MATRIX_NORMAL] << std::endl
+                << "m_shadows: " << uniformLookup[MATRIX_SHADOWS] << std::endl
+                << "t_color: " << uniformLookup[TEXTURE_COLOR] << std::endl
+                << "t_normal: " << uniformLookup[TEXTURE_NORMAL] << std::endl
+                << "t_shadow0: " << uniformLookup[TEXTURE_SHADOW0] << std::endl
+                << "t_shadow1: " << uniformLookup[TEXTURE_SHADOW1] << std::endl
+                << "t_shadow2: " << uniformLookup[TEXTURE_SHADOW2] << std::endl;
+    #undef ATTRLOC
+  #endif
 }
 
 std::string Shader::readFile(const std::string &path) {
