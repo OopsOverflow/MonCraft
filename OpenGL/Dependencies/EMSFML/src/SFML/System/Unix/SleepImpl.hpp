@@ -22,22 +22,31 @@
 //
 ////////////////////////////////////////////////////////////
 
+#ifndef SFML_SLEEPIMPLUNIX_HPP
+#define SFML_SLEEPIMPLUNIX_HPP
+
 ////////////////////////////////////////////////////////////
 // Headers
 ////////////////////////////////////////////////////////////
 #include <SFML/Config.hpp>
+#include <SFML/System/Time.hpp>
 
 
-#if defined(SFML_SYSTEM_WINDOWS)
+namespace sf
+{
+namespace priv
+{
+////////////////////////////////////////////////////////////
+/// \brief Unix implementation of sf::Sleep
+///
+/// \param time Time to sleep
+///
+////////////////////////////////////////////////////////////
+void sleepImpl(Time time);
 
-    #include <SFML/Network/Win32/SocketImpl.hpp>
+} // namespace priv
 
-#elif defined(SFML_SYSTEM_EMSCRIPTEN)
+} // namespace sf
 
-    #include <SFML/Network/Emscripten/SocketImpl.hpp>
 
-#else
-
-    #include <SFML/Network/Unix/SocketImpl.hpp>
-
-#endif
+#endif // SFML_SLEEPIMPLUNIX_HPP

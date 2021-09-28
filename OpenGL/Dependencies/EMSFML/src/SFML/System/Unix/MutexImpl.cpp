@@ -25,19 +25,45 @@
 ////////////////////////////////////////////////////////////
 // Headers
 ////////////////////////////////////////////////////////////
-#include <SFML/Config.hpp>
+#include <SFML/System/Unix/MutexImpl.hpp>
 
 
-#if defined(SFML_SYSTEM_WINDOWS)
+namespace sf
+{
+namespace priv
+{
+////////////////////////////////////////////////////////////
+MutexImpl::MutexImpl()
+{
+    // Make it recursive to follow the expected behavior
+    pthread_mutexattr_t attributes;
+    pthread_mutexattr_init(&attributes);
+    pthread_mutexattr_settype(&attributes, PTHREAD_MUTEX_RECURSIVE);
 
-    #include <SFML/Network/Win32/SocketImpl.hpp>
+    pthread_mutex_init(&m_mutex, &attributes);
+}
 
-#elif defined(SFML_SYSTEM_EMSCRIPTEN)
 
-    #include <SFML/Network/Emscripten/SocketImpl.hpp>
+////////////////////////////////////////////////////////////
+MutexImpl::~MutexImpl()
+{
+    pthread_mutex_destroy(&m_mutex);
+}
 
-#else
 
-    #include <SFML/Network/Unix/SocketImpl.hpp>
+////////////////////////////////////////////////////////////
+void MutexImpl::lock()
+{
+    pthread_mutex_lock(&m_mutex);
+}
 
-#endif
+
+////////////////////////////////////////////////////////////
+void MutexImpl::unlock()
+{
+    pthread_mutex_unlock(&m_mutex);
+}
+
+} // namespace priv
+
+} // namespace sf

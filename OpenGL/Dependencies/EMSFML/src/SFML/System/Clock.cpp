@@ -25,19 +25,39 @@
 ////////////////////////////////////////////////////////////
 // Headers
 ////////////////////////////////////////////////////////////
-#include <SFML/Config.hpp>
-
+#include <SFML/System/Clock.hpp>
 
 #if defined(SFML_SYSTEM_WINDOWS)
-
-    #include <SFML/Network/Win32/SocketImpl.hpp>
-
-#elif defined(SFML_SYSTEM_EMSCRIPTEN)
-
-    #include <SFML/Network/Emscripten/SocketImpl.hpp>
-
+    #include <SFML/System/Win32/ClockImpl.hpp>
 #else
-
-    #include <SFML/Network/Unix/SocketImpl.hpp>
-
+    #include <SFML/System/Unix/ClockImpl.hpp>
 #endif
+
+
+namespace sf
+{
+////////////////////////////////////////////////////////////
+Clock::Clock() :
+m_startTime(priv::ClockImpl::getCurrentTime())
+{
+}
+
+
+////////////////////////////////////////////////////////////
+Time Clock::getElapsedTime() const
+{
+    return priv::ClockImpl::getCurrentTime() - m_startTime;
+}
+
+
+////////////////////////////////////////////////////////////
+Time Clock::restart()
+{
+    Time now = priv::ClockImpl::getCurrentTime();
+    Time elapsed = now - m_startTime;
+    m_startTime = now;
+
+    return elapsed;
+}
+
+} // namespace sf

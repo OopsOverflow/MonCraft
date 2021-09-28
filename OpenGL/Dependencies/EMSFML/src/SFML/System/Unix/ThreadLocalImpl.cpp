@@ -25,19 +25,41 @@
 ////////////////////////////////////////////////////////////
 // Headers
 ////////////////////////////////////////////////////////////
-#include <SFML/Config.hpp>
+#include <SFML/System/Unix/ThreadLocalImpl.hpp>
 
 
-#if defined(SFML_SYSTEM_WINDOWS)
+namespace sf
+{
+namespace priv
+{
+////////////////////////////////////////////////////////////
+ThreadLocalImpl::ThreadLocalImpl() :
+m_key(0)
+{
+    pthread_key_create(&m_key, NULL);
+}
 
-    #include <SFML/Network/Win32/SocketImpl.hpp>
 
-#elif defined(SFML_SYSTEM_EMSCRIPTEN)
+////////////////////////////////////////////////////////////
+ThreadLocalImpl::~ThreadLocalImpl()
+{
+    pthread_key_delete(m_key);
+}
 
-    #include <SFML/Network/Emscripten/SocketImpl.hpp>
 
-#else
+////////////////////////////////////////////////////////////
+void ThreadLocalImpl::setValue(void* value)
+{
+    pthread_setspecific(m_key, value);
+}
 
-    #include <SFML/Network/Unix/SocketImpl.hpp>
 
-#endif
+////////////////////////////////////////////////////////////
+void* ThreadLocalImpl::getValue() const
+{
+    return pthread_getspecific(m_key);
+}
+
+} // namespace priv
+
+} // namespace sf

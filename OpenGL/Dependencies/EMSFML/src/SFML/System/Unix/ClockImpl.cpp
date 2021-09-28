@@ -25,19 +25,40 @@
 ////////////////////////////////////////////////////////////
 // Headers
 ////////////////////////////////////////////////////////////
-#include <SFML/Config.hpp>
+#include <SFML/System/Unix/ClockImpl.hpp>
+#if defined(SFML_SYSTEM_MACOS) || defined(SFML_SYSTEM_IOS)
+    #include <mach/mach_time.h>
+#else
+    #include <time.h>
+#endif
 
 
-#if defined(SFML_SYSTEM_WINDOWS)
+namespace sf
+{
+namespace priv
+{
+////////////////////////////////////////////////////////////
+Time ClockImpl::getCurrentTime()
+{
+#if defined(SFML_SYSTEM_MACOS) || defined(SFML_SYSTEM_IOS)
 
-    #include <SFML/Network/Win32/SocketImpl.hpp>
-
-#elif defined(SFML_SYSTEM_EMSCRIPTEN)
-
-    #include <SFML/Network/Emscripten/SocketImpl.hpp>
+    // Mac OS X specific implementation (it doesn't support clock_gettime)
+    static mach_timebase_info_data_t frequency = {0, 0};
+    if (frequency.denom == 0)
+        mach_timebase_info(&frequency);
+    Uint64 nanoseconds = mach_absolute_time() * frequency.numer / frequency.denom;
+    return sf::microseconds(nanoseconds / 1000);
 
 #else
 
-    #include <SFML/Network/Unix/SocketImpl.hpp>
+    // POSIX implementation
+    timespec time;
+    clock_gettime(CLOCK_MONOTONIC, &time);
+    return sf::microseconds(static_cast<Uint64>(time.tv_sec) * 1000000 + time.tv_nsec / 1000);
 
 #endif
+}
+
+} // namespace priv
+
+} // namespace sf

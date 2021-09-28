@@ -25,19 +25,22 @@
 ////////////////////////////////////////////////////////////
 // Headers
 ////////////////////////////////////////////////////////////
-#include <SFML/Config.hpp>
-
+#include <SFML/System/Sleep.hpp>
 
 #if defined(SFML_SYSTEM_WINDOWS)
-
-    #include <SFML/Network/Win32/SocketImpl.hpp>
-
-#elif defined(SFML_SYSTEM_EMSCRIPTEN)
-
-    #include <SFML/Network/Emscripten/SocketImpl.hpp>
-
+    #include <SFML/System/Win32/SleepImpl.hpp>
 #else
-
-    #include <SFML/Network/Unix/SocketImpl.hpp>
-
+    #include <SFML/System/Unix/SleepImpl.hpp>
 #endif
+
+
+namespace sf
+{
+////////////////////////////////////////////////////////////
+void sleep(Time duration)
+{
+    if (duration >= Time::Zero)
+        priv::sleepImpl(duration);
+}
+
+} // namespace sf

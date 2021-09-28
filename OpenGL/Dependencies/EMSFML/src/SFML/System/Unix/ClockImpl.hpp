@@ -22,22 +22,40 @@
 //
 ////////////////////////////////////////////////////////////
 
+#ifndef SFML_CLOCKIMPLUNIX_HPP
+#define SFML_CLOCKIMPLUNIX_HPP
+
 ////////////////////////////////////////////////////////////
 // Headers
 ////////////////////////////////////////////////////////////
 #include <SFML/Config.hpp>
+#include <SFML/System/Time.hpp>
 
 
-#if defined(SFML_SYSTEM_WINDOWS)
+namespace sf
+{
+namespace priv
+{
+////////////////////////////////////////////////////////////
+/// \brief Unix implementation of sf::Clock
+///
+////////////////////////////////////////////////////////////
+class ClockImpl
+{
+public:
 
-    #include <SFML/Network/Win32/SocketImpl.hpp>
+    ////////////////////////////////////////////////////////////
+    /// \brief Get the current time
+    ///
+    /// \return Current time
+    ///
+    ////////////////////////////////////////////////////////////
+    static Time getCurrentTime();
+};
 
-#elif defined(SFML_SYSTEM_EMSCRIPTEN)
+} // namespace priv
 
-    #include <SFML/Network/Emscripten/SocketImpl.hpp>
+} // namespace sf
 
-#else
 
-    #include <SFML/Network/Unix/SocketImpl.hpp>
-
-#endif
+#endif // SFML_CLOCKIMPLUNIX_HPP

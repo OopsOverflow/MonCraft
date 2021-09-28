@@ -25,19 +25,24 @@
 ////////////////////////////////////////////////////////////
 // Headers
 ////////////////////////////////////////////////////////////
-#include <SFML/Config.hpp>
+#include <SFML/System/Lock.hpp>
+#include <SFML/System/Mutex.hpp>
 
 
-#if defined(SFML_SYSTEM_WINDOWS)
+namespace sf
+{
+////////////////////////////////////////////////////////////
+Lock::Lock(Mutex& mutex) :
+m_mutex(mutex)
+{
+    m_mutex.lock();
+}
 
-    #include <SFML/Network/Win32/SocketImpl.hpp>
 
-#elif defined(SFML_SYSTEM_EMSCRIPTEN)
+////////////////////////////////////////////////////////////
+Lock::~Lock()
+{
+    m_mutex.unlock();
+}
 
-    #include <SFML/Network/Emscripten/SocketImpl.hpp>
-
-#else
-
-    #include <SFML/Network/Unix/SocketImpl.hpp>
-
-#endif
+} // namespace sf
