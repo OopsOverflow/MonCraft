@@ -11,3 +11,4 @@ compile_commands.json
 .valgrind
 Documentation
 OpenGL/OpenGL/save
+.*
