@@ -40,9 +40,9 @@ void loadResources() {
     ResourceManager::loadCubeMap("skyboxNight", skyboxNightFaces);
 
     #ifdef EMSCRIPTEN
-    ResourceManager::loadShader("simple", "simple.vert", "simple_emscripten.frag");
+      ResourceManager::loadShader("simple", "simple.vert", "simple_emscripten.frag");
     #else
-    ResourceManager::loadShader("simple", "simple.vert", "simple.frag");
+      ResourceManager::loadShader("simple", "simple.vert", "simple.frag");
     #endif
     ResourceManager::loadShader("skyBox", "skyBox.vert", "skyBox.frag");
     ResourceManager::loadShader("font",   "font.vert",   "font.frag");
@@ -59,44 +59,6 @@ void loadResources() {
     }
 }
 
-// float t = 0;
-// float dt = 0;
-// Viewport* pwindow;
-// MonCraftScene* pscene;
-// ui::Text* ptext_fps;
-// ui::Text* ptext_posPlayer;
-// ui::Text* ptext_gameTime;
-//
-// void loop() {
-//   t += dt;
-//
-//   pscene->drawFrame(t, dt);
-//
-//   std::ostringstream text;
-//   text << "FPS : " << (int)(1.f / dt);
-//   ptext_fps->setText(text.str());
-//
-//   text.str(""); // "clears" the string stream
-//   text << "Player Pos : " << std::fixed << std::setprecision(3) << pscene->character.getPosition();
-//   ptext_posPlayer->setText(text.str());
-//
-//   text.str(""); // "clears" the string stream
-//   text << "Game Time : " << std::fixed << std::setprecision(3) << t;
-//   ptext_gameTime->setText(text.str());
-// }
-//
-// #ifdef EMSCRIPTEN
-// void em_loop() {
-//   pwindow->beginFrame(dt);
-//   loop();
-//   pwindow->endFrame();
-// }
-// #endif
-//
-// int main(int argc, char* argv[]) {
-//     std::cout << "---- Main ----" << std::endl;
-//     Viewport window({1200, 800});
-
 std::unique_ptr<Server> createServer(Config const& config) {
     std::unique_ptr<Server> server;
     if (config.multiplayer) {
@@ -106,6 +68,59 @@ std::unique_ptr<Server> createServer(Config const& config) {
     }
     return server;
 }
+
+float t = 0;
+float dt = 0;
+Viewport* pwindow;
+MonCraftScene* pscene;
+ui::Text* ptext_fps;
+ui::Text* ptext_posPlayer;
+ui::Text* ptext_players;
+ui::Text* ptext_uid;
+ui::Text* ptext_gameTime;
+World* pworld;
+Server* pserver;
+
+void loop() {
+  t += dt;
+
+  pserver->update();
+
+  pscene->drawFrame(t, dt);
+
+  std::ostringstream text;
+  text << "FPS : " << (int)(1.f / dt);
+  ptext_fps->setText(text.str());
+
+  text.str(""); // "clears" the string stream
+  text << "Player Pos : " << std::fixed << std::setprecision(3) << pserver->getPlayer()->getPosition();
+  ptext_posPlayer->setText(text.str());
+
+  text.str(""); // "clears" the string stream
+  text << "Players online : " << pworld->entities.count();
+  ptext_players->setText(text.str());
+
+  text.str(""); // "clears" the string stream
+  text << "UID : " << pserver->getPlayer()->uid;
+  ptext_uid->setText(text.str());
+
+  text.str(""); // "clears" the string stream
+  text << "Game Time : " << std::fixed << std::setprecision(3) << t;
+  ptext_gameTime->setText(text.str());
+}
+
+#ifdef EMSCRIPTEN
+void em_loop() {
+  pwindow->beginFrame(dt);
+  loop();
+  pwindow->endFrame();
+}
+#endif
+//
+// int main(int argc, char* argv[]) {
+//     std::cout << "---- Main ----" << std::endl;
+//     Viewport window({1200, 800});
+
 
 int main(int argc, char* argv[]) {
     std::cout << "---- Main ----" << std::endl;
@@ -123,7 +138,6 @@ int main(int argc, char* argv[]) {
 
     auto server = createServer(config);
     World& world = World::getInst();
-
 
     // UI stuff
     auto font_roboto = std::make_shared<const Font>("Roboto-Regular");
@@ -179,46 +193,50 @@ int main(int argc, char* argv[]) {
     text_uid.setFontSize(.5f);
 
     // main loop
-    // pwindow = &window;
-    // pscene = &scene;
-    // ptext_fps = &text_fps;
-    // ptext_posPlayer = &text_posPlayer;
-    // ptext_gameTime = &text_gameTime;
+    pwindow = &window;
+    pscene = &scene;
+    ptext_fps = &text_fps;
+    ptext_posPlayer = &text_posPlayer;
+    ptext_players = &text_players;
+    ptext_uid = &text_uid;
+    ptext_posPlayer = &text_posPlayer;
+    ptext_gameTime = &text_gameTime;
+    pworld = &world;
+    pserver = server.get();
+
+    #ifdef EMSCRIPTEN
+      emscripten_set_main_loop(em_loop, 0, 1);
+    #else
+      for (dt = 0; window.beginFrame(dt); window.endFrame()) loop();
+    #endif
+
+    // for (float t = 0, dt = 0; window.beginFrame(dt); window.endFrame()) {
+    //     t += dt;
     //
-    // #ifdef EMSCRIPTEN
-    //   emscripten_set_main_loop(em_loop, 0, 1);
-    // #else
-    // for (dt = 0; window.beginFrame(dt); window.endFrame()) {
-    //   loop();
-    // #endif
-
-    for (float t = 0, dt = 0; window.beginFrame(dt); window.endFrame()) {
-        t += dt;
-
-        server->update();
-
-        scene.drawFrame(t, dt);
-
-        std::ostringstream text;
-        text << "FPS : " << (int)(1.f / dt);
-        text_fps.setText(text.str());
-
-        text.str(""); // "clears" the string stream
-        text << "Player Pos : " << std::fixed << std::setprecision(3) << server->getPlayer()->getPosition();
-        text_posPlayer.setText(text.str());
-
-        text.str(""); // "clears" the string stream
-        text << "Players online : " << world.entities.count();
-        text_players.setText(text.str());
-
-        text.str(""); // "clears" the string stream
-        text << "UID : " << server->getPlayer()->uid;
-        text_uid.setText(text.str());
-
-        text.str(""); // "clears" the string stream
-        text << "Game Time : " << std::fixed << std::setprecision(3) << t;
-        text_gameTime.setText(text.str());
-    }
+    //     server->update();
+    //
+    //     scene.drawFrame(t, dt);
+    //
+    //     std::ostringstream text;
+    //     text << "FPS : " << (int)(1.f / dt);
+    //     text_fps.setText(text.str());
+    //
+    //     text.str(""); // "clears" the string stream
+    //     text << "Player Pos : " << std::fixed << std::setprecision(3) << server->getPlayer()->getPosition();
+    //     text_posPlayer.setText(text.str());
+    //
+    //     text.str(""); // "clears" the string stream
+    //     text << "Players online : " << world.entities.count();
+    //     text_players.setText(text.str());
+    //
+    //     text.str(""); // "clears" the string stream
+    //     text << "UID : " << server->getPlayer()->uid;
+    //     text_uid.setText(text.str());
+    //
+    //     text.str(""); // "clears" the string stream
+    //     text << "Game Time : " << std::fixed << std::setprecision(3) << t;
+    //     text_gameTime.setText(text.str());
+    // }
 
     ResourceManager::free();
     return 0;

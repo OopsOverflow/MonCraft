@@ -89,12 +89,16 @@ server_srcs = files(
 # install_subdir('OpenGL/src/shader', install_dir : 'shader')
 
 if host_machine.system() == 'emscripten'
-  incs = include_directories('OpenGL/src', 'Dependencies')
+  incs = include_directories('OpenGL/src', 'Dependencies', 'Dependencies/SFML/include')
 
   deps = []
 
+  emsfml_srcs = files(
+    'Dependencies/EMSFML/src/SFML/Network/IpAddress.cpp'
+  )
+
   exe = executable(
-    'MonCraft', srcs,
+    'MonCraft', [emsfml_srcs, client_srcs, srcs],
     dependencies: deps,
     include_directories: incs
   )
@@ -113,6 +117,8 @@ else
     dependency('sfml-network'),
     dependency('freetype2'),
   ]
+
+  srcs += files('OpenGL/src/audio/Music.cpp')
 
   incs = include_directories('OpenGL/src')
 

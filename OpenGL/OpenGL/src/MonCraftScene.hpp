@@ -7,7 +7,8 @@
 #include "controller/KeyboardController.hpp"
 
 #ifndef EMSCRIPTEN
-#include "audio/Music.hpp"
+  #include "audio/Music.hpp"
+#endif
 #include "terrain/World.hpp"
 #include "terrain/SkyBox.hpp"
 #include "gl/ShadowMap.hpp"
@@ -53,7 +54,9 @@ public:
   SkyBox sky;
   Raycast caster;
   ShadowMap shadows;
-  Music musicPlayer;
+
+  #ifndef EMSCRIPTEN
+    Music musicPlayer;
   #endif
 
   // other parameters

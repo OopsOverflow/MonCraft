@@ -41,7 +41,7 @@ void Shader::bindTexture(ShaderLocation textureLocation, GLuint texture) const {
 void Shader::initLocations() {
   glUseProgram(program);
 
-  for(auto i = 0; i < uniformLookup.size(); i++)
+  for(size_t i = 0; i < uniformLookup.size(); i++)
     uniformLookup[i] = -1;
 
   uniformLookup[MATRIX_MODEL] = getUniform("m_model");

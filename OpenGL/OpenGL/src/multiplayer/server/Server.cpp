@@ -120,7 +120,7 @@ void Server::packet_chunks() {
 
   for(auto& pair : clients) {
     auto& client = pair.second;
-    auto count = std::min(client.waitingChunks.size(), maxChunks);
+    int count = std::min(client.waitingChunks.size(), maxChunks);
 
     std::vector<std::shared_ptr<Chunk>> chunks;
     for(int i = 0, j = 0; i < count; i++) {
