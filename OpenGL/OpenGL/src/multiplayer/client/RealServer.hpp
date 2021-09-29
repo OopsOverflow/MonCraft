@@ -18,9 +18,10 @@ public:
 
   void ping() override;
   void update() override;
+  bool login() override;
 
   /**
-   * Returns nullptr if the player was not created. 
+   * Returns nullptr if the player was not created.
    */
   std::shared_ptr<Character> getPlayer() override;
 
@@ -35,8 +36,7 @@ private:
   void handle_logout(sf::Packet& packet);
   void handle_blocks(sf::Packet& packet);
   void handle_chunks(sf::Packet& packet);
-  void handle_login(sf::Packet& packet);
-  bool poll();
+  void poll();
 
   void applyEntityTransforms(sf::Packet& packet);
 

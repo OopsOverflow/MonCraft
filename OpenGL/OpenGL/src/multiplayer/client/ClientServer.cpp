@@ -46,6 +46,10 @@ void ClientServer::update() {
   }
 }
 
+bool ClientServer::login() {
+  return true;
+}
+
 std::shared_ptr<Character> ClientServer::getPlayer() {
   return player;
 }

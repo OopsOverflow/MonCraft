@@ -42,7 +42,7 @@ void Server::on_packet_recv(sf::Packet& packet, ClientID client) {
   bool verbose = isVerbose(type);
   if(verbose) std::cout << "Packet " << header << std::endl;
 
-  if(type == PacketType::LOGIN) handle_login(client);
+  if(type == PacketType::LOGIN) handle_login(client, packet);
   else if(type == PacketType::LOGOUT) handle_logout(client);
 
   else {
@@ -143,7 +143,10 @@ void Server::packet_chunks() {
   }
 }
 
-void Server::handle_login(ClientID client) {
+void Server::handle_login(ClientID client, sf::Packet& packet) {
+  Identifier uid;
+  packet >> uid;
+
   auto it = clients.find(client);
 
   if(it != clients.end()) {
@@ -151,7 +154,6 @@ void Server::handle_login(ClientID client) {
     packet_ack_login(it->first, it->second.player.uid);
   }
   else {
-    Identifier uid = generateIdentifier();
     auto res = clients.emplace(client, Client(uid));
 
     if(res.second) {

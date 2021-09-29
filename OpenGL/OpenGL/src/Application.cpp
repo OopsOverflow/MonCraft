@@ -86,16 +86,9 @@ void loop() {
   try {
   t += dt;
 
-  pserver->update();
   pscene->drawFrame(t, dt);
 
-  if(!player) {
-    player = pserver->getPlayer();
-    if(player) {
-      pscene->setPlayer(player);
-    }
-    else return;
-  }
+  auto player = pserver->getPlayer();
 
   std::ostringstream text;
 
@@ -161,7 +154,7 @@ int main(int argc, char* argv[]) {
     auto font_roboto = std::make_shared<const Font>("Roboto-Regular");
     auto font_vt323 = std::make_shared<const Font>("VT323-Regular");
 
-    MonCraftScene scene(&window);
+    MonCraftScene scene(&window, server->getPlayer());
     scene.setPadding({10, 10});
 
     ui::Pane pane_fps(&scene);
@@ -221,6 +214,8 @@ int main(int argc, char* argv[]) {
     ptext_gameTime = &text_gameTime;
     pworld = &world;
     pserver = server.get();
+
+    server->start();
 
     #ifdef EMSCRIPTEN
       emscripten_set_main_loop(em_loop, 0, 1);

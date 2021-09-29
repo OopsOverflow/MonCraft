@@ -24,7 +24,7 @@ protected:
   void on_server_tick();
 
 private:
-  void handle_login(ClientID client);
+  void handle_login(ClientID client, sf::Packet& packet);
   void handle_logout(ClientID client);
   void handle_ping(Client& client);
   void handle_player_tick(Client& client, sf::Packet& packet);

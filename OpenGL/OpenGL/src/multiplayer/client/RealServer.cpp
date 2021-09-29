@@ -11,8 +11,7 @@ using namespace glm;
 RealServer::RealServer(std::string url, unsigned short port)
   : addr(url), port(port),
     frameDuration(sf::milliseconds(NetworkConfig::SERVER_TICK)),
-    world(World::getInst()),
-    player(nullptr)
+    world(World::getInst())
 {
   lastUpdate = clock.getElapsedTime() - frameDuration - frameDuration; // needs update
 
@@ -22,13 +21,37 @@ RealServer::RealServer(std::string url, unsigned short port)
     throw NetworkError("Failed to bind to any port");
   }
 
-  packet_login();
-
   lastServerUpdate = std::time(nullptr);
+
+  Identifier playerUid = generateIdentifier();
+  auto newPlayer = std::make_unique<Character>(NetworkConfig::SPAWN_POINT);
+  auto entity = world.entities.add(playerUid, std::move(newPlayer));
+  player = std::dynamic_pointer_cast<Character>(entity);
 }
 
 RealServer::~RealServer() {
   packet_logout();
+}
+
+bool RealServer::login() {
+  sf::Packet packet;
+  sf::IpAddress serverAddr;
+  unsigned short serverPort;
+
+  auto recv_res = socket.receive(packet, serverAddr, serverPort);
+
+  if(recv_res == sf::Socket::Done) {
+    PacketHeader header;
+    packet >> header;
+    auto type = header.getType();
+    lastServerUpdate = std::time(nullptr);
+
+    if(type == PacketType::ACK_LOGIN) return true; // TODO: check correct uid ?
+    else std::cout << "[WARN] not a login packet: " << header << std::endl;
+  }
+
+  packet_login();
+  return false;
 }
 
 void RealServer::update() {
@@ -36,51 +59,36 @@ void RealServer::update() {
     throw std::runtime_error("server timeout");
   }
 
-  while(poll()) {};
-
-  if(player) {
-    packet_blocks();
-    packet_chunks();
-  }
-
-  pendingChunks.remOldChunks();
+  poll();
+  packet_blocks();
+  packet_chunks();
 
   sf::Time now = clock.getElapsedTime();
   if(now - lastUpdate > frameDuration) {
-    packet_player_tick();
-    lastUpdate = now;
-  }
+      packet_player_tick();
+      lastUpdate = now;
+    }
 }
 
-bool RealServer::poll() {
+void RealServer::poll() {
   sf::Packet packet;
   sf::IpAddress serverAddr;
   unsigned short serverPort;
 
   auto recv_res = socket.receive(packet, serverAddr, serverPort);
 
-  if(recv_res != sf::Socket::Done) {
-    return false;
-  }
+  if(recv_res != sf::Socket::Done) return;
 
   PacketHeader header;
   packet >> header;
   auto type = header.getType();
   lastServerUpdate = std::time(nullptr);
 
-  if(!player) {
-    if(type == PacketType::ACK_LOGIN) handle_login(packet);
-    else std::cout << "[WARN] not a login packet: " << header << std::endl;
-  }
-  else {
-    if(type == PacketType::ENTITY_TICK) applyEntityTransforms(packet);
-    else if(type == PacketType::LOGOUT) handle_logout(packet);
-    else if(type == PacketType::BLOCKS) handle_blocks(packet);
-    else if(type == PacketType::CHUNKS) handle_chunks(packet);
-    else std::cout << "[WARN] unhandled packet: " << header << std::endl;
-  }
-
-  return true;
+  if(type == PacketType::ENTITY_TICK) applyEntityTransforms(packet);
+  else if(type == PacketType::LOGOUT) handle_logout(packet);
+  else if(type == PacketType::BLOCKS) handle_blocks(packet);
+  else if(type == PacketType::CHUNKS) handle_chunks(packet);
+  else std::cout << "[WARN] unhandled packet: " << header << std::endl;
 }
 
 void RealServer::applyEntityTransforms(sf::Packet& packet) {
@@ -143,7 +151,7 @@ void RealServer::packet_login() {
   sf::Packet packet;
   PacketHeader header(PacketType::LOGIN);
 
-  packet << header;
+  packet << header << player->uid;
 
   auto send_res = socket.send(packet, addr, port);
 
@@ -264,17 +272,6 @@ void RealServer::handle_chunks(sf::Packet& packet) {
   }
 
   packet_ack_chunks(ack);
-}
-
-void RealServer::handle_login(sf::Packet& packet) {
-  Identifier playerUid;
-  packet >> playerUid;
-
-  auto newPlayer = std::make_unique<Character>(NetworkConfig::SPAWN_POINT);
-  auto entity = world.entities.add(playerUid, std::move(newPlayer));
-  player = std::dynamic_pointer_cast<Character>(entity);
-
-  std::cout << "logged in as uid " << player->uid << std::endl;
 }
 
 std::shared_ptr<Character> RealServer::getPlayer() {

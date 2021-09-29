@@ -6,10 +6,10 @@
 
 using namespace glm;
 
-MonCraftScene::MonCraftScene(Viewport* vp)
+MonCraftScene::MonCraftScene(Viewport* vp, std::shared_ptr<Character> player)
     : ui::Component(vp->getRoot()),
       world(World::getInst()),
-      player(nullptr),
+      player(player),
       vp(vp),
       camera(ivec2(1), {0, 32, 10}, {0, 32, 0}),
 
@@ -28,10 +28,6 @@ MonCraftScene::MonCraftScene(Viewport* vp)
     for (size_t i = 0; i < 30; i += 1) {
         normalMapID[i] = ResourceManager::getTexture("waterNormal" + std::to_string(i));
     }
-}
-
-void MonCraftScene::setPlayer(std::shared_ptr<Character> player) {
-    this->player = player;
 }
 
 bool MonCraftScene::onMousePressed(glm::ivec2 pos) {
@@ -113,7 +109,7 @@ void MonCraftScene::drawSkybox(float t) {
 void MonCraftScene::drawEntities() {
     shader->bindTexture(TEXTURE_COLOR, texCharacter);
     for(auto pair : world.entities) {
-        if(player && pair.first == player->uid) {
+        if(pair.first == player->uid) {
             if(player->view == View::THIRD_PERSON)
                 player->render();
         }
@@ -129,17 +125,15 @@ void MonCraftScene::drawFrame(float t, float dt) {
         musicPlayer.update();
     #endif
 
-    if(player) {
-        vp->keyboardController.apply(*player);
-        vp->mouseController.apply(*player);
-    }
+    vp->keyboardController.apply(*player);
+    vp->mouseController.apply(*player);
 
     world.entities.updateAll(dt);
 
     setSize(parent->getSize());
     camera.setSize(getSize());
 
-    if(player) player->cameraToHead(camera);
+    player->cameraToHead(camera);
 
     // update sun
     float sunTime = quarter_pi<float>() + t * sunSpeed; // sun is fixed
