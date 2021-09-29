@@ -59,7 +59,9 @@ void RealServer::update() {
     throw std::runtime_error("server timeout");
   }
 
-  poll();
+  pendingChunks.remOldChunks();
+
+  while (poll()) {};
   packet_blocks();
   packet_chunks();
 
@@ -70,14 +72,14 @@ void RealServer::update() {
     }
 }
 
-void RealServer::poll() {
+bool RealServer::poll() {
   sf::Packet packet;
   sf::IpAddress serverAddr;
   unsigned short serverPort;
 
   auto recv_res = socket.receive(packet, serverAddr, serverPort);
 
-  if(recv_res != sf::Socket::Done) return;
+  if(recv_res != sf::Socket::Done) return false;
 
   PacketHeader header;
   packet >> header;
@@ -89,6 +91,8 @@ void RealServer::poll() {
   else if(type == PacketType::BLOCKS) handle_blocks(packet);
   else if(type == PacketType::CHUNKS) handle_chunks(packet);
   else std::cout << "[WARN] unhandled packet: " << header << std::endl;
+
+  return true;
 }
 
 void RealServer::applyEntityTransforms(sf::Packet& packet) {

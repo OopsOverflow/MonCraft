@@ -31,6 +31,7 @@ void ClientServer::update() {
       generator.waitingChunks.push(waiting.at(i));
     }
   }
+  
   pendingChunks.remOldChunks();
 
   // save changes since last update

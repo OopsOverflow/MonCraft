@@ -36,7 +36,7 @@ private:
   void handle_logout(sf::Packet& packet);
   void handle_blocks(sf::Packet& packet);
   void handle_chunks(sf::Packet& packet);
-  void poll();
+  bool poll();
 
   void applyEntityTransforms(sf::Packet& packet);
 
