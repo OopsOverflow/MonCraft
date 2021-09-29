@@ -83,6 +83,9 @@ client_srcs = files(
 server_srcs = files(
   'OpenGL/src/Server.cpp',
   'OpenGL/src/multiplayer/server/Server.cpp',
+  'OpenGL/src/multiplayer/server/UdpServer.cpp',
+  'OpenGL/src/multiplayer/server/WebSocketServer.cpp',
+  'OpenGL/src/multiplayer/server/Server.cpp',
   'OpenGL/src/multiplayer/server/Client.cpp',
 )
 
@@ -97,6 +100,7 @@ if host_machine.system() == 'emscripten'
     'Dependencies/EMSFML/src/SFML/Network/IpAddress.cpp',
     'Dependencies/EMSFML/src/SFML/Network/Packet.cpp',
     'Dependencies/EMSFML/src/SFML/Network/Socket.cpp',
+    'Dependencies/EMSFML/src/SFML/Network/TcpSocket.cpp',
     'Dependencies/EMSFML/src/SFML/Network/UdpSocket.cpp',
     'Dependencies/EMSFML/src/SFML/Network/Emscripten/SocketImpl.cpp',
 
@@ -131,7 +135,7 @@ else
 
   srcs += files('OpenGL/src/audio/Music.cpp')
 
-  incs = include_directories('OpenGL/src')
+  incs = include_directories('OpenGL/src', 'Dependencies')
 
   # install_subdir('OpenGL/src/shader', install_dir : 'shader')
 

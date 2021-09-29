@@ -33,6 +33,6 @@ std::ostream& operator<<(std::ostream& os, PacketHeader const& header) {
   else if(type == PacketType::CHUNKS) os << "CHUNKS";
   else if(type == PacketType::ACK_CHUNKS) os << "ACK_CHUNKS";
   else if(type == PacketType::NONE) os << "NONE";
-  else os << "<unknown>";
+  else os << "<unknown: " << (int)type << ">";
   return os;
 }

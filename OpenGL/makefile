@@ -39,8 +39,12 @@ release:
 	cp -r OpenGL/data dist
 	rm -r Release
 
+# -O3 \
 
-CFLAGS = -O3 -s WASM=1 -pthread -s PTHREAD_POOL_SIZE=4 \
+CFLAGS = -fexceptions \
+--source-map-base http://localhost:6931/sources/__SOURCE_MAP_BASE__/ -gsource-map -O0 -s NO_DISABLE_EXCEPTION_CATCHING \
+-s WASM=1 \
+-pthread -s PTHREAD_POOL_SIZE=4 \
 -s USE_SDL=2 \
 -s USE_SDL_IMAGE=2 \
 -s SDL2_IMAGE_FORMATS='["png"]' \

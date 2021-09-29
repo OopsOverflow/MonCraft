@@ -80,33 +80,54 @@ ui::Text* ptext_uid;
 ui::Text* ptext_gameTime;
 World* pworld;
 Server* pserver;
+std::shared_ptr<Character> player = nullptr;
 
 void loop() {
+  try {
   t += dt;
 
   pserver->update();
-
   pscene->drawFrame(t, dt);
 
+  if(!player) {
+    player = pserver->getPlayer();
+    if(player) {
+      pscene->setPlayer(player);
+    }
+    else return;
+  }
+
   std::ostringstream text;
-  text << "FPS : " << (int)(1.f / dt);
-  ptext_fps->setText(text.str());
 
   text.str(""); // "clears" the string stream
-  text << "Player Pos : " << std::fixed << std::setprecision(3) << pserver->getPlayer()->getPosition();
+  text << "Player Pos : " << std::fixed << std::setprecision(3) << player->getPosition();
   ptext_posPlayer->setText(text.str());
+
+  text.str(""); // "clears" the string stream
+  text << "UID : " << player->uid;
+  ptext_uid->setText(text.str());
+
+  text.str(""); // "clears" the string stream
+  text << "FPS : " << (int)(1.f / dt);
+  ptext_fps->setText(text.str());
 
   text.str(""); // "clears" the string stream
   text << "Players online : " << pworld->entities.count();
   ptext_players->setText(text.str());
 
   text.str(""); // "clears" the string stream
-  text << "UID : " << pserver->getPlayer()->uid;
-  ptext_uid->setText(text.str());
-
-  text.str(""); // "clears" the string stream
   text << "Game Time : " << std::fixed << std::setprecision(3) << t;
   ptext_gameTime->setText(text.str());
+
+  } catch(std::runtime_error& e) {
+    std::cerr << "runtime error!" << std::endl;
+    std::cerr << e.what() << std::endl;
+    throw e;
+  } catch(...) {
+    throw;
+    std::cerr << "error!" << std::endl;
+    exit(1);
+  }
 }
 
 #ifdef EMSCRIPTEN
@@ -116,13 +137,10 @@ void em_loop() {
   pwindow->endFrame();
 }
 #endif
-//
-// int main(int argc, char* argv[]) {
-//     std::cout << "---- Main ----" << std::endl;
-//     Viewport window({1200, 800});
 
 
 int main(int argc, char* argv[]) {
+  try {
     std::cout << "---- Main ----" << std::endl;
     Config config = SaveManager::getInst().getConfig();
 
@@ -143,7 +161,7 @@ int main(int argc, char* argv[]) {
     auto font_roboto = std::make_shared<const Font>("Roboto-Regular");
     auto font_vt323 = std::make_shared<const Font>("VT323-Regular");
 
-    MonCraftScene scene(&window, server->getPlayer());
+    MonCraftScene scene(&window);
     scene.setPadding({10, 10});
 
     ui::Pane pane_fps(&scene);
@@ -210,34 +228,12 @@ int main(int argc, char* argv[]) {
       for (dt = 0; window.beginFrame(dt); window.endFrame()) loop();
     #endif
 
-    // for (float t = 0, dt = 0; window.beginFrame(dt); window.endFrame()) {
-    //     t += dt;
-    //
-    //     server->update();
-    //
-    //     scene.drawFrame(t, dt);
-    //
-    //     std::ostringstream text;
-    //     text << "FPS : " << (int)(1.f / dt);
-    //     text_fps.setText(text.str());
-    //
-    //     text.str(""); // "clears" the string stream
-    //     text << "Player Pos : " << std::fixed << std::setprecision(3) << server->getPlayer()->getPosition();
-    //     text_posPlayer.setText(text.str());
-    //
-    //     text.str(""); // "clears" the string stream
-    //     text << "Players online : " << world.entities.count();
-    //     text_players.setText(text.str());
-    //
-    //     text.str(""); // "clears" the string stream
-    //     text << "UID : " << server->getPlayer()->uid;
-    //     text_uid.setText(text.str());
-    //
-    //     text.str(""); // "clears" the string stream
-    //     text << "Game Time : " << std::fixed << std::setprecision(3) << t;
-    //     text_gameTime.setText(text.str());
-    // }
-
     ResourceManager::free();
+  } catch(std::runtime_error& e) {
+    std::cerr << "error!" << std::endl;
+    std::cerr << e.what() << std::endl;
+  } catch(...) {
+    std::cerr << "error!" << std::endl;
+  }
     return 0;
 }

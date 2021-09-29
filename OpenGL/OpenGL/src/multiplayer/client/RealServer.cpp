@@ -11,33 +11,20 @@ using namespace glm;
 RealServer::RealServer(std::string url, unsigned short port)
   : addr(url), port(port),
     frameDuration(sf::milliseconds(NetworkConfig::SERVER_TICK)),
-    world(World::getInst())
+    world(World::getInst()),
+    player(nullptr)
 {
   lastUpdate = clock.getElapsedTime() - frameDuration - frameDuration; // needs update
+
   socket.setBlocking(false);
+
   if(socket.bind(sf::Socket::AnyPort) != sf::Socket::Done) {
     throw NetworkError("Failed to bind to any port");
   }
 
-  bool handshake = false;
-  int i = 0;
-  const int maxTries = 50;
-  do {
-    packet_login();
-    std::cout << "waiting for server..." << std::endl;
-    handshake = listen_ack_login();
-    sf::sleep(sf::milliseconds(100));
-  } while(!handshake && i++ < maxTries);
-
-  if(i == maxTries) {
-    throw std::runtime_error("Server not found");
-  }
+  packet_login();
 
   lastServerUpdate = std::time(nullptr);
-
-  auto newPlayer = std::make_unique<Character>(NetworkConfig::SPAWN_POINT);
-  auto entity = world.entities.add(playerUid, std::move(newPlayer));
-  player = std::dynamic_pointer_cast<Character>(entity);
 }
 
 RealServer::~RealServer() {
@@ -51,8 +38,10 @@ void RealServer::update() {
 
   while(poll()) {};
 
-  packet_blocks();
-  packet_chunks();
+  if(player) {
+    packet_blocks();
+    packet_chunks();
+  }
 
   pendingChunks.remOldChunks();
 
@@ -79,12 +68,16 @@ bool RealServer::poll() {
   auto type = header.getType();
   lastServerUpdate = std::time(nullptr);
 
-  if(type == PacketType::ENTITY_TICK) applyEntityTransforms(packet);
-  else if(type == PacketType::LOGOUT) handle_logout(packet);
-  else if(type == PacketType::BLOCKS) handle_blocks(packet);
-  else if(type == PacketType::CHUNKS) handle_chunks(packet);
+  if(!player) {
+    if(type == PacketType::ACK_LOGIN) handle_login(packet);
+    else std::cout << "[WARN] not a login packet: " << header << std::endl;
+  }
   else {
-    std::cout << "[WARN] unhandled packed: " << header << std::endl;
+    if(type == PacketType::ENTITY_TICK) applyEntityTransforms(packet);
+    else if(type == PacketType::LOGOUT) handle_logout(packet);
+    else if(type == PacketType::BLOCKS) handle_blocks(packet);
+    else if(type == PacketType::CHUNKS) handle_chunks(packet);
+    else std::cout << "[WARN] unhandled packet: " << header << std::endl;
   }
 
   return true;
@@ -100,7 +93,7 @@ void RealServer::applyEntityTransforms(sf::Packet& packet) {
 
     auto entity = world.entities.get(uid);
 
-    if(uid == playerUid) {
+    if(uid == player->uid) {
       entity->consume(packet);
     }
     else {
@@ -211,29 +204,6 @@ void RealServer::packet_ack_chunks(std::vector<glm::ivec3> ack) {
   }
 }
 
-bool RealServer::listen_ack_login() {
-  sf::Packet packet;
-  sf::IpAddress serverAddr;
-  unsigned short serverPort;
-  auto recv_res = socket.receive(packet, serverAddr, serverPort);
-
-  if(recv_res != sf::Socket::Done) {
-    return false;
-  }
-
-  PacketHeader header;
-  packet >> header;
-  PacketType type = header.getType();
-
-  if(type != PacketType::ACK_LOGIN) {
-    throw NetworkError("listen_ack_login failed");
-  }
-
-  packet >> playerUid;
-
-  return true;
-}
-
 void RealServer::handle_logout(sf::Packet& packet) {
   Identifier uid;
   packet >> uid;
@@ -247,7 +217,7 @@ void RealServer::handle_blocks(sf::Packet& packet) {
   Identifier uid;
   packet >> uid;
 
-  if(uid != playerUid) {
+  if(uid != player->uid) {
     BlockArray blocks;
     packet >> blocks;
 
@@ -294,6 +264,17 @@ void RealServer::handle_chunks(sf::Packet& packet) {
   }
 
   packet_ack_chunks(ack);
+}
+
+void RealServer::handle_login(sf::Packet& packet) {
+  Identifier playerUid;
+  packet >> playerUid;
+
+  auto newPlayer = std::make_unique<Character>(NetworkConfig::SPAWN_POINT);
+  auto entity = world.entities.add(playerUid, std::move(newPlayer));
+  player = std::dynamic_pointer_cast<Character>(entity);
+
+  std::cout << "logged in as uid " << player->uid << std::endl;
 }
 
 std::shared_ptr<Character> RealServer::getPlayer() {

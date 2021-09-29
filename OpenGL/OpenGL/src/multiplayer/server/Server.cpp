@@ -4,11 +4,10 @@
 #include "util/Identifier.hpp"
 #include "debug/Debug.hpp"
 #include "save/SaveManager.hpp"
+
 #include <csignal>
 
 using namespace glm;
-
-bool Server::stopSignal = false;
 
 Server::Server(unsigned short port)
   : port(port), world(World::getInst())
@@ -16,12 +15,10 @@ Server::Server(unsigned short port)
   auto& config = SaveManager::getInst().getConfig();
   renderDistH = config.renderDistH;
   renderDistV = config.renderDistV;
-
-  socket.setBlocking(false);
-  if(socket.bind(port) != sf::Socket::Done) {
-    throw NetworkError("Failed to bind to port: " + std::to_string(port));
-  }
 }
+
+Server::~Server()
+{}
 
 bool isVerbose(PacketType type) {
   return
@@ -32,27 +29,24 @@ bool isVerbose(PacketType type) {
     type != PacketType::PLAYER_TICK;
 }
 
-bool Server::poll() {
-  sf::Packet packet;
-  sf::IpAddress clientAddr;
-  unsigned short clientPort;
+void Server::broadcast(sf::Packet& packet) {
+  for(auto const& pair : clients) {
+    send(packet, pair.first);
+  }
+}
 
-  auto recv_res = socket.receive(packet, clientAddr, clientPort);
-
-  if (recv_res != sf::Socket::Done) return false;
-
+void Server::on_packet_recv(sf::Packet& packet, ClientID client) {
   PacketHeader header;
   packet >> header;
   auto type = header.getType();
   bool verbose = isVerbose(type);
   if(verbose) std::cout << "Packet " << header << std::endl;
 
-  if(type == PacketType::LOGIN) handle_login(clientAddr, clientPort);
-  else if(type == PacketType::LOGOUT) handle_logout(clientAddr, clientPort);
+  if(type == PacketType::LOGIN) handle_login(client);
+  else if(type == PacketType::LOGOUT) handle_logout(client);
 
   else {
-    ClientID id(clientAddr, clientPort);
-    auto it = clients.find(id);
+    auto it = clients.find(client);
     if(it == clients.end()) {
       std::cout << "[WARN] Client not registered" << std::endl;
     }
@@ -67,7 +61,13 @@ bool Server::poll() {
   }
 
   if(verbose) std::cout << "----------------" << std::endl;
-  return true;
+}
+
+void Server::on_server_tick() {
+  packet_entity_tick();
+  packet_chunks();
+  remOldChunks();
+  handleTimeouts();
 }
 
 void Server::packet_entity_tick() {
@@ -88,12 +88,6 @@ void Server::beep() {
   std::cout.flush();
 }
 
-void Server::broadcast(sf::Packet& packet) {
-  for(auto const& pair : clients) {
-    socket.send(packet, pair.first.getAddr(), pair.first.getPort());
-  }
-}
-
 void Server::packet_logout(Identifier uid) {
   sf::Packet packet;
   PacketHeader header(PacketType::LOGOUT);
@@ -108,11 +102,11 @@ void Server::packet_blocks(Identifier uid, BlockArray changedBlocks) {
   broadcast(packet);
 }
 
-void Server::packet_ack_login(ClientID const& client, Identifier uid) {
+void Server::packet_ack_login(ClientID client, Identifier uid) {
   sf::Packet packet;
   PacketHeader header(PacketType::ACK_LOGIN);
   packet << header << uid;
-  socket.send(packet, client.getAddr(), client.getPort());
+  send(packet, client);
 }
 
 void Server::packet_chunks() {
@@ -144,41 +138,13 @@ void Server::packet_chunks() {
         packet << (sf::Uint8)chunk->size.x << chunk->chunkPos << *chunk;
       }
 
-      socket.send(packet, pair.first.getAddr(), pair.first.getPort());
+      send(packet, pair.first);
     }
   }
 }
 
-void Server::sigStop(int signal) {
-  stopSignal = true;
-}
-
-void Server::run() {
-  sf::Clock clock;
-  const sf::Time frameDuration = sf::milliseconds(NetworkConfig::SERVER_TICK);
-
-  std::signal(SIGINT, Server::sigStop);
-
-  while(!stopSignal) {
-    sf::Time start = clock.getElapsedTime();
-
-    while(poll()) {}
-    packet_entity_tick();
-    packet_chunks();
-    remOldChunks();
-    handleTimeouts();
-
-    sf::Time elapsed = clock.getElapsedTime() - start;
-    if(elapsed < frameDuration) {
-      sf::sleep(frameDuration - elapsed);
-    }
-  }
-}
-
-void Server::handle_login(sf::IpAddress clientAddr, unsigned short clientPort) {
-  ClientID id(clientAddr, clientPort);
-
-  auto it = clients.find(id);
+void Server::handle_login(ClientID client) {
+  auto it = clients.find(client);
 
   if(it != clients.end()) {
     std::cout << "[WARN] Login of already registered client" << std::endl;
@@ -186,7 +152,7 @@ void Server::handle_login(sf::IpAddress clientAddr, unsigned short clientPort) {
   }
   else {
     Identifier uid = generateIdentifier();
-    auto res = clients.emplace(id, Client(uid));
+    auto res = clients.emplace(client, Client(uid));
 
     if(res.second) {
       packet_ack_login(res.first->first, uid);
@@ -202,10 +168,8 @@ void Server::handle_login(sf::IpAddress clientAddr, unsigned short clientPort) {
   }
 }
 
-void Server::handle_logout(sf::IpAddress clientAddr, unsigned short clientPort) {
-  ClientID id(clientAddr, clientPort);
-
-  auto it = clients.find(id);
+void Server::handle_logout(ClientID client) {
+  auto it = clients.find(client);
 
   if(it == clients.end()) {
     std::cout << "[WARN] Logout of unregistered client" << std::endl;

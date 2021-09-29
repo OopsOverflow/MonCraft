@@ -12,3 +12,5 @@ compile_commands.json
 Documentation
 OpenGL/OpenGL/save
 .*
+OpenGL/Dependencies/boost
+OpenGL/Dependencies/websocketpp
