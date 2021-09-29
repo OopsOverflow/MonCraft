@@ -30,12 +30,13 @@ size_t ChunkMap::size() {
 
 void ChunkMap::eraseChunks(int count, std::function<bool(glm::ivec3)> predicate) {
   std::lock_guard<std::mutex> lck(chunksMutex);
-  for(auto it = chunks.begin(); it != chunks.end() && count;) {
+  for(auto it = chunks.begin(); it != chunks.end() && count; ) {
     if(predicate(it->first)) {
       count --;
       auto useCount = it->second.use_count();
       if(useCount > 1) {
         std::cout << "[WARN] dangerous erase prevented " << it->second.use_count() << " " << it->first << std::endl;
+        ++it;
       }
       else it = chunks.erase(it);
     }

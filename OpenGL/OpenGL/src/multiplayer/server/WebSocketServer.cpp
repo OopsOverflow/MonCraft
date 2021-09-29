@@ -92,11 +92,12 @@ void WebSocketServer::on_open(websocketpp::connection_hdl hdl) {
 
 void WebSocketServer::on_close(websocketpp::connection_hdl hdl) {
   if(auto handle = hdl.lock()) {
-    for (auto it = clientLookup.begin(); it != clientLookup.end(); ++it) {
+    for (auto it = clientLookup.begin(); it != clientLookup.end(); ) {
       if(auto other = it->second.lock()) {
         if(other == handle) {
           it = clientLookup.erase(it);
         }
+        else it++;
       }
     }
   }

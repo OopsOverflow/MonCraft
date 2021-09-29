@@ -269,14 +269,20 @@ void Server::remOldChunks() {
 
 void Server::handleTimeouts() {
   std::time_t curTime = std::time(nullptr);
-  for(auto it = clients.begin(); it != clients.end(); ++it) {
+  std::vector<Identifier> erased;
+
+  for(auto it = clients.cbegin(); it != clients.cend(); ) {
     auto client = *it;
     if(curTime - it->second.lastUpdate > timeout) {
       Identifier uid = it->second.player.uid;
       std::cout << "Client timeout: uid " << uid << std::endl;
       it = clients.erase(it);
-      packet_logout(uid);
+      erased.push_back(uid);
       beep();
     }
+    else ++it;
   }
+
+  for(auto uid : erased)
+    packet_logout(uid);
 }
