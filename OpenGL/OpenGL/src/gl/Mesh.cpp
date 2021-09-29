@@ -2,7 +2,9 @@
 
 #include <iostream>
 #include <algorithm>
+
 #include "gl/Shader.hpp"
+#include "debug/Debug.hpp"
 
 Mesh::Mesh(GLuint vao, GLuint vbo, GLuint ebo, GLuint vertCount)
     : myVAO(vao), myVBO(vbo), myEBO(ebo), myVertCount(vertCount)
@@ -15,6 +17,8 @@ Mesh::Mesh(std::vector<GLfloat> const& positions,
      std::vector<GLuint>  const& indices,
      std::vector<GLfloat> const& normalMapCoords)
 {
+  ASSERT_GL_MAIN_THREAD();
+
   myVertCount = (GLuint)indices.size();
 
   glGenVertexArrays(1, &myVAO);
@@ -76,6 +80,7 @@ static void reverseTriangles(std::vector<GLuint>& vec) {
 
 Mesh::Mesh(MeshData& data)
 {
+  ASSERT_GL_MAIN_THREAD();
   size_t transpCount = data.indicesTranspX.size() + data.indicesTranspY.size() + data.indicesTranspZ.size();
   myVertCount = data.indicesSolid.size() + transpCount;
 
@@ -166,8 +171,6 @@ GLuint Mesh::getVAO() const {
 GLuint Mesh::getVertexCount() const {
   return myVertCount;
 }
-
-#include "debug/Debug.hpp"
 
 Mesh::~Mesh() {
   ASSERT_GL_MAIN_THREAD();

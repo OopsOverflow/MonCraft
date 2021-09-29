@@ -45,11 +45,13 @@ public:
 #include <thread>
 #include <csignal>
 
+static const std::thread::id mainThread = std::this_thread::get_id();
+
 #define ASSERT_GL_MAIN_THREAD() { \
-  static const std::thread::id mainThread = std::this_thread::get_id(); \
   const std::thread::id thisThread = std::this_thread::get_id(); \
   if(mainThread != thisThread) { \
-    std::cout << "[CRITICAL] " << "gl deleted on worker thread " << thisThread << " While main thread is " << mainThread << "." << std::endl; \
+    std::cout << "[CRITICAL] " << "gl called on worker thread " << thisThread \
+              << " while main thread is " << mainThread << "." << std::endl; \
     std::raise(SIGINT); \
   } \
 }
