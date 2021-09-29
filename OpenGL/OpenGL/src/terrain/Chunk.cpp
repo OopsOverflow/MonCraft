@@ -59,6 +59,7 @@ Chunk::Chunk(ivec3 chunkPos, int chunkSize)
 }
 
 Chunk::~Chunk() {
+  SafeMesh(std::move(mesh));
   // std::cout << "deleted Chunk " << chunkPos << std::endl;
 }
 

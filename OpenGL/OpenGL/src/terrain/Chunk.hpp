@@ -5,7 +5,7 @@
 #include <mutex>
 #include <array>
 
-#include "gl/Mesh.hpp"
+#include "gl/SafeMesh.hpp"
 #include "util/DataStore.hpp"
 #include "blocks/Block.hpp"
 

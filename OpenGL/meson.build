@@ -22,6 +22,7 @@ srcs = files(
   'OpenGL/src/gl/Camera.cpp',
   'OpenGL/src/gl/Viewport.cpp',
   'OpenGL/src/gl/Mesh.cpp',
+  'OpenGL/src/gl/SafeMesh.cpp',
   'OpenGL/src/gl/Font.cpp',
   'OpenGL/src/gl/ResourceManager.cpp',
 

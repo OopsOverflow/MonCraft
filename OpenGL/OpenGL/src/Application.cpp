@@ -9,6 +9,7 @@
 #include "multiplayer/client/RealServer.hpp"
 #include "multiplayer/common/Config.hpp"
 #include "save/SaveManager.hpp"
+#include "gl/SafeMesh.hpp"
 
 #ifdef EMSCRIPTEN
 #include <emscripten.h>
@@ -85,6 +86,8 @@ std::shared_ptr<Character> player = nullptr;
 void loop() {
   try {
   t += dt;
+
+  SafeMesh::update();
 
   pscene->drawFrame(t, dt);
 

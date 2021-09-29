@@ -64,11 +64,11 @@ public:
      */
     glm::mat4 model = glm::mat4(1.f);
 
-private:
-    GLuint myVAO;
-    GLuint myVBO;
-    GLuint myEBO;
-    GLuint myVertCount;
+protected:
+    GLuint vao;
+    GLuint vbo;
+    GLuint ebo;
+    GLuint vertCount;
 };
 
 #endif // Mesh_H
