@@ -40,10 +40,9 @@ release:
 	rm -r Release
 
 # -O3 \
---source-map-base http://localhost:6931/sources/__SOURCE_MAP_BASE__/ -gsource-map -O0 -s NO_DISABLE_EXCEPTION_CATCHING \
 
 CFLAGS = -fexceptions \
--O3 \
+--source-map-base http://localhost:6931/sources/__SOURCE_MAP_BASE__/ -gsource-map -O0 -s NO_DISABLE_EXCEPTION_CATCHING \
 -s WASM=1 \
 -pthread -s PTHREAD_POOL_SIZE=4 \
 -s USE_SDL=2 \
@@ -56,6 +55,8 @@ CFLAGS = -fexceptions \
 -s MIN_WEBGL_VERSION=2 \
 -s FULL_ES2=1 \
 -s FULL_ES3=1 \
+-s WEBSOCKET_URL='wss://pi.thissma.fr:55001' \
+-s WEBSOCKET_SUBPROTOCOL='binary' \
 --preload-file data --preload-file src -Wno-unused-command-line-argument
 # CFLAGS = --source-map-base http://localhost:6931/sources/__SOURCE_MAP_BASE__/ -gsource-map -O0 -s WASM=1 -pthread -s PTHREAD_POOL_SIZE=4 -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s SDL2_IMAGE_FORMATS='["png"]' -s USE_SDL_GFX=2 -s USE_FREETYPE=2 -s NO_DISABLE_EXCEPTION_CATCHING -s ALLOW_MEMORY_GROWTH=1 -s MAX_WEBGL_VERSION=2 -s MIN_WEBGL_VERSION=2 -s FULL_ES2=1 -s FULL_ES3=1 -s OFFSCREENCANVAS_SUPPORT=1 --preload-file data --preload-file src
 MESON_ARGS = --prefix=${PWD}/WASM --cross-file=emscripten-crossfile.txt --default-library=static --buildtype=debug --wrap-mode=nofallback

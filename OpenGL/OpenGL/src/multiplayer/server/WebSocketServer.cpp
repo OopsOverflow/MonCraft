@@ -49,6 +49,7 @@ void WebSocketServer::run() {
   inst = this;
   std::signal(SIGINT, &WebSocketServer::sigStop);
   server.set_message_handler(bind(&WebSocketServer::on_message, this, _1, _2));
+  server.set_tls_init_handler(bind(&WebSocketServer::on_tls_init, this));
   server.set_open_handler(bind(&WebSocketServer::on_open, this, _1));
   server.set_close_handler(bind(&WebSocketServer::on_close, this, _1));
   server.set_access_channels(websocketpp::log::alevel::all);
@@ -71,7 +72,7 @@ void WebSocketServer::run() {
 ClientID WebSocketServer::htdl_to_client(websocketpp::connection_hdl hdl) {
   auto con = server.get_con_from_hdl(hdl);
   sf::IpAddress ip;
-  unsigned short port = con->get_port();
+  unsigned short port = con->get_raw_socket().remote_endpoint().port();
   return ClientID(ip, port);
 }
 
@@ -106,6 +107,39 @@ void WebSocketServer::on_message(websocketpp::connection_hdl hdl, WebServer::mes
   p.append(payload.c_str(), payload.size());
 
   on_packet_recv(p, htdl_to_client(hdl));
+}
+
+std::string get_password() {
+  return "test";
+}
+
+WebSocketServer::context_ptr WebSocketServer::on_tls_init() {
+  std::cout << "on_tls_init called" << std::endl;
+  context_ptr ctx = std::make_shared<boost::asio::ssl::context>(boost::asio::ssl::context::sslv23);
+
+  try {
+    auto opts = boost::asio::ssl::context::default_workarounds;
+    opts |= boost::asio::ssl::context::no_sslv2;
+    opts |= boost::asio::ssl::context::no_sslv3;
+    opts |= boost::asio::ssl::context::single_dh_use;
+    ctx->set_options(opts);
+
+    ctx->set_password_callback(bind(&get_password));
+    ctx->use_certificate_chain_file("cert/fullchain.pem");
+    ctx->use_private_key_file("cert/privkey.pem", boost::asio::ssl::context::pem);
+    ctx->use_tmp_dh_file("cert/dh.pem");
+
+    std::string ciphers = "ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!3DES:!MD5:!PSK";
+
+    if (SSL_CTX_set_cipher_list(ctx->native_handle() , ciphers.c_str()) != 1) {
+      std::cout << "Error setting cipher list" << std::endl;
+    }
+
+  } catch (std::exception &e) {
+    std::cout << "Error in context pointer: " << e.what() << std::endl;
+  }
+
+  return ctx;
 }
 
 void WebSocketServer::send(sf::Packet &packet, ClientID client) {

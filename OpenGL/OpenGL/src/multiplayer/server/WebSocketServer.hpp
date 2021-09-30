@@ -2,7 +2,7 @@
 
 #include "Server.hpp"
 
-#include <websocketpp/config/asio_no_tls.hpp>
+#include <websocketpp/config/asio.hpp>
 #include <websocketpp/server.hpp>
 
 
@@ -24,11 +24,18 @@ protected:
   void send(sf::Packet &packet, ClientID client) override;
 
 private:
-  typedef websocketpp::server<websocketpp::config::asio> WebServer;
+  typedef websocketpp::server<websocketpp::config::asio_tls> WebServer;
+  typedef websocketpp::lib::shared_ptr<websocketpp::lib::asio::ssl::context> context_ptr;
   WebServer server;
+
+  enum tls_mode {
+    MOZILLA_INTERMEDIATE = 1,
+    MOZILLA_MODERN = 2
+  };
 
   ClientID htdl_to_client(websocketpp::connection_hdl);
   websocketpp::connection_hdl client_to_hdl(ClientID);
+  context_ptr on_tls_init();
   void on_message(websocketpp::connection_hdl, WebServer::message_ptr msg);
   void on_open(websocketpp::connection_hdl);
   void on_close(websocketpp::connection_hdl);

@@ -133,6 +133,7 @@ else
     dependency('sfml-audio'),
     dependency('sfml-network'),
     dependency('freetype2'),
+    dependency('openssl'),
   ]
 
   srcs += files('OpenGL/src/audio/Music.cpp')

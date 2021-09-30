@@ -14,3 +14,4 @@ OpenGL/OpenGL/save
 .*
 OpenGL/Dependencies/boost
 OpenGL/Dependencies/websocketpp
+OpenGL/OpenGL/cert
