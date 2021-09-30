@@ -4,6 +4,7 @@
 
 std::unordered_map<std::string, std::unique_ptr<Shader>> ResourceManager::shaders;
 std::unordered_map<std::string, GLuint> ResourceManager::textures;
+std::unordered_map<std::string, std::shared_ptr<const Font> > ResourceManager::fonts;
 
 ResourceManager::ResourceManager() {}
 
@@ -160,4 +161,17 @@ GLuint ResourceManager::getTexture(std::string const& name) {
     throw std::runtime_error(err);
   }
   return it->second;
+}
+
+void ResourceManager::loadFont(std::string const& name, std::string const& filename) {
+    auto font = std::make_shared<const Font>(filename);
+    fonts.emplace(name, font);
+}
+std::shared_ptr<const Font> ResourceManager::getFont(std::string const& name) {
+    auto it = fonts.find(name);
+    if (it == fonts.end()) {
+        std::string err = "font not found: " + name;
+        throw std::runtime_error(err);
+    }
+    return it->second;
 }
