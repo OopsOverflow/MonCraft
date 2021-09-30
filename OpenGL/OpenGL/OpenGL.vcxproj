@@ -138,7 +138,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -191,7 +191,10 @@
     <ClCompile Include="src\gl\Shader.cpp" />
     <ClCompile Include="src\gl\ShadowMap.cpp" />
     <ClCompile Include="src\gl\Viewport.cpp" />
-    <ClCompile Include="src\MonCraftScene.cpp" />
+    <ClCompile Include="src\interface\Overlay.cpp" />
+    <ClCompile Include="src\interface\DebugOverlay.cpp" />
+    <ClCompile Include="src\interface\GameMenu.cpp" />
+    <ClCompile Include="src\interface\MainMenu.cpp" />
     <ClCompile Include="src\multiplayer\client\ClientServer.cpp" />
     <ClCompile Include="src\multiplayer\client\RealServer.cpp" />
     <ClCompile Include="src\multiplayer\common\NetworkError.cpp" />
@@ -286,7 +289,10 @@
     <ClInclude Include="src\gl\Shader.hpp" />
     <ClInclude Include="src\gl\ShadowMap.hpp" />
     <ClInclude Include="src\gl\Viewport.hpp" />
-    <ClInclude Include="src\MonCraftScene.hpp" />
+    <ClInclude Include="src\interface\Overlay.hpp" />
+    <ClInclude Include="src\interface\DebugOverlay.hpp" />
+    <ClInclude Include="src\interface\GameMenu.hpp" />
+    <ClInclude Include="src\interface\MainMenu.hpp" />
     <ClInclude Include="src\multiplayer\client\ClientServer.hpp" />
     <ClInclude Include="src\multiplayer\client\RealServer.hpp" />
     <ClInclude Include="src\multiplayer\client\Server.hpp" />

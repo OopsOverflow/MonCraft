@@ -18,8 +18,8 @@ class MonCraftScene : public ui::Component {
 
 public:
   MonCraftScene(Viewport* vp);
-  void drawMoncraftWorld();
-  void drawFrame(float t, float dt);
+  void initializeMoncraftScene();
+  void drawMenu();
 
 private:
   void updateShadowMaps();
@@ -27,6 +27,7 @@ private:
   void drawMiddleDot();
   void drawSkybox(float t);
   void drawEntities();
+  void draw() override;
 
 protected:
   virtual bool onMousePressed(glm::ivec2 pos) override;
@@ -65,4 +66,13 @@ public:
   const float skyboxSpeed;
   glm::vec3 sunDir;
   bool captured;
+
+
+
+  //ui
+private:
+	ui::Pane pane_interface;
+	ui::Pane pane_fps;
+	ui::Text text_gameTime;
+	ui::Button btn_vsync;
 };

@@ -139,6 +139,7 @@ void Viewport::on_event(SDL_Event const& e) {
 
 bool Viewport::beginFrame(float& dt) {
   SDL_Event event;
+  glViewport(0, 0, size.x, size.y);
   while (SDL_PollEvent(&event)) {
     if(event.type == SDL_WINDOWEVENT)
       if(event.window.event == SDL_WINDOWEVENT_CLOSE)

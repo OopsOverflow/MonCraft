@@ -15,13 +15,13 @@ MonCraftScene::MonCraftScene(Viewport* vp)
       world(World::getInst()),
       vp(vp),
       camera(ivec2(1), {0, 32, 10}, {0, 32, 0}),
-
       caster(100.f),
       shadows(4096),
-
       fogEnabled(false),
       sunSpeed(0.0075f), skyboxSpeed(0.0075f),
-      captured(false)
+      captured(false),
+
+    ui::Text text_gameTime(this, "", font_vt323);
 {
     // load resources
     shader = ResourceManager::getShader("simple");
@@ -31,7 +31,33 @@ MonCraftScene::MonCraftScene(Viewport* vp)
     for (size_t i = 0; i < 30; i += 1) {
         normalMapID[i] = ResourceManager::getTexture("waterNormal" + std::to_string(i));
     }
+
+
+
+
+
 }
+
+void MonCraftScene::drawMenu() {
+    // UI stuff
+
+    ui::Pane pane_title(this);
+    pane_title.setColor({ 1.f, 0.f, 0.f, 0.5f });
+    pane_title.setAnchorY(ui::Anchor::CENTER);
+    pane_title.setAnchorX(ui::Anchor::CENTER);
+    pane_title.setPadding({ 10, 10 });
+    pane_title.setSize({ 300, 10 });
+
+    ui::Text text_fps(&pane_title, "MonCraft", font_vt323);
+    text_fps.setFontSize(2.f);
+    text_fps.setColor({ 0.8f, 0.7f, 0.0f, 1.f });
+
+    ui::Button btn_start(this, "Start", font_vt323);
+    btn_start.onclick([&] { drawMoncraftWorld(); });
+
+   
+}
+
 
 std::unique_ptr<Server> createServer(Config const& config) {
     std::unique_ptr<Server> server;
@@ -44,7 +70,7 @@ std::unique_ptr<Server> createServer(Config const& config) {
     return server;
 }
 
-void MonCraftScene::drawMoncraftWorld() {
+void MonCraftScene::initializeMoncraftScene() {
     Config config = SaveManager::getInst().getConfig();
 
     // game seed
@@ -62,8 +88,6 @@ void MonCraftScene::drawMoncraftWorld() {
     float t = 0;
 
     // UI stuff
-    auto font_roboto = std::make_shared<const Font>("Roboto-Regular");
-    auto font_vt323 = std::make_shared<const Font>("VT323-Regular");
 
     setPadding({ 10, 10 });
 
@@ -98,7 +122,7 @@ void MonCraftScene::drawMoncraftWorld() {
     text_posPlayer.setAnchorY(ui::Anchor::END);
     text_posPlayer.setFontSize(.5f);
 
-    ui::Text text_gameTime(this, "", font_vt323);
+    
     text_gameTime.setAnchorY(ui::Anchor::END);
     text_gameTime.setPosition(ivec2(0, -90)); // TODO: implement a box container
     text_gameTime.setFontSize(.5f);
@@ -113,36 +137,9 @@ void MonCraftScene::drawMoncraftWorld() {
     text_uid.setPosition({ 0, -60 }); // TODO: implement a box container
     text_uid.setFontSize(.5f);
 
-    // main loop
-    for (float dt = 0; vp->beginFrame(dt); vp->endFrame()) {
-        t += dt;
 
-        server->update();
 
-        drawFrame(t, dt);
 
-        std::ostringstream text;
-        text << "FPS : " << (int)(1.f / dt);
-        text_fps.setText(text.str());
-
-        text.str(""); // "clears" the string stream
-        text << "Player Pos : " << std::fixed << std::setprecision(3) << server->getPlayer()->getPosition();
-        text_posPlayer.setText(text.str());
-
-        text.str(""); // "clears" the string stream
-        text << "Players online : " << world.entities.count();
-        text_players.setText(text.str());
-
-        text.str(""); // "clears" the string stream
-        text << "UID : " << server->getPlayer()->uid;
-        text_uid.setText(text.str());
-
-        text.str(""); // "clears" the string stream
-        text << "Game Time : " << std::fixed << std::setprecision(3) << t;
-        text_gameTime.setText(text.str());
-    }
-
-    ResourceManager::free();
 }
 
 
@@ -235,7 +232,10 @@ void MonCraftScene::drawEntities() {
     }
 }
 
-void MonCraftScene::drawFrame(float t, float dt) {
+void MonCraftScene::draw() {
+
+    server->update();
+
     // updates
     #ifndef EMSCRIPTEN
         musicPlayer.update();
@@ -244,7 +244,7 @@ void MonCraftScene::drawFrame(float t, float dt) {
     vp->keyboardController.apply(*player);
     vp->mouseController.apply(*player);
 
-    world.entities.updateAll(dt);
+    world.entities.updateAll(0.016);
 
     setSize(parent->getSize());
     camera.setSize(getSize());
@@ -252,7 +252,7 @@ void MonCraftScene::drawFrame(float t, float dt) {
     player->cameraToHead(camera);
 
     // update sun
-    float sunTime = quarter_pi<float>() + t * sunSpeed; // sun is fixed
+    float sunTime = quarter_pi<float>() + 0 * sunSpeed; // sun is fixed
     float sunDist = 100.f;
     sunDir = -normalize(vec3(cos(sunTime), 1, sin(sunTime))) * sunDist;
 
@@ -265,10 +265,10 @@ void MonCraftScene::drawFrame(float t, float dt) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // set uniforms / textures
-    updateUniforms(t);
+    updateUniforms(0);
 
     // draw skybox
-    drawSkybox(t);
+    drawSkybox(0);
 
     // draw the terrain
     shader->bindTexture(TEXTURE_COLOR, texAtlas);
@@ -279,4 +279,24 @@ void MonCraftScene::drawFrame(float t, float dt) {
 
     // draw dot in the middle of the screen
     drawMiddleDot();
+
+    std::ostringstream text;
+    text << "FPS : " << (int)(1.f / dt);
+    text_fps.setText(text.str());
+
+    text.str(""); // "clears" the string stream
+    text << "Player Pos : " << std::fixed << std::setprecision(3) << server->getPlayer()->getPosition();
+    text_posPlayer.setText(text.str());
+
+    text.str(""); // "clears" the string stream
+    text << "Players online : " << world.entities.count();
+    text_players.setText(text.str());
+
+    text.str(""); // "clears" the string stream
+    text << "UID : " << server->getPlayer()->uid;
+    text_uid.setText(text.str());
+
+    text.str(""); // "clears" the string stream
+    text << "Game Time : " << std::fixed << std::setprecision(3) << t;
+    text_gameTime.setText(text.str());
 }

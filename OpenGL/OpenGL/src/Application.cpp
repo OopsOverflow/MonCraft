@@ -3,7 +3,8 @@
 #include <vector>
 #include "gl/ResourceManager.hpp"
 #include "gl/Viewport.hpp"
-#include "MonCraftScene.hpp"
+//#include "MonCraftScene.hpp"
+#include "interface/MainMenu.hpp"
 
 
 
@@ -50,6 +51,9 @@ void loadResources() {
         std::string filename = "water/water_normal_" + std::to_string(i+1)+"_frame";
         ResourceManager::loadTexture("waterNormal" + std::to_string(i), filename);
     }
+
+    ResourceManager::loadFont("roboto", "Roboto-Regular");
+    ResourceManager::loadFont("vt323", "VT323-Regular");
 }
 
 
@@ -59,9 +63,17 @@ int main(int argc, char* argv[]) {
     Viewport window({ 800, 800 });
     loadResources();
     window.createRoot();
+    MainMenu mainMenu();
+    window.add(mainMenu);
 
-    MonCraftScene scene(&window);
-    scene.drawMoncraftWorld();
+    MonCraftScene scene();
+    //scene.drawMoncraftWorld();
+    mainMenu.playButton->onclick([] { window.add(scene);
+                                      window.remove(mainMenu); });
+    for (float dt = 0; window.beginFrame(dt); window.endFrame()) {
+        mainMenu.setSize(window.getRoot()->getSize());
+    }
 
+    ResourceManager::free();
     return 0;
 }
