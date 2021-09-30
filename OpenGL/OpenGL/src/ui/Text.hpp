@@ -11,7 +11,7 @@ namespace ui {
 class Text : public Component {
 
 public:
-  Text(Component* parent, std::string text, std::shared_ptr<const Font> font);
+  Text(std::string text, std::shared_ptr<const Font> font);
 
   void draw() override;
 

@@ -8,7 +8,6 @@ using namespace ui;
 using namespace glm;
 
 Root::Root(ivec2 size)
-  : Component(nullptr)
 {
   setSize(size);
 

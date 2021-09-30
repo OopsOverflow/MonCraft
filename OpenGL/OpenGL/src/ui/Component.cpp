@@ -13,22 +13,23 @@ const spec_t Component::PADDING  = MAKE_SPEC("Component::padding", ivec2);
 const spec_t Component::ANCHOR_X = MAKE_SPEC("Component::anchorX", Anchor);
 const spec_t Component::ANCHOR_Y = MAKE_SPEC("Component::anchorY", Anchor);
 
-Component::Component(Component* parent)
+Component::Component()
   : drawQueued(true), recomputeQueued(true),
-    parent(parent),
+    parent(nullptr),
     size(0), absoluteSize(0), computedSize(0), computedOrigin(0),
     position(0), padding(0),
     anchorX(Anchor::BEGIN), anchorY(Anchor::BEGIN),
     hover(false), pressed(false)
 {
-  if(parent) parent->addChild(this);
-
   Component::getDefaultStyle()->apply(this);
 }
 
 Component::~Component() {
   if(parent) parent->removeChild(this);
   if(activeWidget == this) activeWidget = nullptr;
+  for(Component* child : children) {
+    child->parent = nullptr;
+  }
 }
 
 void Component::setStyle(prop_t const& prop) {
@@ -111,6 +112,10 @@ void Component::queueRecompute(bool propagate) {
 }
 
 void Component::addChild(Component* child) {
+  if(child->parent != nullptr) {
+    throw std::runtime_error("child already has parent");
+  }
+  child->parent = this;
   children.push_back(child);
   queueRecompute(true);
   if(parent) parent->queueRecompute();

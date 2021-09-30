@@ -1,10 +1,10 @@
 #pragma once
 #include "ui/ui.hpp"
 
-class MainMenu : public ui::Component 
+class MainMenu : public ui::Component
 {
 public:
-	MainMenu(Component* parent);
+	MainMenu();
 	void draw() override;
 
 	std::unique_ptr<ui::Button> playButton;

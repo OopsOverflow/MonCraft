@@ -8,7 +8,7 @@ namespace ui {
 class Pane : public Component {
 
 public:
-  Pane(Component* parent);
+  Pane();
   virtual ~Pane();
 
   void draw() override;

@@ -6,10 +6,10 @@ using namespace glm;
 const spec_t Input::TEXT = MAKE_SPEC("Input::text", std::string);
 const spec_t Input::TEXT_COLOR = MAKE_SPEC("Input::textColor", vec4);
 
-Input::Input(Component* parent, std::string text, std::shared_ptr<const Font> font)
-  : Pane(parent)
+Input::Input(std::string text, std::shared_ptr<const Font> font)
 {
-  textComp = std::make_unique<Text>(this, std::move(text), std::move(font));
+  textComp = std::make_unique<Text>(std::move(text), std::move(font));
+  addChild(textComp.get());
 
   Input::getDefaultStyle()->apply(this);
 

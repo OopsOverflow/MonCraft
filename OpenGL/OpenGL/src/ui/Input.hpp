@@ -11,7 +11,7 @@ namespace ui {
 class Input : public Pane {
 
 public:
-  Input(Component* parent, std::string text, std::shared_ptr<const Font> font);
+  Input(std::string text, std::shared_ptr<const Font> font);
 
   static const spec_t TEXT;
   static const spec_t TEXT_COLOR;

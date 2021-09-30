@@ -14,7 +14,7 @@ enum class Anchor { BEGIN, END, CENTER };
 class Component {
 
 public:
-  Component(Component* parent);
+  Component();
   virtual ~Component();
   Component(Component&) = delete;
   Component& operator=(Component&) = delete;
@@ -55,9 +55,10 @@ public:
   void keyPress(Key k);
   void keyRelease(Key k);
 
-protected:
   void addChild(Component* child);
   void removeChild(Component* child);
+
+protected:
   void recompute();
 
   bool drawQueued;

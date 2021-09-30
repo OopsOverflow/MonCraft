@@ -11,7 +11,7 @@ namespace ui {
 class Button : public Pane {
 
 public:
-  Button(Component* parent, std::string text, std::shared_ptr<const Font> font);
+  Button(std::string text, std::shared_ptr<const Font> font);
 
   static const spec_t TEXT;
   static const spec_t TEXT_COLOR;

@@ -63,15 +63,16 @@ int main(int argc, char* argv[]) {
     Viewport window({ 800, 800 });
     loadResources();
     window.createRoot();
-    MainMenu mainMenu();
-    window.add(mainMenu);
+    MainMenu mainMenu;
 
-    MonCraftScene scene();
+    window.getRoot()->addChild(&mainMenu);
+
+    // MonCraftScene scene();
     //scene.drawMoncraftWorld();
-    mainMenu.playButton->onclick([] { window.add(scene);
-                                      window.remove(mainMenu); });
+    // mainMenu.playButton->onclick([] { window.add(scene);
+    //                                   window.remove(mainMenu); });
+
     for (float dt = 0; window.beginFrame(dt); window.endFrame()) {
-        mainMenu.setSize(window.getRoot()->getSize());
     }
 
     ResourceManager::free();

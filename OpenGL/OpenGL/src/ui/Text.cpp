@@ -9,9 +9,8 @@ const spec_t Text::COLOR     = MAKE_SPEC("Text::color", vec4);
 const spec_t Text::FONT_SIZE = MAKE_SPEC("Text::fontSize", float);
 const spec_t Text::FONT      = MAKE_SPEC("Text::font", std::shared_ptr<const Font>);
 
-Text::Text(Component* parent, std::string text, std::shared_ptr<const Font> font)
-  : Component(parent),
-    text(std::move(text)),
+Text::Text(std::string text, std::shared_ptr<const Font> font)
+  : text(std::move(text)),
     color(0.f, 0.f, 0.f, 1.f), fontSize(1.f),
     font(std::move(font)), shader(ResourceManager::getShader("font"))
 {
