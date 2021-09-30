@@ -32,7 +32,7 @@ void WebSocketServer::sigStop(int signal) {
 
 void WebSocketServer::loop() {
   sf::Clock clock;
-  const sf::Time frameDuration = sf::milliseconds(NetworkConfig::SERVER_TICK);
+  const sf::Time frameDuration = sf::milliseconds(NetworkConfig::WEBSOCKET_SERVER_TICK);
 
   while(!stopSignal) {
     sf::Time start = clock.getElapsedTime();
@@ -70,7 +70,6 @@ void WebSocketServer::run() {
 
 ClientID WebSocketServer::htdl_to_client(websocketpp::connection_hdl hdl) {
   auto con = server.get_con_from_hdl(hdl);
-  // sf::IpAddress ip = con->get_origin();
   sf::IpAddress ip;
   unsigned short port = con->get_port();
   return ClientID(ip, port);
@@ -83,11 +82,6 @@ websocketpp::connection_hdl WebSocketServer::client_to_hdl(ClientID client) {
 void WebSocketServer::on_open(websocketpp::connection_hdl hdl) {
   ClientID client = htdl_to_client(hdl);
   clientLookup.emplace(client, hdl);
-
-  // sf::Packet packet;
-  // PacketHeader header(PacketType::LOGIN);
-  // packet << header;
-  // on_packet_recv(packet, client);
 }
 
 void WebSocketServer::on_close(websocketpp::connection_hdl hdl) {

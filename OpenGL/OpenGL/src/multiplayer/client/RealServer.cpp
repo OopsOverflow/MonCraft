@@ -61,15 +61,16 @@ void RealServer::update() {
 
   pendingChunks.remOldChunks();
 
-  while (poll()) {};
+  poll();
+
   packet_blocks();
   packet_chunks();
 
   sf::Time now = clock.getElapsedTime();
   if(now - lastUpdate > frameDuration) {
-      packet_player_tick();
-      lastUpdate = now;
-    }
+    packet_player_tick();
+    lastUpdate = now;
+  }
 }
 
 bool RealServer::poll() {

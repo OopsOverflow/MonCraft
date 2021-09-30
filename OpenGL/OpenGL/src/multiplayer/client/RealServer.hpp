@@ -51,5 +51,5 @@ private:
   PendingChunks pendingChunks;
 
   std::time_t lastServerUpdate;
-  static const std::time_t timeout = 5;
+  static const std::time_t timeout = 10;
 };

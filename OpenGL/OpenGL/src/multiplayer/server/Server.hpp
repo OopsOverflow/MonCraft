@@ -53,5 +53,5 @@ protected:
   int renderDistH, renderDistV;
   static const unsigned int maxChunks = 50;
 
-  static const time_t timeout = 5;
+  static const time_t timeout = 10;
 };

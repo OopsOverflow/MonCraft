@@ -40,9 +40,10 @@ release:
 	rm -r Release
 
 # -O3 \
+--source-map-base http://localhost:6931/sources/__SOURCE_MAP_BASE__/ -gsource-map -O0 -s NO_DISABLE_EXCEPTION_CATCHING \
 
 CFLAGS = -fexceptions \
---source-map-base http://localhost:6931/sources/__SOURCE_MAP_BASE__/ -gsource-map -O0 -s NO_DISABLE_EXCEPTION_CATCHING \
+-O3 \
 -s WASM=1 \
 -pthread -s PTHREAD_POOL_SIZE=4 \
 -s USE_SDL=2 \
