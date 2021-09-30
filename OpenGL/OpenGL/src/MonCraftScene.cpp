@@ -3,13 +3,16 @@
 #include "MonCraftScene.hpp"
 #include "gl/ResourceManager.hpp"
 #include "multiplayer/common/Config.hpp"
+#include "multiplayer/client/Server.hpp"
+#include "multiplayer/client/RealServer.hpp"
+#include "multiplayer/client/ClientServer.hpp"
+#include "ui/ui.hpp"
 
 using namespace glm;
 
-MonCraftScene::MonCraftScene(Viewport* vp, std::shared_ptr<Character> player)
+MonCraftScene::MonCraftScene(Viewport* vp)
     : ui::Component(vp->getRoot()),
       world(World::getInst()),
-      player(player),
       vp(vp),
       camera(ivec2(1), {0, 32, 10}, {0, 32, 0}),
 
@@ -29,6 +32,119 @@ MonCraftScene::MonCraftScene(Viewport* vp, std::shared_ptr<Character> player)
         normalMapID[i] = ResourceManager::getTexture("waterNormal" + std::to_string(i));
     }
 }
+
+std::unique_ptr<Server> createServer(Config const& config) {
+    std::unique_ptr<Server> server;
+    if (config.multiplayer) {
+        server = std::make_unique<RealServer>(config.serverAddr, config.serverPort);
+    }
+    else {
+        server = std::make_unique<ClientServer>();
+    }
+    return server;
+}
+
+void MonCraftScene::drawMoncraftWorld() {
+    Config config = SaveManager::getInst().getConfig();
+
+    // game seed
+    std::hash<std::string> hashString;
+    auto seed = hashString(config.seed);
+    std::srand(seed);
+    std::cout << "seed : " << config.seed << " (" << seed << ")" << std::endl;
+
+
+
+    auto server = createServer(config);
+    World& world = World::getInst();
+
+    player = server->getPlayer();
+    float t = 0;
+
+    // UI stuff
+    auto font_roboto = std::make_shared<const Font>("Roboto-Regular");
+    auto font_vt323 = std::make_shared<const Font>("VT323-Regular");
+
+    setPadding({ 10, 10 });
+
+    ui::Pane pane_fps(this);
+    pane_fps.setColor({ 1.f, 1.f, 1.f, 0.5f });
+    pane_fps.setPosition({ -10, -10 });
+    pane_fps.setAnchorY(ui::Anchor::END);
+    pane_fps.setAnchorX(ui::Anchor::END);
+    pane_fps.setPadding({ 10, 10 });
+    pane_fps.setSize({ 300, 10 });
+
+    ui::Text text_fps(&pane_fps, "", font_vt323);
+    text_fps.setFontSize(2.f);
+    text_fps.setColor({ 0.8f, 0.7f, 0.0f, 1.f });
+
+    ui::Button btn_vsync(this, "VSync", font_vt323);
+    btn_vsync.setPadding({ 15, 10 });
+
+    ui::Button btn_fullscreen(this, "Fullscreen", font_vt323);
+    btn_fullscreen.setAnchorX(ui::Anchor::END);
+    btn_fullscreen.setPadding({ 15, 10 });
+
+    ui::Button btn_ping(this, "Ping", font_vt323);
+    btn_ping.setPosition({ 0, 80 }); // TODO: implement a box container
+    btn_fullscreen.setPadding({ 15, 10 });
+
+    btn_vsync.onclick([&] { vp->toggleVSync(); });
+    btn_fullscreen.onclick([&] { vp->toggleFullscreen(); });
+    btn_ping.onclick([&] { server->ping(); });
+
+    ui::Text text_posPlayer(this, "", font_vt323);
+    text_posPlayer.setAnchorY(ui::Anchor::END);
+    text_posPlayer.setFontSize(.5f);
+
+    ui::Text text_gameTime(this, "", font_vt323);
+    text_gameTime.setAnchorY(ui::Anchor::END);
+    text_gameTime.setPosition(ivec2(0, -90)); // TODO: implement a box container
+    text_gameTime.setFontSize(.5f);
+
+    ui::Text text_players(this, "", font_vt323);
+    text_players.setAnchorY(ui::Anchor::END);
+    text_players.setPosition({ 0, -30 }); // TODO: implement a box container
+    text_players.setFontSize(.5f);
+
+    ui::Text text_uid(this, "", font_vt323);
+    text_uid.setAnchorY(ui::Anchor::END);
+    text_uid.setPosition({ 0, -60 }); // TODO: implement a box container
+    text_uid.setFontSize(.5f);
+
+    // main loop
+    for (float dt = 0; vp->beginFrame(dt); vp->endFrame()) {
+        t += dt;
+
+        server->update();
+
+        drawFrame(t, dt);
+
+        std::ostringstream text;
+        text << "FPS : " << (int)(1.f / dt);
+        text_fps.setText(text.str());
+
+        text.str(""); // "clears" the string stream
+        text << "Player Pos : " << std::fixed << std::setprecision(3) << server->getPlayer()->getPosition();
+        text_posPlayer.setText(text.str());
+
+        text.str(""); // "clears" the string stream
+        text << "Players online : " << world.entities.count();
+        text_players.setText(text.str());
+
+        text.str(""); // "clears" the string stream
+        text << "UID : " << server->getPlayer()->uid;
+        text_uid.setText(text.str());
+
+        text.str(""); // "clears" the string stream
+        text << "Game Time : " << std::fixed << std::setprecision(3) << t;
+        text_gameTime.setText(text.str());
+    }
+
+    ResourceManager::free();
+}
+
 
 bool MonCraftScene::onMousePressed(glm::ivec2 pos) {
     vp->captureMouse();

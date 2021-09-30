@@ -17,8 +17,8 @@
 class MonCraftScene : public ui::Component {
 
 public:
-  MonCraftScene(Viewport* vp, std::shared_ptr<Character> player);
-
+  MonCraftScene(Viewport* vp);
+  void drawMoncraftWorld();
   void drawFrame(float t, float dt);
 
 private:
