@@ -61,7 +61,11 @@ void RealServer::update() {
 
   pendingChunks.remOldChunks();
 
-  poll();
+  #ifdef EMSCRIPTEN
+    poll(); // TODO: this hack avoids waiting too long and timeout
+  #else
+    while(poll()) {}
+  #endif
 
   packet_blocks();
   packet_chunks();

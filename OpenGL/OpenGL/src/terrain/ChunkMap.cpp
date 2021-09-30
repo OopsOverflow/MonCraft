@@ -45,7 +45,7 @@ void ChunkMap::eraseChunks(int count, std::function<bool(glm::ivec3)> predicate)
 }
 
 void ChunkMap::for_each(std::function<void(std::shared_ptr<Chunk>)> callback) {
-  // std::lock_guard<std::mutex> lck(chunksMutex); // TODO: is this dangerous ?
+  std::lock_guard<std::mutex> lck(chunksMutex);
   for(auto const& pair : chunks) {
     if(pair.second)
       callback(pair.second);
