@@ -39,14 +39,17 @@ static const std::vector<GLfloat> headUVs= {
 class Head : public Member {
 
 public:
-  Head()
-   : Member(Mesh(Cube::vertices, Cube::normals, headUVs, Cube::occlusions, Cube::indices, Cube::normalMap))
-  {
+  Head() {
     glm::mat4 I(1.f);
 
     geometryModel = glm::scale(I, {8, 8, 8});
     geometryModel = glm::translate(I, {0, 4, 0}) * geometryModel;
 
     node.loc = {0, 6, 0};
+  }
+
+protected:
+  std::unique_ptr<Mesh> createMesh() override {
+    return std::make_unique<Mesh>(Cube::vertices, Cube::normals, headUVs, Cube::occlusions, Cube::indices, Cube::normalMap);
   }
 };
