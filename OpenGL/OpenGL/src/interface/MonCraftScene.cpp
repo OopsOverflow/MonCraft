@@ -8,6 +8,7 @@
 #include "multiplayer/client/ClientServer.hpp"
 #include "ui/ui.hpp"
 #include "util/SaveManager.hpp"
+#include "debug/Debug.hpp"
 
 using namespace glm;
 
@@ -60,7 +61,8 @@ MonCraftScene::MonCraftScene(Viewport* vp)
     debugOverlay = std::make_unique<DebugOverlay>(server);
     overlay = std::make_unique<Overlay>();
 
-    overlay->setAnchorY(ui::Anchor::END);
+    debugOverlay->setAnchorY(ui::Anchor::END);
+
     overlay->btn_vsync->onclick([=] { vp->toggleVSync(); });
     overlay->btn_fullscreen->onclick([=] { vp->toggleFullscreen(); });
     overlay->btn_ping->onclick([&] { server->ping(); });
@@ -160,6 +162,7 @@ void MonCraftScene::drawEntities() {
 
 void MonCraftScene::draw() {
 
+    glEnable(GL_DEPTH_TEST);
     server->update();
 
     // updates
@@ -200,6 +203,7 @@ void MonCraftScene::draw() {
     // draw the entities
     drawEntities();
 
+    glDisable(GL_DEPTH_TEST);
     // draw dot in the middle of the screen
     drawMiddleDot();
 
