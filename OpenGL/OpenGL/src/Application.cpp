@@ -68,6 +68,7 @@ int main(int argc, char* argv[]) {
     std::unique_ptr<MonCraftScene> moncraftScene;
 
     window.getRoot()->addChild(&mainMenu);
+    
     mainMenu.playButton->onclick([&] {
         moncraftScene = std::make_unique<MonCraftScene>(&window);
         window.getRoot()->removeChild(&mainMenu);

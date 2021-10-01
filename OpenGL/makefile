@@ -2,9 +2,11 @@
 .PHONY: run debug opti configure
 
 configure:
+	rm -rf Debug
 	meson Debug
 
 configure_opti:
+	rm -rf DebugOptimized
 	meson DebugOptimized --buildtype debugoptimized
 
 run:

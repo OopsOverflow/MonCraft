@@ -46,7 +46,7 @@ DebugOverlay::DebugOverlay(std::shared_ptr<Server> server) :
 }
 
 void DebugOverlay::draw() {
-	setSize(parent->getSize());
+	setSize(glm::ivec2(parent->getSize().x, 0));
 
 	std::ostringstream text;
 	text << "FPS : " << (int)(1.f / world.dt);
@@ -71,6 +71,3 @@ void DebugOverlay::draw() {
 
 	Component::draw();
 }
-
-
-

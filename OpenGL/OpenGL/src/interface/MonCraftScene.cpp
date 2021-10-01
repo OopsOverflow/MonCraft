@@ -60,12 +60,12 @@ MonCraftScene::MonCraftScene(Viewport* vp)
     debugOverlay = std::make_unique<DebugOverlay>(server);
     overlay = std::make_unique<Overlay>();
 
+    overlay->setAnchorY(ui::Anchor::END);
     overlay->btn_vsync->onclick([=] { vp->toggleVSync(); });
     overlay->btn_fullscreen->onclick([=] { vp->toggleFullscreen(); });
     overlay->btn_ping->onclick([&] { server->ping(); });
     addChild(overlay.get());
     addChild(debugOverlay.get());
-
 
 }
 

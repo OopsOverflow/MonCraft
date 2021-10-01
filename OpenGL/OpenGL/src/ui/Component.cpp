@@ -122,7 +122,11 @@ void Component::addChild(Component* child) {
 }
 
 void Component::removeChild(Component* child) {
+  if(!child->parent || child->parent != this) {
+    throw std::runtime_error("element is not a child");
+  }
   children.erase(std::remove(children.begin(), children.end(), child));
+  child->parent = nullptr;
 }
 
 ivec2 Component::getOrigin() const {

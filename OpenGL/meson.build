@@ -29,6 +29,7 @@ srcs = files(
   'OpenGL/src/util/Raycast.cpp',
   'OpenGL/src/util/Random.cpp',
   'OpenGL/src/util/Identifier.cpp',
+  'OpenGL/src/util/SaveManager.cpp',
 
   'OpenGL/src/entity/Entity.cpp',
   'OpenGL/src/entity/Hitbox.cpp',
@@ -61,8 +62,6 @@ srcs = files(
   'OpenGL/src/ui/style/Type.cpp',
   'OpenGL/src/ui/style/Specification.cpp',
 
-  'OpenGL/src/save/SaveManager.cpp',
-
   'OpenGL/src/multiplayer/common/NetworkError.cpp',
   'OpenGL/src/multiplayer/common/Packet.cpp',
 
@@ -77,6 +76,12 @@ srcs = files(
 client_srcs = files(
   'OpenGL/src/Application.cpp',
   'OpenGL/src/interface/MainMenu.cpp',
+  'OpenGL/src/Application.cpp',
+  'OpenGL/src/interface/MonCraftScene.cpp',
+  'OpenGL/src/interface/GameMenu.cpp',
+  'OpenGL/src/interface/MainMenu.cpp',
+  'OpenGL/src/interface/Overlay.cpp',
+  'OpenGL/src/interface/DebugOverlay.cpp',
   'OpenGL/src/multiplayer/client/Server.cpp',
   'OpenGL/src/multiplayer/client/ClientServer.cpp',
   'OpenGL/src/multiplayer/client/RealServer.cpp',
