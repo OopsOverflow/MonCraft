@@ -1,4 +1,5 @@
 #pragma once
+
 #include <iostream>
 #include <iomanip>
 #include <chrono>
@@ -73,4 +74,14 @@ std::ostream& operator<<(std::ostream& os, glm::vec<N, T> const& v) {
     os << v[i] << ", ";
   os << v[N-1] << ")";
   return os;
+}
+
+template<typename T>
+std::ostream& operator<<(std::ostream& os, glm::tmat4x4<T> const& mat) {
+    os << std::fixed << std::setprecision(2);
+    os << "mat: ";
+    for (size_t i = 0; i < 4; i+=1) {
+         os  << mat[i] << std::endl << "     ";
+    }
+    return os;
 }
