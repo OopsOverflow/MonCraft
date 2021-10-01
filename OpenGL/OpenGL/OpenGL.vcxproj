@@ -195,6 +195,7 @@
     <ClCompile Include="src\interface\DebugOverlay.cpp" />
     <ClCompile Include="src\interface\GameMenu.cpp" />
     <ClCompile Include="src\interface\MainMenu.cpp" />
+    <ClCompile Include="src\MonCraftScene.cpp" />
     <ClCompile Include="src\multiplayer\client\ClientServer.cpp" />
     <ClCompile Include="src\multiplayer\client\RealServer.cpp" />
     <ClCompile Include="src\multiplayer\common\NetworkError.cpp" />
@@ -293,6 +294,7 @@
     <ClInclude Include="src\interface\DebugOverlay.hpp" />
     <ClInclude Include="src\interface\GameMenu.hpp" />
     <ClInclude Include="src\interface\MainMenu.hpp" />
+    <ClInclude Include="src\MonCraftScene.hpp" />
     <ClInclude Include="src\multiplayer\client\ClientServer.hpp" />
     <ClInclude Include="src\multiplayer\client\RealServer.hpp" />
     <ClInclude Include="src\multiplayer\client\Server.hpp" />

@@ -5,7 +5,7 @@
 #include "controller/MouseController.hpp"
 #include "controller/KeyboardController.hpp"
 #include "ui/Root.hpp"
-#include "save/SaveManager.hpp"
+#include "util/SaveManager.hpp"
 
 #include <SDL2/SDL.h>
 
