@@ -19,7 +19,6 @@ MainMenu::MainMenu()
 
 void MainMenu::draw() {
 	if(parent) {
-		std::cout << "hello" << std::endl;
 		setSize(parent->getSize());
 	}
 	Component::draw();

@@ -39,8 +39,11 @@ public:
 
   ChunkMap chunks;
   Entities entities;
+  float t;
+  float dt;
 
 private:
   World();
   ~World();
+
 };

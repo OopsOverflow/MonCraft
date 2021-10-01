@@ -3,8 +3,9 @@
 #include <vector>
 #include "gl/ResourceManager.hpp"
 #include "gl/Viewport.hpp"
-//#include "MonCraftScene.hpp"
+#include "interface/MonCraftScene.hpp"
 #include "interface/MainMenu.hpp"
+
 
 
 
@@ -64,15 +65,19 @@ int main(int argc, char* argv[]) {
     loadResources();
     window.createRoot();
     MainMenu mainMenu;
+    std::unique_ptr<MonCraftScene> moncraftScene;
 
     window.getRoot()->addChild(&mainMenu);
+    mainMenu.playButton->onclick([&] {
+        moncraftScene = std::make_unique<MonCraftScene>(&window);
+        window.getRoot()->removeChild(&mainMenu);
+        window.getRoot()->addChild(moncraftScene.get());
+    });
 
-    // MonCraftScene scene();
-    //scene.drawMoncraftWorld();
-    // mainMenu.playButton->onclick([] { window.add(scene);
-    //                                   window.remove(mainMenu); });
 
     for (float dt = 0; window.beginFrame(dt); window.endFrame()) {
+        World::getInst().t += dt;
+        World::getInst().dt = dt;
     }
 
     ResourceManager::free();

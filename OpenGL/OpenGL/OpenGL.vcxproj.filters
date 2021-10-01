@@ -144,7 +144,7 @@
     <ClCompile Include="src\noise\XXHash.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\save\SaveManager.cpp">
+    <ClCompile Include="src\util\SaveManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\multiplayer\client\RealServer.cpp">
@@ -207,7 +207,7 @@
     <ClCompile Include="src\interface\GameMenu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\MonCraftScene.cpp">
+    <ClCompile Include="src\interface\MonCraftScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -524,7 +524,7 @@
     <ClInclude Include="src\noise\XXHash.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\save\SaveManager.hpp">
+    <ClInclude Include="src\util\SaveManager.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\multiplayer\client\RealServer.hpp">
@@ -593,7 +593,7 @@
     <ClInclude Include="src\interface\GameMenu.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\MonCraftScene.hpp">
+    <ClInclude Include="src\interface\MonCraftScene.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

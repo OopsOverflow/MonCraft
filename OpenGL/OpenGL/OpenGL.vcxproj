@@ -195,7 +195,7 @@
     <ClCompile Include="src\interface\DebugOverlay.cpp" />
     <ClCompile Include="src\interface\GameMenu.cpp" />
     <ClCompile Include="src\interface\MainMenu.cpp" />
-    <ClCompile Include="src\MonCraftScene.cpp" />
+    <ClCompile Include="src\interface\MonCraftScene.cpp" />
     <ClCompile Include="src\multiplayer\client\ClientServer.cpp" />
     <ClCompile Include="src\multiplayer\client\RealServer.cpp" />
     <ClCompile Include="src\multiplayer\common\NetworkError.cpp" />
@@ -211,7 +211,7 @@
     <ClCompile Include="src\noise\value.cpp" />
     <ClCompile Include="src\noise\voronoi.cpp" />
     <ClCompile Include="src\noise\XXHash.cpp" />
-    <ClCompile Include="src\save\SaveManager.cpp" />
+    <ClCompile Include="src\util\SaveManager.cpp" />
     <ClCompile Include="src\terrain\BlockArray.cpp" />
     <ClCompile Include="src\terrain\Chunk.cpp" />
     <ClCompile Include="src\terrain\ChunkMap.cpp" />
@@ -294,7 +294,7 @@
     <ClInclude Include="src\interface\DebugOverlay.hpp" />
     <ClInclude Include="src\interface\GameMenu.hpp" />
     <ClInclude Include="src\interface\MainMenu.hpp" />
-    <ClInclude Include="src\MonCraftScene.hpp" />
+    <ClInclude Include="src\interface\MonCraftScene.hpp" />
     <ClInclude Include="src\multiplayer\client\ClientServer.hpp" />
     <ClInclude Include="src\multiplayer\client\RealServer.hpp" />
     <ClInclude Include="src\multiplayer\client\Server.hpp" />
@@ -319,7 +319,7 @@
     <ClInclude Include="src\noise\value.hpp" />
     <ClInclude Include="src\noise\voronoi.hpp" />
     <ClInclude Include="src\noise\XXHash.hpp" />
-    <ClInclude Include="src\save\SaveManager.hpp" />
+    <ClInclude Include="src\util\SaveManager.hpp" />
     <ClInclude Include="src\shadow\ShadowMap.hpp" />
     <ClInclude Include="src\Noise.hpp" />
     <ClInclude Include="src\terrain\biomes\Biome.hpp" />
