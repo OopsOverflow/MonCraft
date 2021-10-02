@@ -35,6 +35,7 @@ namespace ui {
 	private:
 		glm::mat4 computeModel();
 		glm::mat4 computeTexture();
+		void calculateCropping(glm::vec2& offset, glm::vec2& size);
 		static Shader* shader;
 		static GLuint texAtlas;
 

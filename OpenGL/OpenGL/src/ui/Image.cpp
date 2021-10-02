@@ -44,12 +44,6 @@ Image::Image()
             glVertexAttribPointer(VERTEX_POSITION, 2, GL_FLOAT, GL_FALSE, 0, 0);
             glEnableVertexAttribArray(VERTEX_POSITION);
             glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-            shader->activate();
-            GLint uniform = shader->getUniform("uTexture");
-            glUniform1i(uniform, 0);
-
-            std::cout << uniform << " " << GL_TEXTURE0;
         }
         glBindVertexArray(0);
 
@@ -134,14 +128,42 @@ glm::mat4 Image::computeModel() {
 }
 
 glm::mat4 Image::computeTexture() {
-    auto p1 = getTextureOffset();
+
+    glm::vec2 offset = getTextureOffset();
+    glm::vec2 size = getTextureSize();
+    calculateCropping(offset, size);
+
     auto texture = mat4(1.f);
-    texture = translate(texture, glm::vec3(p1,0.0f));
-    texture = scale(texture, vec3(getTextureSize(), 1.f));
+    texture = translate(texture, glm::vec3(offset, 0.0f));
+    texture = scale(texture, vec3(size, 1.f));
     return texture;
 }
 
+void Image::calculateCropping(glm::vec2& offset, glm::vec2& size) {
+    if (crop != Crop::NONE) {
+        int w, h;
+        int miplevel = 0;
+        glGetTexLevelParameteriv(GL_TEXTURE_2D, miplevel, GL_TEXTURE_WIDTH, &w);
+        glGetTexLevelParameteriv(GL_TEXTURE_2D, miplevel, GL_TEXTURE_HEIGHT, &h);
 
+        glm::vec2 absoluteSize = getAbsoluteSize();
+        glm::vec2 newOffset = offset;
+        glm::vec2 newSize = size;
+        if (absoluteSize.x / absoluteSize.y < (w * size.x) / (h * size.y)) {
+            newSize.x = absoluteSize.x * (h * size.y) / (absoluteSize.y * w);
+        }
+        else {
+            newSize.y = absoluteSize.y * (w * size.x) / (absoluteSize.x * h);
+
+        }
+        if (crop == Crop::END)
+            newOffset = offset + size - newSize;
+        if (crop == Crop::CENTER)
+            newOffset = offset + (size - newSize) / 2.0f;
+        offset = newOffset;
+        size = newSize;
+    }
+}
 void Image::setCrop(Crop crop) {
     if (crop == this->crop) return;
     this->crop = crop;

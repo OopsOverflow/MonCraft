@@ -15,6 +15,8 @@ MainMenu::MainMenu()
 
 	titlePane->setAnchorX(ui::Anchor::CENTER);
 	titlePane->setAnchorY(ui::Anchor::END);
+
+	setCrop(Crop::CENTER);
 }
 
 void MainMenu::draw() {
