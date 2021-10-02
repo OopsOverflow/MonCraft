@@ -18,6 +18,11 @@ public:
 
   void ping() override;
   void update() override;
+  bool login() override;
+
+  /**
+   * Returns nullptr if the player was not created.
+   */
   std::shared_ptr<Character> getPlayer() override;
 
 private:
@@ -28,7 +33,6 @@ private:
   void packet_blocks();
   void packet_chunks();
   void packet_ack_chunks(std::vector<glm::ivec3> chunks);
-  bool listen_ack_login();
   void handle_logout(sf::Packet& packet);
   void handle_blocks(sf::Packet& packet);
   void handle_chunks(sf::Packet& packet);
@@ -44,9 +48,8 @@ private:
   sf::Clock clock;
   World& world;
   std::shared_ptr<Character> player;
-  Identifier playerUid;
   PendingChunks pendingChunks;
 
   std::time_t lastServerUpdate;
-  static const std::time_t timeout = 5;
+  static const std::time_t timeout = 10;
 };

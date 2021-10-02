@@ -6,7 +6,6 @@ endif
 
 srcs = files(
 
-  'OpenGL/src/audio/Music.cpp',
   'OpenGL/src/debug/Debug.cpp',
 
   'OpenGL/src/controller/KeyboardController.cpp',
@@ -23,6 +22,7 @@ srcs = files(
   'OpenGL/src/gl/Camera.cpp',
   'OpenGL/src/gl/Viewport.cpp',
   'OpenGL/src/gl/Mesh.cpp',
+  'OpenGL/src/gl/SafeMesh.cpp',
   'OpenGL/src/gl/Font.cpp',
   'OpenGL/src/gl/ResourceManager.cpp',
 
@@ -77,6 +77,7 @@ srcs = files(
 client_srcs = files(
   'OpenGL/src/Application.cpp',
   'OpenGL/src/MonCraftScene.cpp',
+  'OpenGL/src/multiplayer/client/Server.cpp',
   'OpenGL/src/multiplayer/client/ClientServer.cpp',
   'OpenGL/src/multiplayer/client/RealServer.cpp',
 )
@@ -84,36 +85,72 @@ client_srcs = files(
 server_srcs = files(
   'OpenGL/src/Server.cpp',
   'OpenGL/src/multiplayer/server/Server.cpp',
+  'OpenGL/src/multiplayer/server/UdpServer.cpp',
+  'OpenGL/src/multiplayer/server/WebSocketServer.cpp',
+  'OpenGL/src/multiplayer/server/Server.cpp',
   'OpenGL/src/multiplayer/server/Client.cpp',
 )
 
-deps = [
-  dependency('glew'),
-  dependency('gl'),
-  dependency('sdl2'),
-  dependency('SDL2_image'),
-  dependency('OpenGL'),
-  dependency('glfw3'),
-  dependency('glm'),
-  dependency('threads'),
-  dependency('openmp'),
-  dependency('sfml-audio'),
-  dependency('sfml-network'),
-  dependency('freetype2'),
-]
-
-incs = include_directories('OpenGL/src')
-
 # install_subdir('OpenGL/src/shader', install_dir : 'shader')
 
-exe = executable(
-  'MonCraft', [client_srcs, srcs],
-  dependencies: deps,
-  include_directories: incs
-)
+if host_machine.system() == 'emscripten'
+  incs = include_directories('OpenGL/src', 'Dependencies', 'Dependencies/SFML/include', 'Dependencies/EMSFML/src/')
 
-exe_server = executable(
-  'MonCraftServer', [server_srcs, srcs],
-  dependencies: deps,
-  include_directories: incs
-)
+  deps = []
+
+  emsfml_srcs = files(
+    'Dependencies/EMSFML/src/SFML/Network/IpAddress.cpp',
+    'Dependencies/EMSFML/src/SFML/Network/Packet.cpp',
+    'Dependencies/EMSFML/src/SFML/Network/Socket.cpp',
+    'Dependencies/EMSFML/src/SFML/Network/TcpSocket.cpp',
+    'Dependencies/EMSFML/src/SFML/Network/UdpSocket.cpp',
+    'Dependencies/EMSFML/src/SFML/Network/Emscripten/SocketImpl.cpp',
+
+    'Dependencies/EMSFML/src/SFML/System/Err.cpp',
+    'Dependencies/EMSFML/src/SFML/System/Clock.cpp',
+    'Dependencies/EMSFML/src/SFML/System/Sleep.cpp',
+    'Dependencies/EMSFML/src/SFML/System/Time.cpp',
+    'Dependencies/EMSFML/src/SFML/System/Unix/ClockImpl.cpp',
+    'Dependencies/EMSFML/src/SFML/System/Unix/SleepImpl.cpp',
+  )
+
+  exe = executable(
+    'MonCraft', [emsfml_srcs, client_srcs, srcs],
+    dependencies: deps,
+    include_directories: incs
+  )
+else
+  deps = [
+    dependency('glew'),
+    dependency('gl'),
+    dependency('sdl2'),
+    dependency('SDL2_image'),
+    dependency('OpenGL'),
+    dependency('glfw3'),
+    dependency('glm'),
+    dependency('threads'),
+    dependency('openmp'),
+    dependency('sfml-audio'),
+    dependency('sfml-network'),
+    dependency('freetype2'),
+    dependency('openssl'),
+  ]
+
+  srcs += files('OpenGL/src/audio/Music.cpp')
+
+  incs = include_directories('OpenGL/src', 'Dependencies')
+
+  # install_subdir('OpenGL/src/shader', install_dir : 'shader')
+
+  exe = executable(
+    'MonCraft', [client_srcs, srcs],
+    dependencies: deps,
+    include_directories: incs
+  )
+
+  exe_server = executable(
+    'MonCraftServer', [server_srcs, srcs],
+    dependencies: deps,
+    include_directories: incs
+  )
+endif

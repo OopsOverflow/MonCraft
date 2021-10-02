@@ -59,8 +59,8 @@ void WaterGeometry::genFace(glm::ivec3 pos, BlockFace face, Block* block, std::a
             if (neighborBlock->type == BlockType::Water)
                 posFace = &fillSpaceBlockPositions[(size_t)face];
         }
-            
-            
+
+
     }
 
     _pos.insert(_pos.end(), posFace->begin(), posFace->end());
@@ -101,7 +101,7 @@ void WaterGeometry::generateMesh(ivec3 pos, Block* block, std::array<Block*, 26>
         bool printFace = false;
 
         //TODO optimise this mess
-        
+
         if (!neigh->isSolid() || off.second == BlockFace::TOP) {
             if ((size_t)off.second >= 2) {
                 Block* topBlock = neighbors[checkNeighbors[(size_t)off.second - 2][2]];
@@ -341,8 +341,8 @@ const std::array<std::array<int, 3>, 4> WaterGeometry::checkNeighbors = {
 
 //TODO post release maybe
 const face_t<2> WaterGeometry::faceNormalMap = {
-    1.f, 0.f,
+    0.5f, 0.f,
     0.f, 0.f,
     0.f, 1.f,
-    1.f, 1.f,
+    0.5f, 1.f,
 };

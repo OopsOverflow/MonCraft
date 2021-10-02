@@ -2,10 +2,12 @@
 
 #include <iostream>
 #include <algorithm>
+
 #include "gl/Shader.hpp"
+#include "debug/Debug.hpp"
 
 Mesh::Mesh(GLuint vao, GLuint vbo, GLuint ebo, GLuint vertCount)
-    : myVAO(vao), myVBO(vbo), myEBO(ebo), myVertCount(vertCount)
+    : vao(vao), vbo(vbo), ebo(ebo), vertCount(vertCount)
 { }
 
 Mesh::Mesh(std::vector<GLfloat> const& positions,
@@ -15,20 +17,22 @@ Mesh::Mesh(std::vector<GLfloat> const& positions,
      std::vector<GLuint>  const& indices,
      std::vector<GLfloat> const& normalMapCoords)
 {
-  myVertCount = (GLuint)indices.size();
+  ASSERT_GL_MAIN_THREAD();
 
-  glGenVertexArrays(1, &myVAO);
-  glGenBuffers(1, &myVBO);
-  glGenBuffers(1, &myEBO);
+  vertCount = (GLuint)indices.size();
 
-  glBindVertexArray(myVAO);
-  glBindBuffer(GL_ARRAY_BUFFER, myVBO);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, myEBO);
+  glGenVertexArrays(1, &vao);
+  glGenBuffers(1, &vbo);
+  glGenBuffers(1, &ebo);
+
+  glBindVertexArray(vao);
+  glBindBuffer(GL_ARRAY_BUFFER, vbo);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 
   size_t size = positions.size() / 3 * sizeof(GLfloat);
 
   glBufferData(GL_ARRAY_BUFFER, size * 11, nullptr, GL_STATIC_DRAW);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, myVertCount * sizeof(GLuint), indices.data(), GL_STATIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, vertCount * sizeof(GLuint), indices.data(), GL_STATIC_DRAW);
 
   // positions
   glBufferSubData(GL_ARRAY_BUFFER, 0, size * 3, positions.data());
@@ -76,42 +80,50 @@ static void reverseTriangles(std::vector<GLuint>& vec) {
 
 Mesh::Mesh(MeshData& data)
 {
+  ASSERT_GL_MAIN_THREAD();
   size_t transpCount = data.indicesTranspX.size() + data.indicesTranspY.size() + data.indicesTranspZ.size();
-  myVertCount = data.indicesSolid.size() + transpCount;
+  vertCount = data.indicesSolid.size() + transpCount;
 
-  glGenVertexArrays(1, &myVAO);
-  glGenBuffers(1, &myVBO);
-  glGenBuffers(1, &myEBO);
+  glGenVertexArrays(1, &vao);
+  glGenBuffers(1, &vbo);
+  glGenBuffers(1, &ebo);
 
-  glBindVertexArray(myVAO);
-  glBindBuffer(GL_ARRAY_BUFFER, myVBO);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, myEBO);
+  glBindVertexArray(vao);
+  glBindBuffer(GL_ARRAY_BUFFER, vbo);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 
   size_t size = data.positions.size() / 3 * sizeof(GLfloat);
 
   glBufferData(GL_ARRAY_BUFFER, size * 11, nullptr, GL_STATIC_DRAW);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, (data.indicesSolid.size() + 2 * transpCount) * sizeof(GLuint), nullptr, GL_STATIC_DRAW);
   size_t indOff = 0;
-  glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, indOff, data.indicesSolid.size() * sizeof(GLuint), data.indicesSolid.data());
+  if(data.indicesSolid.size() != 0)
+    glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, indOff, data.indicesSolid.size() * sizeof(GLuint), data.indicesSolid.data());
   indOff += data.indicesSolid.size() * sizeof(GLuint);
 
   // indices in positive x/y/z direction
-  glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, indOff, data.indicesTranspX.size() * sizeof(GLuint), data.indicesTranspX.data());
+  if(data.indicesTranspX.size() != 0)
+    glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, indOff, data.indicesTranspX.size() * sizeof(GLuint), data.indicesTranspX.data());
   indOff += data.indicesTranspX.size() * sizeof(GLuint);
-  glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, indOff, data.indicesTranspY.size() * sizeof(GLuint), data.indicesTranspY.data());
+  if(data.indicesTranspY.size() != 0)
+    glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, indOff, data.indicesTranspY.size() * sizeof(GLuint), data.indicesTranspY.data());
   indOff += data.indicesTranspY.size() * sizeof(GLuint);
-  glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, indOff, data.indicesTranspZ.size() * sizeof(GLuint), data.indicesTranspZ.data());
+  if(data.indicesTranspZ.size() != 0)
+    glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, indOff, data.indicesTranspZ.size() * sizeof(GLuint), data.indicesTranspZ.data());
   indOff += data.indicesTranspZ.size() * sizeof(GLuint);
 
   // indices in negative x/y/z direction
   reverseTriangles(data.indicesTranspX);
   reverseTriangles(data.indicesTranspY);
   reverseTriangles(data.indicesTranspZ);
-  glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, indOff, data.indicesTranspX.size() * sizeof(GLuint), data.indicesTranspX.data());
+  if(data.indicesTranspX.size() != 0)
+    glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, indOff, data.indicesTranspX.size() * sizeof(GLuint), data.indicesTranspX.data());
   indOff += data.indicesTranspX.size() * sizeof(GLuint);
-  glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, indOff, data.indicesTranspY.size() * sizeof(GLuint), data.indicesTranspY.data());
+  if(data.indicesTranspY.size() != 0)
+    glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, indOff, data.indicesTranspY.size() * sizeof(GLuint), data.indicesTranspY.data());
   indOff += data.indicesTranspY.size() * sizeof(GLuint);
-  glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, indOff, data.indicesTranspZ.size() * sizeof(GLuint), data.indicesTranspZ.data());
+  if(data.indicesTranspZ.size() != 0)
+    glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, indOff, data.indicesTranspZ.size() * sizeof(GLuint), data.indicesTranspZ.data());
 
   // positions
   glBufferSubData(GL_ARRAY_BUFFER, 0, size * 3, data.positions.data());
@@ -142,29 +154,27 @@ Mesh::Mesh(MeshData& data)
 }
 
 Mesh::Mesh(Mesh&& other) {
-  myVAO = other.myVAO;
-  myVBO = other.myVBO;
-  myEBO = other.myEBO;
-  myVertCount = other.myVertCount;
-  other.myVAO = 0;
-  other.myVBO = 0;
-  other.myEBO = 0;
-  other.myVertCount = 0;
+  vao = other.vao;
+  vbo = other.vbo;
+  ebo = other.ebo;
+  vertCount = other.vertCount;
+  other.vao = 0;
+  other.vbo = 0;
+  other.ebo = 0;
+  other.vertCount = 0;
 }
 
 GLuint Mesh::getVAO() const {
-  return myVAO;
+  return vao;
 }
 
 GLuint Mesh::getVertexCount() const {
-  return myVertCount;
+  return vertCount;
 }
-
-#include "debug/Debug.hpp"
 
 Mesh::~Mesh() {
   ASSERT_GL_MAIN_THREAD();
-  glDeleteVertexArrays(1, &myVAO);
-  glDeleteBuffers(1, &myVBO);
-  glDeleteBuffers(1, &myEBO);
+  glDeleteVertexArrays(1, &vao);
+  glDeleteBuffers(1, &vbo);
+  glDeleteBuffers(1, &ebo);
 }

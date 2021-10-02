@@ -15,10 +15,7 @@
 class Member {
 
 public:
-  /**
-   * Creates a member from it's mesh.
-   */
-  Member(Mesh mesh);
+  Member();
   virtual ~Member();
 
   /**
@@ -33,5 +30,9 @@ public:
 
 protected:
   glm::mat4 geometryModel;
-  Mesh mesh;
+
+  virtual std::unique_ptr<Mesh> createMesh() = 0;
+
+private:
+  std::unique_ptr<Mesh> mesh;
 };

@@ -5,6 +5,11 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_syswm.h>
 
+#ifdef EMSCRIPTEN
+#include <emscripten.h>
+#include <emscripten/html5.h>
+#endif
+
 // GLEW Libraries
 #include <GL/glew.h>
 #include <GL/gl.h>
@@ -30,10 +35,9 @@ Viewport::Viewport(glm::ivec2 size)
       mouseCaptured(false), vsync(true),
       root(nullptr), config(SaveManager::getInst().getConfig())
 {
-  //Initialize SDL2
-  if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-      throw std::runtime_error(std::string("SDL init failed: ") + SDL_GetError());
-  }
+  // Initialize SDL2
+  if (SDL_Init(SDL_INIT_VIDEO) < 0)
+    throw std::runtime_error(std::string("SDL init failed: ") + SDL_GetError());
 
   //Create a Window
   window = SDL_CreateWindow("MonCraft",
@@ -44,10 +48,19 @@ Viewport::Viewport(glm::ivec2 size)
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 
+  #ifdef EMSCRIPTEN
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+  // TODO
+  // EMSCRIPTEN_WEBGL_CONTEXT_HANDLE ctx = emscripten_webgl_get_current_context();
+  // EmscriptenWebGLContextAttributes attrs;
+  // emscripten_webgl_get_context_attributes(ctx, &attrs);
+  // emscripten_webgl_enable_extension(ctx, "WEBGL_depth_texture");
+  #endif
+
   //Initialize the OpenGL Context
   context = SDL_GL_CreateContext(window);
-
-  //Check GLEW Intitialisation
+  
+  // Initialize GLEW
   if (glewInit() != GLEW_OK)
     throw std::runtime_error("GLEW init failed");
 

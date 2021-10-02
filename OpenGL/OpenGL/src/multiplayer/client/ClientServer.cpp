@@ -31,6 +31,7 @@ void ClientServer::update() {
       generator.waitingChunks.push(waiting.at(i));
     }
   }
+  
   pendingChunks.remOldChunks();
 
   // save changes since last update
@@ -44,6 +45,10 @@ void ClientServer::update() {
       SaveManager::saveChunk(*chunk);
     }
   }
+}
+
+bool ClientServer::login() {
+  return true;
 }
 
 std::shared_ptr<Character> ClientServer::getPlayer() {

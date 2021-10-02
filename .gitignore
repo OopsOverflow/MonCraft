@@ -11,3 +11,7 @@ compile_commands.json
 .valgrind
 Documentation
 OpenGL/OpenGL/save
+.*
+OpenGL/Dependencies/boost
+OpenGL/Dependencies/websocketpp
+OpenGL/OpenGL/cert

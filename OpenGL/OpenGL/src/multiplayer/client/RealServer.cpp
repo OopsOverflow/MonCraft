@@ -14,27 +14,16 @@ RealServer::RealServer(std::string url, unsigned short port)
     world(World::getInst())
 {
   lastUpdate = clock.getElapsedTime() - frameDuration - frameDuration; // needs update
+
   socket.setBlocking(false);
+
   if(socket.bind(sf::Socket::AnyPort) != sf::Socket::Done) {
     throw NetworkError("Failed to bind to any port");
   }
 
-  bool handshake = false;
-  int i = 0;
-  const int maxTries = 50;
-  do {
-    packet_login();
-    std::cout << "waiting for server..." << std::endl;
-    handshake = listen_ack_login();
-    sf::sleep(sf::milliseconds(100));
-  } while(!handshake && i++ < maxTries);
-
-  if(i == maxTries) {
-    throw std::runtime_error("Server not found");
-  }
-
   lastServerUpdate = std::time(nullptr);
 
+  Identifier playerUid = generateIdentifier();
   auto newPlayer = std::make_unique<Character>(NetworkConfig::SPAWN_POINT);
   auto entity = world.entities.add(playerUid, std::move(newPlayer));
   player = std::dynamic_pointer_cast<Character>(entity);
@@ -44,17 +33,42 @@ RealServer::~RealServer() {
   packet_logout();
 }
 
+bool RealServer::login() {
+  sf::Packet packet;
+  sf::IpAddress serverAddr;
+  unsigned short serverPort;
+
+  auto recv_res = socket.receive(packet, serverAddr, serverPort);
+
+  if(recv_res == sf::Socket::Done) {
+    PacketHeader header;
+    packet >> header;
+    auto type = header.getType();
+    lastServerUpdate = std::time(nullptr);
+
+    if(type == PacketType::ACK_LOGIN) return true; // TODO: check correct uid ?
+    else std::cout << "[WARN] not a login packet: " << header << std::endl;
+  }
+
+  packet_login();
+  return false;
+}
+
 void RealServer::update() {
   if(std::time(nullptr) - lastServerUpdate > timeout) {
     throw std::runtime_error("server timeout");
   }
 
-  while(poll()) {};
+  pendingChunks.remOldChunks();
+
+  #ifdef EMSCRIPTEN
+    poll(); // TODO: this hack avoids waiting too long and timeout
+  #else
+    while(poll()) {}
+  #endif
 
   packet_blocks();
   packet_chunks();
-
-  pendingChunks.remOldChunks();
 
   sf::Time now = clock.getElapsedTime();
   if(now - lastUpdate > frameDuration) {
@@ -70,9 +84,7 @@ bool RealServer::poll() {
 
   auto recv_res = socket.receive(packet, serverAddr, serverPort);
 
-  if(recv_res != sf::Socket::Done) {
-    return false;
-  }
+  if(recv_res != sf::Socket::Done) return false;
 
   PacketHeader header;
   packet >> header;
@@ -83,9 +95,7 @@ bool RealServer::poll() {
   else if(type == PacketType::LOGOUT) handle_logout(packet);
   else if(type == PacketType::BLOCKS) handle_blocks(packet);
   else if(type == PacketType::CHUNKS) handle_chunks(packet);
-  else {
-    std::cout << "[WARN] unhandled packed: " << header << std::endl;
-  }
+  else std::cout << "[WARN] unhandled packet: " << header << std::endl;
 
   return true;
 }
@@ -100,7 +110,7 @@ void RealServer::applyEntityTransforms(sf::Packet& packet) {
 
     auto entity = world.entities.get(uid);
 
-    if(uid == playerUid) {
+    if(uid == player->uid) {
       entity->consume(packet);
     }
     else {
@@ -150,7 +160,7 @@ void RealServer::packet_login() {
   sf::Packet packet;
   PacketHeader header(PacketType::LOGIN);
 
-  packet << header;
+  packet << header << player->uid;
 
   auto send_res = socket.send(packet, addr, port);
 
@@ -211,29 +221,6 @@ void RealServer::packet_ack_chunks(std::vector<glm::ivec3> ack) {
   }
 }
 
-bool RealServer::listen_ack_login() {
-  sf::Packet packet;
-  sf::IpAddress serverAddr;
-  unsigned short serverPort;
-  auto recv_res = socket.receive(packet, serverAddr, serverPort);
-
-  if(recv_res != sf::Socket::Done) {
-    return false;
-  }
-
-  PacketHeader header;
-  packet >> header;
-  PacketType type = header.getType();
-
-  if(type != PacketType::ACK_LOGIN) {
-    throw NetworkError("listen_ack_login failed");
-  }
-
-  packet >> playerUid;
-
-  return true;
-}
-
 void RealServer::handle_logout(sf::Packet& packet) {
   Identifier uid;
   packet >> uid;
@@ -247,7 +234,7 @@ void RealServer::handle_blocks(sf::Packet& packet) {
   Identifier uid;
   packet >> uid;
 
-  if(uid != playerUid) {
+  if(uid != player->uid) {
     BlockArray blocks;
     packet >> blocks;
 

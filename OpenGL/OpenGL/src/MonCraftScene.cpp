@@ -41,6 +41,7 @@ bool MonCraftScene::onMouseMove(glm::ivec2 pos) {
 }
 
 void MonCraftScene::updateShadowMaps() {
+    #ifndef EMSCRIPTEN // TODO: COMBAK: we need to find a way to make it work in wasm
     shadows.update(sunDir);
     shadows.attach(camera, Frustum::NEAR);
     shadows.beginFrame(Frustum::NEAR);
@@ -55,29 +56,30 @@ void MonCraftScene::updateShadowMaps() {
     shadows.beginFrame(Frustum::FAR);
     world.render(shadows.camera);
     shadows.endFrame();
+    #endif
 }
 
 
 void MonCraftScene::updateUniforms(float t) {
     auto sunDirViewSpace = camera.view * vec4(sunDir, 0.0);
 
-    glUniform1f(shader->getUniformLocation("lightIntensity"), 1);
-    glUniform1f(shader->getUniformLocation("skyTime"), t * skyboxSpeed);
-    glUniform3fv(shader->getUniformLocation("lightDirection"), 1, value_ptr(sunDirViewSpace));
-    glUniform1f(fogShader->getUniformLocation("sunTime"), t);
-    glUniform1f(fogShader->getUniformLocation("lightIntensity"), 1);
-    glUniform3fv(fogShader->getUniformLocation("lightDirection"), 1, value_ptr(sunDirViewSpace));
-    glUniform1i(shader->getUniformLocation("fog"), (int)fogEnabled); // TODO
+    glUniform1f(shader->getUniform("lightIntensity"), 1);
+    glUniform1f(shader->getUniform("skyTime"), t * skyboxSpeed);
+    glUniform3fv(shader->getUniform("lightDirection"), 1, value_ptr(sunDirViewSpace));
+    glUniform1f(fogShader->getUniform("sunTime"), t);
+    glUniform1f(fogShader->getUniform("lightIntensity"), 1);
+    glUniform3fv(fogShader->getUniform("lightDirection"), 1, value_ptr(sunDirViewSpace));
+    glUniform1i(shader->getUniform("fog"), (int)fogEnabled); // TODO
     shader->bindTexture(TEXTURE_NORMAL, normalMapID[(size_t)(t*15)%30]);
 
     Block* block = world.getBlock(ivec3(camera.position + vec3(-0.5f,0.6f,-0.5f)));
     if (block) {
         bool isUnderWater = block->type == BlockType::Water;
-        GLint underWater = shader->getUniformLocation("underWater");
+        GLint underWater = shader->getUniform("underWater");
         glUniform1i(underWater, isUnderWater);
 
         sky.skyBoxShader->activate();
-        underWater = sky.skyBoxShader->getUniformLocation("underWater");
+        underWater = sky.skyBoxShader->getUniform("underWater");
         glUniform1i(underWater, isUnderWater);
 
         shader->activate();
@@ -119,7 +121,10 @@ void MonCraftScene::drawEntities() {
 
 void MonCraftScene::drawFrame(float t, float dt) {
     // updates
-    musicPlayer.update();
+    #ifndef EMSCRIPTEN
+        musicPlayer.update();
+    #endif
+
     vp->keyboardController.apply(*player);
     vp->mouseController.apply(*player);
 

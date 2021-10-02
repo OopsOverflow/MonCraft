@@ -39,11 +39,14 @@ static const std::vector<GLfloat> chestUVs= {
 class Chest : public Member {
 
 public:
-  Chest()
-   : Member(Mesh(Cube::vertices, Cube::normals, chestUVs, Cube::occlusions, Cube::indices, Cube::normalMap))
-  {
+  Chest() {
     glm::mat4 I(1.f);
 
     geometryModel = glm::scale(I, {8, 12, 4});
+  }
+
+protected:
+  std::unique_ptr<Mesh> createMesh() override {
+    return std::make_unique<Mesh>(Cube::vertices, Cube::normals, chestUVs, Cube::occlusions, Cube::indices, Cube::normalMap);
   }
 };

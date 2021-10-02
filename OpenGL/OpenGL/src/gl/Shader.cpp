@@ -11,10 +11,9 @@ Shader::Shader(const char *vertexPath, const char *fragmentPath) {
   vertex = createShader(GL_VERTEX_SHADER, vertexPath);
   fragment = createShader(GL_FRAGMENT_SHADER, fragmentPath);
   program = createProgram(vertex, fragment);
+  initLocations();
   glDeleteShader(vertex);
   glDeleteShader(fragment);
-
-  initLocations();
 }
 
 void Shader::activate() {
@@ -24,12 +23,16 @@ void Shader::activate() {
 
 Shader *Shader::getActive() { return activeShader; }
 
-GLint Shader::getUniformLocation(const std::string &location) const {
+GLint Shader::getUniform(const std::string &location) const {
   return glGetUniformLocation(program, location.c_str());
 }
 
+GLint Shader::getUniform(ShaderLocation location) const {
+  return uniformLookup[location];
+}
+
 void Shader::bindTexture(ShaderLocation textureLocation, GLuint texture) const {
-  glActiveTexture(GL_TEXTURE0 + textureLocation);
+  glActiveTexture(GL_TEXTURE0 + textureLocation - TEXTURE_COLOR);
   glBindTexture(GL_TEXTURE_2D, texture);
 }
 
@@ -38,39 +41,47 @@ void Shader::bindTexture(ShaderLocation textureLocation, GLuint texture) const {
 void Shader::initLocations() {
   glUseProgram(program);
 
-  GLint t_color = getUniformLocation("t_color");
-  GLint t_normal = getUniformLocation("t_normal");
-  GLint t_shadow0 = getUniformLocation("t_shadow[0]");
-  GLint t_shadow1 = getUniformLocation("t_shadow[1]");
-  GLint t_shadow2 = getUniformLocation("t_shadow[2]");
-  glUniform1i(t_color, 0);
-  glUniform1i(t_normal, 1);
-  glUniform1i(t_shadow0, 2);
-  glUniform1i(t_shadow1, 3);
-  glUniform1i(t_shadow2, 4);
+  for(size_t i = 0; i < uniformLookup.size(); i++)
+    uniformLookup[i] = -1;
 
-#if defined(DEBUG) && SHADER_ENABLE_DEBUG == 1
-#define ATTRLOC(str) glGetAttribLocation(program, str)
-#define UNILOC(str) glGetUniformLocation(program, str)
-  std::cout << "---- SHADER ----" << std::endl
-            << "v_position: " << ATTRLOC("v_position") << std::endl
-            << "v_color: " << ATTRLOC("v_color") << std::endl
-            << "v_normal: " << ATTRLOC("v_normal") << std::endl
-            << "v_texture: " << ATTRLOC("v_texture") << std::endl
-            << "v_occlusion: " << ATTRLOC("v_occlusion") << std::endl
-            << "v_normalMap: " << ATTRLOC("v_normalMap") << std::endl
-            << "m_model: " << UNILOC("m_model") << std::endl
-            << "m_view: " << UNILOC("m_view") << std::endl
-            << "m_projection: " << UNILOC("m_projection") << std::endl
-            << "m_normal: " << UNILOC("m_normal") << std::endl
-            << "m_shadows: " << UNILOC("m_shadows") << std::endl
-            << "t_color: " << t_color << std::endl
-            << "t_normal: " << t_normal << std::endl
-            << "t_shadow0: " << t_shadow0 << std::endl
-            << "t_shadow1: " << t_shadow1 << std::endl
-            << "t_shadow2: " << t_shadow2 << std::endl;
-  #undef ATTRLOC
-  #undef UNILOC
+  uniformLookup[MATRIX_MODEL] = getUniform("m_model");
+  uniformLookup[MATRIX_VIEW] = getUniform("m_view");
+  uniformLookup[MATRIX_PROJECTION] = getUniform("m_projection");
+  uniformLookup[MATRIX_NORMAL] = getUniform("m_normal");
+  uniformLookup[MATRIX_SHADOWS] = getUniform("m_shadows");
+
+  uniformLookup[TEXTURE_COLOR] = getUniform("t_color");
+  uniformLookup[TEXTURE_NORMAL] = getUniform("t_normal");
+  uniformLookup[TEXTURE_SHADOW0] = getUniform("t_shadow[0]");
+  uniformLookup[TEXTURE_SHADOW1] = getUniform("t_shadow[1]");
+  uniformLookup[TEXTURE_SHADOW2] = getUniform("t_shadow[2]");
+
+  glUniform1i(uniformLookup[TEXTURE_COLOR], 0);
+  glUniform1i(uniformLookup[TEXTURE_NORMAL], 1);
+  glUniform1i(uniformLookup[TEXTURE_SHADOW0], 2);
+  glUniform1i(uniformLookup[TEXTURE_SHADOW1], 3);
+  glUniform1i(uniformLookup[TEXTURE_SHADOW2], 4);
+
+  #if defined(DEBUG) && SHADER_ENABLE_DEBUG == 1
+    #define ATTRLOC(str) glGetAttribLocation(program, str)
+      std::cout << "---- SHADER ----" << std::endl
+                << "v_position: " << ATTRLOC("v_position") << std::endl
+                << "v_color: " << ATTRLOC("v_color") << std::endl
+                << "v_normal: " << ATTRLOC("v_normal") << std::endl
+                << "v_texture: " << ATTRLOC("v_texture") << std::endl
+                << "v_occlusion: " << ATTRLOC("v_occlusion") << std::endl
+                << "v_normalMap: " << ATTRLOC("v_normalMap") << std::endl
+                << "m_model: " << uniformLookup[MATRIX_MODEL] << std::endl
+                << "m_view: " << uniformLookup[MATRIX_VIEW] << std::endl
+                << "m_projection: " << uniformLookup[MATRIX_PROJECTION] << std::endl
+                << "m_normal: " << uniformLookup[MATRIX_NORMAL] << std::endl
+                << "m_shadows: " << uniformLookup[MATRIX_SHADOWS] << std::endl
+                << "t_color: " << uniformLookup[TEXTURE_COLOR] << std::endl
+                << "t_normal: " << uniformLookup[TEXTURE_NORMAL] << std::endl
+                << "t_shadow0: " << uniformLookup[TEXTURE_SHADOW0] << std::endl
+                << "t_shadow1: " << uniformLookup[TEXTURE_SHADOW1] << std::endl
+                << "t_shadow2: " << uniformLookup[TEXTURE_SHADOW2] << std::endl;
+    #undef ATTRLOC
   #endif
 }
 
@@ -132,6 +143,11 @@ GLuint Shader::createProgram(GLuint vertex, GLuint fragment) {
   program = glCreateProgram();
   glAttachShader(program, vertex);
   glAttachShader(program, fragment);
+  glBindAttribLocation(program, 0, "v_position");
+  glBindAttribLocation(program, 1, "v_normal");
+  glBindAttribLocation(program, 2, "v_texture");
+  glBindAttribLocation(program, 3, "v_occlusion");
+  glBindAttribLocation(program, 4, "v_normalMap");
   glLinkProgram(program);
   glGetProgramiv(program, GL_LINK_STATUS, &success);
 

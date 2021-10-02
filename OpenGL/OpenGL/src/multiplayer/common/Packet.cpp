@@ -1,5 +1,11 @@
 #include "Packet.hpp"
 
+// #define VERBOSE_PACKET
+
+#ifdef VERBOSE_PACKET
+#include <sstream>
+#endif
+
 PacketHeader::PacketHeader(PacketType type)
   : type((sf::Uint8)type)
 { }
@@ -14,10 +20,19 @@ PacketType PacketHeader::getType() const {
 }
 
 sf::Packet& operator<<(sf::Packet& packet, PacketHeader const& header) {
+    #ifdef VERBOSE_PACKET
+      std::stringstream ss;
+      ss << header;
+      packet << ss.str();
+    #endif
     return packet << header.type;
 }
 
 sf::Packet& operator>>(sf::Packet& packet, PacketHeader& header) {
+    #ifdef VERBOSE_PACKET
+      std::string s;
+      packet >> s;
+    #endif
     return packet >> header.type;
 }
 
@@ -33,6 +48,6 @@ std::ostream& operator<<(std::ostream& os, PacketHeader const& header) {
   else if(type == PacketType::CHUNKS) os << "CHUNKS";
   else if(type == PacketType::ACK_CHUNKS) os << "ACK_CHUNKS";
   else if(type == PacketType::NONE) os << "NONE";
-  else os << "<unknown>";
+  else os << "<unknown: " << (int)type << ">";
   return os;
 }

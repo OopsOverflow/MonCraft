@@ -2,6 +2,8 @@
 
 #include <SFML/Network.hpp>
 #include <glm/glm.hpp>
+#include <deque>
+
 #include "util/Identifier.hpp"
 #include "entity/Entity.hpp"
 
@@ -25,6 +27,6 @@ public:
   Client(Identifier uid);
 
   Entity player;
-  std::vector<glm::ivec3> waitingChunks;
+  std::deque<glm::ivec3> waitingChunks;
   std::time_t lastUpdate;
 };

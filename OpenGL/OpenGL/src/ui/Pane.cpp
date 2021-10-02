@@ -74,8 +74,8 @@ void Pane::draw() {
   computeModel();
   glBindVertexArray(vao);
   shader->activate();
-  glUniform4fv(shader->getUniformLocation("color"), 1, glm::value_ptr(color));
-  glUniformMatrix4fv(MATRIX_MODEL, 1, GL_FALSE, glm::value_ptr(model));
+  glUniform4fv(shader->getUniform("color"), 1, glm::value_ptr(color));
+  glUniformMatrix4fv(shader->getUniform(MATRIX_MODEL), 1, GL_FALSE, glm::value_ptr(model));
   glDrawArrays(GL_TRIANGLES, 0, 6);
   glBindVertexArray(0);
   Component::draw();

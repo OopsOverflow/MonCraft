@@ -18,7 +18,6 @@ Entity::Entity(Hitbox hitbox)
 {}
 
 Entity::~Entity() {
-	SaveManager::saveEntity(*this);
 }
 
 void Entity::walk(vec3 dir) {

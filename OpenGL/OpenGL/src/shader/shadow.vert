@@ -1,15 +1,15 @@
-#version 430 core
-layout (location = 0) in vec3 v_position;
-layout (location = 0) uniform mat4 m_model;
-layout (location = 4) uniform mat4 m_shadows;
+#version 300 es
+in vec3 v_position;
+uniform mat4 m_model;
+uniform mat4 m_shadows;
 
 vec3 nsigmoid1(vec3 x, float k) {
-  return 1 / (1 + exp(-x * k)) * 2 - 1;
+  return vec3(1.0) / (vec3(1.0) + exp(-x * k)) * 2.0 - 1.0;
 }
 
 vec3 nsigmoid2(vec3 x, float k) {
-  vec3 val = (-pow(x, vec3(3)) + 3 * x) / 2;
-  return clamp(val, -1, 1);
+  vec3 val = (-pow(x, vec3(3.0)) + 3.0 * x) / 2.0;
+  return clamp(val, -1.0, 1.0);
 }
 
 void main()

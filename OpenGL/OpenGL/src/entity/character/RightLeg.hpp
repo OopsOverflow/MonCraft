@@ -39,9 +39,7 @@ static const std::vector<GLfloat> rightLegUVs = {
 class RightLeg : public Member {
 
 public:
-  RightLeg()
-   : Member(Mesh(Cube::vertices, Cube::normals, rightLegUVs, Cube::occlusions, Cube::indices, Cube::normalMap))
-  {
+  RightLeg() {
     glm::mat4 I(1.f);
 
     geometryModel = glm::scale(I, {4, 12, 4});
@@ -51,5 +49,10 @@ public:
     geometryModel = glm::translate(I, {zFightingOffset, 0, -zFightingOffset}) * geometryModel;
 
     node.loc = {-2, -6, 0};
+  }
+  
+protected:
+  std::unique_ptr<Mesh> createMesh() override {
+    return std::make_unique<Mesh>(Cube::vertices, Cube::normals, rightLegUVs, Cube::occlusions, Cube::indices, Cube::normalMap);
   }
 };

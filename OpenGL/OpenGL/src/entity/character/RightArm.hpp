@@ -39,14 +39,17 @@ static const std::vector<GLfloat> rightArmUVs= {
 class RightArm : public Member {
 
 public:
-  RightArm()
-   : Member(Mesh(Cube::vertices, Cube::normals, rightArmUVs, Cube::occlusions, Cube::indices, Cube::normalMap))
-  {
+  RightArm() {
     glm::mat4 I(1.f);
 
     geometryModel = glm::scale(I, {4, 12, 4});
     geometryModel = glm::translate(I, {0, -4, 0}) * geometryModel;
 
     node.loc = {-6, 4, 0};
+  }
+
+protected:
+  std::unique_ptr<Mesh> createMesh() override {
+    return std::make_unique<Mesh>(Cube::vertices, Cube::normals, rightArmUVs, Cube::occlusions, Cube::indices, Cube::normalMap);
   }
 };
