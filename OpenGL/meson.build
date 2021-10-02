@@ -57,6 +57,7 @@ srcs = files(
   'OpenGL/src/ui/Button.cpp',
   'OpenGL/src/ui/Input.cpp',
   'OpenGL/src/ui/Event.cpp',
+  'OpenGL/src/ui/Image.cpp',
   'OpenGL/src/ui/Key.cpp',
   'OpenGL/src/ui/style/Style.cpp',
   'OpenGL/src/ui/style/Type.cpp',

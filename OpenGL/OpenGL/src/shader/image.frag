@@ -2,7 +2,7 @@
 
 precision mediump float;
 
-smooth in vec2 vertexPosition;
+smooth in vec2 texCoords;
 
 out vec4 outputColor;
 uniform sampler2D uTexture;
@@ -10,5 +10,5 @@ uniform sampler2D uTexture;
 
 
 void main() {
-  outputColor = texture(uTexture, vertexPosition);
+  outputColor = texture(uTexture, texCoords);
 }

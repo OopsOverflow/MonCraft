@@ -106,7 +106,7 @@ style_const_t Image::getDefaultStyle() const {
 
 
 void Image::draw() {
-
+  glDisable(GL_CULL_FACE);
     glBindVertexArray(vao);
     shader->activate();
     GLint texSampler = shader->getUniform("uTexture");
