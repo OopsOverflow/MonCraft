@@ -188,6 +188,7 @@
     <ClCompile Include="src\gl\Font.cpp" />
     <ClCompile Include="src\gl\Mesh.cpp" />
     <ClCompile Include="src\gl\ResourceManager.cpp" />
+    <ClCompile Include="src\gl\SafeMesh.cpp" />
     <ClCompile Include="src\gl\Shader.cpp" />
     <ClCompile Include="src\gl\ShadowMap.cpp" />
     <ClCompile Include="src\gl\Viewport.cpp" />
@@ -198,6 +199,7 @@
     <ClCompile Include="src\interface\MonCraftScene.cpp" />
     <ClCompile Include="src\multiplayer\client\ClientServer.cpp" />
     <ClCompile Include="src\multiplayer\client\RealServer.cpp" />
+    <ClCompile Include="src\multiplayer\client\Server.cpp" />
     <ClCompile Include="src\multiplayer\common\NetworkError.cpp" />
     <ClCompile Include="src\multiplayer\common\Packet.cpp" />
     <ClCompile Include="src\multiplayer\terrain\BiomeMap.cpp" />
@@ -211,6 +213,7 @@
     <ClCompile Include="src\noise\value.cpp" />
     <ClCompile Include="src\noise\voronoi.cpp" />
     <ClCompile Include="src\noise\XXHash.cpp" />
+    <ClCompile Include="src\ui\Image.cpp" />
     <ClCompile Include="src\util\SaveManager.cpp" />
     <ClCompile Include="src\terrain\BlockArray.cpp" />
     <ClCompile Include="src\terrain\Chunk.cpp" />
@@ -287,6 +290,7 @@
     <ClInclude Include="src\gl\Font.hpp" />
     <ClInclude Include="src\gl\Mesh.hpp" />
     <ClInclude Include="src\gl\ResourceManager.hpp" />
+    <ClInclude Include="src\gl\SafeMesh.hpp" />
     <ClInclude Include="src\gl\Shader.hpp" />
     <ClInclude Include="src\gl\ShadowMap.hpp" />
     <ClInclude Include="src\gl\Viewport.hpp" />
@@ -319,6 +323,7 @@
     <ClInclude Include="src\noise\value.hpp" />
     <ClInclude Include="src\noise\voronoi.hpp" />
     <ClInclude Include="src\noise\XXHash.hpp" />
+    <ClInclude Include="src\ui\Image.hpp" />
     <ClInclude Include="src\util\SaveManager.hpp" />
     <ClInclude Include="src\shadow\ShadowMap.hpp" />
     <ClInclude Include="src\Noise.hpp" />
@@ -407,6 +412,8 @@
   <ItemGroup>
     <None Include="src\shader\fog.frag" />
     <None Include="src\shader\fog.vert" />
+    <None Include="src\shader\image.frag" />
+    <None Include="src\shader\image.vert" />
     <None Include="src\shader\pane.frag" />
     <None Include="src\shader\pane.vert" />
     <None Include="src\shader\simple.frag" />

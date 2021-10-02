@@ -1,7 +1,7 @@
 #pragma once
 #include "ui/ui.hpp"
 
-class MainMenu : public ui::Component
+class MainMenu : public ui::Image
 {
 public:
 	MainMenu();

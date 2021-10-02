@@ -21,5 +21,5 @@ void MainMenu::draw() {
 	if(parent) {
 		setSize(parent->getSize());
 	}
-	Component::draw();
+	Image::draw();
 }

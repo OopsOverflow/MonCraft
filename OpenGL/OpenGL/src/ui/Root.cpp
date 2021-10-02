@@ -14,6 +14,7 @@ Root::Root(ivec2 size)
   shaders = {
     ResourceManager::getShader("font"),
     ResourceManager::getShader("pane"),
+    ResourceManager::getShader("image"),
   };
 }
 

@@ -210,6 +210,15 @@
     <ClCompile Include="src\interface\MonCraftScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\ui\Image.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gl\SafeMesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\multiplayer\client\Server.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\util\mesh.hpp">
@@ -596,6 +605,12 @@
     <ClInclude Include="src\interface\MonCraftScene.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\ui\Image.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gl\SafeMesh.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="src\blocks\Textures\Testxture.png">
@@ -726,5 +741,7 @@
     <None Include="src\shader\pane.frag" />
     <None Include="src\shader\skyBox.vert" />
     <None Include="src\shader\skyBox.frag" />
+    <None Include="src\shader\image.vert" />
+    <None Include="src\shader\image.frag" />
   </ItemGroup>
 </Project>

@@ -45,6 +45,7 @@ void loadResources() {
     ResourceManager::loadShader("fog", "fog.vert", "fog.frag");
     ResourceManager::loadShader("pane", "pane.vert", "pane.frag");
     ResourceManager::loadShader("shadow", "shadow.vert", "shadow.frag");
+    ResourceManager::loadShader("image", "image.vert", "image.frag");
 
     ResourceManager::loadTexture("atlas", "Texture_atlas");
     ResourceManager::loadTexture("character", "Character");
@@ -52,6 +53,7 @@ void loadResources() {
         std::string filename = "water/water_normal_" + std::to_string(i+1)+"_frame";
         ResourceManager::loadTexture("waterNormal" + std::to_string(i), filename);
     }
+    ResourceManager::loadTexture("imageAtlas", "ImageAtlas");
 
     ResourceManager::loadFont("roboto", "Roboto-Regular");
     ResourceManager::loadFont("vt323", "VT323-Regular");
