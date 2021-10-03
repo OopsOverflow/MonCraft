@@ -3,7 +3,7 @@
 #include "terrain/World.hpp"
 #include "multiplayer/client/Server.hpp"
 
-class DebugOverlay : public ui::Component
+class DebugOverlay : public ui::Box
 {
 public:
 	DebugOverlay(std::shared_ptr<Server> server);

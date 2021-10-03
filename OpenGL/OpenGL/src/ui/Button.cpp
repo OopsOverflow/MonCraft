@@ -5,6 +5,7 @@ using namespace glm;
 
 const spec_t Button::TEXT = MAKE_SPEC("Button::text", std::string);
 const spec_t Button::TEXT_COLOR = MAKE_SPEC("Button::textColor", vec4);
+const spec_t Button::FONT_SIZE = MAKE_SPEC("Button::fontSize", float);
 
 Button::Button(std::string text, std::shared_ptr<const Font> font)
 {
@@ -31,6 +32,12 @@ void Button::setStyle(prop_t const& prop) {
   else if(prop.spec == Button::TEXT_COLOR) {
     setTextColor(prop.value->get<vec4>());
   }
+  else if(prop.spec == Button::TEXT_COLOR) {
+    setTextColor(prop.value->get<vec4>());
+  }
+  else if(prop.spec == Button::FONT_SIZE) {
+    setFontSize(prop.value->get<float>());
+  }
   else {
     Component::setStyle(prop);
   }
@@ -42,6 +49,9 @@ prop_t Button::getStyle(spec_t spec) const {
   }
   if(spec == Button::TEXT_COLOR) {
     return make_property(spec, getColor());
+  }
+  if(spec == Button::FONT_SIZE) {
+    return make_property(spec, getFontSize());
   }
   else {
     return Component::getStyle(spec);
@@ -98,4 +108,12 @@ void Button::setTextColor(glm::vec4 color) {
 
 glm::vec4 Button::getTextColor() const {
   return textComp->getColor();
+}
+
+void Button::setFontSize(float fontSize) {
+  textComp->setFontSize(fontSize);
+}
+
+float Button::getFontSize() const {
+  return textComp->getFontSize();
 }
