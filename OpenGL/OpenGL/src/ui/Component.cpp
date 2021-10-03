@@ -152,6 +152,11 @@ ivec2 Component::getAbsoluteSize() const {
   return computedSize;
 }
 
+ivec2 Component::getMaxSize() const {
+  if(!parent) return size;
+  return parent->getMaxSize() - 2 * parent->padding;
+}
+
 void Component::recompute() {
   computeSize();
   computeOrigin(); // also resets recomputeQueued
@@ -181,6 +186,8 @@ void Component::computeSize() {
     for(Component* child : children) {
       newCompSize = max(newCompSize, abs(child->position) + child->computedSize + 2 * padding);
     }
+
+    newCompSize = min(newCompSize, getMaxSize());
 
     if(parent && newCompSize != computedSize) parent->queueRecompute(false);
     computedSize = newCompSize;

@@ -36,6 +36,7 @@ public:
   void setSize(glm::ivec2 size);
   glm::ivec2 getSize() const;
   glm::ivec2 getAbsoluteSize() const;
+  glm::ivec2 getMaxSize() const;
 
   glm::ivec2 getOrigin() const;
   glm::ivec2 getAbsoluteOrigin() const;
