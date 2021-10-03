@@ -23,6 +23,8 @@ public:
 
   glm::ivec2 findCell(glm::vec2 pos) const;
 
+  bool isInRange(glm::ivec2 cell);
+
 
 private:
   XXHash noise;

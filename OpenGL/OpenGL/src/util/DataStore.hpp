@@ -68,7 +68,7 @@ public:
     for(int i = 0; i < N; i++)
       maxIndex *= size[i];
 
-    if(index >= maxIndex)
+    if(index < 0 || index >= maxIndex)
       throw std::out_of_range("DataStore index is out of range");
 
     return map[index];
@@ -83,7 +83,7 @@ public:
     for(int i = 0; i < N; i++)
       maxIndex *= size[i];
 
-    if(index >= maxIndex)
+    if(index < 0 || index >= maxIndex)
       throw std::out_of_range("DataStore index is out of range");
 
     return map[index];
@@ -95,7 +95,7 @@ public:
    */
   T &at(glm::vec<N, int> pos) {
     for(int i = 0; i < N; i++)
-      if(pos[i] > size[i])
+      if(pos[i] < 0 || pos[i] >= size[i])
         throw std::out_of_range("DataStore coordinates are out of range");
 
     return this->operator[](pos);
@@ -107,7 +107,7 @@ public:
    */
   T const& at(glm::vec<N, int> pos) const {
     for(int i = 0; i < N; i++)
-      if(pos[i] > size[i])
+      if(pos[i] < 0 || pos[i] >= size[i])
         throw std::out_of_range("DataStore coordinates are out of range");
 
     return this->operator[](pos);
@@ -117,9 +117,9 @@ public:
    * Gets the data stored at pos. (unsafe)
    */
   T &operator[](glm::vec<N, int> pos) {
-    auto index = 0;
-    auto acc = 1;
-    for(auto i = 0; i < N - 1; i++) {
+    int index = 0;
+    int acc = 1;
+    for(int i = 0; i < N - 1; i++) {
       index += pos[i] * acc;
       acc *= size[i];
     }
@@ -131,9 +131,9 @@ public:
    * Gets the data stored at pos. (unsafe)
    */
   T const& operator[](glm::vec<N, int> pos) const {
-    auto index = 0;
-    auto acc = 1;
-    for(auto i = 0; i < N - 1; i++) {
+    int index = 0;
+    int acc = 1;
+    for(int i = 0; i < N - 1; i++) {
       index += pos[i] * acc;
       acc *= size[i];
     }

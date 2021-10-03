@@ -193,13 +193,15 @@ BiomeMap::weightedBiomes_t BiomeMap::offsetVoronoi(ivec2 ipos) {
       for (delta.y = -2; delta.y <= 2; delta.y++) {
 
         if(delta == ivec2(0)) continue;
+        ivec2 cell = mainCell + delta;
+        if(!voronoi.isInRange(cell)) continue;
 
-        vec2 otherPos = voronoi.get(mainCell + delta);
+        vec2 otherPos = voronoi.get(cell);
         float dist = distance(pos, otherPos);
         if(dist < thres) {
           float weight = pow(0.001 * (thres - dist), 4);
           res.push_back({
-            mainCell + delta,
+            cell,
             weight,
             nullptr
           });

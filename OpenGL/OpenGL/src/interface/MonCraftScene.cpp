@@ -54,6 +54,7 @@ MonCraftScene::MonCraftScene(Viewport* vp)
 
     World& world = World::getInst();
     server = createServer(config);
+    server->start();
     player = server->getPlayer();
 
     // UI stuff

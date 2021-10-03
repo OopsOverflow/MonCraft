@@ -4,7 +4,8 @@
 using namespace glm;
 
 PendingChunks::PendingChunks()
-  : world(World::getInst())
+  : cpos(0),
+    world(World::getInst())
 {
   auto& config = SaveManager::getInst().getConfig();
   renderDistH = config.renderDistH;

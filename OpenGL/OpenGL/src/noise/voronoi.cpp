@@ -17,10 +17,7 @@ VoronoiNoise::VoronoiNoise(int seed, int size, float cellSize, ivec2 offset)
 #include "debug/Debug.hpp"
 
 glm::vec2 VoronoiNoise::get(glm::ivec2 cell) const {
-    if(any(glm::greaterThanEqual(cell, grid.size))) {
-      std::cout << cell << grid.size << std::endl;
-    }
-    return (vec2(cell) + grid.at(cell + 1)) * cellSize;
+  return (vec2(cell) + grid.at(cell + 1)) * cellSize;
 }
 
 glm::ivec2 VoronoiNoise::findCell(vec2 pos) const {
@@ -45,4 +42,10 @@ glm::ivec2 VoronoiNoise::findCell(vec2 pos) const {
   }
 
   return res;
+}
+
+
+bool VoronoiNoise::isInRange(ivec2 cell) {
+  cell += 1;
+  return all(glm::greaterThanEqual(cell, ivec2(0)) && lessThan(cell, grid.size));
 }

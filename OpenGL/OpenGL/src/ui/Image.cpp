@@ -23,13 +23,16 @@ static const GLfloat quad[6][2] = {
     { 1.0f, 0.0f },
 };
 
-Shader*Image::shader = nullptr;
+Shader* Image::shader = nullptr;
 GLuint Image::texAtlas = 0;
 GLuint Image::vao = 0;
 GLuint Image::vbo = 0;
 
 
 Image::Image()
+ : crop(Crop::NONE),
+   texOffset(0.f),
+   texSize(1.f)
 {
     if (shader == nullptr) {
         shader = ResourceManager::getShader("image");
@@ -44,6 +47,10 @@ Image::Image()
             glVertexAttribPointer(VERTEX_POSITION, 2, GL_FLOAT, GL_FALSE, 0, 0);
             glEnableVertexAttribArray(VERTEX_POSITION);
             glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+            GLint texSampler = shader->getUniform("uTexture");
+            glUniform1i(texSampler, 0);
+            glActiveTexture(GL_TEXTURE0);
         }
         glBindVertexArray(0);
 
@@ -100,22 +107,18 @@ style_const_t Image::getDefaultStyle() const {
 
 
 void Image::draw() {
-  glDisable(GL_CULL_FACE);
-    glBindVertexArray(vao);
     shader->activate();
-    GLint texSampler = shader->getUniform("uTexture");
-    glUniform1i(texSampler, 0);
-    glActiveTexture(GL_TEXTURE0);
     shader->bindTexture(TEXTURE_COLOR, texAtlas);
 
     glm::mat4 model = computeModel();
     glm::mat4 textureCoords = computeTexture();
 
-    //std::cout << textureCoords << std::endl;
+    glBindVertexArray(vao);
     glUniformMatrix4fv(shader->getUniform(MATRIX_MODEL), 1, GL_FALSE, glm::value_ptr(model));
     glUniformMatrix4fv(shader->getUniform("m_texture"), 1, GL_FALSE, glm::value_ptr(textureCoords));
     glDrawArrays(GL_TRIANGLES, 0, 6);
     glBindVertexArray(0);
+
     Component::draw();
 }
 
