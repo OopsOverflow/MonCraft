@@ -7,10 +7,12 @@ const spec_t Button::TEXT = MAKE_SPEC("Button::text", std::string);
 const spec_t Button::TEXT_COLOR = MAKE_SPEC("Button::textColor", vec4);
 const spec_t Button::FONT_SIZE = MAKE_SPEC("Button::fontSize", float);
 
-Button::Button(std::string text, std::shared_ptr<const Font> font)
+Button::Button(std::unique_ptr<Component> comp, std::string text, std::shared_ptr<const Font> font)
+  : mainComp(std::move(comp))
 {
   textComp = std::make_unique<Text>(std::move(text), std::move(font));
-  add(textComp.get());
+  mainComp->add(textComp.get());
+  add(mainComp.get());
 
   Button::getDefaultStyle()->apply(this);
 
@@ -22,6 +24,10 @@ Button::Button(std::string text, std::shared_ptr<const Font> font)
 
   textComp->setUseBaseline(false);
 }
+
+Button::Button(std::string text, std::shared_ptr<const Font> font)
+  : Button(std::make_unique<Pane>(), text, font)
+{}
 
 void Button::onclick(std::function<void()> callback) {
   this->clickCallback = callback;
@@ -41,7 +47,8 @@ void Button::setStyle(prop_t const& prop) {
     setFontSize(prop.value->get<float>());
   }
   else {
-    Component::setStyle(prop);
+    // Component::setStyle(prop);
+    mainComp->setStyle(prop); // forward style to main comp
   }
 }
 
@@ -50,7 +57,7 @@ prop_t Button::getStyle(spec_t spec) const {
     return make_property(spec, getText());
   }
   if(spec == Button::TEXT_COLOR) {
-    return make_property(spec, getColor());
+    return make_property(spec, getTextColor());
   }
   if(spec == Button::FONT_SIZE) {
     return make_property(spec, getFontSize());
@@ -62,7 +69,7 @@ prop_t Button::getStyle(spec_t spec) const {
 
 style_const_t Button::getDefaultStyle() const {
   static style_const_t style = Style::make_style(
-    Pane::getDefaultStyle(),
+    Component::getDefaultStyle(),
     make_property(Button::TEXT_COLOR, vec4(0.f, 0.f, 0.f, 1.f)),
     make_property(Component::PADDING, ivec2(10, 5))
   );
@@ -118,4 +125,12 @@ void Button::setFontSize(float fontSize) {
 
 float Button::getFontSize() const {
   return textComp->getFontSize();
+}
+
+Style& Button::hoverStyle() {
+  return hover;
+}
+
+Style& Button::pressedStyle() {
+  return pressed;
 }

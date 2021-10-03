@@ -8,9 +8,10 @@
 
 namespace ui {
 
-class Button : public Pane {
+class Button : public Component {
 
 public:
+  Button(std::unique_ptr<Component> comp, std::string text, std::shared_ptr<const Font> font);
   Button(std::string text, std::shared_ptr<const Font> font);
 
   static const spec_t TEXT;
@@ -30,6 +31,9 @@ public:
   void setFontSize(float fontSize);
   float getFontSize() const;
 
+  Style& hoverStyle();
+  Style& pressedStyle();
+
 protected:
   void onMouseIn(glm::ivec2 pos) override;
   bool onMousePressed(glm::ivec2 pos) override;
@@ -37,6 +41,7 @@ protected:
   void onMouseOut(glm::ivec2 pos) override;
 
 private:
+  std::unique_ptr<Component> mainComp;
   std::unique_ptr<Text> textComp;
   Style hover;
   Style pressed;
