@@ -9,7 +9,7 @@ const spec_t Button::TEXT_COLOR = MAKE_SPEC("Button::textColor", vec4);
 Button::Button(std::string text, std::shared_ptr<const Font> font)
 {
   textComp = std::make_unique<Text>(std::move(text), std::move(font));
-  addChild(textComp.get());
+  add(textComp.get());
 
   Button::getDefaultStyle()->apply(this);
 

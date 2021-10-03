@@ -9,10 +9,10 @@ GameMenu::GameMenu()
 	playButton = std::make_unique<ui::Button>("Resume", font);
 	quitButton = std::make_unique<ui::Button>("Quit", font);
 
-	addChild(titlePane.get());
-	titlePane->addChild(pauseTitle.get());
-	addChild(playButton.get());
-	addChild(quitButton.get());
+	add(titlePane.get());
+	titlePane->add(pauseTitle.get());
+	add(playButton.get());
+	add(quitButton.get());
 
 	titlePane->setAnchorX(ui::Anchor::CENTER);
 	titlePane->setAnchorY(ui::Anchor::END);

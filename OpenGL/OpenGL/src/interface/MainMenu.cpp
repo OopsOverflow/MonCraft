@@ -9,9 +9,9 @@ MainMenu::MainMenu()
 	moncraftTitle = std::make_unique<ui::Text>("MONCRAFT", font);
 	playButton = std::make_unique<ui::Button>("PLAY", font);
 	
-	addChild(titlePane.get());
-	titlePane->addChild(moncraftTitle.get());
-	addChild(playButton.get());
+	add(titlePane.get());
+	titlePane->add(moncraftTitle.get());
+	add(playButton.get());
 
 	titlePane->setAnchorX(ui::Anchor::CENTER);
 	titlePane->setAnchorY(ui::Anchor::END);

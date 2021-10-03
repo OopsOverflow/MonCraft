@@ -12,11 +12,11 @@ DebugOverlay::DebugOverlay(std::shared_ptr<Server> server) :
 	text_uid = std::make_unique<ui::Text>("UID : ", font);
 	text_gameTime = std::make_unique<ui::Text>("Time : ", font);
 
-	addChild(text_fps.get());
-	addChild(text_posPlayer.get());
-	addChild(text_players.get());
-	addChild(text_uid.get());
-	addChild(text_gameTime.get());
+	add(text_fps.get());
+	add(text_posPlayer.get());
+	add(text_players.get());
+	add(text_uid.get());
+	add(text_gameTime.get());
 
 	text_fps->setColor({ 1.0f, 1.0f, 1.0f, 1.f });
 	text_fps->setAnchorY(ui::Anchor::END);

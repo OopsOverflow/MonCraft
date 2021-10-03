@@ -8,9 +8,9 @@ Overlay::Overlay()
 	btn_fullscreen = std::make_unique<ui::Button>("Fullscreen", font);
 	btn_ping = std::make_unique<ui::Button>("Ping", font);
 
-	addChild(btn_vsync.get());
-	addChild(btn_fullscreen.get());
-	addChild(btn_ping.get());
+	add(btn_vsync.get());
+	add(btn_fullscreen.get());
+	add(btn_ping.get());
 
 	btn_vsync->setPadding({ 15, 10 });
 

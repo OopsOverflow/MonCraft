@@ -25,7 +25,7 @@ Component::Component()
 }
 
 Component::~Component() {
-  if(parent) parent->removeChild(this);
+  if(parent) parent->remove(this);
   if(activeWidget == this) activeWidget = nullptr;
   for(Component* child : children) {
     child->parent = nullptr;
@@ -111,7 +111,7 @@ void Component::queueRecompute(bool propagate) {
   if(propagate) for(Component* child : children) child->queueRecompute(true);
 }
 
-void Component::addChild(Component* child) {
+void Component::add(Component* child) {
   if(child->parent != nullptr) {
     throw std::runtime_error("child already has parent");
   }
@@ -121,7 +121,7 @@ void Component::addChild(Component* child) {
   if(parent) parent->queueRecompute();
 }
 
-void Component::removeChild(Component* child) {
+void Component::remove(Component* child) {
   if(!child->parent || child->parent != this) {
     throw std::runtime_error("element is not a child");
   }

@@ -55,8 +55,8 @@ public:
   void keyPress(Key k);
   void keyRelease(Key k);
 
-  void addChild(Component* child);
-  void removeChild(Component* child);
+  void add(Component* child);
+  void remove(Component* child);
 
 protected:
   void recompute();
