@@ -19,6 +19,8 @@ Button::Button(std::string text, std::shared_ptr<const Font> font)
 
   pressed.setParent(Button::getDefaultStyle());
   pressed.set(make_property(TEXT_COLOR, vec4(0.0, 1.0, 0.0, 1.0)));
+
+  textComp->setUseBaseline(false);
 }
 
 void Button::onclick(std::function<void()> callback) {

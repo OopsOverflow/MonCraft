@@ -29,6 +29,7 @@ std::string Type::getName(type_t type) {
 
 #include <glm/glm.hpp>
 
+MAKE_TYPE(bool);
 MAKE_TYPE(int);
 MAKE_TYPE(float);
 MAKE_TYPE(std::string);
