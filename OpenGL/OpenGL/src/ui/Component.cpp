@@ -121,6 +121,11 @@ void Component::add(Component* child) {
   if(parent) parent->queueRecompute();
 }
 
+void Component::add(std::unique_ptr<Component> child) {
+  owned.push_back(std::move(child));
+  add(owned.back().get());
+}
+
 void Component::remove(Component* child) {
   if(!child->parent || child->parent != this) {
     throw std::runtime_error("element is not a child");

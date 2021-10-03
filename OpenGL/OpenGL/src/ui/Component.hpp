@@ -57,6 +57,7 @@ public:
   void keyRelease(Key k);
 
   void add(Component* child);
+  void add(std::unique_ptr<Component> child);
   void remove(Component* child);
 
 protected:
@@ -66,6 +67,7 @@ protected:
   bool recomputeQueued;
   Component* parent;
   std::vector<Component*> children;
+  std::vector<std::unique_ptr<Component>> owned;
 
   void handleEvents(std::vector<Event> const& events);
   virtual void onMouseIn(glm::ivec2 pos);
