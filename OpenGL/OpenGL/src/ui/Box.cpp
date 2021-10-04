@@ -14,21 +14,21 @@ Box::Box()
 Box::~Box()
 {}
 
-void Box::setStyle(prop_t const& prop) {
+void Box::setProperty(prop_t prop) {
   if(prop.spec == Box::GAP) {
     setGap(prop.value->get<int>());
   }
   else {
-    Component::setStyle(prop);
+    Component::setProperty(prop);
   }
 }
 
-prop_t Box::getStyle(spec_t spec) const {
+prop_t Box::getProperty(spec_t spec) const {
   if(spec == Box::GAP) {
     return make_property(spec, getGap());
   }
   else {
-    return Component::getStyle(spec);
+    return Component::getProperty(spec);
   }
 }
 

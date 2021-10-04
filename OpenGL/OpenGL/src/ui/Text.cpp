@@ -17,10 +17,10 @@ Text::Text(std::string text, std::shared_ptr<const Font> font)
     useBaseline(true), baselineOffset(0)
 {
   computeSize();
-  Text::getDefaultStyle()->apply(this);
+
 }
 
-void Text::setStyle(prop_t const& prop) {
+void Text::setProperty(prop_t prop) {
   if(prop.spec == Text::COLOR) {
     setColor(prop.value->get<vec4>());
   }
@@ -31,11 +31,11 @@ void Text::setStyle(prop_t const& prop) {
     setUseBaseline(prop.value->get<bool>());
   }
   else {
-    Component::setStyle(prop);
+    Component::setProperty(prop);
   }
 }
 
-prop_t Text::getStyle(spec_t spec) const {
+prop_t Text::getProperty(spec_t spec) const {
   if(spec == Text::COLOR) {
     return make_property(spec, getColor());
   }
@@ -46,7 +46,7 @@ prop_t Text::getStyle(spec_t spec) const {
     return make_property(spec, getUseBaseline());
   }
   else {
-    return Component::getStyle(spec);
+    return Component::getProperty(spec);
   }
 }
 

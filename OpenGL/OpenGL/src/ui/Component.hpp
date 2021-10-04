@@ -26,11 +26,36 @@ public:
   static const spec_t PADDING;
   static const spec_t ANCHOR_X;
   static const spec_t ANCHOR_Y;
-  virtual void setStyle(prop_t const& prop);
-  virtual prop_t getStyle(spec_t spec) const;
+
+  /**
+   * Set a css style property (apply recursively to children)
+   */
+  void setStyle(prop_t prop);
+
+  /**
+  * Set a style property only for itself
+  */
+  virtual void setProperty(prop_t prop);
+
+  /**
+   * Get the style property
+   */
+  virtual prop_t getProperty(spec_t spec) const;
+
+
+  /**
+   * Get the default stylesheet for this component
+   */
   virtual style_const_t getDefaultStyle() const;
 
-  // avoid unecessary draw calls
+  /**
+   * Get the current stylesheet for this component
+   */
+  style_const_t getOwnStyle() const;
+
+  /**
+   * Mark the component to be redrawn
+   */
   void queueDraw();
 
   void setSize(glm::ivec2 size);
@@ -94,6 +119,7 @@ private:
   void filterEvent(Event const& evt);
   bool overlaps(glm::ivec2 point) const;
   void makeActive();
+  void applyStyleRec(prop_t prop);
 
   glm::ivec2 size;
   glm::ivec2 absoluteSize;
@@ -106,6 +132,9 @@ private:
 
   bool hover;
   bool pressed;
+
+  style_t ownStyle;
+
   static Component* activeWidget;
 };
 

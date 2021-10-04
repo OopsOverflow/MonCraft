@@ -11,7 +11,7 @@ Input::Input(std::string text, std::shared_ptr<const Font> font)
   textComp = std::make_unique<Text>(std::move(text), std::move(font));
   add(textComp.get());
 
-  Input::getDefaultStyle()->apply(this);
+
 
   hover.setParent(Input::getDefaultStyle());
   hover.set(make_property(TEXT_COLOR, vec4(1.0, 0.0, 0.0, 1.0)));
@@ -24,7 +24,7 @@ void Input::onChange(std::function<void()> callback) {
   this->changeCallback = callback;
 }
 
-void Input::setStyle(prop_t const& prop) {
+void Input::setProperty(prop_t prop) {
   if(prop.spec == Input::TEXT) {
     setText(prop.value->get<std::string>());
   }
@@ -32,11 +32,11 @@ void Input::setStyle(prop_t const& prop) {
     setTextColor(prop.value->get<vec4>());
   }
   else {
-    Component::setStyle(prop);
+    Component::setProperty(prop);
   }
 }
 
-prop_t Input::getStyle(spec_t spec) const {
+prop_t Input::getProperty(spec_t spec) const {
   if(spec == Input::TEXT) {
     return make_property(spec, getText());
   }
@@ -44,7 +44,7 @@ prop_t Input::getStyle(spec_t spec) const {
     return make_property(spec, getColor());
   }
   else {
-    return Component::getStyle(spec);
+    return Component::getProperty(spec);
   }
 }
 

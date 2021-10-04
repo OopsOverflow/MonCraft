@@ -35,17 +35,17 @@ void Style::apply(Component* comp) const {
 }
 
 void Style::revert(Component* comp) const {
-  if(!parent) return;
-  for(auto const& pair : props) {
-    auto it = parent->props.find(pair.first);
-    if(it != parent->props.end()) {
-      comp->setStyle(it->second);
+  if(parent) {
+    for(auto const& pair : props) {
+      auto prop = parent->getProperty(comp, pair.first);
+      if(prop.value != nullptr) comp->setStyle(prop);
     }
-    else {
-      std::cout
-        << "[WARN] cannot revert property: '"
-        << Specification::get(pair.first).name
-        << "'" << std::endl;
+  }
+  else {
+    auto fallback = comp->getDefaultStyle();
+    for(auto const& pair : props) {
+      auto prop = fallback->getProperty(pair.first);
+      if(prop.value != nullptr) comp->setStyle(prop);
     }
   }
 }
@@ -53,6 +53,27 @@ void Style::revert(Component* comp) const {
 void Style::applyAll(Component* comp) const {
   if(parent) parent->applyAll(comp);
   apply(comp);
+}
+
+bool Style::hasProperty(spec_t spec) const {
+  if(parent) {
+    if(parent->hasProperty(spec)) return true;
+  }
+  return props.find(spec) != props.cend();
+}
+
+prop_t Style::getProperty(spec_t spec) const {
+  auto it = props.find(spec);
+  if(it != props.cend()) return it->second;
+  else if(parent) return parent->getProperty(spec);
+  else return prop_t{ spec, nullptr };
+}
+
+prop_t Style::getProperty(Component* comp, spec_t spec) const {
+  auto it = props.find(spec);
+  if(it != props.cend()) return it->second;
+  else if(parent) return parent->getProperty(comp, spec);
+  else return comp->getDefaultStyle()->getProperty(spec);
 }
 
 style_t Style::make_style(style_const_t parent) {

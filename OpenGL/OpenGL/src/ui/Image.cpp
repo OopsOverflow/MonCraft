@@ -56,7 +56,7 @@ Image::Image()
 
     }
 
-    Image::getDefaultStyle()->apply(this);
+
 }
 
 Image::~Image() {
@@ -65,7 +65,7 @@ Image::~Image() {
     glDeleteBuffers(1, &vbo);
 }
 
-void Image::setStyle(prop_t const& prop) {
+void Image::setProperty(prop_t prop) {
     if (prop.spec == Image::CROP) {
         setCrop(prop.value->get<Crop>());
     }
@@ -76,11 +76,11 @@ void Image::setStyle(prop_t const& prop) {
         setTextureSize(prop.value->get<glm::vec2>());
     }
     else {
-        Component::setStyle(prop);
+        Component::setProperty(prop);
     }
 }
 
-prop_t Image::getStyle(spec_t spec) const {
+prop_t Image::getProperty(spec_t spec) const {
     if (spec == Image::CROP) {
         return make_property(spec, getCrop());
     }
@@ -91,7 +91,7 @@ prop_t Image::getStyle(spec_t spec) const {
         return make_property(spec, getTextureSize());
     }
     else {
-        return Component::getStyle(spec);
+        return Component::getProperty(spec);
     }
 }
 
