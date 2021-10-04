@@ -8,18 +8,14 @@ Overlay::Overlay()
 	btn_fullscreen = std::make_unique<ui::Button>("Fullscreen", font);
 	btn_ping = std::make_unique<ui::Button>("Ping", font);
 
+	setPadding({ 15, 15 });
+
 	add(btn_vsync.get());
 	add(btn_fullscreen.get());
 	add(btn_ping.get());
 
-	btn_vsync->setPadding({ 15, 10 });
-
 	btn_fullscreen->setAnchorX(ui::Anchor::END);
-	btn_fullscreen->setPadding({ 15, 10 });
-
-	btn_ping->setPosition({ 0, 80 }); // TODO: implement a box container
-	btn_fullscreen->setPadding({ 15, 10 });
-
+	btn_ping->setPosition({ 0, 80 });
 }
 
 void Overlay::draw() {
@@ -28,7 +24,3 @@ void Overlay::draw() {
 	}
 	Component::draw();
 }
-
-
-
-

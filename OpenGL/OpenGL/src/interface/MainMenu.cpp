@@ -11,6 +11,7 @@ MainMenu::MainMenu()
 		auto img = std::make_unique<ui::Image>();
 		playButton = std::make_unique<ui::Button>(move(img), "PLAY", font);
 	}
+	playButton->setHoverStyle(ui::make_property(ui::Text::COLOR, glm::vec4(1.f, 1.f, 0.f, 1.f)));
 
 	add(titlePane.get());
 	titlePane->add(moncraftTitle.get());

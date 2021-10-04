@@ -14,9 +14,10 @@ public:
   Button(std::unique_ptr<Component> comp, std::string text, std::shared_ptr<const Font> font);
   Button(std::string text, std::shared_ptr<const Font> font);
 
-  static const spec_t TEXT;
-  static const spec_t TEXT_COLOR;
-  static const spec_t FONT_SIZE;
+  void setHoverStyle(prop_t prop);
+  void setPressedStyle(prop_t prop);
+
+
   // virtual void setProperty(prop_t prop) override;
   // virtual prop_t getProperty(spec_t spec) const override;
   virtual style_const_t getDefaultStyle() const override;

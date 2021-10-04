@@ -3,10 +3,6 @@
 using namespace ui;
 using namespace glm;
 
-const spec_t Button::TEXT = MAKE_SPEC("Button::text", std::string);
-const spec_t Button::TEXT_COLOR = MAKE_SPEC("Button::textColor", vec4);
-const spec_t Button::FONT_SIZE = MAKE_SPEC("Button::fontSize", float);
-
 Button::Button(std::unique_ptr<Component> comp, std::string text, std::shared_ptr<const Font> font)
   : mainComp(std::move(comp)),
     hover(std::make_shared<Style>()),
@@ -42,6 +38,14 @@ style_const_t Button::getDefaultStyle() const {
   );
 
   return style;
+}
+
+void Button::setHoverStyle(prop_t prop) {
+  hover->set(prop);
+}
+
+void Button::setPressedStyle(prop_t prop) {
+  pressed->set(prop);
 }
 
 #include "debug/Debug.hpp"

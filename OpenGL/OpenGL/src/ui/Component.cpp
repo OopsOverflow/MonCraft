@@ -32,7 +32,7 @@ Component::~Component() {
 }
 
 void Component::setStyle(prop_t prop) {
-  setProperty(prop);
+  setProperty(prop); // TODO: defect e.g. when button is hover, ownStyle is not active.
   ownStyle->set(prop);
   applyStyleRec(prop);
 }
