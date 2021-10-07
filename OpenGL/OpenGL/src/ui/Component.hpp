@@ -13,8 +13,10 @@ enum class Anchor { BEGIN, END, CENTER };
 
 class Component {
 
-public:
+protected:
   Component();
+
+public:
   virtual ~Component();
   Component(Component&) = delete;
   Component& operator=(Component&) = delete;

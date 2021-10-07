@@ -4,9 +4,9 @@
 Overlay::Overlay()
 {
 	auto font = ResourceManager::getFont("roboto");
-	btn_vsync = std::make_unique<ui::Button>("Vsync", font);
-	btn_fullscreen = std::make_unique<ui::Button>("Fullscreen", font);
-	btn_ping = std::make_unique<ui::Button>("Ping", font);
+	btn_vsync = ui::Button::makePaneButton("Vsync", font);
+	btn_fullscreen = ui::Button::makePaneButton("Fullscreen", font);
+	btn_ping = ui::Button::makePaneButton("Ping", font);
 
 	setPadding({ 15, 15 });
 

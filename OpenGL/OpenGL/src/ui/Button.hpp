@@ -10,9 +10,12 @@ namespace ui {
 
 class Button : public Component {
 
-public:
+protected:
   Button(std::unique_ptr<Component> comp, std::string text, std::shared_ptr<const Font> font);
-  Button(std::string text, std::shared_ptr<const Font> font);
+
+public:
+  static std::unique_ptr<Button> makePaneButton(std::string text, std::shared_ptr<const Font> font);
+  static std::unique_ptr<Button> makeImageButton(glm::ivec2 offset, glm::ivec2 size, std::string text, std::shared_ptr<const Font> font);
 
   void setHoverStyle(prop_t prop);
   void setPressedStyle(prop_t prop);

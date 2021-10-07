@@ -10,11 +10,11 @@ MainMenu::MainMenu() : Image({0, 0}, {1920, 1080})
 	moncraftTitle = std::make_unique<ui::Image>(glm::ivec2(0, 1081), glm::ivec2(438, 100));
 	buttonPannel = std::make_unique<ui::Box>();
 
-	singlePlayerButton = std::make_unique<ui::Button>("Solo", font);
-	multiplayerButton = std::make_unique<ui::Button>("Multijoueur", font);
-	parameterButton = std::make_unique<ui::Button>("Parametres", font);
-	quitButton = std::make_unique<ui::Button>("Quitter", font);
-	
+	singlePlayerButton = ui::Button::makePaneButton("Solo", font);
+	multiplayerButton = ui::Button::makePaneButton("Multijoueur", font);
+	parameterButton = ui::Button::makePaneButton("Parametres", font);
+	quitButton = ui::Button::makePaneButton("Quitter", font);
+
 	add(moncraftTitle.get());
 	add(buttonPannel.get());
 
