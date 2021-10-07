@@ -11,7 +11,7 @@ namespace ui {
 	class Image : public Component {
 
 	public:
-		Image();
+		Image(glm::ivec2 offset, glm::ivec2 size);
 		virtual ~Image();
 
 		void draw() override;
@@ -26,21 +26,21 @@ namespace ui {
 		void setCrop(Crop crop);
 		Crop getCrop() const;
 
-		void setTextureOffset(glm::vec2 offset);
-		glm::vec2 getTextureOffset() const;
+		void setTextureOffset(glm::ivec2 offset);
+		glm::ivec2 getTextureOffset() const;
 
-		void setTextureSize(glm::vec2 size);
-		glm::vec2 getTextureSize() const;
+		void setTextureSize(glm::ivec2 size);
+		glm::ivec2 getTextureSize() const;
 
 	private:
 		glm::mat4 computeModel();
 		glm::mat4 computeTexture();
-		void calculateCropping(glm::vec2& offset, glm::vec2& size);
+		void calculateCropping(glm::ivec2& offset, glm::ivec2& size);
 		static Shader* shader;
 		static GLuint texAtlas;
 
-		glm::vec2 texOffset;
-		glm::vec2 texSize;
+		glm::ivec2 texOffset;
+		glm::ivec2 texSize;
 		Crop crop;
 
 		static GLuint vao, vbo;

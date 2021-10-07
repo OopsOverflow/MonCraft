@@ -10,7 +10,6 @@ public:
 	std::unique_ptr<ui::Button> playButton;
 
 private:
-	std::unique_ptr<ui::Pane> titlePane;
-	std::unique_ptr<ui::Text> moncraftTitle;
+	std::unique_ptr<ui::Image> MoncraftTitle;
 
 };

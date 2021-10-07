@@ -1,23 +1,21 @@
 #include "MainMenu.hpp"
 #include "gl/ResourceManager.hpp"
 
-MainMenu::MainMenu()
+MainMenu::MainMenu() : Image({0, 0}, {1920, 1080})
 {
 	auto font = ResourceManager::getFont("roboto");
 
-	titlePane = std::make_unique<ui::Pane>();
-	moncraftTitle = std::make_unique<ui::Text>("MONCRAFT", font);
-	{
-		auto img = std::make_unique<ui::Image>();
-		playButton = std::make_unique<ui::Button>(move(img), "PLAY", font);
-	}
-
-	add(titlePane.get());
-	titlePane->add(moncraftTitle.get());
+	MoncraftTitle = std::make_unique<ui::Image>(glm::ivec2(0, 1081), glm::ivec2(438, 100));
+	playButton = std::make_unique<ui::Button>("PLAY", font);
+	
+	add(MoncraftTitle.get());
 	add(playButton.get());
 
-	titlePane->setAnchorX(ui::Anchor::CENTER);
-	titlePane->setAnchorY(ui::Anchor::END);
+	MoncraftTitle->setAnchorX(ui::Anchor::CENTER);
+	MoncraftTitle->setAnchorY(ui::Anchor::END);
+
+	MoncraftTitle->setSize({ 1.5*438,1.5*100 });
+	MoncraftTitle->setCrop(Crop::CENTER);
 
 	setCrop(Crop::CENTER);
 }

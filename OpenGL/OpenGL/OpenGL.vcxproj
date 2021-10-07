@@ -197,6 +197,7 @@
     <ClCompile Include="src\interface\GameMenu.cpp" />
     <ClCompile Include="src\interface\MainMenu.cpp" />
     <ClCompile Include="src\interface\MonCraftScene.cpp" />
+    <ClCompile Include="src\interface\ParametersMenu.cpp" />
     <ClCompile Include="src\multiplayer\client\ClientServer.cpp" />
     <ClCompile Include="src\multiplayer\client\RealServer.cpp" />
     <ClCompile Include="src\multiplayer\client\Server.cpp" />
@@ -213,6 +214,7 @@
     <ClCompile Include="src\noise\value.cpp" />
     <ClCompile Include="src\noise\voronoi.cpp" />
     <ClCompile Include="src\noise\XXHash.cpp" />
+    <ClCompile Include="src\ui\Box.cpp" />
     <ClCompile Include="src\ui\Image.cpp" />
     <ClCompile Include="src\util\SaveManager.cpp" />
     <ClCompile Include="src\terrain\BlockArray.cpp" />
@@ -299,6 +301,7 @@
     <ClInclude Include="src\interface\GameMenu.hpp" />
     <ClInclude Include="src\interface\MainMenu.hpp" />
     <ClInclude Include="src\interface\MonCraftScene.hpp" />
+    <ClInclude Include="src\interface\ParametersMenu.hpp" />
     <ClInclude Include="src\multiplayer\client\ClientServer.hpp" />
     <ClInclude Include="src\multiplayer\client\RealServer.hpp" />
     <ClInclude Include="src\multiplayer\client\Server.hpp" />
@@ -323,6 +326,7 @@
     <ClInclude Include="src\noise\value.hpp" />
     <ClInclude Include="src\noise\voronoi.hpp" />
     <ClInclude Include="src\noise\XXHash.hpp" />
+    <ClInclude Include="src\ui\Box.hpp" />
     <ClInclude Include="src\ui\Image.hpp" />
     <ClInclude Include="src\util\SaveManager.hpp" />
     <ClInclude Include="src\shadow\ShadowMap.hpp" />
