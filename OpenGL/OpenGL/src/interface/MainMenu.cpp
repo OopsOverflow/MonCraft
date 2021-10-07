@@ -3,27 +3,40 @@
 
 MainMenu::MainMenu() : Image({0, 0}, {1920, 1080})
 {
-	auto font = ResourceManager::getFont("roboto");
-
-	titlePane = std::make_unique<ui::Pane>();
-	moncraftTitle = std::make_unique<ui::Text>("MONCRAFT", font);
-	{
-		auto img = std::make_unique<ui::Image>();
-		playButton = std::make_unique<ui::Button>(move(img), "PLAY", font);
-	}
-	playButton->setHoverStyle(ui::make_property(ui::Text::COLOR, glm::vec4(1.f, 1.f, 0.f, 1.f)));
-
-	add(titlePane.get());
-	titlePane->add(moncraftTitle.get());
-	add(playButton.get());
-
-	MoncraftTitle->setAnchorX(ui::Anchor::CENTER);
-	MoncraftTitle->setAnchorY(ui::Anchor::END);
-
-	MoncraftTitle->setSize({ 1.5*438,1.5*100 });
-	MoncraftTitle->setCrop(Crop::CENTER);
 
 	setCrop(Crop::CENTER);
+	auto font = ResourceManager::getFont("roboto");
+
+	moncraftTitle = std::make_unique<ui::Image>(glm::ivec2(0, 1081), glm::ivec2(438, 100));
+	buttonPannel = std::make_unique<ui::Box>();
+
+	singlePlayerButton = std::make_unique<ui::Button>("Solo", font);
+	multiplayerButton = std::make_unique<ui::Button>("Multijoueur", font);
+	parameterButton = std::make_unique<ui::Button>("Parametres", font);
+	quitButton = std::make_unique<ui::Button>("Quitter", font);
+	
+	add(moncraftTitle.get());
+	add(buttonPannel.get());
+
+	buttonPannel->setAnchorX(ui::Anchor::CENTER);
+	buttonPannel->setAnchorY(ui::Anchor::CENTER);
+
+	buttonPannel->pack(singlePlayerButton.get());
+	buttonPannel->pack(multiplayerButton.get());
+	buttonPannel->pack(parameterButton.get());
+	buttonPannel->pack(quitButton.get());
+
+	moncraftTitle->setAnchorX(ui::Anchor::CENTER);
+	moncraftTitle->setAnchorY(ui::Anchor::END);
+
+	moncraftTitle->setSize({ 1.5*438,1.5*100 });
+	moncraftTitle->setCrop(Crop::CENTER);
+
+	singlePlayerButton->setAnchorX(ui::Anchor::CENTER);
+	multiplayerButton->setAnchorX(ui::Anchor::CENTER);
+	parameterButton->setAnchorX(ui::Anchor::CENTER);
+	quitButton->setAnchorX(ui::Anchor::CENTER);
+
 }
 
 void MainMenu::draw() {
