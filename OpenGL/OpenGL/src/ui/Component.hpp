@@ -107,6 +107,8 @@ protected:
   virtual void onKeyPressed(Key k);
   virtual void onKeyReleased(Key k);
 
+  glm::ivec2 toRelative(glm::ivec2 absPos) const;
+
   bool isHover();
   bool isPressed();
   bool isActive();

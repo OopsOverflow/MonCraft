@@ -175,6 +175,11 @@ ivec2 Component::getAbsoluteOrigin() const {
   return parent->getAbsoluteOrigin() + parent->padding + computedOrigin;
 }
 
+ivec2 Component::toRelative(ivec2 pos) const {
+  if(!parent) return pos;
+  return parent->toRelative(pos) - parent->padding - computedOrigin;
+}
+
 ivec2 Component::getAbsoluteSize() const {
   return computedSize;
 }
@@ -234,6 +239,7 @@ bool Component::bubbleEvent(Event const& evt) { // goes to the bottom
   if(!overlaps(evt.getPosition())) {
     if(hover) {
       hover = false;
+      pressed = false;
       for(auto child : children)
         child->bubbleEvent(evt);
       onMouseOut(evt.getPosition());
@@ -279,7 +285,7 @@ void Component::unfocus() {
 }
 
 bool Component::handleEvent(Event const& evt) {
-  ivec2 pos = evt.getPosition();
+  ivec2 pos = toRelative(evt.getPosition());
   Event::Type type = evt.getType();
   bool res = false;
 

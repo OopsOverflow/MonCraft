@@ -67,16 +67,14 @@ void Button::onMouseOut(glm::ivec2 pos) {
 }
 
 bool Button::onMousePressed(glm::ivec2 pos) {
-  Component::onMousePressed(pos);
   pressed->apply(this);
   if(clickCallback) clickCallback();
-  return true;
+  return false;
 }
 
 bool Button::onMouseReleased(glm::ivec2 pos) {
-  bool res = Component::onMousePressed(pos);
   pressed->revert(this);
-  return res;
+  return false;
 }
 
 void Button::setText(std::string text) {
