@@ -15,7 +15,9 @@ public:
   virtual prop_t getProperty(spec_t spec) const override;
   virtual style_const_t getDefaultStyle() const override;
 
-  void pack(Component* comp);
+  void pack(size_t index, Component* comp);
+  void pack_start(Component* comp);
+  void pack_end(Component* comp);
   void unpack(Component* comp);
 
   void draw() override;

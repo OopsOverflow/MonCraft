@@ -30,9 +30,9 @@ GLuint Image::vbo = 0;
 
 
 Image::Image(glm::ivec2 offset, glm::ivec2 size)
- : crop(Crop::NONE),
-   texOffset(offset),
-   texSize(size)
+ : texOffset(offset),
+   texSize(size),
+   crop(Crop::NONE)
 {
     if (shader == nullptr) {
         shader = ResourceManager::getShader("image");
@@ -53,10 +53,7 @@ Image::Image(glm::ivec2 offset, glm::ivec2 size)
             glActiveTexture(GL_TEXTURE0);
         }
         glBindVertexArray(0);
-
     }
-
-
 }
 
 Image::~Image() {
@@ -154,7 +151,6 @@ void Image::calculateCropping(glm::ivec2& offset, glm::ivec2& size) {
         }
         else {
             newSize.y = absoluteSize.y * size.x / (float)absoluteSize.x;
-
         }
         if (crop == Crop::END)
             newOffset = offset + size - newSize;
