@@ -19,10 +19,9 @@ Component::Component()
     size(0), absoluteSize(0), computedSize(0), computedOrigin(0),
     position(0), padding(0),
     anchorX(Anchor::BEGIN), anchorY(Anchor::BEGIN),
-    hover(false), pressed(false)
-{
-  Component::getDefaultStyle()->apply(this);
-}
+    hover(false), pressed(false),
+    ownStyle(std::make_shared<Style>())
+{}
 
 Component::~Component() {
   if(parent) parent->remove(this);
@@ -32,7 +31,22 @@ Component::~Component() {
   }
 }
 
-void Component::setStyle(prop_t const& prop) {
+void Component::setStyle(prop_t prop) {
+  setProperty(prop); // TODO: defect e.g. when button is hover, ownStyle is not active.
+  ownStyle->set(prop);
+  applyStyleRec(prop);
+}
+
+void Component::applyStyleRec(prop_t prop) {
+  for(auto child : children) {
+    if(!child->ownStyle->hasProperty(prop.spec)) {
+      child->setProperty(prop);
+      child->applyStyleRec(prop);
+    }
+  }
+}
+
+void Component::setProperty(prop_t prop) {
   if(prop.spec == Component::SIZE) {
     setSize(prop.value->get<ivec2>());
   }
@@ -49,14 +63,14 @@ void Component::setStyle(prop_t const& prop) {
     setAnchorY(prop.value->get<Anchor>());
   }
   else {
-    std::cout << "[WARN] unsupported style property: '"
-              << Specification::get(prop.spec).name
-              << "'"
-              << std::endl;
+    // std::cout << "[WARN] unsupported style property: '"
+    //           << Specification::get(prop.spec).name
+    //           << "'"
+    //           << std::endl;
   }
 }
 
-prop_t Component::getStyle(spec_t spec) const {
+prop_t Component::getProperty(spec_t spec) const {
   if(spec == Component::SIZE) {
     return make_property(spec, getSize());
   }
@@ -94,6 +108,10 @@ style_const_t Component::getDefaultStyle() const {
   return style;
 }
 
+style_const_t Component::getOwnStyle() const {
+  return ownStyle;
+}
+
 void Component::draw() {
   if(!drawQueued) return;
   for(Component* child : children) child->draw();
@@ -115,8 +133,12 @@ void Component::add(Component* child) {
   if(child->parent != nullptr) {
     throw std::runtime_error("child already has parent");
   }
+
   child->parent = this;
   children.push_back(child);
+
+  // TODO: style
+
   queueRecompute(true);
   if(parent) parent->queueRecompute();
 }

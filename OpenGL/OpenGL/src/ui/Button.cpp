@@ -3,26 +3,24 @@
 using namespace ui;
 using namespace glm;
 
-const spec_t Button::TEXT = MAKE_SPEC("Button::text", std::string);
-const spec_t Button::TEXT_COLOR = MAKE_SPEC("Button::textColor", vec4);
-const spec_t Button::FONT_SIZE = MAKE_SPEC("Button::fontSize", float);
-
 Button::Button(std::unique_ptr<Component> comp, std::string text, std::shared_ptr<const Font> font)
-  : mainComp(std::move(comp))
+  : mainComp(std::move(comp)),
+    hover(std::make_shared<Style>()),
+    pressed(std::make_shared<Style>())
 {
   textComp = std::make_unique<Text>(std::move(text), std::move(font));
   mainComp->add(textComp.get());
   add(mainComp.get());
 
+  hover->set(make_property(Text::COLOR, vec4(1.0, 0.0, 0.0, 1.0)));
+
+  pressed->setParent(hover);
+  pressed->set(make_property(Text::COLOR, vec4(0.0, 1.0, 0.0, 1.0)));
+
+  textComp->setUseBaseline(false); // TODO: non-heritable styles ?
+  mainComp->setPadding(ivec2(10, 5));
+
   Button::getDefaultStyle()->apply(this);
-
-  hover.setParent(Button::getDefaultStyle());
-  hover.set(make_property(TEXT_COLOR, vec4(1.0, 0.0, 0.0, 1.0)));
-
-  pressed.setParent(Button::getDefaultStyle());
-  pressed.set(make_property(TEXT_COLOR, vec4(0.0, 1.0, 0.0, 1.0)));
-
-  textComp->setUseBaseline(false);
 }
 
 Button::Button(std::string text, std::shared_ptr<const Font> font)
@@ -33,73 +31,44 @@ void Button::onclick(std::function<void()> callback) {
   this->clickCallback = callback;
 }
 
-void Button::setStyle(prop_t const& prop) {
-  if(prop.spec == Button::TEXT) {
-    setText(prop.value->get<std::string>());
-  }
-  else if(prop.spec == Button::TEXT_COLOR) {
-    setTextColor(prop.value->get<vec4>());
-  }
-  else if(prop.spec == Button::TEXT_COLOR) {
-    setTextColor(prop.value->get<vec4>());
-  }
-  else if(prop.spec == Button::FONT_SIZE) {
-    setFontSize(prop.value->get<float>());
-  }
-  else {
-    // Component::setStyle(prop);
-    mainComp->setStyle(prop); // forward style to main comp
-  }
-}
-
-prop_t Button::getStyle(spec_t spec) const {
-  if(spec == Button::TEXT) {
-    return make_property(spec, getText());
-  }
-  if(spec == Button::TEXT_COLOR) {
-    return make_property(spec, getTextColor());
-  }
-  if(spec == Button::FONT_SIZE) {
-    return make_property(spec, getFontSize());
-  }
-  else {
-    return Component::getStyle(spec);
-  }
-}
-
 style_const_t Button::getDefaultStyle() const {
   static style_const_t style = Style::make_style(
     Component::getDefaultStyle(),
-    make_property(Button::TEXT_COLOR, vec4(0.f, 0.f, 0.f, 1.f)),
-    make_property(Component::PADDING, ivec2(10, 5))
+    make_property(Text::COLOR, vec4(0.f, 0.f, 0.f, 1.f))
   );
 
   return style;
 }
 
+void Button::setHoverStyle(prop_t prop) {
+  hover->set(prop);
+}
+
+void Button::setPressedStyle(prop_t prop) {
+  pressed->set(prop);
+}
+
 #include "debug/Debug.hpp"
 
 void Button::onMouseIn(glm::ivec2 pos) {
-  hover.apply(this);
+  hover->apply(this);
 }
 
 void Button::onMouseOut(glm::ivec2 pos) {
-  if(isPressed()) pressed.revert(this);
-  else hover.revert(this);
+  if(isPressed()) pressed->revert(this);
+  hover->revert(this);
 }
 
 bool Button::onMousePressed(glm::ivec2 pos) {
   Component::onMousePressed(pos);
-  hover.revert(this);
-  pressed.apply(this);
+  pressed->apply(this);
   if(clickCallback) clickCallback();
   return true;
 }
 
 bool Button::onMouseReleased(glm::ivec2 pos) {
   bool res = Component::onMousePressed(pos);
-  pressed.revert(this);
-  hover.apply(this);
+  pressed->revert(this);
   return res;
 }
 
@@ -125,12 +94,4 @@ void Button::setFontSize(float fontSize) {
 
 float Button::getFontSize() const {
   return textComp->getFontSize();
-}
-
-Style& Button::hoverStyle() {
-  return hover;
-}
-
-Style& Button::pressedStyle() {
-  return pressed;
 }

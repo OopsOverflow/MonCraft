@@ -11,8 +11,8 @@ public:
   virtual ~Box();
 
   static const spec_t GAP;
-  virtual void setStyle(prop_t const& prop) override;
-  virtual prop_t getStyle(spec_t spec) const override;
+  virtual void setProperty(prop_t prop) override;
+  virtual prop_t getProperty(spec_t spec) const override;
   virtual style_const_t getDefaultStyle() const override;
 
   void pack(Component* comp);

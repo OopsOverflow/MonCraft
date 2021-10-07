@@ -33,7 +33,7 @@ Pane::Pane()
   glBindVertexArray(0);
   shader = ResourceManager::getShader("pane");
 
-  Pane::getDefaultStyle()->apply(this);
+
 }
 
 Pane::~Pane() {
@@ -42,21 +42,21 @@ Pane::~Pane() {
   glDeleteBuffers(1, &vbo);
 }
 
-void Pane::setStyle(prop_t const& prop) {
+void Pane::setProperty(prop_t prop) {
   if(prop.spec == Pane::COLOR) {
     setColor(prop.value->get<vec4>());
   }
   else {
-    Component::setStyle(prop);
+    Component::setProperty(prop);
   }
 }
 
-prop_t Pane::getStyle(spec_t spec) const {
+prop_t Pane::getProperty(spec_t spec) const {
   if(spec == Pane::COLOR) {
     return make_property(spec, getColor());
   }
   else {
-    return Component::getStyle(spec);
+    return Component::getProperty(spec);
   }
 }
 

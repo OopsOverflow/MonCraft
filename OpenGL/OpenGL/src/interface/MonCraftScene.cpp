@@ -52,7 +52,6 @@ MonCraftScene::MonCraftScene(Viewport* vp)
     std::srand(seed);
     std::cout << "seed : " << config.seed << " (" << seed << ")" << std::endl;
 
-    World& world = World::getInst();
     server = createServer(config);
     server->start();
     player = server->getPlayer();

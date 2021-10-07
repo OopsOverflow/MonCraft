@@ -5,10 +5,16 @@ MainMenu::MainMenu() : Image({0, 0}, {1920, 1080})
 {
 	auto font = ResourceManager::getFont("roboto");
 
-	MoncraftTitle = std::make_unique<ui::Image>(glm::ivec2(0, 1081), glm::ivec2(438, 100));
-	playButton = std::make_unique<ui::Button>("PLAY", font);
-	
-	add(MoncraftTitle.get());
+	titlePane = std::make_unique<ui::Pane>();
+	moncraftTitle = std::make_unique<ui::Text>("MONCRAFT", font);
+	{
+		auto img = std::make_unique<ui::Image>();
+		playButton = std::make_unique<ui::Button>(move(img), "PLAY", font);
+	}
+	playButton->setHoverStyle(ui::make_property(ui::Text::COLOR, glm::vec4(1.f, 1.f, 0.f, 1.f)));
+
+	add(titlePane.get());
+	titlePane->add(moncraftTitle.get());
 	add(playButton.get());
 
 	MoncraftTitle->setAnchorX(ui::Anchor::CENTER);

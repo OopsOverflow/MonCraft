@@ -29,6 +29,7 @@ public:
   void apply(Component* comp) const;
   void revert(Component* comp) const;
   void applyAll(Component* comp) const;
+  bool hasProperty(spec_t spec) const;
 
   // edge case
   static style_t make_style(style_const_t parent);
@@ -42,6 +43,10 @@ public:
   }
 
 private:
+
+  prop_t getProperty(spec_t spec) const;
+  prop_t getProperty(Component* comp, spec_t spec) const;
+
   using propStore_t = std::unordered_map<spec_t, prop_t>;
 
   propStore_t props;

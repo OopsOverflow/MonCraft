@@ -19,8 +19,8 @@ public:
   static const spec_t FONT_SIZE;
   static const spec_t FONT;
   static const spec_t USE_BASELINE;
-  virtual void setStyle(prop_t const& prop) override;
-  virtual prop_t getStyle(spec_t spec) const override;
+  virtual void setProperty(prop_t prop) override;
+  virtual prop_t getProperty(spec_t spec) const override;
   virtual style_const_t getDefaultStyle() const override;
 
   void setText(std::string text);

@@ -261,15 +261,15 @@ std::istream &operator>>(std::istream &stream, BlockType &type) {
 
 std::istream &operator>>(std::istream &stream, Chunk &chunk) {
   int maxIndex = chunk.size.x * chunk.size.y * chunk.size.z;
-  int offset = 0;
+  uint16_t offset = 0;
 
-  while (offset != maxIndex) {
+  while (offset < maxIndex) {
     Binary<uint16_t> blockCount;
     BlockType type;
     stream >> blockCount >> type;
 
-    for (int i = offset + 0; i < offset + blockCount.val; i += 1) {
-      chunk.at(i) = AllBlocks::create_static(type);
+    for (uint16_t i = 0; i < blockCount.val; i += 1) {
+      chunk.at(offset + i) = AllBlocks::create_static(type);
     }
 
     offset += blockCount.val;
