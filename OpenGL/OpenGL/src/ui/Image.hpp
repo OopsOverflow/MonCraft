@@ -31,7 +31,9 @@ namespace ui {
 
 		void setTextureSize(glm::ivec2 size);
 		glm::ivec2 getTextureSize() const;
-
+		
+		void setMagFilter(GLint param);
+		void setMinFilter(GLint param);
 	private:
 		glm::mat4 computeModel();
 		glm::mat4 computeTexture();
@@ -42,6 +44,9 @@ namespace ui {
 		glm::ivec2 texOffset;
 		glm::ivec2 texSize;
 		Crop crop;
+
+		GLint minFilter;
+		GLint magFilter;
 
 		static GLuint vao, vbo;
 	};

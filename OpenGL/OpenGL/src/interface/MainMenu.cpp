@@ -5,9 +5,12 @@ MainMenu::MainMenu() : Image({0, 0}, {1920, 1080})
 {
 
 	setCrop(Crop::CENTER);
+	setMinFilter(GL_LINEAR);
+	setMagFilter(GL_LINEAR);
+	setPadding(glm::ivec2(15, 15));
 	auto font = ResourceManager::getFont("roboto");
 
-	moncraftTitle = std::make_unique<ui::Image>(glm::ivec2(0, 1081), glm::ivec2(438, 100));
+	moncraftTitle = std::make_unique<ui::Image>(glm::ivec2(0, 1083), glm::ivec2(429, 92));
 	buttonPannel = std::make_unique<ui::Box>();
 
 	singlePlayerButton = std::make_unique<ui::Button>("Solo", font);
@@ -29,8 +32,11 @@ MainMenu::MainMenu() : Image({0, 0}, {1920, 1080})
 	moncraftTitle->setAnchorX(ui::Anchor::CENTER);
 	moncraftTitle->setAnchorY(ui::Anchor::END);
 
-	moncraftTitle->setSize({ 1.5*438,1.5*100 });
+	moncraftTitle->setSize({ 1.5*429,1.5*92 });
 	moncraftTitle->setCrop(Crop::CENTER);
+	moncraftTitle->setMinFilter(GL_LINEAR);
+	moncraftTitle->setMagFilter(GL_LINEAR);
+
 
 	singlePlayerButton->setAnchorX(ui::Anchor::CENTER);
 	multiplayerButton->setAnchorX(ui::Anchor::CENTER);

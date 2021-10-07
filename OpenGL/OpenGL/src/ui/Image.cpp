@@ -32,7 +32,9 @@ GLuint Image::vbo = 0;
 Image::Image(glm::ivec2 offset, glm::ivec2 size)
  : crop(Crop::NONE),
    texOffset(offset),
-   texSize(size)
+   texSize(size),
+   minFilter(GL_NEAREST),
+   magFilter(GL_NEAREST)
 {
     if (shader == nullptr) {
         shader = ResourceManager::getShader("image");
@@ -53,6 +55,13 @@ Image::Image(glm::ivec2 offset, glm::ivec2 size)
             glActiveTexture(GL_TEXTURE0);
         }
         glBindVertexArray(0);
+        glBindTexture(GL_TEXTURE_2D, texAtlas);
+        {
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+        }
+        glBindTexture(GL_TEXTURE_2D, 0);
 
     }
 
@@ -107,7 +116,8 @@ style_const_t Image::getDefaultStyle() const {
 void Image::draw() {
     shader->activate();
     shader->bindTexture(TEXTURE_COLOR, texAtlas);
-
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
     glm::mat4 model = computeModel();
     glm::mat4 textureCoords = computeTexture();
 
@@ -192,4 +202,12 @@ void Image::setTextureSize(glm::ivec2 size) {
 
 glm::ivec2 Image::getTextureSize() const {
     return texSize;
+}
+
+void Image::setMagFilter(GLint param) {
+    magFilter = param;
+}
+
+void Image::setMinFilter(GLint param) {
+    minFilter = param;
 }
