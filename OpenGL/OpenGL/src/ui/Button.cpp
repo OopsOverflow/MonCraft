@@ -69,7 +69,7 @@ void Button::onMouseOut(glm::ivec2 pos) {
 bool Button::onMousePressed(glm::ivec2 pos) {
   pressed->apply(this);
   if(clickCallback) clickCallback();
-  return false;
+  return true;
 }
 
 bool Button::onMouseReleased(glm::ivec2 pos) {

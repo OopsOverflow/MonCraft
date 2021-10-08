@@ -82,12 +82,19 @@ void Box::updateCells() {
   int offset = 0;
   std::vector<int> offsets(cells.size());
   int i = orientation == Orientation::HORIZONTAL ? 0 : 1;
+  ivec2 maxSize(0);
 
   for(auto const& cell : cells) {
     ivec2 pos(0);
     pos[i] = offset;
     cell->setPosition(pos);
+    maxSize = max(maxSize, cell->getAbsoluteSize());
     offset += cell->getAbsoluteSize()[i] + gap;
+  }
+
+  maxSize[i] = 0;
+  for(auto const& cell : cells) {
+    cell->setSize(maxSize);
   }
 }
 

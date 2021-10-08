@@ -51,7 +51,7 @@ void Slider::moveThumb(int pos) {
 bool Slider::onMousePressed(glm::ivec2 pos) {
   thumb->setColor({ 1, 0, 1, 1 });
   moveThumb(pos.x);
-  return false;
+  return true;
 }
 
 
