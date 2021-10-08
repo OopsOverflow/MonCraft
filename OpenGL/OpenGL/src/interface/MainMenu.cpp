@@ -13,21 +13,22 @@ MainMenu::MainMenu() : Image({0, 0}, {1920, 1080})
 	moncraftTitle = std::make_unique<ui::Image>(glm::ivec2(0, 1083), glm::ivec2(429, 92));
 	buttonPannel = std::make_unique<ui::Box>();
 
-	singlePlayerButton = std::make_unique<ui::Button>("Solo", font);
-	multiplayerButton = std::make_unique<ui::Button>("Multijoueur", font);
-	parameterButton = std::make_unique<ui::Button>("Parametres", font);
-	quitButton = std::make_unique<ui::Button>("Quitter", font);
-	
+	singlePlayerButton = ui::Button::makePaneButton("Solo", font);
+	multiplayerButton = ui::Button::makePaneButton("Multijoueur", font);
+	parameterButton = ui::Button::makePaneButton("Parametres", font);
+	quitButton = ui::Button::makePaneButton("Quitter", font);
+
 	add(moncraftTitle.get());
 	add(buttonPannel.get());
 
 	buttonPannel->setAnchorX(ui::Anchor::CENTER);
 	buttonPannel->setAnchorY(ui::Anchor::CENTER);
+	buttonPannel->setGap(10);
 
-	buttonPannel->pack(singlePlayerButton.get());
-	buttonPannel->pack(multiplayerButton.get());
-	buttonPannel->pack(parameterButton.get());
-	buttonPannel->pack(quitButton.get());
+	buttonPannel->pack_end(singlePlayerButton.get());
+	buttonPannel->pack_end(multiplayerButton.get());
+	buttonPannel->pack_end(parameterButton.get());
+	buttonPannel->pack_end(quitButton.get());
 
 	moncraftTitle->setAnchorX(ui::Anchor::CENTER);
 	moncraftTitle->setAnchorY(ui::Anchor::END);

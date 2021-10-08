@@ -17,7 +17,6 @@ Text::Text(std::string text, std::shared_ptr<const Font> font)
     useBaseline(true), baselineOffset(0)
 {
   computeSize();
-
 }
 
 void Text::setProperty(prop_t prop) {

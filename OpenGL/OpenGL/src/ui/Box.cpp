@@ -5,10 +5,13 @@
 using namespace ui;
 using namespace glm;
 
+MAKE_TYPE(Box::Orientation);
 const spec_t Box::GAP = MAKE_SPEC("Box::gap", int);
+const spec_t Box::ORIENTATION = MAKE_SPEC("Box::orientation", Box::Orientation);
 
 Box::Box()
-  : gap(0)
+  : gap(0),
+    orientation(Orientation::VERTICAL)
 {}
 
 Box::~Box()
@@ -16,6 +19,9 @@ Box::~Box()
 
 void Box::setProperty(prop_t prop) {
   if(prop.spec == Box::GAP) {
+    setGap(prop.value->get<int>());
+  }
+  if(prop.spec == Box::ORIENTATION) {
     setGap(prop.value->get<int>());
   }
   else {
@@ -35,16 +41,28 @@ prop_t Box::getProperty(spec_t spec) const {
 style_const_t Box::getDefaultStyle() const {
   static style_const_t style = Style::make_style(
     Component::getDefaultStyle(),
-    make_property(Box::GAP, 0)
+    make_property(Box::GAP, 0),
+    make_property(Box::ORIENTATION, Orientation::VERTICAL)
   );
 
   return style;
 }
 
 
-void Box::pack(Component* comp) {
+void Box::pack(size_t index, Component* comp) {
+  auto it = cells.begin() + index;
+  it = cells.insert(it, std::make_unique<Cell>(comp));
+  add(it->get());
+}
+
+void Box::pack_start(Component* comp) {
   cells.emplace_back(std::make_unique<Cell>(comp));
   add(cells.back().get());
+}
+
+void Box::pack_end(Component* comp) {
+  auto it = cells.emplace(cells.begin(), std::make_unique<Cell>(comp));
+  add(it->get());
 }
 
 void Box::unpack(Component* comp) {
@@ -63,10 +81,20 @@ void Box::draw() {
 void Box::updateCells() {
   int offset = 0;
   std::vector<int> offsets(cells.size());
+  int i = orientation == Orientation::HORIZONTAL ? 0 : 1;
+  ivec2 maxSize(0);
 
   for(auto const& cell : cells) {
-    cell->setPosition(ivec2(0, offset));
-    offset += cell->getAbsoluteSize().y + gap;
+    ivec2 pos(0);
+    pos[i] = offset;
+    cell->setPosition(pos);
+    maxSize = max(maxSize, cell->getAbsoluteSize());
+    offset += cell->getAbsoluteSize()[i] + gap;
+  }
+
+  maxSize[i] = 0;
+  for(auto const& cell : cells) {
+    cell->setSize(maxSize);
   }
 }
 
@@ -76,6 +104,17 @@ void Box::setGap(int gap) {
 
 int Box::getGap() const {
   return gap;
+}
+
+void Box::setOrientation(Orientation orientation) {
+  if(orientation != this->orientation) {
+    this->orientation = orientation;
+    updateCells();
+  }
+}
+
+Box::Orientation Box::getOrientation() const {
+  return orientation;
 }
 
 Box::Cell::Cell(Component* comp) {

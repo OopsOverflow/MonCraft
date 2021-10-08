@@ -1,4 +1,5 @@
 #include "Button.hpp"
+#include "Image.hpp"
 
 using namespace ui;
 using namespace glm;
@@ -19,13 +20,19 @@ Button::Button(std::unique_ptr<Component> comp, std::string text, std::shared_pt
 
   textComp->setUseBaseline(false); // TODO: non-heritable styles ?
   mainComp->setPadding(ivec2(10, 5));
-
-  Button::getDefaultStyle()->apply(this);
 }
 
-Button::Button(std::string text, std::shared_ptr<const Font> font)
-  : Button(std::make_unique<Pane>(), text, font)
-{}
+std::unique_ptr<Button> Button::makePaneButton(std::string text, std::shared_ptr<const Font> font) {
+  auto btn = new Button(std::make_unique<Pane>(), text, font);
+  btn->getDefaultStyle()->apply(btn);
+  return std::unique_ptr<Button>(btn);
+}
+
+std::unique_ptr<Button> Button::makeImageButton(glm::ivec2 offset, glm::ivec2 size, std::string text, std::shared_ptr<const Font> font) {
+  auto btn = new Button(std::make_unique<Image>(offset, size), text, font);
+  btn->getDefaultStyle()->apply(btn);
+  return std::unique_ptr<Button>(btn);
+}
 
 void Button::onclick(std::function<void()> callback) {
   this->clickCallback = callback;
@@ -60,16 +67,14 @@ void Button::onMouseOut(glm::ivec2 pos) {
 }
 
 bool Button::onMousePressed(glm::ivec2 pos) {
-  Component::onMousePressed(pos);
   pressed->apply(this);
   if(clickCallback) clickCallback();
   return true;
 }
 
 bool Button::onMouseReleased(glm::ivec2 pos) {
-  bool res = Component::onMousePressed(pos);
   pressed->revert(this);
-  return res;
+  return false;
 }
 
 void Button::setText(std::string text) {

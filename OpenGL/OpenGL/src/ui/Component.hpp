@@ -13,8 +13,10 @@ enum class Anchor { BEGIN, END, CENTER };
 
 class Component {
 
-public:
+protected:
   Component();
+
+public:
   virtual ~Component();
   Component(Component&) = delete;
   Component& operator=(Component&) = delete;
@@ -104,6 +106,8 @@ protected:
   virtual void onDeactivated();
   virtual void onKeyPressed(Key k);
   virtual void onKeyReleased(Key k);
+
+  glm::ivec2 toRelative(glm::ivec2 absPos) const;
 
   bool isHover();
   bool isPressed();

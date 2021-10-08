@@ -32,8 +32,6 @@ Pane::Pane()
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindVertexArray(0);
   shader = ResourceManager::getShader("pane");
-
-
 }
 
 Pane::~Pane() {

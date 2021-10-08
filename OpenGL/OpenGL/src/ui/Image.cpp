@@ -30,9 +30,9 @@ GLuint Image::vbo = 0;
 
 
 Image::Image(glm::ivec2 offset, glm::ivec2 size)
- : crop(Crop::NONE),
-   texOffset(offset),
+ : texOffset(offset),
    texSize(size),
+   crop(Crop::NONE),
    minFilter(GL_NEAREST),
    magFilter(GL_NEAREST)
 {
@@ -59,13 +59,9 @@ Image::Image(glm::ivec2 offset, glm::ivec2 size)
         {
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
         }
         glBindTexture(GL_TEXTURE_2D, 0);
-
     }
-
-
 }
 
 Image::~Image() {
@@ -164,7 +160,6 @@ void Image::calculateCropping(glm::ivec2& offset, glm::ivec2& size) {
         }
         else {
             newSize.y = absoluteSize.y * size.x / (float)absoluteSize.x;
-
         }
         if (crop == Crop::END)
             newOffset = offset + size - newSize;
