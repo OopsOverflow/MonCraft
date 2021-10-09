@@ -64,6 +64,7 @@ void loadResources() {
 
 int main(int argc, char* argv[]) {
     std::cout << "---- Main ----" << std::endl;
+    Config& config = SaveManager::getInst().getConfig();
     Viewport window({ 800, 800 });
     loadResources();
     window.createRoot();
@@ -71,7 +72,15 @@ int main(int argc, char* argv[]) {
 
     window.getRoot()->add(&mainMenu);
 
-    mainMenu.singlePlayerButton->onclick([&] {
+    mainMenu.singleplayerButton->onclick([&] {
+        config.multiplayer = false;
+        auto scene = std::make_unique<MonCraftScene>(&window);
+        window.getRoot()->remove(&mainMenu);
+        window.getRoot()->add(move(scene));
+    });
+
+    mainMenu.multiplayerButton->onclick([&] {
+        config.multiplayer = true;
         auto scene = std::make_unique<MonCraftScene>(&window);
         window.getRoot()->remove(&mainMenu);
         window.getRoot()->add(move(scene));

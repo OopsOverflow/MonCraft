@@ -13,7 +13,7 @@ MainMenu::MainMenu() : Image({0, 0}, {1920, 1080})
 	moncraftTitle = std::make_unique<ui::Image>(glm::ivec2(0, 1083), glm::ivec2(429, 92));
 	buttonPannel = std::make_unique<ui::Box>();
 
-	singlePlayerButton = ui::Button::makePaneButton("Solo", font);
+	singleplayerButton = ui::Button::makePaneButton("Solo", font);
 	multiplayerButton = ui::Button::makePaneButton("Multijoueur", font);
 	parameterButton = ui::Button::makePaneButton("Parametres", font);
 	quitButton = ui::Button::makePaneButton("Quitter", font);
@@ -25,7 +25,7 @@ MainMenu::MainMenu() : Image({0, 0}, {1920, 1080})
 	buttonPannel->setAnchorY(ui::Anchor::CENTER);
 	buttonPannel->setGap(10);
 
-	buttonPannel->pack_end(singlePlayerButton.get());
+	buttonPannel->pack_end(singleplayerButton.get());
 	buttonPannel->pack_end(multiplayerButton.get());
 	buttonPannel->pack_end(parameterButton.get());
 	buttonPannel->pack_end(quitButton.get());
@@ -39,7 +39,7 @@ MainMenu::MainMenu() : Image({0, 0}, {1920, 1080})
 	moncraftTitle->setMagFilter(GL_LINEAR);
 
 
-	singlePlayerButton->setAnchorX(ui::Anchor::CENTER);
+	singleplayerButton->setAnchorX(ui::Anchor::CENTER);
 	multiplayerButton->setAnchorX(ui::Anchor::CENTER);
 	parameterButton->setAnchorX(ui::Anchor::CENTER);
 	quitButton->setAnchorX(ui::Anchor::CENTER);
