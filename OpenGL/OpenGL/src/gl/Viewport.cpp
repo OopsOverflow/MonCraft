@@ -31,7 +31,7 @@ Viewport::Viewport(glm::ivec2 size)
       window(nullptr), context(nullptr),
       lastSpacePress(0), spaceIsPressed(false),
       timeBegin(0), lastTime(0),
-      mouseCaptured(false), vsync(true),
+      mouseCaptured(false), vsync(true), mustQuit(false),
       root(nullptr), config(SaveManager::getInst().getConfig())
 {
   // Initialize SDL2
@@ -58,7 +58,7 @@ Viewport::Viewport(glm::ivec2 size)
 
   //Initialize the OpenGL Context
   context = SDL_GL_CreateContext(window);
-  
+
   // Initialize GLEW
   if (glewInit() != GLEW_OK)
     throw std::runtime_error("GLEW init failed");
@@ -82,6 +82,10 @@ Viewport::~Viewport() {
     if (window)
         SDL_DestroyWindow(window);
     SDL_Quit();
+}
+
+void Viewport::quit() {
+  mustQuit = true;
 }
 
 ui::Root* Viewport::getRoot() {
@@ -137,8 +141,9 @@ void Viewport::on_event(SDL_Event const& e) {
 }
 
 bool Viewport::beginFrame(float& dt) {
+  if(mustQuit) return false;
+
   SDL_Event event;
-  glViewport(0, 0, size.x, size.y);
   while (SDL_PollEvent(&event)) {
     if(event.type == SDL_WINDOWEVENT)
       if(event.window.event == SDL_WINDOWEVENT_CLOSE)
@@ -148,6 +153,7 @@ bool Viewport::beginFrame(float& dt) {
     on_event(event);
   }
 
+  glViewport(0, 0, size.x, size.y);
   glClearColor(54/255.f, 199/255.f, 242/255.f, 1.0);
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);

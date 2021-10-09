@@ -44,6 +44,7 @@ public:
   void captureMouse();
   void toggleVSync();
   void toggleFullscreen();
+  void quit();
 
   glm::ivec2 size;
 
@@ -72,6 +73,7 @@ private:
   bool mouseCaptured;
   bool vsync;
   bool fullscreen;
+  bool mustQuit;
 
   std::unique_ptr<ui::Root> root;
 

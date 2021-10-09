@@ -43,7 +43,6 @@ MainMenu::MainMenu() : Image({0, 0}, {1920, 1080})
 	multiplayerButton->setAnchorX(ui::Anchor::CENTER);
 	parameterButton->setAnchorX(ui::Anchor::CENTER);
 	quitButton->setAnchorX(ui::Anchor::CENTER);
-
 }
 
 void MainMenu::draw() {

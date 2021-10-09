@@ -68,7 +68,6 @@ MonCraftScene::MonCraftScene(Viewport* vp)
     overlay->btn_ping->onclick([&] { server->ping(); });
     add(overlay.get());
     add(debugOverlay.get());
-
 }
 
 

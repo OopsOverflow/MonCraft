@@ -5,6 +5,7 @@
 #include "gl/Viewport.hpp"
 #include "interface/MonCraftScene.hpp"
 #include "interface/MainMenu.hpp"
+#include "interface/ParametersMenu.hpp"
 
 
 
@@ -67,16 +68,24 @@ int main(int argc, char* argv[]) {
     loadResources();
     window.createRoot();
     MainMenu mainMenu;
-    std::unique_ptr<MonCraftScene> moncraftScene;
 
     window.getRoot()->add(&mainMenu);
-    
+
     mainMenu.singlePlayerButton->onclick([&] {
-        moncraftScene = std::make_unique<MonCraftScene>(&window);
+        auto scene = std::make_unique<MonCraftScene>(&window);
         window.getRoot()->remove(&mainMenu);
-        window.getRoot()->add(moncraftScene.get());
+        window.getRoot()->add(move(scene));
     });
 
+    mainMenu.parameterButton->onclick([&] {
+        auto params = std::make_unique<ParametersMenu>();
+        window.getRoot()->remove(&mainMenu);
+        window.getRoot()->add(move(params));
+    });
+
+    mainMenu.quitButton->onclick([&] {
+        window.quit();
+    });
 
     for (float dt = 0; window.beginFrame(dt); window.endFrame()) {
         World::getInst().t += dt;

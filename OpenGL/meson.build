@@ -84,6 +84,7 @@ client_srcs = files(
   'OpenGL/src/interface/GameMenu.cpp',
   'OpenGL/src/interface/MainMenu.cpp',
   'OpenGL/src/interface/Overlay.cpp',
+  'OpenGL/src/interface/ParametersMenu.cpp',
   'OpenGL/src/interface/DebugOverlay.cpp',
   'OpenGL/src/multiplayer/client/Server.cpp',
   'OpenGL/src/multiplayer/client/ClientServer.cpp',

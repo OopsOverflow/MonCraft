@@ -13,9 +13,9 @@ ParametersMenu::ParametersMenu() : Image({ 0, 1178 }, { 132, 116 })
 	graphicDisplay = std::make_unique<ui::Box>();
 	audioDisplay = std::make_unique<ui::Box>();
 
-	keyMenu = std::make_unique<ui::Button>("Controles", font);
-	graphicMenu = std::make_unique<ui::Button>("Graphismes", font);
-	audioMenu = std::make_unique<ui::Button>("Audio", font);
+	keyMenu = ui::Button::makePaneButton("Controles", font);
+	graphicMenu = ui::Button::makePaneButton("Graphismes", font);
+	audioMenu = ui::Button::makePaneButton("Audio", font);
 	add(display.get());
 
 	display->add(parametersTitle.get());
@@ -25,10 +25,7 @@ ParametersMenu::ParametersMenu() : Image({ 0, 1178 }, { 132, 116 })
 	folders->add(graphicMenu.get());
 	folders->add(audioMenu.get());
 
-
-
 	setSize(getSize() * 2);
-	
 }
 
 void ParametersMenu::draw() {
