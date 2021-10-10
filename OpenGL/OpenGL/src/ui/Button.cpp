@@ -9,7 +9,7 @@ Button::Button(std::unique_ptr<Component> comp, std::string text, std::shared_pt
     hover(std::make_shared<Style>()),
     pressed(std::make_shared<Style>())
 {
-  textComp = std::make_unique<Text>(std::move(text), std::move(font));
+  textComp = Text::create(std::move(text), std::move(font));
   mainComp->add(textComp.get());
   add(mainComp.get());
 
@@ -22,29 +22,20 @@ Button::Button(std::unique_ptr<Component> comp, std::string text, std::shared_pt
   mainComp->setPadding(ivec2(10, 5));
 }
 
-std::unique_ptr<Button> Button::makePaneButton(std::string text, std::shared_ptr<const Font> font) {
-  auto btn = new Button(std::make_unique<Pane>(), text, font);
-  btn->getDefaultStyle()->apply(btn);
+std::unique_ptr<Button> Button::createPaneButton(std::string text, std::shared_ptr<const Font> font) {
+  auto btn = new Button(Pane::create(), text, font);
+  btn->initialize();
   return std::unique_ptr<Button>(btn);
 }
 
-std::unique_ptr<Button> Button::makeImageButton(glm::ivec2 offset, glm::ivec2 size, std::string text, std::shared_ptr<const Font> font) {
-  auto btn = new Button(std::make_unique<Image>(offset, size), text, font);
-  btn->getDefaultStyle()->apply(btn);
+std::unique_ptr<Button> Button::createImageButton(glm::ivec2 offset, glm::ivec2 size, std::string text, std::shared_ptr<const Font> font) {
+  auto btn = new Button(Image::create(offset, size), text, font);
+  btn->initialize();
   return std::unique_ptr<Button>(btn);
 }
 
 void Button::onclick(std::function<void()> callback) {
   this->clickCallback = callback;
-}
-
-style_const_t Button::getDefaultStyle() const {
-  static style_const_t style = Style::make_style(
-    Component::getDefaultStyle(),
-    make_property(Text::COLOR, vec4(0.f, 0.f, 0.f, 1.f))
-  );
-
-  return style;
 }
 
 void Button::setHoverStyle(prop_t prop) {

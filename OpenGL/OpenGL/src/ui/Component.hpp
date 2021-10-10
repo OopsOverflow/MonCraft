@@ -15,6 +15,7 @@ class Component {
 
 protected:
   Component();
+  void initialize();
 
 public:
   virtual ~Component();
@@ -35,15 +36,30 @@ public:
   void setStyle(prop_t prop);
 
   /**
+   * Shorthand, @see setStyle
+   */
+  template<typename T>
+  void setStyle(spec_t spec, T val) {
+    setStyle(make_property(spec, val));
+  }
+
+  /**
   * Set a style property only for itself
   */
   virtual void setProperty(prop_t prop);
 
   /**
+   * Shorthand, @see setProperty
+   */
+  template<typename T>
+  void setProp(spec_t spec, T val) {
+    setProperty(make_property(spec, val));
+  }
+
+  /**
    * Get the style property
    */
   virtual prop_t getProperty(spec_t spec) const;
-
 
   /**
    * Get the default stylesheet for this component

@@ -10,8 +10,11 @@ namespace ui {
 
 	class Image : public Component {
 
-	public:
+	protected:
 		Image(glm::ivec2 offset, glm::ivec2 size);
+
+	public:
+		static std::unique_ptr<Image> create(glm::ivec2 offset, glm::ivec2 size);
 		virtual ~Image();
 
 		void draw() override;
@@ -31,7 +34,7 @@ namespace ui {
 
 		void setTextureSize(glm::ivec2 size);
 		glm::ivec2 getTextureSize() const;
-		
+
 		void setMagFilter(GLint param);
 		void setMinFilter(GLint param);
 	private:

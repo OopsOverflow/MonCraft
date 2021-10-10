@@ -8,7 +8,7 @@ const spec_t Input::TEXT_COLOR = MAKE_SPEC("Input::textColor", vec4);
 
 Input::Input(std::string text, std::shared_ptr<const Font> font)
 {
-  textComp = std::make_unique<Text>(std::move(text), std::move(font));
+  textComp = Text::create(std::move(text), std::move(font));
   add(textComp.get());
 
 
@@ -18,6 +18,12 @@ Input::Input(std::string text, std::shared_ptr<const Font> font)
 
   active.setParent(Input::getDefaultStyle());
   active.set(make_property(TEXT_COLOR, vec4(0.0, 1.0, 0.0, 1.0)));
+}
+
+std::unique_ptr<Input> Input::create(std::string text, std::shared_ptr<const Font> font) {
+  auto comp = std::unique_ptr<Input>(new Input(text, font));
+  comp->initialize();
+  return comp;
 }
 
 void Input::onChange(std::function<void()> callback) {

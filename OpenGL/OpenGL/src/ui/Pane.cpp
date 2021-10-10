@@ -34,6 +34,12 @@ Pane::Pane()
   shader = ResourceManager::getShader("pane");
 }
 
+std::unique_ptr<Pane> Pane::create() {
+  auto comp = std::unique_ptr<Pane>(new Pane());
+  comp->initialize();
+  return comp;
+}
+
 Pane::~Pane() {
   ASSERT_GL_MAIN_THREAD();
   glDeleteVertexArrays(1, &vao);

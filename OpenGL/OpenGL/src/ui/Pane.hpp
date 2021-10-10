@@ -7,8 +7,11 @@ namespace ui {
 
 class Pane : public Component {
 
-public:
+protected:
   Pane();
+
+public:
+  static std::unique_ptr<Pane> create();
   virtual ~Pane();
 
   void draw() override;

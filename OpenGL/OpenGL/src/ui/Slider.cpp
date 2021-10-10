@@ -9,14 +9,20 @@ const spec_t Slider::VALUE = MAKE_SPEC("Slider::value", float);
 Slider::Slider()
   : value(0)
 {
-  track = std::make_unique<Pane>();
-  thumb = std::make_unique<Pane>();
+  track = Pane::create();
+  thumb = Pane::create();
 
   add(track.get());
   track->add(thumb.get());
 
   thumb->setColor({ 1, 0, 0, 1 });
   setSize(ivec2(100, 20));
+}
+
+std::unique_ptr<Slider> Slider::create() {
+  auto comp = std::unique_ptr<Slider>(new Slider());
+  comp->initialize();
+  return comp;
 }
 
 

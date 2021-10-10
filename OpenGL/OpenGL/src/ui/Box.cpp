@@ -14,15 +14,18 @@ Box::Box()
     orientation(Orientation::VERTICAL)
 {}
 
-Box::~Box()
-{}
+std::unique_ptr<Box> Box::create() {
+  auto comp = std::unique_ptr<Box>(new Box());
+  comp->initialize();
+  return comp;
+}
 
 void Box::setProperty(prop_t prop) {
   if(prop.spec == Box::GAP) {
     setGap(prop.value->get<int>());
   }
   if(prop.spec == Box::ORIENTATION) {
-    setGap(prop.value->get<int>());
+    setOrientation(prop.value->get<Box::Orientation>());
   }
   else {
     Component::setProperty(prop);

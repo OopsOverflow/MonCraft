@@ -64,6 +64,12 @@ Image::Image(glm::ivec2 offset, glm::ivec2 size)
     }
 }
 
+std::unique_ptr<Image> Image::create(ivec2 offset, ivec2 size) {
+  auto comp = std::unique_ptr<Image>(new Image(offset, size));
+  comp->initialize();
+  return comp;
+}
+
 Image::~Image() {
     ASSERT_GL_MAIN_THREAD();
     glDeleteVertexArrays(1, &vao);

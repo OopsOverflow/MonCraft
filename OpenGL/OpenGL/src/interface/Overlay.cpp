@@ -1,12 +1,14 @@
 #include "Overlay.hpp"
 #include "gl/ResourceManager.hpp"
 
+using namespace ui;
+
 Overlay::Overlay()
 {
 	auto font = ResourceManager::getFont("roboto");
-	btn_vsync = ui::Button::makePaneButton("Vsync", font);
-	btn_fullscreen = ui::Button::makePaneButton("Fullscreen", font);
-	btn_ping = ui::Button::makePaneButton("Ping", font);
+	btn_vsync = Button::createPaneButton("Vsync", font);
+	btn_fullscreen = Button::createPaneButton("Fullscreen", font);
+	btn_ping = Button::createPaneButton("Ping", font);
 
 	setPadding({ 15, 15 });
 
@@ -14,7 +16,7 @@ Overlay::Overlay()
 	add(btn_fullscreen.get());
 	add(btn_ping.get());
 
-	btn_fullscreen->setAnchorX(ui::Anchor::END);
+	btn_fullscreen->setAnchorX(Anchor::END);
 	btn_ping->setPosition({ 0, 80 });
 }
 

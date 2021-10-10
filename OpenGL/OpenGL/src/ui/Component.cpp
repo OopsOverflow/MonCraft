@@ -23,6 +23,11 @@ Component::Component()
     ownStyle(std::make_shared<Style>())
 {}
 
+void Component::initialize() {
+  ownStyle->setParent(getDefaultStyle());
+  ownStyle->applyAll(this);
+}
+
 Component::~Component() {
   if(parent) parent->remove(this);
   if(activeWidget == this) activeWidget = nullptr;

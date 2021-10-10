@@ -11,8 +11,11 @@ namespace ui {
 
 class Text : public Component {
 
-public:
+protected:
   Text(std::string text, std::shared_ptr<const Font> font);
+
+public:
+  static std::unique_ptr<Text> create(std::string text, std::shared_ptr<const Font> font);
 
   void draw() override;
 

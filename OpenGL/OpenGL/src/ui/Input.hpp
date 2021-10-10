@@ -10,8 +10,11 @@ namespace ui {
 
 class Input : public Pane {
 
-public:
+protected:
   Input(std::string text, std::shared_ptr<const Font> font);
+
+public:
+  static std::unique_ptr<Input> create(std::string text, std::shared_ptr<const Font> font);
 
   static const spec_t TEXT;
   static const spec_t TEXT_COLOR;

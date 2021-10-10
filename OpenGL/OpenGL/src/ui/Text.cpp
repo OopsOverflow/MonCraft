@@ -21,6 +21,12 @@ Text::Text(std::string text, std::shared_ptr<const Font> font)
   computeSize();
 }
 
+std::unique_ptr<Text> Text::create(std::string text, std::shared_ptr<const Font> font) {
+  auto comp = std::unique_ptr<Text>(new Text(text, font));
+  comp->initialize();
+  return comp;
+}
+
 void Text::setProperty(prop_t prop) {
   if(prop.spec == Text::COLOR) {
     setColor(prop.value->get<vec4>());

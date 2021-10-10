@@ -1,21 +1,23 @@
 #include "ParametersMenu.hpp"
 #include "gl/ResourceManager.hpp"
 
+using namespace ui;
+
 ParametersMenu::ParametersMenu() : Image({ 0, 1178 }, { 132, 116 })
 {
 	auto font = ResourceManager::getFont("roboto");
 
-	parametersTitle = std::make_unique<ui::Text>("Parametres", font);
-	folders = std::make_unique<ui::Box>();
-	display = std::make_unique<ui::Box>();
+	parametersTitle = Text::create("Parametres", font);
+	folders = Box::create();
+	display = Box::create();
 
-	keyDisplay = std::make_unique<ui::Box>();
-	graphicDisplay = std::make_unique<ui::Box>();
-	audioDisplay = std::make_unique<ui::Box>();
+	keyDisplay = Box::create();
+	graphicDisplay = Box::create();
+	audioDisplay = Box::create();
 
-	keyMenu = ui::Button::makePaneButton("Controles", font);
-	graphicMenu = ui::Button::makePaneButton("Graphismes", font);
-	audioMenu = ui::Button::makePaneButton("Audio", font);
+	keyMenu = Button::createPaneButton("Controles", font);
+	graphicMenu = Button::createPaneButton("Graphismes", font);
+	audioMenu = Button::createPaneButton("Audio", font);
 	add(display.get());
 
 	display->add(parametersTitle.get());

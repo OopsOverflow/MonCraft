@@ -1,16 +1,18 @@
 #include "DebugOverlay.hpp"
 #include "gl/ResourceManager.hpp"
 
+using namespace ui;
+
 DebugOverlay::DebugOverlay(std::shared_ptr<Server> server) :
 	server(server),
 	world(World::getInst())
 {
 	auto font = ResourceManager::getFont("roboto");
-	text_fps = std::make_unique<ui::Text>("Fps : ", font);;
-	text_posPlayer = std::make_unique<ui::Text>("Pos : ", font);
-	text_players = std::make_unique<ui::Text>("Players : ", font);
-	text_uid = std::make_unique<ui::Text>("UID : ", font);
-	text_gameTime = std::make_unique<ui::Text>("Time : ", font);
+	text_fps = Text::create("Fps : ", font);;
+	text_posPlayer = Text::create("Pos : ", font);
+	text_players = Text::create("Players : ", font);
+	text_uid = Text::create("UID : ", font);
+	text_gameTime = Text::create("Time : ", font);
 
 	pack_end(text_fps.get());
 	pack_end(text_posPlayer.get());
@@ -21,23 +23,23 @@ DebugOverlay::DebugOverlay(std::shared_ptr<Server> server) :
 	setGap(10);
 
 	text_fps->setColor({ 1.0f, 1.0f, 1.0f, 1.f });
-	text_fps->setAnchorY(ui::Anchor::END);
+	text_fps->setAnchorY(Anchor::END);
 	text_fps->setFontSize(.35f);
 
 	text_posPlayer->setColor({ 1.0f, 1.0f, 1.0f, 1.f });
-	text_posPlayer->setAnchorY(ui::Anchor::END);
+	text_posPlayer->setAnchorY(Anchor::END);
 	text_posPlayer->setFontSize(.35f);
 
 	text_players->setColor({ 1.0f, 1.0f, 1.0f, 1.f });
-	text_players->setAnchorY(ui::Anchor::END);
+	text_players->setAnchorY(Anchor::END);
 	text_players->setFontSize(.35f);
 
 	text_uid->setColor({ 1.0f, 1.0f, 1.0f, 1.f });
-	text_uid->setAnchorY(ui::Anchor::END);
+	text_uid->setAnchorY(Anchor::END);
 	text_uid->setFontSize(.35f);
 
 	text_gameTime->setColor({ 1.0f, 1.0f, 1.0f, 1.f });
-	text_gameTime->setAnchorY(ui::Anchor::END);
+	text_gameTime->setAnchorY(Anchor::END);
 	text_gameTime->setFontSize(.35f);
 
 }

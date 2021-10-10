@@ -11,6 +11,7 @@
 #include "debug/Debug.hpp"
 
 using namespace glm;
+using namespace ui;
 
 std::shared_ptr<Server> createServer(Config const& config) {
     std::unique_ptr<Server> server;
@@ -25,7 +26,7 @@ std::shared_ptr<Server> createServer(Config const& config) {
 
 
 MonCraftScene::MonCraftScene(Viewport* vp)
-    : ui::Component(),
+    : Component(),
       world(World::getInst()),
       vp(vp),
       camera(ivec2(1), {0, 32, 10}, {0, 32, 0}),
@@ -61,7 +62,7 @@ MonCraftScene::MonCraftScene(Viewport* vp)
     debugOverlay = std::make_unique<DebugOverlay>(server);
     overlay = std::make_unique<Overlay>();
 
-    debugOverlay->setAnchorY(ui::Anchor::END);
+    debugOverlay->setAnchorY(Anchor::END);
 
     overlay->btn_vsync->onclick([=] { vp->toggleVSync(); });
     overlay->btn_fullscreen->onclick([=] { vp->toggleFullscreen(); });

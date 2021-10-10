@@ -6,9 +6,11 @@ namespace ui {
 
 class Box : public Component {
 
-public:
+protected:
   Box();
-  virtual ~Box();
+
+public:
+  static std::unique_ptr<Box> create();
 
   enum class Orientation { HORIZONTAL, VERTICAL };
 

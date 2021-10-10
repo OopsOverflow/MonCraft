@@ -1,0 +1,26 @@
+#include "MainMenuButton.hpp"
+#include "gl/ResourceManager.hpp"
+
+using namespace ui;
+using namespace glm;
+
+MainMenuButton::MainMenuButton(std::unique_ptr<Component> comp, std::string text, std::shared_ptr<const Font> font)
+  : Button(move(comp), move(text), move(font))
+{}
+
+void MainMenuButton::draw() {
+  if(parent) mainComp->setSize(parent->getSize() - 2 * mainComp->getPadding());
+  Button::draw();
+}
+
+std::unique_ptr<Button> MainMenuButton::create(std::string text) {
+  auto font = ResourceManager::getFont("roboto");
+  auto btn = new MainMenuButton(Pane::create(), text, font);
+  btn->mainComp->setProp(Pane::COLOR, vec4{ 0.f, 0.f, 0.f, .8f });
+  btn->mainComp->setPadding({ 35, 20 });
+  btn->getDefaultStyle()->apply(btn);
+  btn->textComp->setUseBaseline(true);
+  btn->setStyle(Text::COLOR, vec4(1.f));
+  btn->setHoverStyle(make_property(Text::COLOR, vec4{ 1.f, 0.f, 0.f, .5f }));
+  return std::unique_ptr<Button>(btn);
+}

@@ -7,8 +7,11 @@ namespace ui {
 
 class Slider : public Component {
 
-public:
+protected:
   Slider();
+
+public:
+  static std::unique_ptr<Slider> create();
 
   static const spec_t VALUE;
 
