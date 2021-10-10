@@ -2,6 +2,7 @@
 
 #include <glm/glm.hpp>
 #include <memory>
+#include <codecvt>
 
 #include "Component.hpp"
 #include "gl/Font.hpp"
@@ -40,13 +41,14 @@ public:
 
 private:
   void computeSize();
-  std::string text;
+  std::u32string text;
   glm::vec4 color;
   float fontSize;
   std::shared_ptr<const Font> font;
   Shader* shader;
   bool useBaseline;
   float baselineOffset;
+  static std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
 };
 
 }; // namespace ui

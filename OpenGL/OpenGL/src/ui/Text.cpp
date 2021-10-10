@@ -4,6 +4,8 @@
 using namespace ui;
 using namespace glm;
 
+std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> Text::conv;
+
 MAKE_TYPE(std::shared_ptr<const Font>);
 const spec_t Text::COLOR        = MAKE_SPEC("Text::color", vec4);
 const spec_t Text::FONT_SIZE    = MAKE_SPEC("Text::fontSize", float);
@@ -11,7 +13,7 @@ const spec_t Text::FONT         = MAKE_SPEC("Text::font", std::shared_ptr<const 
 const spec_t Text::USE_BASELINE = MAKE_SPEC("Text::useBaseline", bool);
 
 Text::Text(std::string text, std::shared_ptr<const Font> font)
-  : text(std::move(text)),
+  : text(conv.from_bytes(text)),
     color(0.f, 0.f, 0.f, 1.f), fontSize(1.f),
     font(std::move(font)), shader(ResourceManager::getShader("font")),
     useBaseline(true), baselineOffset(0)
@@ -65,7 +67,7 @@ void Text::draw() {
   vec3 pos(orig.x, orig.y, 0.f);
   shader->activate();
   if(text.size() > 0) {
-    pos.x -= font->characters.at(text.at(0)).bearing.x * fontSize;
+    pos.x -= font->getChar(text.at(0)).bearing.x * fontSize;
     if(!useBaseline) pos.y += baselineOffset;
     font->draw(text, pos, fontSize, color);
   }
@@ -79,14 +81,14 @@ void Text::computeSize() {
   if(text.size() > 0) {
 
     for(auto c : text) {
-      auto const& ch = font->characters.at(c);
+      auto const& ch = font->getChar(c);
       size.x += ch.advance;
       size.y = max(size.y, ch.bearing.y);
       off = max(off, ch.size.y - ch.bearing.y);
     }
 
-    auto const& first = font->characters.at(*text.begin());
-    auto const& last = font->characters.at(*--text.end());
+    auto const& first = font->getChar(*text.begin());
+    auto const& last = font->getChar(*--text.end());
     size.x -= first.bearing.x;
     size.x -= (last.advance - last.size.x - last.bearing.x);
   }
@@ -109,13 +111,14 @@ glm::vec4 Text::getColor() const {
 }
 
 void Text::setText(std::string text) {
-  this->text = text;
+  std::u32string wtext = conv.from_bytes(text);
+  this->text = wtext;
   computeSize();
   queueDraw();
 }
 
 std::string Text::getText() const {
-  return this->text;
+  return conv.to_bytes(text);
 }
 
 void Text::setFontSize(float fontSize) {

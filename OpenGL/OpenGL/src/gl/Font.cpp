@@ -3,6 +3,7 @@
 #include <stdexcept>
 #include <array>
 #include <glm/gtc/type_ptr.hpp>
+#include <codecvt>
 
 using namespace glm;
 
@@ -41,93 +42,112 @@ Font::~Font() {
   FT_Done_FreeType(ft);
 }
 
+Font::Glyph Font::loadGlyph(FT_UInt i) const {
+  if (FT_Load_Glyph(face, i, FT_LOAD_RENDER))   {
+    std::cout << "[Warning] Failed to load Glyph index " << i << std::endl;
+    FT_Load_Char(face, 0, FT_LOAD_RENDER); // 0 is missing glyph
+  }
+
+  GLuint texture;
+  glGenTextures(1, &texture);
+  glBindTexture(GL_TEXTURE_2D, texture);
+  glTexImage2D(
+    GL_TEXTURE_2D, 0, GL_R8,
+    face->glyph->bitmap.width,
+    face->glyph->bitmap.rows,
+    0, GL_RED, GL_UNSIGNED_BYTE,
+    face->glyph->bitmap.buffer
+  );
+
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+  return Glyph{
+    texture,
+    ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
+    ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
+    face->glyph->advance.x >> 6 // advance is in 1/64th pixels size
+  };
+}
+
 void Font::loadAllGlyphs() {
-  for (unsigned char c = 0; c < 128; c++) {
-    if (FT_Load_Char(face, c, FT_LOAD_RENDER))   {
-      std::cout << "[Warning] Failed to load Glyph " << c << std::endl;
-      continue;
-    }
+  FT_UInt i;
 
-    // generate texture
-    GLuint texture;
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
-    glTexImage2D(
-      GL_TEXTURE_2D, 0, GL_R8,
-      face->glyph->bitmap.width,
-      face->glyph->bitmap.rows,
-      0, GL_RED, GL_UNSIGNED_BYTE,
-      face->glyph->bitmap.buffer
-    );
+  glyphs.resize(face->num_glyphs);
 
-    // set texture options
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-    // now store character for later use
-    Character character = {
-      texture,
-      ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
-      ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
-      face->glyph->advance.x >> 6 // advance is in 1/64th pixels size
-    };
-    characters.emplace(c, character);
+  for(FT_ULong c = FT_Get_First_Char(face, &i); i != 0; c = FT_Get_Next_Char(face, c, &i)) {
+    glyphs.at(i) = loadGlyph(i);
   }
 }
 
-void Font::draw(std::string text, vec3 pos, float scale, vec4 color) const {
+Font::Glyph const& Font::getChar(FT_ULong charcode) const {
+  FT_UInt i = FT_Get_Char_Index(face, charcode);
+  return glyphs.at(i);
+}
+
+void Font::drawGlyph(GLuint tex, vec3 pos, vec2 size) const {
+  // TODO: use fixed quad vertices and compute model matrix instead.
+  GLfloat quadPos[6][3] = {
+      { pos.x+size.x, pos.y+size.y, pos.z },
+      { pos.x, pos.y+size.y, pos.z },
+      { pos.x, pos.y, pos.z },
+
+      { pos.x+size.x, pos.y+size.y, pos.z },
+      { pos.x, pos.y, pos.z },
+      { pos.x+size.x, pos.y, pos.z },
+  };
+
+  static const GLfloat quadTex[6][2] = {
+      { 1.0f, 0.0f },
+      { 0.0f, 0.0f },
+      { 0.0f, 1.0f },
+
+      { 1.0f, 0.0f },
+      { 0.0f, 1.0f },
+      { 1.0f, 1.0f },
+  };
+
+  // update vbo and render
+  glBindVertexArray(vao);
+
+  GLint texSampler = Shader::getActive()->getUniform("text");
+  glUniform1i(texSampler, 0);
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, tex);
+
+  glBindBuffer(GL_ARRAY_BUFFER, vbo);
+  glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(quadPos), quadPos);
+  glBufferSubData(GL_ARRAY_BUFFER, sizeof(quadPos), sizeof(quadTex), quadTex);
+
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glDrawArrays(GL_TRIANGLES, 0, 6);
+}
+
+void Font::draw(std::u32string text, vec3 pos, float scale, vec4 color) const {
   if(text.size() == 0) return;
   Shader* shader = Shader::getActive();
   glUniform4fv(shader->getUniform("color"), 1, glm::value_ptr(color));
 
   for(auto c : text) {
-    Character const& ch = characters.at(c);
+    Glyph const& g = getChar(c);
 
-    float xpos = pos.x + ch.bearing.x * scale;
-    float ypos = pos.y - (ch.size.y - ch.bearing.y) * scale;
+    float xpos = pos.x + g.bearing.x * scale;
+    float ypos = pos.y - (g.size.y - g.bearing.y) * scale;
 
-    float w = ch.size.x * scale;
-    float h = ch.size.y * scale;
-    // TODO: use fixed quad vertices and compute model matrix instead.
-    GLfloat quadPos[6][3] = {
-        { xpos+w, ypos+h, pos.z },
-        { xpos, ypos+h, pos.z },
-        { xpos, ypos, pos.z },
+    auto gpos = vec3(xpos, ypos, pos.z);
+    auto gsize = vec2(g.size) * scale;
 
-        { xpos+w, ypos+h, pos.z },
-        { xpos, ypos, pos.z },
-        { xpos+w, ypos, pos.z },
-    };
+    drawGlyph(g.tex, gpos, gsize);
 
-    static const GLfloat quadTex[6][2] = {
-        { 1.0f, 0.0f },
-        { 0.0f, 0.0f },
-        { 0.0f, 1.0f },
-
-        { 1.0f, 0.0f },
-        { 0.0f, 1.0f },
-        { 1.0f, 1.0f },
-    };
-
-    // update vbo and render
-    glBindVertexArray(vao);
-
-    GLint texSampler = Shader::getActive()->getUniform("text");
-    glUniform1i(texSampler, 0);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, ch.tex);
-
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(quadPos), quadPos);
-    glBufferSubData(GL_ARRAY_BUFFER, sizeof(quadPos), sizeof(quadTex), quadTex);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-
-    pos.x += ch.advance * scale; // bitshift by 6 to get value in pixels (2^6 = 64)
+    pos.x += g.advance * scale; // bitshift by 6 to get value in pixels (2^6 = 64)
   }
   glBindVertexArray(0);
   glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void Font::draw(std::string text, vec3 pos, float scale, vec4 color) const {
+  std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
+  draw(conv.from_bytes(text), pos, scale, color);
 }

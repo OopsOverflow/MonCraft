@@ -15,7 +15,7 @@ MainMenu::MainMenu() : Image({0, 0}, {1920, 1080})
 
 	singleplayerButton = ui::Button::makePaneButton("Solo", font);
 	multiplayerButton = ui::Button::makePaneButton("Multijoueur", font);
-	parameterButton = ui::Button::makePaneButton("Parametres", font);
+	parameterButton = ui::Button::makePaneButton("Paramètres", font);
 	quitButton = ui::Button::makePaneButton("Quitter", font);
 
 	add(moncraftTitle.get());
