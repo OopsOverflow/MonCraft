@@ -103,11 +103,11 @@ prop_t Component::getProperty(spec_t spec) const {
 style_const_t Component::getDefaultStyle() const {
   static style_const_t style = Style::make_style(
     nullptr, // parent
-    make_property(Component::SIZE, ivec2(0.f)),
-    make_property(Component::POSITION, ivec2(0.f)),
-    make_property(Component::PADDING, ivec2(0.f)),
-    make_property(Component::ANCHOR_X, Anchor::BEGIN),
-    make_property(Component::ANCHOR_Y, Anchor::BEGIN)
+    Component::SIZE, ivec2(0.f),
+    Component::POSITION, ivec2(0.f),
+    Component::PADDING, ivec2(0.f),
+    Component::ANCHOR_X, Anchor::BEGIN,
+    Component::ANCHOR_Y, Anchor::BEGIN
   );
 
   return style;

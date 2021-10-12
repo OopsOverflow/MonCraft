@@ -11,8 +11,6 @@ Input::Input(std::string text, std::shared_ptr<const Font> font)
   textComp = Text::create(std::move(text), std::move(font));
   add(textComp.get());
 
-
-
   hover.setParent(Input::getDefaultStyle());
   hover.set(make_property(TEXT_COLOR, vec4(1.0, 0.0, 0.0, 1.0)));
 
@@ -57,8 +55,8 @@ prop_t Input::getProperty(spec_t spec) const {
 style_const_t Input::getDefaultStyle() const {
   static style_const_t style = Style::make_style(
     Pane::getDefaultStyle(),
-    make_property(Input::TEXT_COLOR, vec4(0.f, 0.f, 0.f, 1.f)),
-    make_property(Component::PADDING, ivec2(10, 5))
+    Input::TEXT_COLOR, vec4(0.f, 0.f, 0.f, 1.f),
+    Component::PADDING, ivec2(10, 5)
   );
 
   return style;

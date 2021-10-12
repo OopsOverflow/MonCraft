@@ -109,7 +109,7 @@ prop_t Image::getProperty(spec_t spec) const {
 style_const_t Image::getDefaultStyle() const {
     static style_const_t style = Style::make_style(
         Component::getDefaultStyle(),
-        make_property(Image::CROP, Crop::NONE)
+        Image::CROP, Crop::NONE
     );
     return style;
 }

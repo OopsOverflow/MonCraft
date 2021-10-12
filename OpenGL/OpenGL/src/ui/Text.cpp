@@ -60,9 +60,9 @@ prop_t Text::getProperty(spec_t spec) const {
 style_const_t Text::getDefaultStyle() const {
   static style_const_t style = Style::make_style(
     Component::getDefaultStyle(),
-    make_property(Text::COLOR, vec4(0.f, 0.f, 0.f, 1.f)),
-    make_property(Text::FONT_SIZE, 1.f),
-    make_property(Text::USE_BASELINE, true)
+    Text::COLOR, vec4(0.f, 0.f, 0.f, 1.f),
+    Text::FONT_SIZE, 1.f,
+    Text::USE_BASELINE, true
   );
 
   return style;

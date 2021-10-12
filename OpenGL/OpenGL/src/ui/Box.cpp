@@ -44,8 +44,8 @@ prop_t Box::getProperty(spec_t spec) const {
 style_const_t Box::getDefaultStyle() const {
   static style_const_t style = Style::make_style(
     Component::getDefaultStyle(),
-    make_property(Box::GAP, 0),
-    make_property(Box::ORIENTATION, Orientation::VERTICAL)
+    Box::GAP, 0,
+    Box::ORIENTATION, Orientation::VERTICAL
   );
 
   return style;

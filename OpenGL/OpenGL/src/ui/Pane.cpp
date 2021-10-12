@@ -67,7 +67,7 @@ prop_t Pane::getProperty(spec_t spec) const {
 style_const_t Pane::getDefaultStyle() const {
   static style_const_t style = Style::make_style(
     Component::getDefaultStyle(),
-    make_property(Pane::COLOR, vec4(1.f))
+    Pane::COLOR, vec4(1.f)
   );
 
   return style;

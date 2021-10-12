@@ -35,10 +35,10 @@ public:
   static style_t make_style(style_const_t parent);
 
   // recursive case
-  template<typename... Args>
-  static style_t make_style(style_const_t parent, prop_t prop, Args... args) {
+  template<typename T, typename... Args>
+  static style_t make_style(style_const_t parent, spec_t spec, T val, Args... args) {
     style_t style = make_style(parent, args...);
-    style->set(prop);
+    style->set(make_property(spec, val));
     return style;
   }
 
