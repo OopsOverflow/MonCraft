@@ -16,15 +16,28 @@ const spec_t Component::ANCHOR_Y = MAKE_SPEC("Component::anchorY", Anchor);
 Component::Component()
   : drawQueued(true), recomputeQueued(true),
     parent(nullptr),
-    size(0), absoluteSize(0), computedSize(0), computedOrigin(0),
-    position(0), padding(0),
-    anchorX(Anchor::BEGIN), anchorY(Anchor::BEGIN),
+    computedSize(0), computedOrigin(0),
     hover(false), pressed(false),
     ownStyle(std::make_shared<Style>())
 {}
 
-void Component::initialize()
-{}
+
+void Component::applyStyleRec(style_const_t style) {
+  if(auto parent = style->getParent()) applyStyleRec(parent);
+  for(auto pair : *style) {
+    std::cout << Specification::get(pair.first).name << std::endl;
+    setProperty(pair.second);
+  }
+}
+
+void Component::initialize() {
+  // applyStyleRec(getDefaultStyle());
+  // std::cout << getSize() << std::endl;
+  // std::cout << getPosition() << std::endl;
+  // std::cout << getPadding() << std::endl;
+  // std::cout << (int)getAnchorX() << std::endl;
+  // std::cout << (int)getAnchorY() << std::endl;
+}
 
 Component::~Component() {
   if(parent) parent->remove(this);
@@ -109,10 +122,6 @@ style_const_t Component::getDefaultStyle() const {
   );
 
   return style;
-}
-
-style_const_t Component::getOwnStyle() const {
-  return ownStyle;
 }
 
 void Component::draw() {
@@ -340,52 +349,52 @@ void Component::makeActive() {
 
 void Component::setSize(ivec2 size) {
   if(size == getSize()) return;
-  this->size = size;
+  setStyle(SIZE, size);
   queueRecompute(true); // needs to recompute children (size changed)
 }
 
 ivec2 Component::getSize() const {
-  return size;
+  return getStyle<ivec2>(SIZE);
 }
 
 void Component::setPosition(ivec2 position) {
   if(position == getPosition()) return;
-  this->position = position;
+  setStyle(POSITION, position);
   queueRecompute(false); // no need to recompute children
 }
 
 ivec2 Component::getPosition() const {
-  return position;
+  return getStyle<ivec2>(POSITION);
 }
 
 void Component::setPadding(ivec2 padding) {
   if(padding == getPadding()) return;
-  this->padding = padding;
+  setStyle(PADDING, padding);
   queueRecompute(true);
 }
 
 ivec2 Component::getPadding() const {
-  return padding;
+  return getStyle<ivec2>(PADDING);
 }
 
 void Component::setAnchorX(Anchor anchor) {
   if(anchor == getAnchorX()) return;
-  this->anchorX = anchor;
+  setStyle(ANCHOR_X, anchor);
   queueRecompute(false); // no need to recompute children
 }
 
 Anchor Component::getAnchorX() const {
-  return anchorX;
+  return getStyle<Anchor>(ANCHOR_X);
 }
 
 void Component::setAnchorY(Anchor anchor) {
   if(anchor == getAnchorY()) return;
-  this->anchorY = anchor;
+  setStyle(ANCHOR_Y, anchor);
   queueRecompute(false); // no need to recompute children
 }
 
 Anchor Component::getAnchorY() const {
-  return anchorY;
+  return getStyle<Anchor>(ANCHOR_Y);
 }
 
 void Component::keyPress(Key k) {

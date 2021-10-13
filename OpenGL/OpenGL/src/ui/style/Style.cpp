@@ -28,6 +28,10 @@ void Style::setParent(style_const_t parent) {
   this->parent = parent;
 }
 
+style_const_t Style::getParent() const {
+  return parent;
+}
+
 prop_t Style::get(spec_t spec) const {
   auto it = props.find(spec);
   if(it != props.cend()) return it->second;

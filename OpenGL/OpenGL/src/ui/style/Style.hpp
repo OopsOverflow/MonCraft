@@ -24,6 +24,7 @@ public:
   Style(std::initializer_list<prop_t> list, style_const_t parent);
 
   void setParent(style_const_t parent);
+  style_const_t getParent() const;
 
   void set(prop_t prop);
   prop_t get(spec_t spec) const;
@@ -40,11 +41,16 @@ public:
     return style;
   }
 
+
 private:
   using propStore_t = std::unordered_map<spec_t, prop_t>;
 
   propStore_t props;
   style_const_t parent;
+
+public:
+  auto begin() const { return props.begin(); }
+  auto end() const { return props.end(); }
 };
 
 

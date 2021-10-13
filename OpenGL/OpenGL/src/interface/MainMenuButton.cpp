@@ -20,7 +20,7 @@ std::unique_ptr<Button> MainMenuButton::create(std::string text) {
   btn->mainComp->setProp(Pane::COLOR, vec4{ 0.f, 0.f, 0.f, .8f });
   btn->mainComp->setPadding({ 35, 20 });
   btn->textComp->setUseBaseline(true);
-  btn->setStyle(Text::COLOR, vec4(1.f));
+  btn->setProp(Text::COLOR, vec4(1.f));
   btn->setHoverStyle(make_property(Text::COLOR, vec4{ 1.f, 0.f, 0.f, .5f }));
   return std::unique_ptr<Button>(btn);
 }

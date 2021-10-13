@@ -30,21 +30,9 @@ public:
   static const spec_t ANCHOR_X;
   static const spec_t ANCHOR_Y;
 
-  /**
-   * Set a css style property (apply recursively to children)
-   */
-  void setStyle(prop_t prop);
 
-  /**
-   * Shorthand, @see setStyle
-   */
-  template<typename T>
-  void setStyle(spec_t spec, T val) {
-    setStyle(make_property(spec, val));
-  }
-
-  std::shared_ptr<const AbstractValue> getStyle(spec_t spec) const;
-
+  //// STYLING ////
+public:
   /**
   * Set a style property only for itself
   */
@@ -63,17 +51,38 @@ public:
    */
   virtual prop_t getProperty(spec_t spec) const;
 
+protected:
+  /**
+   * Set a css style property (apply recursively to children)
+   */
+  void setStyle(prop_t prop);
 
   /**
-   * Get the current stylesheet for this component
+   * Shorthand, @see setStyle
    */
-  style_const_t getOwnStyle() const;
+  template<typename T>
+  void setStyle(spec_t spec, T val) {
+    setStyle(make_property(spec, val));
+  }
+
+  std::shared_ptr<const AbstractValue> getStyle(spec_t spec) const;
 
   /**
-   * Mark the component to be redrawn
+   * Shorthand, @see getStyle
    */
-  void queueDraw();
+  template<typename T>
+  T getStyle(spec_t spec) const {
+    return getStyle(spec)->get<T>();
+  }
 
+  virtual style_const_t getDefaultStyle() const;
+
+private:
+  void applyStyleRec(style_const_t style);
+
+
+  //// PROPERTIES ////
+public:
   void setSize(glm::ivec2 size);
   glm::ivec2 getSize() const;
   glm::ivec2 getAbsoluteSize() const;
@@ -101,17 +110,21 @@ public:
   void add(std::unique_ptr<Component> child);
   void remove(Component* child);
 
+//// PROTECTED STUFF ////
 protected:
-  void recompute();
-  // void notifyProp(prop_t prop);
-
-  bool drawQueued;
-  bool recomputeQueued;
   Component* parent;
   std::vector<Component*> children;
-  std::vector<std::unique_ptr<Component>> owned;
 
+  void queueDraw();
+  void recompute();
   void handleEvents(std::vector<Event> const& events);
+  glm::ivec2 toRelative(glm::ivec2 absPos) const;
+
+  bool isHover();
+  bool isPressed();
+  bool isActive();
+  void unfocus();
+
   virtual void onMouseIn(glm::ivec2 pos);
   virtual void onMouseOut(glm::ivec2 pos);
   virtual bool onMouseMove(glm::ivec2 pos);
@@ -122,16 +135,22 @@ protected:
   virtual void onKeyPressed(Key k);
   virtual void onKeyReleased(Key k);
 
-  glm::ivec2 toRelative(glm::ivec2 absPos) const;
-
-  bool isHover();
-  bool isPressed();
-  bool isActive();
-  void unfocus();
-
-  virtual style_const_t getDefaultStyle() const;
-
+//// PRIVATE STUFF ////
 private:
+  bool drawQueued;
+  bool recomputeQueued;
+  std::vector<std::unique_ptr<Component>> owned;
+
+  glm::ivec2 computedSize;
+  glm::ivec2 computedOrigin;
+
+  bool hover;
+  bool pressed;
+
+  style_t ownStyle;
+
+  static Component* activeWidget;
+
   void queueRecompute(bool propagate = true);
   void computeSize();
   void computeOrigin();
@@ -140,24 +159,6 @@ private:
   void filterEvent(Event const& evt);
   bool overlaps(glm::ivec2 point) const;
   void makeActive();
-  void propagateStyle(prop_t prop);
-  void propagateUnsetStyle(spec_t spec);
-
-  glm::ivec2 size;
-  glm::ivec2 absoluteSize;
-  glm::ivec2 computedSize;
-  glm::ivec2 computedOrigin;
-  glm::ivec2 position;
-  glm::ivec2 padding;
-  Anchor anchorX;
-  Anchor anchorY;
-
-  bool hover;
-  bool pressed;
-
-  style_t ownStyle;
-
-  static Component* activeWidget;
 };
 
 }; // namespace ui
