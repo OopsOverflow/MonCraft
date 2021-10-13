@@ -340,7 +340,7 @@ void Component::makeActive() {
 
 // style setters / getters below
 
-void Component::setSize(glm::ivec2 size) {
+void Component::setSize(ivec2 size) {
   if(size == this->size) return;
   this->size = size;
   queueRecompute(true); // needs to recompute children (size changed)
@@ -350,23 +350,23 @@ ivec2 Component::getSize() const {
   return size;
 }
 
-void Component::setPosition(glm::ivec2 position) {
+void Component::setPosition(ivec2 position) {
   if(position == this->position) return;
   this->position = position;
   queueRecompute(false); // no need to recompute children
 }
 
-glm::ivec2 Component::getPosition() const {
+ivec2 Component::getPosition() const {
   return position;
 }
 
-void Component::setPadding(glm::ivec2 padding) {
+void Component::setPadding(ivec2 padding) {
   if(padding == this->padding) return;
   this->padding = padding;
   queueRecompute(true);
 }
 
-glm::ivec2 Component::getPadding() const {
+ivec2 Component::getPadding() const {
   return padding;
 }
 
@@ -400,11 +400,11 @@ void Component::keyRelease(Key k) {
 
 // default event handlers
 
-void Component::onMouseIn(glm::ivec2 pos) { }
-void Component::onMouseOut(glm::ivec2 pos) { }
-bool Component::onMouseMove(glm::ivec2 pos) { return false; }
-bool Component::onMousePressed(glm::ivec2 pos) { return false; }
-bool Component::onMouseReleased(glm::ivec2 pos) { return false; }
+void Component::onMouseIn(ivec2 pos) { }
+void Component::onMouseOut(ivec2 pos) { }
+bool Component::onMouseMove(ivec2 pos) { return false; }
+bool Component::onMousePressed(ivec2 pos) { return false; }
+bool Component::onMouseReleased(ivec2 pos) { return false; }
 bool Component::onActivate() { return false; }
 void Component::onDeactivated() { }
 void Component::onKeyPressed(Key k) { }

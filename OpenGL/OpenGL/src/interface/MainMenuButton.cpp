@@ -16,9 +16,9 @@ void MainMenuButton::draw() {
 std::unique_ptr<Button> MainMenuButton::create(std::string text) {
   auto font = ResourceManager::getFont("roboto");
   auto btn = new MainMenuButton(Pane::create(), text, font);
+  btn->initialize();
   btn->mainComp->setProp(Pane::COLOR, vec4{ 0.f, 0.f, 0.f, .8f });
   btn->mainComp->setPadding({ 35, 20 });
-  btn->getDefaultStyle()->apply(btn);
   btn->textComp->setUseBaseline(true);
   btn->setStyle(Text::COLOR, vec4(1.f));
   btn->setHoverStyle(make_property(Text::COLOR, vec4{ 1.f, 0.f, 0.f, .5f }));
