@@ -23,10 +23,8 @@ Component::Component()
     ownStyle(std::make_shared<Style>())
 {}
 
-void Component::initialize() {
-  // ownStyle->setParent(getDefaultStyle());
-  // ownStyle->applyAll(this);
-}
+void Component::initialize()
+{}
 
 Component::~Component() {
   if(parent) parent->remove(this);
@@ -37,18 +35,18 @@ Component::~Component() {
 }
 
 void Component::setStyle(prop_t prop) {
-  setProperty(prop); // TODO: defect e.g. when button is hover, ownStyle is not active.
   ownStyle->set(prop);
-  applyStyleRec(prop);
 }
 
-void Component::applyStyleRec(prop_t prop) {
-  // for(auto child : children) {
-  //   if(!child->ownStyle->hasProperty(prop.spec)) {
-  //     child->setProperty(prop);
-  //     child->applyStyleRec(prop);
-  //   }
-  // }
+std::shared_ptr<const AbstractValue> Component::getStyle(spec_t spec) const {
+  auto res = ownStyle->get(spec);
+  if(res.value == nullptr) res = getDefaultStyle()->get(spec);
+  if(res.value == nullptr) {
+    std::cout << "[WARN] cannot get style property "
+              << Specification::get(spec).name << std::endl;
+    // throw std::runtime_error("cannot get style property");
+  }
+  return res.value;
 }
 
 void Component::setProperty(prop_t prop) {
@@ -162,27 +160,27 @@ void Component::remove(Component* child) {
 }
 
 ivec2 Component::getOrigin() const {
-  if(!parent) return position;
-  ivec2 orig = position;
+  if(!parent) return getPosition();
+  ivec2 orig = getPosition();
   ivec2 size = computedSize;
-  ivec2 parentSize = parent->computedSize - parent->padding * 2;
+  ivec2 parentSize = parent->computedSize - parent->getPadding() * 2;
 
-  if(anchorX == Anchor::END)         orig.x +=  parentSize.x - size.x;
-  else if(anchorX == Anchor::CENTER) orig.x += (parentSize.x - size.x) / 2.f;
-  if(anchorY == Anchor::END)         orig.y +=  parentSize.y - size.y;
-  else if(anchorY == Anchor::CENTER) orig.y += (parentSize.y - size.y) / 2.f;
+  if(getAnchorX() == Anchor::END)         orig.x +=  parentSize.x - size.x;
+  else if(getAnchorX() == Anchor::CENTER) orig.x += (parentSize.x - size.x) / 2.f;
+  if(getAnchorY() == Anchor::END)         orig.y +=  parentSize.y - size.y;
+  else if(getAnchorY() == Anchor::CENTER) orig.y += (parentSize.y - size.y) / 2.f;
 
   return orig;
 }
 
 ivec2 Component::getAbsoluteOrigin() const {
   if(!parent) return computedOrigin;
-  return parent->getAbsoluteOrigin() + parent->padding + computedOrigin;
+  return parent->getAbsoluteOrigin() + parent->getPadding() + computedOrigin;
 }
 
 ivec2 Component::toRelative(ivec2 pos) const {
   if(!parent) return pos;
-  return parent->toRelative(pos) - parent->padding - computedOrigin;
+  return parent->toRelative(pos) - parent->getPadding() - computedOrigin;
 }
 
 ivec2 Component::getAbsoluteSize() const {
@@ -190,8 +188,8 @@ ivec2 Component::getAbsoluteSize() const {
 }
 
 ivec2 Component::getMaxSize() const {
-  if(!parent) return size;
-  return parent->getMaxSize() - 2 * parent->padding;
+  if(!parent) return getSize();
+  return parent->getMaxSize() - 2 * parent->getPadding();
 }
 
 void Component::recompute() {
@@ -218,10 +216,10 @@ void Component::computeSize() {
   for(Component* child : children) child->computeSize();
 
   if(recomputeQueued) {
-    ivec2 newCompSize = size + 2 * padding;
+    ivec2 newCompSize = getSize() + 2 * getPadding();
 
     for(Component* child : children) {
-      newCompSize = max(newCompSize, abs(child->position) + child->computedSize + 2 * padding);
+      newCompSize = max(newCompSize, abs(child->getPosition()) + child->computedSize + 2 * getPadding());
     }
 
     newCompSize = min(newCompSize, getMaxSize());
@@ -341,7 +339,7 @@ void Component::makeActive() {
 // style setters / getters below
 
 void Component::setSize(ivec2 size) {
-  if(size == this->size) return;
+  if(size == getSize()) return;
   this->size = size;
   queueRecompute(true); // needs to recompute children (size changed)
 }
@@ -351,7 +349,7 @@ ivec2 Component::getSize() const {
 }
 
 void Component::setPosition(ivec2 position) {
-  if(position == this->position) return;
+  if(position == getPosition()) return;
   this->position = position;
   queueRecompute(false); // no need to recompute children
 }
@@ -361,7 +359,7 @@ ivec2 Component::getPosition() const {
 }
 
 void Component::setPadding(ivec2 padding) {
-  if(padding == this->padding) return;
+  if(padding == getPadding()) return;
   this->padding = padding;
   queueRecompute(true);
 }
@@ -371,7 +369,7 @@ ivec2 Component::getPadding() const {
 }
 
 void Component::setAnchorX(Anchor anchor) {
-  if(anchor == this->anchorX) return;
+  if(anchor == getAnchorX()) return;
   this->anchorX = anchor;
   queueRecompute(false); // no need to recompute children
 }
@@ -381,7 +379,7 @@ Anchor Component::getAnchorX() const {
 }
 
 void Component::setAnchorY(Anchor anchor) {
-  if(anchor == this->anchorY) return;
+  if(anchor == getAnchorY()) return;
   this->anchorY = anchor;
   queueRecompute(false); // no need to recompute children
 }

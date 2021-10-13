@@ -43,6 +43,8 @@ public:
     setStyle(make_property(spec, val));
   }
 
+  std::shared_ptr<const AbstractValue> getStyle(spec_t spec) const;
+
   /**
   * Set a style property only for itself
   */
@@ -61,10 +63,6 @@ public:
    */
   virtual prop_t getProperty(spec_t spec) const;
 
-  /**
-   * Get the default stylesheet for this component
-   */
-  virtual style_const_t getDefaultStyle() const;
 
   /**
    * Get the current stylesheet for this component
@@ -105,6 +103,7 @@ public:
 
 protected:
   void recompute();
+  // void notifyProp(prop_t prop);
 
   bool drawQueued;
   bool recomputeQueued;
@@ -130,6 +129,8 @@ protected:
   bool isActive();
   void unfocus();
 
+  virtual style_const_t getDefaultStyle() const;
+
 private:
   void queueRecompute(bool propagate = true);
   void computeSize();
@@ -139,7 +140,8 @@ private:
   void filterEvent(Event const& evt);
   bool overlaps(glm::ivec2 point) const;
   void makeActive();
-  void applyStyleRec(prop_t prop);
+  void propagateStyle(prop_t prop);
+  void propagateUnsetStyle(spec_t spec);
 
   glm::ivec2 size;
   glm::ivec2 absoluteSize;
