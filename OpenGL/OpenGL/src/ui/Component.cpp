@@ -24,8 +24,8 @@ Component::Component()
 {}
 
 void Component::initialize() {
-  ownStyle->setParent(getDefaultStyle());
-  ownStyle->applyAll(this);
+  // ownStyle->setParent(getDefaultStyle());
+  // ownStyle->applyAll(this);
 }
 
 Component::~Component() {
@@ -43,12 +43,12 @@ void Component::setStyle(prop_t prop) {
 }
 
 void Component::applyStyleRec(prop_t prop) {
-  for(auto child : children) {
-    if(!child->ownStyle->hasProperty(prop.spec)) {
-      child->setProperty(prop);
-      child->applyStyleRec(prop);
-    }
-  }
+  // for(auto child : children) {
+  //   if(!child->ownStyle->hasProperty(prop.spec)) {
+  //     child->setProperty(prop);
+  //     child->applyStyleRec(prop);
+  //   }
+  // }
 }
 
 void Component::setProperty(prop_t prop) {
