@@ -65,19 +65,20 @@ protected:
     setStyle(make_property(spec, val));
   }
 
-  std::shared_ptr<const AbstractValue> getStyle(spec_t spec) const;
+  prop_t getStyle(spec_t spec) const;
 
   /**
    * Shorthand, @see getStyle
    */
   template<typename T>
   T getStyle(spec_t spec) const {
-    return getStyle(spec)->get<T>();
+    return getStyle(spec).value->get<T>();
   }
 
   virtual style_const_t getDefaultStyle() const;
 
 private:
+  prop_t getStyleRec(spec_t spec) const;
   void applyStyleRec(style_const_t style);
 
 

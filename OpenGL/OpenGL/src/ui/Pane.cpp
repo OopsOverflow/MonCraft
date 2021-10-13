@@ -7,7 +7,7 @@
 using namespace ui;
 using namespace glm;
 
-const spec_t Pane::COLOR = MAKE_SPEC("Pane::color", vec4);
+const spec_t Pane::COLOR = MAKE_SPEC_INHERIT("Pane::color", vec4);
 
 static const GLfloat quad[6][2] = {
     { 1.0f, 1.0f },

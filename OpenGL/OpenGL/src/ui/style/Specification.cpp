@@ -3,23 +3,23 @@
 
 using namespace ui;
 
-Specification::map_t& Specification::getMap() {
+Spec::map_t& Spec::getMap() {
   static map_t propLookup{};
   return propLookup;
 }
-Specification::pool_t& Specification::getPool() {
+Spec::pool_t& Spec::getPool() {
   static pool_t specPool{};
   return specPool;
 }
 
-Specification::Specification(std::string name, type_t type)
-  : name(name), type(type)
+Spec::Spec(std::string name, type_t type, bool inherit)
+  : name(name), type(type), inherit(inherit)
 { }
 
-spec_t Specification::create(std::string name, type_t type) {
+spec_t Spec::create(std::string name, type_t type, bool inherit) {
   auto res = getMap().emplace(name, getPool().size());
   if(res.second) {
-    getPool().emplace_back(Specification(name, type));
+    getPool().emplace_back(Spec(name, type, inherit));
     return getPool().size() - 1;
   }
   else if(getPool().at(res.first->second).type == type) {
@@ -38,12 +38,12 @@ spec_t Specification::create(std::string name, type_t type) {
   }
 }
 
-Specification const& Specification::get(spec_t spec) {
+Spec const& Spec::get(spec_t spec) {
   assertSpecValid(spec);
   return getPool().at(spec);
 }
 
-void Specification::assertSpecValid(spec_t spec) {
+void Spec::assertSpecValid(spec_t spec) {
   if(spec >= getPool().size()) {
     throw StyleError(
       "invalid property spec: '" +

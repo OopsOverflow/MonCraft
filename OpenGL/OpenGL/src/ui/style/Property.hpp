@@ -18,12 +18,12 @@ prop_t make_property(spec_t spec, T val) {
     std::make_unique<Value<T>>(val)
   };
 
-  if(prop.value->getType() != Specification::get(spec).type) {
+  if(prop.value->getType() != Spec::get(spec).type) {
     throw StyleError(
       "cannot create property with incompatible spec and value: spec '" +
-      Specification::get(spec).name +
+      Spec::get(spec).name +
       "' expects '" +
-      Type::getName(Specification::get(spec).type) +
+      Type::getName(Spec::get(spec).type) +
       "', got '" +
       Type::getName(prop.value->getType()) +
       "'"

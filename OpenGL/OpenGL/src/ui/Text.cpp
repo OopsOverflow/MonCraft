@@ -7,8 +7,8 @@ using namespace glm;
 std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> Text::conv;
 
 MAKE_TYPE(std::shared_ptr<const Font>);
-const spec_t Text::COLOR        = MAKE_SPEC("Text::color", vec4);
-const spec_t Text::FONT_SIZE    = MAKE_SPEC("Text::fontSize", float);
+const spec_t Text::COLOR        = MAKE_SPEC_INHERIT("Text::color", vec4);
+const spec_t Text::FONT_SIZE    = MAKE_SPEC_INHERIT("Text::fontSize", float);
 const spec_t Text::FONT         = MAKE_SPEC("Text::font", std::shared_ptr<const Font>);
 const spec_t Text::USE_BASELINE = MAKE_SPEC("Text::useBaseline", bool);
 

@@ -4,7 +4,7 @@ using namespace ui;
 using namespace glm;
 
 const spec_t Input::TEXT = MAKE_SPEC("Input::text", std::string);
-const spec_t Input::TEXT_COLOR = MAKE_SPEC("Input::textColor", vec4);
+const spec_t Input::TEXT_COLOR = MAKE_SPEC_INHERIT("Input::textColor", vec4);
 
 Input::Input(std::string text, std::shared_ptr<const Font> font)
 {

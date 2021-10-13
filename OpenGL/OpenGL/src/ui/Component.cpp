@@ -14,29 +14,20 @@ const spec_t Component::ANCHOR_X = MAKE_SPEC("Component::anchorX", Anchor);
 const spec_t Component::ANCHOR_Y = MAKE_SPEC("Component::anchorY", Anchor);
 
 Component::Component()
-  : drawQueued(true), recomputeQueued(true),
-    parent(nullptr),
+  : parent(nullptr),
+    drawQueued(true), recomputeQueued(true),
     computedSize(0), computedOrigin(0),
     hover(false), pressed(false),
-    ownStyle(std::make_shared<Style>())
+    ownStyle(nullptr)
 {}
 
 
 void Component::applyStyleRec(style_const_t style) {
   if(auto parent = style->getParent()) applyStyleRec(parent);
-  for(auto pair : *style) {
-    std::cout << Specification::get(pair.first).name << std::endl;
-    setProperty(pair.second);
-  }
+  for(auto pair : *style) setProperty(pair.second);
 }
 
 void Component::initialize() {
-  // applyStyleRec(getDefaultStyle());
-  // std::cout << getSize() << std::endl;
-  // std::cout << getPosition() << std::endl;
-  // std::cout << getPadding() << std::endl;
-  // std::cout << (int)getAnchorX() << std::endl;
-  // std::cout << (int)getAnchorY() << std::endl;
 }
 
 Component::~Component() {
@@ -48,18 +39,32 @@ Component::~Component() {
 }
 
 void Component::setStyle(prop_t prop) {
+  if(!ownStyle) ownStyle = std::make_shared<Style>();
   ownStyle->set(prop);
 }
 
-std::shared_ptr<const AbstractValue> Component::getStyle(spec_t spec) const {
-  auto res = ownStyle->get(spec);
+
+
+prop_t Component::getStyleRec(spec_t spec) const {
+  prop_t res{ spec, nullptr };
+  if(ownStyle) res = ownStyle->get(spec);
+
+  if(parent && res.value == nullptr && Spec::get(spec).inherit) {
+    auto res = parent->getStyleRec(spec);
+  }
+
+  return res;
+}
+
+prop_t Component::getStyle(spec_t spec) const {
+  prop_t res = getStyleRec(spec);
   if(res.value == nullptr) res = getDefaultStyle()->get(spec);
   if(res.value == nullptr) {
     std::cout << "[WARN] cannot get style property "
-              << Specification::get(spec).name << std::endl;
+              << Spec::get(spec).name << std::endl;
     // throw std::runtime_error("cannot get style property");
   }
-  return res.value;
+  return res;
 }
 
 void Component::setProperty(prop_t prop) {
@@ -80,7 +85,7 @@ void Component::setProperty(prop_t prop) {
   }
   else {
     // std::cout << "[WARN] unsupported style property: '"
-    //           << Specification::get(prop.spec).name
+    //           << Spec::get(prop.spec).name
     //           << "'"
     //           << std::endl;
   }
@@ -105,7 +110,7 @@ prop_t Component::getProperty(spec_t spec) const {
   else {
     throw StyleError(
       "unsupported style property: " +
-      Specification::get(spec).name +
+      Spec::get(spec).name +
       "'"
     );
   }
