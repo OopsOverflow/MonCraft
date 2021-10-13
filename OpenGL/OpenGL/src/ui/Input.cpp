@@ -65,22 +65,22 @@ style_const_t Input::getDefaultStyle() const {
 #include "debug/Debug.hpp"
 
 void Input::onMouseIn(glm::ivec2 pos) {
-  if(!isActive()) hover.apply(this);
+  // if(!isActive()) hover.applyStyles(this);
 }
 
 void Input::onMouseOut(glm::ivec2 pos) {
-  if(!isActive()) hover.revert(this);
+  // if(!isActive()) hover.revertStyles(this);
 }
 
 bool Input::onActivate() {
-  if(isHover()) hover.revert(this);
-  active.apply(this);
+  // if(isHover()) hover.revertStyles(this);
+  // active.applyStyles(this);
   return true;
 }
 
 void Input::onDeactivated() {
-  active.revert(this);
-  if(isHover()) hover.apply(this);
+  // active.revertStyles(this);
+  // if(isHover()) hover.applyStyles(this);
 }
 
 bool Input::onMousePressed(glm::ivec2 pos) {

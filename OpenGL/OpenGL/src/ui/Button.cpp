@@ -49,22 +49,22 @@ void Button::setPressedStyle(prop_t prop) {
 #include "debug/Debug.hpp"
 
 void Button::onMouseIn(glm::ivec2 pos) {
-  hover->apply(this);
+  // hover->applyStyles(this);
 }
 
 void Button::onMouseOut(glm::ivec2 pos) {
-  if(isPressed()) pressed->revert(this);
-  hover->revert(this);
+  // if(isPressed()) pressed->revertStyles(this);
+  // hover->revertStyles(this);
 }
 
 bool Button::onMousePressed(glm::ivec2 pos) {
-  pressed->apply(this);
+  // pressed->applyStyles(this);
   if(clickCallback) clickCallback();
   return true;
 }
 
 bool Button::onMouseReleased(glm::ivec2 pos) {
-  pressed->revert(this);
+  // pressed->revertStyles(this);
   return false;
 }
 
