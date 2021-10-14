@@ -2,7 +2,6 @@
 
 #include <glm/glm.hpp>
 #include <memory>
-#include <codecvt>
 
 #include "Component.hpp"
 #include "gl/Font.hpp"
@@ -23,7 +22,7 @@ public:
   static const spec_t FONT_SIZE;
   static const spec_t FONT;
   static const spec_t USE_BASELINE;
-  
+
   virtual void setProperty(prop_t prop) override;
   virtual prop_t getProperty(spec_t spec) const override;
   virtual style_const_t getDefaultStyle() const override;
@@ -45,10 +44,9 @@ public:
 
 private:
   void computeSize();
-  std::u32string text;
+  std::string text;
   Shader* shader;
   float baselineOffset;
-  static std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
 };
 
 }; // namespace ui

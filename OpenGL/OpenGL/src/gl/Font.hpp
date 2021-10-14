@@ -16,7 +16,6 @@ public:
   virtual ~Font();
 
   void draw(std::string text, glm::vec3 pos, float scale, glm::vec4 color) const;
-  void draw(std::u32string text, glm::vec3 pos, float scale, glm::vec4 color) const;
 
   struct Glyph {
     GLuint tex;

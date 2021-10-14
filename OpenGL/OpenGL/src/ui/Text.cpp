@@ -4,8 +4,6 @@
 using namespace ui;
 using namespace glm;
 
-std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> Text::conv;
-
 MAKE_TYPE(std::shared_ptr<const Font>);
 const spec_t Text::COLOR        = MAKE_SPEC_INHERIT("Text::color", vec4);
 const spec_t Text::FONT_SIZE    = MAKE_SPEC_INHERIT("Text::fontSize", float);
@@ -13,7 +11,7 @@ const spec_t Text::FONT         = MAKE_SPEC_INHERIT("Text::font", std::shared_pt
 const spec_t Text::USE_BASELINE = MAKE_SPEC("Text::useBaseline", bool);
 
 Text::Text(std::string text, std::shared_ptr<const Font> font)
-  : text(conv.from_bytes(text)),
+  : text(text),
     shader(ResourceManager::getShader("font")),
     baselineOffset(0)
 {
@@ -124,13 +122,12 @@ vec4 Text::getColor() const {
 }
 
 void Text::setText(std::string text) {
-  std::u32string wtext = conv.from_bytes(text);
-  this->text = wtext;
+  this->text = text;
   computeSize();
 }
 
 std::string Text::getText() const {
-  return conv.to_bytes(text);
+  return text;
 }
 
 void Text::setFontSize(float fontSize) {

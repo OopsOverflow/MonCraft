@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include <array>
 #include <glm/gtc/type_ptr.hpp>
-#include <codecvt>
+#include "UTF8Iter.hpp"
 
 using namespace glm;
 
@@ -125,12 +125,12 @@ void Font::drawGlyph(GLuint tex, vec3 pos, vec2 size) const {
   glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
-void Font::draw(std::u32string text, vec3 pos, float scale, vec4 color) const {
+void Font::draw(std::string text, vec3 pos, float scale, vec4 color) const {
   if(text.size() == 0) return;
   Shader* shader = Shader::getActive();
   glUniform4fv(shader->getUniform("color"), 1, glm::value_ptr(color));
 
-  for(auto c : text) {
+  for(char32_t c : UTF8StringAdaptator(text)) {
     Glyph const& g = getChar(c);
 
     float xpos = pos.x + g.bearing.x * scale;
@@ -145,9 +145,4 @@ void Font::draw(std::u32string text, vec3 pos, float scale, vec4 color) const {
   }
   glBindVertexArray(0);
   glBindTexture(GL_TEXTURE_2D, 0);
-}
-
-void Font::draw(std::string text, vec3 pos, float scale, vec4 color) const {
-  std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
-  draw(conv.from_bytes(text), pos, scale, color);
 }
