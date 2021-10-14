@@ -3,7 +3,7 @@
 #include "Component.hpp"
 #include "gl/Shader.hpp"
 
-enum class Crop { NONE, BEGIN, CENTER, END };
+enum class Crop { NONE, BEGIN, CENTER, END, REPEAT };
 
 
 namespace ui {

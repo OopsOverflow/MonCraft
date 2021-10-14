@@ -78,7 +78,7 @@ std::ostream& operator<<(std::ostream& os, glm::vec<N, T> const& v) {
 
 template<typename T>
 std::ostream& operator<<(std::ostream& os, glm::tmat4x4<T> const& mat) {
-    os << std::fixed << std::setprecision(2);
+    os << std::fixed << std::setprecision(5);
     os << "mat: ";
     for (size_t i = 0; i < 4; i+=1) {
          os  << mat[i] << std::endl << "     ";

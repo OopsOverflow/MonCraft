@@ -29,8 +29,12 @@ GLuint Image::vao = 0;
 GLuint Image::vbo = 0;
 
 
-Image::Image(ivec2 offset, ivec2 size)
- : minFilter(GL_NEAREST),
+Image::Image(glm::ivec2 offset, glm::ivec2 size)
+ : crop(Crop::NONE),
+   texOffset(offset),
+   texSize(size),
+   texDimensions(1.0f),
+   minFilter(GL_NEAREST),
    magFilter(GL_NEAREST)
 {
     setTextureOffset(offset);
@@ -55,14 +59,9 @@ Image::Image(ivec2 offset, ivec2 size)
             glActiveTexture(GL_TEXTURE0);
         }
         glBindVertexArray(0);
-        glBindTexture(GL_TEXTURE_2D, texAtlas);
-        {
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        }
-        glBindTexture(GL_TEXTURE_2D, 0);
+
     }
-}
+
 
 std::unique_ptr<Image> Image::create(ivec2 offset, ivec2 size) {
   auto comp = std::unique_ptr<Image>(new Image(offset, size));
@@ -124,8 +123,9 @@ void Image::draw() {
     mat4 textureCoords = computeTexture();
 
     glBindVertexArray(vao);
-    glUniformMatrix4fv(shader->getUniform(MATRIX_MODEL), 1, GL_FALSE, value_ptr(model));
-    glUniformMatrix4fv(shader->getUniform("m_texture"), 1, GL_FALSE, value_ptr(textureCoords));
+    glUniformMatrix4fv(shader->getUniform(MATRIX_MODEL), 1, GL_FALSE, glm::value_ptr(model));
+    glUniformMatrix4fv(shader->getUniform("m_texture"), 1, GL_FALSE, glm::value_ptr(textureCoords));
+    glUniform2fv(shader->getUniform("scale"), 1, glm::value_ptr(texDimensions));
     glDrawArrays(GL_TRIANGLES, 0, 6);
     glBindVertexArray(0);
 
@@ -156,11 +156,12 @@ mat4 Image::computeTexture() {
     return texture;
 }
 
-void Image::calculateCropping(ivec2& offset, ivec2& size) {
-    if (getCrop() != Crop::NONE) {
-        ivec2 absoluteSize = getAbsoluteSize();
-        ivec2 newOffset = offset;
-        ivec2 newSize = size;
+void Image::calculateCropping(glm::ivec2& offset, glm::ivec2& size) {
+    if (crop != Crop::NONE && crop != Crop::REPEAT) {
+
+        glm::ivec2 absoluteSize = getAbsoluteSize();
+        glm::ivec2 newOffset = offset;
+        glm::ivec2 newSize = size;
         if (absoluteSize.x / (float)absoluteSize.y < size.x / (float)size.y) {
             newSize.x = absoluteSize.x * size.y / (float)absoluteSize.y;
         }
@@ -173,6 +174,7 @@ void Image::calculateCropping(ivec2& offset, ivec2& size) {
             newOffset = vec2(offset) + vec2(size - newSize) / 2.0f;
         offset = newOffset;
         size = newSize;
+
     }
 }
 void Image::setCrop(Crop crop) {
