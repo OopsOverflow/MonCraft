@@ -107,8 +107,8 @@ void Text::computeSize() {
   }
 
   if(!getUseBaseline()) size.y += off;
-  size.x *= fontSize;
-  size.y *= fontSize;
+  size.x = (int)(size.x * fontSize);
+  size.y = (int)(size.y * fontSize);
   baselineOffset = off * fontSize;
   setSize(size);
 }

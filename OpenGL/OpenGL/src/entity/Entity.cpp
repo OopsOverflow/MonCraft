@@ -100,7 +100,7 @@ void Entity::update(float dt) {
 	{
 		// check collisions one block at a time (usually posOffset is < 1 so only 1 check)
 		auto newPos = node.loc;
-		float totalOffset = length(posOffset);
+		float totalOffset = (float)length(posOffset);
 		size_t steps = (size_t)ceil(totalOffset);
 		for (size_t i = 0; i < steps; i++) {
 			vec3 thisOffset = posOffset * 1.0 / (double)steps;
@@ -135,7 +135,7 @@ void Entity::update(float dt) {
 		if(dir.y > 0) targetRot *= -1;
 		targetRot = clamp(targetRot, -thresold, thresold);
 
-		float currentRot = -headNode.rot.y;
+		float currentRot = (float)-headNode.rot.y;
 		float dist = targetRot - currentRot;
 
 		float speed = 4.f;
@@ -146,7 +146,7 @@ void Entity::update(float dt) {
 	}
 
 	// fov function of speed
-	const auto maxFov = 180.0;
+	const auto maxFov = 180.0f;
 	const auto smoothing = 0.005f;
 	const auto transition = 10.f;
 	const auto targetFov = playerFovY - (maxFov + (defaultFovY - maxFov) * exp(-smoothing * length(speed)));

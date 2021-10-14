@@ -146,12 +146,12 @@ bool SaveManager::saveConfig() {
 }
 
 std::ostream &operator<<(std::ostream &stream, const glm::vec3 &vec) {
-  Binary<int> x = vec.x, y = vec.y, z = vec.z;
+  Binary<float> x = vec.x, y = vec.y, z = vec.z;
   stream << x << y << z;
   return stream;
 }
 std::istream &operator>>(std::istream &stream, glm::vec3 &vec) {
-  Binary<int> x, y, z;
+  Binary<float> x, y, z;
   stream >> x >> y >> z;
   vec.x = x.val;
   vec.y = y.val;

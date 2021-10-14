@@ -155,10 +155,10 @@ void Chunk::compute() {
   loaded = true;
   mustRecompute = false;
 
-  solidOffset = meshData.indicesSolid.size();
-  transpOffset.x = solidOffset + meshData.indicesTranspX.size();
-  transpOffset.y = transpOffset.x + meshData.indicesTranspY.size();
-  transpOffset.z  = transpOffset.y + meshData.indicesTranspZ.size();
+  solidOffset = (unsigned int)meshData.indicesSolid.size();
+  transpOffset.x = solidOffset + (unsigned int)meshData.indicesTranspX.size();
+  transpOffset.y = transpOffset.x + (unsigned int)meshData.indicesTranspY.size();
+  transpOffset.z  = transpOffset.y + (unsigned int)meshData.indicesTranspZ.size();
 
   model = translate(mat4(1.0), vec3(size * chunkPos));
 }

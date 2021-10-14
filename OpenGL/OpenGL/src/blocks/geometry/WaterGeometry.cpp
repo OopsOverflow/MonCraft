@@ -22,10 +22,10 @@ std::array<GLfloat, 4> WaterGeometry::genOcclusion(glm::ivec3 pos, std::array<Bl
         b[i] = neighbors[offsets[i]]->isSolid();
     }
 
-    occl[0] = b[0] + b[1] + b[2];
-    occl[1] = b[2] + b[3] + b[4];
-    occl[2] = b[4] + b[5] + b[6];
-    occl[3] = b[6] + b[7] + b[0];
+    occl[0] = (float)(b[0] + b[1] + b[2]);
+    occl[1] = (float)(b[2] + b[3] + b[4]);
+    occl[2] = (float)(b[4] + b[5] + b[6]);
+    occl[3] = (float)(b[6] + b[7] + b[0]);
 
     return occl;
 }

@@ -50,7 +50,7 @@ MonCraftScene::MonCraftScene(Viewport* vp)
     // game seed
     std::hash<std::string> hashString;
     auto seed = hashString(config.seed);
-    std::srand(seed);
+    std::srand((unsigned int)seed);
     std::cout << "seed : " << config.seed << " (" << seed << ")" << std::endl;
 
     server = createServer(config);
@@ -131,7 +131,7 @@ void MonCraftScene::drawMiddleDot() {
     glEnable(GL_SCISSOR_TEST);
     {
         auto size = getSize();
-        float pointSize = 8;
+        int pointSize = 8;
         // TODO: make this properly use compnent position and size
         glScissor((size.x - pointSize) / 2, (size.y - pointSize) / 2, pointSize, pointSize);
         glClearColor(1, 0, 0, 1);

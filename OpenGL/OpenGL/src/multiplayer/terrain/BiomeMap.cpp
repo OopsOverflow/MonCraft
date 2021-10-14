@@ -30,7 +30,7 @@ const octaves_t waterOctaves = {
 };
 
 BiomeMap::BiomeMap()
- : voronoi(rand(), size + 2 * displacement, cellSize, ivec2(0)),
+ : voronoi(rand(), (int)ceil(size + 2 * displacement), cellSize, ivec2(0)),
    value(rand()),
    map(size)
 {
@@ -180,7 +180,7 @@ BiomeMap::weightedBiomes_t BiomeMap::offsetVoronoi(ivec2 ipos) {
 
     float dist = distance(pos, mainPos);
     if(dist < thres) {
-      float weight = pow(0.001*(thres - dist),4);
+      float weight = (float)pow(0.001 * (thres - dist), 4);
       res.push_back({
         mainCell,
         weight,
@@ -199,7 +199,7 @@ BiomeMap::weightedBiomes_t BiomeMap::offsetVoronoi(ivec2 ipos) {
         vec2 otherPos = voronoi.get(cell);
         float dist = distance(pos, otherPos);
         if(dist < thres) {
-          float weight = pow(0.001 * (thres - dist), 4);
+          float weight = (float)pow(0.001 * (thres - dist), 4);
           res.push_back({
             cell,
             weight,

@@ -110,10 +110,10 @@ GLuint ResourceManager::loadTexture(std::string const& name, std::string const& 
 
         else {
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, mipmaps.size());
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, (GLint)mipmaps.size());
             for(size_t i = 0; i < mipmaps.size(); i++) {
                 SDL_Surface* surf = mipmaps.at(i);
-                glTexImage2D(GL_TEXTURE_2D, i+1, GL_RGBA, surf->w, surf->h, 0,
+                glTexImage2D(GL_TEXTURE_2D, (GLint)(i+1), GL_RGBA, surf->w, surf->h, 0,
                     GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid *)surf->pixels);
                 SDL_FreeSurface(surf);
             }

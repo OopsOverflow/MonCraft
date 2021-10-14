@@ -11,7 +11,7 @@
 
 using namespace glm;
 
-const float defaultSpeed = 4.317;
+const float defaultSpeed = 4.317f;
 const float godMultiplier = 5;
 const float sprintMultiplier = 2;
 
@@ -24,7 +24,7 @@ Character::Character(vec3 pos)
   node.loc = pos;
   rootNode.sca = vec3(1.85f / 32.f); // steve is 1.85 blocks high, 32 pixels high
   rootNode.rot.y = glm::pi<float>();
-  rootNode.loc.y = 9.5f / 32.f * 1.85f;
+  rootNode.loc.y = 9.5 / 32. * 1.85;
   headNode.loc = {0, 6, 0};
   node.addChild(&rootNode);
   rootNode.addChild(&headNode);

@@ -69,7 +69,7 @@ void PendingChunks::updateWaitingChunks() {
 }
 
 void PendingChunks::remOldChunks() {
-  int delCount = std::max<int>(world.chunks.size() - maxChunks, 0);
+  int delCount = std::max<int>((unsigned int)world.chunks.size() - maxChunks, 0);
   world.chunks.eraseChunks(delCount, [=](ivec3 thisChunkPos) {
     ivec3 dist = abs(cpos - thisChunkPos);
     return dist.x > renderDistH + 1 || dist.z > renderDistH + 1 || dist.y > renderDistV + 1;

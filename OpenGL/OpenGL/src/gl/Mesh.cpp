@@ -6,7 +6,7 @@
 #include "gl/Shader.hpp"
 #include "debug/Debug.hpp"
 
-Mesh::Mesh(GLuint vao, GLuint vbo, GLuint ebo, GLuint vertCount)
+Mesh::Mesh(GLuint vao, GLuint vbo, GLuint ebo, GLsizei vertCount)
     : vao(vao), vbo(vbo), ebo(ebo), vertCount(vertCount)
 { }
 
@@ -19,7 +19,7 @@ Mesh::Mesh(std::vector<GLfloat> const& positions,
 {
   ASSERT_GL_MAIN_THREAD();
 
-  vertCount = (GLuint)indices.size();
+  vertCount = (GLsizei)indices.size();
 
   glGenVertexArrays(1, &vao);
   glGenBuffers(1, &vbo);
@@ -82,7 +82,7 @@ Mesh::Mesh(MeshData& data)
 {
   ASSERT_GL_MAIN_THREAD();
   size_t transpCount = data.indicesTranspX.size() + data.indicesTranspY.size() + data.indicesTranspZ.size();
-  vertCount = data.indicesSolid.size() + transpCount;
+  vertCount = (GLsizei)(data.indicesSolid.size() + transpCount);
 
   glGenVertexArrays(1, &vao);
   glGenBuffers(1, &vbo);
@@ -168,7 +168,7 @@ GLuint Mesh::getVAO() const {
   return vao;
 }
 
-GLuint Mesh::getVertexCount() const {
+GLsizei Mesh::getVertexCount() const {
   return vertCount;
 }
 

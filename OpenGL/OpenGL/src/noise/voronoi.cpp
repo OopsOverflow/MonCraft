@@ -7,7 +7,7 @@ using glm::vec2;
 VoronoiNoise::VoronoiNoise(int seed, int size, float cellSize, ivec2 offset)
     : noise(seed),
       size(size), cellSize(cellSize),
-      grid(ceil(size / cellSize) + 2)
+      grid((int)ceil(size / cellSize) + 2)
 {
   grid.for_each([&](ivec2 ipos, vec2& val) {
     val = vec2(noise.sample<2, 2>(offset + ipos)) / vec2(UINT16_MAX);

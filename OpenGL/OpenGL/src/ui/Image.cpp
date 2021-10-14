@@ -169,10 +169,10 @@ void Image::calculateCropping(glm::ivec2& offset, glm::ivec2& size) {
         glm::ivec2 newOffset = offset;
         glm::ivec2 newSize = size;
         if (absoluteSize.x / (float)absoluteSize.y < size.x / (float)size.y) {
-            newSize.x = absoluteSize.x * size.y / (float)absoluteSize.y;
+            newSize.x = (absoluteSize.x * size.y) / absoluteSize.y;
         }
         else {
-            newSize.y = absoluteSize.y * size.x / (float)absoluteSize.x;
+            newSize.y = (absoluteSize.y * size.x) / absoluteSize.x;
         }
         if (getCrop() == Crop::END)
             newOffset = offset + size - newSize;

@@ -41,7 +41,7 @@ public:
      * Thus, the vao/vbo/ebo must be owner-free before assigning them to
      * the mesh.
      */
-    Mesh(GLuint vao, GLuint vbo, GLuint ebo, GLuint vertCount);
+    Mesh(GLuint vao, GLuint vbo, GLuint ebo, GLsizei vertCount);
     ~Mesh();
 
     Mesh(Mesh const&) = delete;
@@ -57,7 +57,7 @@ public:
     /**
      * Gets the vertex count.
      */
-    GLuint getVertexCount() const;
+    GLsizei getVertexCount() const;
 
     /**
      * The model member of the mesh is read/write and can be modified by anyone.
@@ -68,7 +68,7 @@ protected:
     GLuint vao;
     GLuint vbo;
     GLuint ebo;
-    GLuint vertCount;
+    GLsizei vertCount;
 };
 
 #endif // Mesh_H

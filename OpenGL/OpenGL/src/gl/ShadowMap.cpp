@@ -40,10 +40,10 @@ void ShadowMap::update(vec3 sunDir) {
 }
 
 float linearizeDepth(float depth) { // https://learnopengl.com/Advanced-OpenGL/Depth-testing
-    float near = 0.1;
-    float far = 200.0;
-    float z = depth * 2.0 - 1.0; // back to NDC
-    return (2.0 * near * far) / (far + near - z * (far - near)) / far;
+    float near = 0.1f;
+    float far = 200.0f;
+    float z = depth * 2.0f - 1.0f; // back to NDC
+    return (2.0f * near * far) / (far + near - z * (far - near)) / far;
 }
 
 void ShadowMap::attach(Camera const& cam, Frustum frustum) {
