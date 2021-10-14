@@ -22,6 +22,7 @@ namespace ui {
 		static const spec_t CROP;
 		static const spec_t TEXTURE_OFFSET;
 		static const spec_t TEXTURE_SIZE;
+
 		virtual void setProperty(prop_t prop) override;
 		virtual prop_t getProperty(spec_t spec) const override;
 		virtual style_const_t getDefaultStyle() const override;
@@ -43,10 +44,6 @@ namespace ui {
 		void calculateCropping(glm::ivec2& offset, glm::ivec2& size);
 		static Shader* shader;
 		static GLuint texAtlas;
-
-		glm::ivec2 texOffset;
-		glm::ivec2 texSize;
-		Crop crop;
 
 		GLint minFilter;
 		GLint magFilter;

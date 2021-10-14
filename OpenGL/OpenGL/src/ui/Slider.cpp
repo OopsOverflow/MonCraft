@@ -4,8 +4,6 @@
 using namespace ui;
 using namespace glm;
 
-const spec_t Slider::VALUE = MAKE_SPEC("Slider::value", float);
-
 Slider::Slider()
   : value(0)
 {
@@ -24,7 +22,6 @@ std::unique_ptr<Slider> Slider::create() {
   comp->initialize();
   return comp;
 }
-
 
 void Slider::onMouseIn(glm::ivec2 pos) {
   Component::onMouseIn(pos);
@@ -59,7 +56,6 @@ bool Slider::onMousePressed(glm::ivec2 pos) {
   moveThumb(pos.x);
   return true;
 }
-
 
 bool Slider::onMouseReleased(glm::ivec2 pos) {
   thumb->setColor({ 0, 1, 1, 1 });

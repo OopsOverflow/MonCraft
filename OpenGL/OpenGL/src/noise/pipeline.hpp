@@ -5,7 +5,7 @@
 /**
  * A sequential execution of functions (function composition).
  *
- * A pipeline is a Spec for a sequential execution of transforms.
+ * A pipeline is a specification for a sequential execution of transforms.
  * The (n)th link output is connected to the (n+1)th link input.
  * A pipeline run converts an input value to an output value by going througn
  * each link in sequence.

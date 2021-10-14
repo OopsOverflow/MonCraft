@@ -12,7 +12,7 @@ struct prop_t {
 };
 
 template<typename T>
-prop_t make_property(spec_t spec, T val) {
+prop_t make_prop(spec_t spec, T val) {
   prop_t prop = {
     spec,
     std::make_unique<Value<T>>(val)

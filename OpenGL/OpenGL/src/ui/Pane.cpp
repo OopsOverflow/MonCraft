@@ -20,7 +20,6 @@ static const GLfloat quad[6][2] = {
 };
 
 Pane::Pane()
- : color(1.f)
 {
   glGenVertexArrays(1, &vao);
   glGenBuffers(1, &vbo);
@@ -57,7 +56,7 @@ void Pane::setProperty(prop_t prop) {
 
 prop_t Pane::getProperty(spec_t spec) const {
   if(spec == Pane::COLOR) {
-    return make_property(spec, getColor());
+    return make_prop(spec, getColor());
   }
   else {
     return Component::getProperty(spec);
@@ -77,8 +76,8 @@ void Pane::draw() {
   computeModel();
   glBindVertexArray(vao);
   shader->activate();
-  glUniform4fv(shader->getUniform("color"), 1, glm::value_ptr(color));
-  glUniformMatrix4fv(shader->getUniform(MATRIX_MODEL), 1, GL_FALSE, glm::value_ptr(model));
+  glUniform4fv(shader->getUniform("color"), 1, value_ptr(getColor()));
+  glUniformMatrix4fv(shader->getUniform(MATRIX_MODEL), 1, GL_FALSE, value_ptr(model));
   glDrawArrays(GL_TRIANGLES, 0, 6);
   glBindVertexArray(0);
   Component::draw();
@@ -91,12 +90,12 @@ void Pane::computeModel() {
   model = scale(model, vec3(getAbsoluteSize(), 1.f));
 }
 
-void Pane::setColor(glm::vec4 color) {
-  if(color == this->color) return;
-  this->color = color;
+void Pane::setColor(vec4 color) {
+  if(color == getColor()) return;
+  setStyle(COLOR, color);
   queueDraw();
 }
 
-glm::vec4 Pane::getColor() const {
-  return color;
+vec4 Pane::getColor() const {
+  return getStyle<vec4>(COLOR);
 }

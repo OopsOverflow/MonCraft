@@ -10,8 +10,8 @@ using namespace glm;
 MAKE_TYPE(Crop);
 
 const spec_t Image::CROP = MAKE_SPEC("Image::crop", Crop);
-const spec_t Image::TEXTURE_OFFSET = MAKE_SPEC("Image::textureOffset", glm::vec2);
-const spec_t Image::TEXTURE_SIZE = MAKE_SPEC("Image::textureSize", glm::vec2);
+const spec_t Image::TEXTURE_OFFSET = MAKE_SPEC("Image::textureOffset", ivec2);
+const spec_t Image::TEXTURE_SIZE = MAKE_SPEC("Image::textureSize", ivec2);
 
 static const GLfloat quad[6][2] = {
     { 1.0f, 1.0f },
@@ -29,13 +29,13 @@ GLuint Image::vao = 0;
 GLuint Image::vbo = 0;
 
 
-Image::Image(glm::ivec2 offset, glm::ivec2 size)
- : texOffset(offset),
-   texSize(size),
-   crop(Crop::NONE),
-   minFilter(GL_NEAREST),
+Image::Image(ivec2 offset, ivec2 size)
+ : minFilter(GL_NEAREST),
    magFilter(GL_NEAREST)
 {
+    setTextureOffset(offset);
+    setTextureSize(size);
+
     if (shader == nullptr) {
         shader = ResourceManager::getShader("image");
         texAtlas = ResourceManager::getTexture("imageAtlas");
@@ -81,10 +81,10 @@ void Image::setProperty(prop_t prop) {
         setCrop(prop.value->get<Crop>());
     }
     else if (prop.spec == Image::TEXTURE_OFFSET) {
-        setTextureOffset(prop.value->get<glm::ivec2>());
+        setTextureOffset(prop.value->get<ivec2>());
     }
     else if (prop.spec == Image::TEXTURE_SIZE) {
-        setTextureSize(prop.value->get<glm::ivec2>());
+        setTextureSize(prop.value->get<ivec2>());
     }
     else {
         Component::setProperty(prop);
@@ -93,13 +93,13 @@ void Image::setProperty(prop_t prop) {
 
 prop_t Image::getProperty(spec_t spec) const {
     if (spec == Image::CROP) {
-        return make_property(spec, getCrop());
+        return make_prop(spec, getCrop());
     }
     else if (spec == Image::TEXTURE_OFFSET) {
-        return make_property(spec, getTextureOffset());
+        return make_prop(spec, getTextureOffset());
     }
     else if (spec == Image::TEXTURE_SIZE) {
-        return make_property(spec, getTextureSize());
+        return make_prop(spec, getTextureSize());
     }
     else {
         return Component::getProperty(spec);
@@ -109,7 +109,7 @@ prop_t Image::getProperty(spec_t spec) const {
 style_const_t Image::getDefaultStyle() const {
     static style_const_t style = Style::make_style(
         Component::getDefaultStyle(),
-        Image::CROP, Crop::NONE
+        CROP, Crop::NONE
     );
     return style;
 }
@@ -120,19 +120,19 @@ void Image::draw() {
     shader->bindTexture(TEXTURE_COLOR, texAtlas);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
-    glm::mat4 model = computeModel();
-    glm::mat4 textureCoords = computeTexture();
+    mat4 model = computeModel();
+    mat4 textureCoords = computeTexture();
 
     glBindVertexArray(vao);
-    glUniformMatrix4fv(shader->getUniform(MATRIX_MODEL), 1, GL_FALSE, glm::value_ptr(model));
-    glUniformMatrix4fv(shader->getUniform("m_texture"), 1, GL_FALSE, glm::value_ptr(textureCoords));
+    glUniformMatrix4fv(shader->getUniform(MATRIX_MODEL), 1, GL_FALSE, value_ptr(model));
+    glUniformMatrix4fv(shader->getUniform("m_texture"), 1, GL_FALSE, value_ptr(textureCoords));
     glDrawArrays(GL_TRIANGLES, 0, 6);
     glBindVertexArray(0);
 
     Component::draw();
 }
 
-glm::mat4 Image::computeModel() {
+mat4 Image::computeModel() {
     auto p1 = getAbsoluteOrigin();
     auto model = mat4(1.f);
     model = translate(model, vec3(p1, 0.f));
@@ -140,10 +140,10 @@ glm::mat4 Image::computeModel() {
     return model;
 }
 
-glm::mat4 Image::computeTexture() {
+mat4 Image::computeTexture() {
 
-    glm::ivec2 offset = getTextureOffset();
-    glm::ivec2 size = getTextureSize();
+    ivec2 offset = getTextureOffset();
+    ivec2 size = getTextureSize();
     calculateCropping(offset, size);
     int w, h;
     int miplevel = 0;
@@ -151,58 +151,52 @@ glm::mat4 Image::computeTexture() {
     glGetTexLevelParameteriv(GL_TEXTURE_2D, miplevel, GL_TEXTURE_HEIGHT, &h);
 
     auto texture = mat4(1.f);
-    texture = translate(texture, glm::vec3(offset.x / (float)w, offset.y/(float)h , 0.0f));
+    texture = translate(texture, vec3(offset.x / (float)w, offset.y/(float)h , 0.0f));
     texture = scale(texture, vec3(size.x / (float)w, size.y / (float)h, 1.f));
     return texture;
 }
 
-void Image::calculateCropping(glm::ivec2& offset, glm::ivec2& size) {
-    if (crop != Crop::NONE) {
-        glm::ivec2 absoluteSize = getAbsoluteSize();
-        glm::ivec2 newOffset = offset;
-        glm::ivec2 newSize = size;
+void Image::calculateCropping(ivec2& offset, ivec2& size) {
+    if (getCrop() != Crop::NONE) {
+        ivec2 absoluteSize = getAbsoluteSize();
+        ivec2 newOffset = offset;
+        ivec2 newSize = size;
         if (absoluteSize.x / (float)absoluteSize.y < size.x / (float)size.y) {
             newSize.x = absoluteSize.x * size.y / (float)absoluteSize.y;
         }
         else {
             newSize.y = absoluteSize.y * size.x / (float)absoluteSize.x;
         }
-        if (crop == Crop::END)
+        if (getCrop() == Crop::END)
             newOffset = offset + size - newSize;
-        if (crop == Crop::CENTER)
-            newOffset = glm::vec2(offset) + glm::vec2(size - newSize) / 2.0f;
+        if (getCrop() == Crop::CENTER)
+            newOffset = vec2(offset) + vec2(size - newSize) / 2.0f;
         offset = newOffset;
         size = newSize;
     }
 }
 void Image::setCrop(Crop crop) {
-    if (crop == this->crop) return;
-    this->crop = crop;
-    queueDraw();
+    setStyle(CROP, crop);
 }
 
 Crop Image::getCrop() const {
-    return crop;
+    return getStyle<Crop>(CROP);
 }
 
-void Image::setTextureOffset(glm::ivec2 offset) {
-    if (offset == this->texOffset) return;
-    this->texOffset = offset;
-    queueDraw();
+void Image::setTextureOffset(ivec2 offset) {
+    setStyle(TEXTURE_OFFSET, offset);
 }
 
-glm::ivec2 Image::getTextureOffset() const {
-    return texOffset;
+ivec2 Image::getTextureOffset() const {
+    return getStyle<ivec2>(TEXTURE_OFFSET);
 }
 
-void Image::setTextureSize(glm::ivec2 size) {
-    if (size == this->texSize) return;
-    this->texSize = size;
-    queueDraw();
+void Image::setTextureSize(ivec2 size) {
+    setStyle(TEXTURE_SIZE, size);
 }
 
-glm::ivec2 Image::getTextureSize() const {
-    return texSize;
+ivec2 Image::getTextureSize() const {
+    return getStyle<ivec2>(TEXTURE_SIZE);
 }
 
 void Image::setMagFilter(GLint param) {

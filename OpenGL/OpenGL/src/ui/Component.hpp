@@ -43,7 +43,7 @@ public:
    */
   template<typename T>
   void setProp(spec_t spec, T val) {
-    setProperty(make_property(spec, val));
+    setProperty(make_prop(spec, val));
   }
 
   /**
@@ -62,7 +62,7 @@ protected:
    */
   template<typename T>
   void setStyle(spec_t spec, T val) {
-    setStyle(make_property(spec, val));
+    setStyle(make_prop(spec, val));
   }
 
   prop_t getStyle(spec_t spec) const;
@@ -77,7 +77,14 @@ protected:
 
   virtual style_const_t getDefaultStyle() const;
 
+  void setStylesheet(style_const_t style);
+  style_const_t getStylesheet() const;
+  style_const_t getOwnStylesheet();
+
 private:
+  style_t ownStyle;
+  style_const_t style;
+
   prop_t getStyleRec(spec_t spec) const;
   void applyStyleRec(style_const_t style);
 
@@ -147,8 +154,6 @@ private:
 
   bool hover;
   bool pressed;
-
-  style_t ownStyle;
 
   static Component* activeWidget;
 

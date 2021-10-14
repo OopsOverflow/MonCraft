@@ -14,11 +14,10 @@ const spec_t Component::ANCHOR_X = MAKE_SPEC("Component::anchorX", Anchor);
 const spec_t Component::ANCHOR_Y = MAKE_SPEC("Component::anchorY", Anchor);
 
 Component::Component()
-  : parent(nullptr),
+  : ownStyle(std::make_shared<Style>()), style(ownStyle), parent(nullptr),
     drawQueued(true), recomputeQueued(true),
     computedSize(0), computedOrigin(0),
-    hover(false), pressed(false),
-    ownStyle(nullptr)
+    hover(false), pressed(false)
 {}
 
 
@@ -28,6 +27,7 @@ void Component::applyStyleRec(style_const_t style) {
 }
 
 void Component::initialize() {
+  setStylesheet(getOwnStylesheet());
 }
 
 Component::~Component() {
@@ -38,19 +38,29 @@ Component::~Component() {
   }
 }
 
+
+void Component::setStylesheet(style_const_t style) {
+  this->style = style;
+}
+
+style_const_t Component::getStylesheet() const {
+  return style;
+}
+
+style_const_t Component::getOwnStylesheet() {
+  return ownStyle;
+}
+
 void Component::setStyle(prop_t prop) {
-  if(!ownStyle) ownStyle = std::make_shared<Style>();
   ownStyle->set(prop);
 }
 
-
-
 prop_t Component::getStyleRec(spec_t spec) const {
   prop_t res{ spec, nullptr };
-  if(ownStyle) res = ownStyle->get(spec);
+  if(style) res = style->get(spec);
 
   if(parent && res.value == nullptr && Spec::get(spec).inherit) {
-    auto res = parent->getStyleRec(spec);
+    res = parent->getStyleRec(spec);
   }
 
   return res;
@@ -60,9 +70,7 @@ prop_t Component::getStyle(spec_t spec) const {
   prop_t res = getStyleRec(spec);
   if(res.value == nullptr) res = getDefaultStyle()->get(spec);
   if(res.value == nullptr) {
-    std::cout << "[WARN] cannot get style property "
-              << Spec::get(spec).name << std::endl;
-    // throw std::runtime_error("cannot get style property");
+    throw std::runtime_error("cannot get style property");
   }
   return res;
 }
@@ -84,6 +92,7 @@ void Component::setProperty(prop_t prop) {
     setAnchorY(prop.value->get<Anchor>());
   }
   else {
+    setStyle(prop);
     // std::cout << "[WARN] unsupported style property: '"
     //           << Spec::get(prop.spec).name
     //           << "'"
@@ -93,19 +102,19 @@ void Component::setProperty(prop_t prop) {
 
 prop_t Component::getProperty(spec_t spec) const {
   if(spec == Component::SIZE) {
-    return make_property(spec, getSize());
+    return make_prop(spec, getSize());
   }
   else if(spec == Component::POSITION) {
-    return make_property(spec, getPosition());
+    return make_prop(spec, getPosition());
   }
   else if(spec == Component::PADDING) {
-    return make_property(spec, getPadding());
+    return make_prop(spec, getPadding());
   }
   else if(spec == Component::ANCHOR_X) {
-    return make_property(spec, getAnchorX());
+    return make_prop(spec, getAnchorX());
   }
   else if(spec == Component::ANCHOR_Y) {
-    return make_property(spec, getAnchorY());
+    return make_prop(spec, getAnchorY());
   }
   else {
     throw StyleError(

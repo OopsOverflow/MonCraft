@@ -9,14 +9,13 @@ std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> Text::conv;
 MAKE_TYPE(std::shared_ptr<const Font>);
 const spec_t Text::COLOR        = MAKE_SPEC_INHERIT("Text::color", vec4);
 const spec_t Text::FONT_SIZE    = MAKE_SPEC_INHERIT("Text::fontSize", float);
-const spec_t Text::FONT         = MAKE_SPEC("Text::font", std::shared_ptr<const Font>);
+const spec_t Text::FONT         = MAKE_SPEC_INHERIT("Text::font", std::shared_ptr<const Font>);
 const spec_t Text::USE_BASELINE = MAKE_SPEC("Text::useBaseline", bool);
 
 Text::Text(std::string text, std::shared_ptr<const Font> font)
   : text(conv.from_bytes(text)),
-    color(0.f, 0.f, 0.f, 1.f), fontSize(1.f),
-    font(std::move(font)), shader(ResourceManager::getShader("font")),
-    useBaseline(true), baselineOffset(0)
+    shader(ResourceManager::getShader("font")),
+    baselineOffset(0)
 {
   computeSize();
 }
@@ -34,6 +33,9 @@ void Text::setProperty(prop_t prop) {
   else if(prop.spec == Text::FONT_SIZE) {
     setFontSize(prop.value->get<float>());
   }
+  else if(prop.spec == Text::FONT) {
+    setFont(prop.value->get<std::shared_ptr<const Font>>());
+  }
   else if(prop.spec == Text::USE_BASELINE) {
     setUseBaseline(prop.value->get<bool>());
   }
@@ -44,13 +46,16 @@ void Text::setProperty(prop_t prop) {
 
 prop_t Text::getProperty(spec_t spec) const {
   if(spec == Text::COLOR) {
-    return make_property(spec, getColor());
+    return make_prop(spec, getColor());
   }
   else if(spec == Text::FONT_SIZE) {
-    return make_property(spec, getFontSize());
+    return make_prop(spec, getFontSize());
+  }
+  else if(spec == Text::FONT) {
+    return make_prop(spec, getFont());
   }
   else if(spec == Text::USE_BASELINE) {
-    return make_property(spec, getUseBaseline());
+    return make_prop(spec, getUseBaseline());
   }
   else {
     return Component::getProperty(spec);
@@ -62,6 +67,7 @@ style_const_t Text::getDefaultStyle() const {
     Component::getDefaultStyle(),
     Text::COLOR, vec4(0.f, 0.f, 0.f, 1.f),
     Text::FONT_SIZE, 1.f,
+    Text::FONT, ResourceManager::getFont("roboto"),
     Text::USE_BASELINE, true
   );
 
@@ -69,18 +75,21 @@ style_const_t Text::getDefaultStyle() const {
 }
 
 void Text::draw() {
+  auto font = getFont();
   auto orig = getAbsoluteOrigin();
   vec3 pos(orig.x, orig.y, 0.f);
   shader->activate();
   if(text.size() > 0) {
-    pos.x -= font->getChar(text.at(0)).bearing.x * fontSize;
-    if(!useBaseline) pos.y += baselineOffset;
-    font->draw(text, pos, fontSize, color);
+    pos.x -= font->getChar(text.at(0)).bearing.x * getFontSize();
+    if(!getUseBaseline()) pos.y += baselineOffset;
+    font->draw(text, pos, getFontSize(), getColor());
   }
   Component::draw();
 }
 
 void Text::computeSize() {
+  auto font = getFont();
+  auto fontSize = getFontSize();
   ivec2 size{ 0, 0 };
   int off = 0;
 
@@ -99,21 +108,21 @@ void Text::computeSize() {
     size.x -= (last.advance - last.size.x - last.bearing.x);
   }
 
-  if(!useBaseline) size.y += off;
+  if(!getUseBaseline()) size.y += off;
   size.x *= fontSize;
   size.y *= fontSize;
   baselineOffset = off * fontSize;
   setSize(size);
 }
 
-void Text::setColor(glm::vec4 color) {
-  if(color == this->color) return;
-  this->color = color;
+void Text::setColor(vec4 color) {
+  if(color == getColor()) return;
+  setStyle(COLOR, color);
   queueDraw();
 }
 
-glm::vec4 Text::getColor() const {
-  return color;
+vec4 Text::getColor() const {
+  return getStyle<vec4>(COLOR);
 }
 
 void Text::setText(std::string text) {
@@ -128,30 +137,30 @@ std::string Text::getText() const {
 }
 
 void Text::setFontSize(float fontSize) {
-  if(fontSize == this->fontSize) return;
-  this->fontSize = fontSize;
+  if(fontSize == getFontSize()) return;
+  setStyle(FONT_SIZE, fontSize);
   computeSize();
 }
 
 float Text::getFontSize() const {
-  return this->fontSize;
+  return getStyle<float>(FONT_SIZE);
 }
 
 void Text::setFont(std::shared_ptr<const Font> font) {
-  this->font = font;
+  setStyle(FONT, font);
   computeSize();
 }
 
 std::shared_ptr<const Font> Text::getFont() const {
-  return font;
+  return getStyle<std::shared_ptr<const Font>>(FONT);
 }
 
 void Text::setUseBaseline(bool useBaseline) {
-  if(useBaseline == this->useBaseline) return;
-  this->useBaseline = useBaseline;
+  if(useBaseline == getUseBaseline()) return;
+  setStyle(USE_BASELINE, useBaseline);
   computeSize();
 }
 
 bool Text::getUseBaseline() const {
-  return useBaseline;
+  return getStyle<bool>(USE_BASELINE);
 }

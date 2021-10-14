@@ -46,8 +46,6 @@ private:
   void updateCells();
 
   std::vector<std::unique_ptr<Cell>> cells;
-  int gap;
-  Orientation orientation;
 };
 
 } // namespace ui

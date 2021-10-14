@@ -10,8 +10,6 @@ const spec_t Box::GAP = MAKE_SPEC("Box::gap", int);
 const spec_t Box::ORIENTATION = MAKE_SPEC("Box::orientation", Box::Orientation);
 
 Box::Box()
-  : gap(0),
-    orientation(Orientation::VERTICAL)
 {}
 
 std::unique_ptr<Box> Box::create() {
@@ -34,7 +32,7 @@ void Box::setProperty(prop_t prop) {
 
 prop_t Box::getProperty(spec_t spec) const {
   if(spec == Box::GAP) {
-    return make_property(spec, getGap());
+    return make_prop(spec, getGap());
   }
   else {
     return Component::getProperty(spec);
@@ -84,7 +82,7 @@ void Box::draw() {
 void Box::updateCells() {
   int offset = 0;
   std::vector<int> offsets(cells.size());
-  int i = orientation == Orientation::HORIZONTAL ? 0 : 1;
+  int i = getOrientation() == Orientation::HORIZONTAL ? 0 : 1;
   ivec2 maxSize(0);
 
   for(auto const& cell : cells) {
@@ -92,7 +90,7 @@ void Box::updateCells() {
     pos[i] = offset;
     cell->setPosition(pos);
     maxSize = max(maxSize, cell->getAbsoluteSize());
-    offset += cell->getAbsoluteSize()[i] + gap;
+    offset += cell->getAbsoluteSize()[i] + getGap();
   }
 
   maxSize[i] = 0;
@@ -102,22 +100,22 @@ void Box::updateCells() {
 }
 
 void Box::setGap(int gap) {
-  this->gap = gap;
+  setStyle(GAP, gap);
 }
 
 int Box::getGap() const {
-  return gap;
+  return getStyle<int>(GAP);
 }
 
 void Box::setOrientation(Orientation orientation) {
-  if(orientation != this->orientation) {
-    this->orientation = orientation;
+  if(orientation != getOrientation()) {
+    setStyle(ORIENTATION, orientation);
     updateCells();
   }
 }
 
 Box::Orientation Box::getOrientation() const {
-  return orientation;
+  return getStyle<Orientation>(ORIENTATION);
 }
 
 Box::Cell::Cell(Component* comp) {

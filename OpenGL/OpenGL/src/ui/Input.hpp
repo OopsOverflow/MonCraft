@@ -16,11 +16,9 @@ protected:
 public:
   static std::unique_ptr<Input> create(std::string text, std::shared_ptr<const Font> font);
 
-  static const spec_t TEXT;
-  static const spec_t TEXT_COLOR;
-  virtual void setProperty(prop_t prop) override;
-  virtual prop_t getProperty(spec_t spec) const override;
-  virtual style_const_t getDefaultStyle() const override;
+  // virtual void setProperty(prop_t prop) override;
+  // virtual prop_t getProperty(spec_t spec) const override;
+  // virtual style_const_t getDefaultStyle() const override;
 
   void onChange(std::function<void()> callback);
 
@@ -40,8 +38,8 @@ protected:
 
 private:
   std::unique_ptr<Text> textComp;
-  Style hover;
-  Style active;
+  style_t hover;
+  style_t active;
   std::function<void()> changeCallback;
 };
 

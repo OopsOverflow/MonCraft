@@ -13,10 +13,11 @@ Button::Button(std::unique_ptr<Component> comp, std::string text, std::shared_pt
   mainComp->add(textComp.get());
   add(mainComp.get());
 
-  hover->set(make_property(Text::COLOR, vec4(1.0, 0.0, 0.0, 1.0)));
+  hover->setParent(getOwnStylesheet());
+  hover->set(make_prop(Text::COLOR, vec4(1.0, 0.0, 0.0, 1.0)));
 
   pressed->setParent(hover);
-  pressed->set(make_property(Text::COLOR, vec4(0.0, 1.0, 0.0, 1.0)));
+  pressed->set(make_prop(Text::COLOR, vec4(0.0, 1.0, 0.0, 1.0)));
 
   textComp->setUseBaseline(false); // TODO: non-heritable styles ?
   mainComp->setPadding(ivec2(10, 5));
@@ -49,22 +50,21 @@ void Button::setPressedStyle(prop_t prop) {
 #include "debug/Debug.hpp"
 
 void Button::onMouseIn(glm::ivec2 pos) {
-  // hover->applyStyles(this);
+  setStylesheet(hover);
 }
 
 void Button::onMouseOut(glm::ivec2 pos) {
-  // if(isPressed()) pressed->revertStyles(this);
-  // hover->revertStyles(this);
+  setStylesheet(getOwnStylesheet());
 }
 
 bool Button::onMousePressed(glm::ivec2 pos) {
-  // pressed->applyStyles(this);
+  setStylesheet(pressed);
   if(clickCallback) clickCallback();
   return true;
 }
 
 bool Button::onMouseReleased(glm::ivec2 pos) {
-  // pressed->revertStyles(this);
+  setStylesheet(hover);
   return false;
 }
 

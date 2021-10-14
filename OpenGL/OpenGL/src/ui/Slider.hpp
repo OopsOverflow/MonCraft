@@ -13,8 +13,6 @@ protected:
 public:
   static std::unique_ptr<Slider> create();
 
-  static const spec_t VALUE;
-
   virtual void onMouseIn(glm::ivec2 pos) override;
   virtual void onMouseOut(glm::ivec2 pos) override;
   virtual bool onMouseMove(glm::ivec2 pos) override;

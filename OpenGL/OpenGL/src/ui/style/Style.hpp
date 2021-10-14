@@ -36,7 +36,7 @@ public:
   template<typename T, typename... Args>
   static style_t make_style(style_const_t parent, spec_t spec, T val, Args... args) {
     style_t style = make_style(parent, args...);
-    style->set(make_property(spec, val));
+    style->set(make_prop(spec, val));
     return style;
   }
 
