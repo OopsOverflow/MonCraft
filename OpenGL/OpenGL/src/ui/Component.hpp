@@ -52,14 +52,8 @@ public:
   virtual prop_t getProperty(spec_t spec) const;
 
 protected:
-  /**
-   * Set a css style property (apply recursively to children)
-   */
   void setStyle(prop_t prop);
 
-  /**
-   * Shorthand, @see setStyle
-   */
   template<typename T>
   void setStyle(spec_t spec, T val) {
     setStyle(make_prop(spec, val));
@@ -67,9 +61,6 @@ protected:
 
   prop_t getStyle(spec_t spec) const;
 
-  /**
-   * Shorthand, @see getStyle
-   */
   template<typename T>
   T getStyle(spec_t spec) const {
     return getStyle(spec).value->get<T>();

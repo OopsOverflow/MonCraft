@@ -116,9 +116,7 @@ void Text::computeSize() {
 }
 
 void Text::setColor(vec4 color) {
-  if(color == getColor()) return;
   setStyle(COLOR, color);
-  queueDraw();
 }
 
 vec4 Text::getColor() const {
@@ -129,7 +127,6 @@ void Text::setText(std::string text) {
   std::u32string wtext = conv.from_bytes(text);
   this->text = wtext;
   computeSize();
-  queueDraw();
 }
 
 std::string Text::getText() const {
@@ -137,7 +134,6 @@ std::string Text::getText() const {
 }
 
 void Text::setFontSize(float fontSize) {
-  if(fontSize == getFontSize()) return;
   setStyle(FONT_SIZE, fontSize);
   computeSize();
 }
@@ -156,7 +152,6 @@ std::shared_ptr<const Font> Text::getFont() const {
 }
 
 void Text::setUseBaseline(bool useBaseline) {
-  if(useBaseline == getUseBaseline()) return;
   setStyle(USE_BASELINE, useBaseline);
   computeSize();
 }

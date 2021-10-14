@@ -91,9 +91,7 @@ void Pane::computeModel() {
 }
 
 void Pane::setColor(vec4 color) {
-  if(color == getColor()) return;
   setStyle(COLOR, color);
-  queueDraw();
 }
 
 vec4 Pane::getColor() const {

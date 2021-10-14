@@ -384,7 +384,7 @@ ivec2 Component::getPosition() const {
 void Component::setPadding(ivec2 padding) {
   if(padding == getPadding()) return;
   setStyle(PADDING, padding);
-  queueRecompute(true);
+  queueRecompute(true); // needs to recompute children (size changed)
 }
 
 ivec2 Component::getPadding() const {
