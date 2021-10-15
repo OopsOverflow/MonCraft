@@ -61,14 +61,22 @@ MonCraftScene::MonCraftScene(Viewport* vp)
     gameMenu = std::make_unique<GameMenu>();
     debugOverlay = std::make_unique<DebugOverlay>(server);
     overlay = std::make_unique<Overlay>();
+    middleDot = Image::create(glm::ivec2(1, 1230), glm::ivec2(10, 10));
 
     debugOverlay->setAnchorY(Anchor::END);
 
+    middleDot->setAnchorX(Anchor::CENTER);
+    middleDot->setAnchorY(Anchor::CENTER);
+
+    middleDot->setSize(glm::ivec2(10, 10));
+    add(middleDot.get());
     overlay->btn_vsync->onclick([=] { vp->toggleVSync(); });
     overlay->btn_fullscreen->onclick([=] { vp->toggleFullscreen(); });
     overlay->btn_ping->onclick([&] { server->ping(); });
     add(overlay.get());
     add(debugOverlay.get());
+
+
 }
 
 
@@ -126,19 +134,6 @@ void MonCraftScene::updateUniforms(float t) {
 
         shader->activate();
     }
-}
-
-void MonCraftScene::drawMiddleDot() {
-    glEnable(GL_SCISSOR_TEST);
-    {
-        auto size = getSize();
-        int pointSize = 8;
-        // TODO: make this properly use compnent position and size
-        glScissor((size.x - pointSize) / 2, (size.y - pointSize) / 2, pointSize, pointSize);
-        glClearColor(1, 0, 0, 1);
-        glClear(GL_COLOR_BUFFER_BIT); // draw point
-    }
-    glDisable(GL_SCISSOR_TEST);
 }
 
 void MonCraftScene::drawSkybox(float t) {
@@ -205,8 +200,5 @@ void MonCraftScene::draw() {
     drawEntities();
 
     glDisable(GL_DEPTH_TEST);
-    // draw dot in the middle of the screen
-    drawMiddleDot();
-
     Component::draw();
 }

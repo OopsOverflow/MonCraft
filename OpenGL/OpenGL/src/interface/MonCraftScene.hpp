@@ -23,7 +23,6 @@ public:
 private:
   void updateShadowMaps();
   void updateUniforms(float t);
-  void drawMiddleDot();
   void drawSkybox(float t);
   void drawEntities();
   void draw() override;
@@ -51,6 +50,7 @@ private:
   std::unique_ptr<GameMenu> gameMenu;
   std::unique_ptr<DebugOverlay> debugOverlay;
   std::unique_ptr<Overlay> overlay;
+  std::unique_ptr<ui::Image> middleDot;
 
 public:
   // components
