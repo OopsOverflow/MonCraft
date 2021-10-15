@@ -6,7 +6,7 @@
 #include "gl/Shader.hpp"
 #include "debug/Debug.hpp"
 
-Mesh::Mesh(GLuint vao, GLuint vbo, GLuint ebo, GLsizei vertCount)
+Mesh::Mesh(GLuint vao, GLuint vbo, GLuint ebo, GLsizei vertCount) noexcept
     : vao(vao), vbo(vbo), ebo(ebo), vertCount(vertCount)
 { }
 
@@ -78,7 +78,7 @@ static void reverseTriangles(std::vector<GLuint>& vec) {
   }
 }
 
-Mesh::Mesh(MeshData& data)
+Mesh::Mesh(MeshData& data) noexcept
 {
   ASSERT_GL_MAIN_THREAD();
   size_t transpCount = data.indicesTranspX.size() + data.indicesTranspY.size() + data.indicesTranspZ.size();
@@ -153,7 +153,7 @@ Mesh::Mesh(MeshData& data)
   glBindVertexArray(0);
 }
 
-Mesh::Mesh(Mesh&& other) {
+Mesh::Mesh(Mesh&& other) noexcept {
   vao = other.vao;
   vbo = other.vbo;
   ebo = other.ebo;

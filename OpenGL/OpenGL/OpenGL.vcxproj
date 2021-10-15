@@ -144,6 +144,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\SDL2\lib\x64;$(SolutionDir)Dependencies\SFML\lib\x64;$(SolutionDir)Dependencies\GLEW\lib\Release\x64;$(SolutionDir)Dependencies\FreeType\lib\win64</AdditionalLibraryDirectories>
       <AdditionalDependencies>opengl32.lib;User32.lib;Gdi32.lib;Shell32.lib;glew32s.lib;SDL2.lib;SDL2main.lib;SDL2test.lib;SDL2_image.lib;freetype.lib;sfml-audio.lib;sfml-system.lib;sfml-network.lib</AdditionalDependencies>
+      <AdditionalOptions>/NODEFAULTLIB:library /ignore:4099
+ %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

@@ -111,7 +111,8 @@ void MonCraftScene::updateUniforms(float t) {
     glUniform1f(fogShader->getUniform("lightIntensity"), 1);
     glUniform3fv(fogShader->getUniform("lightDirection"), 1, value_ptr(sunDirViewSpace));
     glUniform1i(shader->getUniform("fog"), (int)fogEnabled); // TODO
-    shader->bindTexture(TEXTURE_NORMAL, normalMapID[(size_t)(t * 15) % 30]);
+    size_t normalMapIndex = (size_t)(t * 15) % 30;
+    shader->bindTexture(TEXTURE_NORMAL, normalMapID[normalMapIndex]);
 
     Block* block = world.getBlock(ivec3(camera.position + vec3(-0.5f, 0.6f, -0.5f)));
     if (block) {

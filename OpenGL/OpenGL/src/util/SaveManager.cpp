@@ -16,7 +16,7 @@ std::string SaveManager::configFilename = "config.txt";
 
 template <typename T> class Binary {
 public:
-  Binary() {}
+  Binary() : val() {}
   Binary(T val) : val(val) {}
   T val;
 };
@@ -243,6 +243,9 @@ std::unique_ptr<Entity> SaveManager::getEntity(Identifier uid) {
   switch (entityClass) {
   case EntityClass::Character:
     entity = new Character({});
+    break;
+  default :
+      throw std::runtime_error("Unknown entity type");
   }
   openedFile >> *entity;
 

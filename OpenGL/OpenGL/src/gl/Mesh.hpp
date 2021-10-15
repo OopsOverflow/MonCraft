@@ -32,7 +32,7 @@ public:
     /**
      * Creates using the given vectors of vertex data.
      */
-    Mesh(MeshData& data);
+    Mesh(MeshData& data) noexcept;
 
 
     /**
@@ -41,13 +41,13 @@ public:
      * Thus, the vao/vbo/ebo must be owner-free before assigning them to
      * the mesh.
      */
-    Mesh(GLuint vao, GLuint vbo, GLuint ebo, GLsizei vertCount);
+    Mesh(GLuint vao, GLuint vbo, GLuint ebo, GLsizei vertCount) noexcept;
     ~Mesh();
 
     Mesh(Mesh const&) = delete;
     Mesh& operator=(Mesh const&) = delete;
 
-    Mesh(Mesh&&);
+    Mesh(Mesh&&) noexcept;
 
     /**
      * Gets the vao.

@@ -8,7 +8,7 @@ ShadowMap::ShadowMap(int size)
   : camera(ivec2(size), {10, 10, 10}, {0, 0, 0}, Projection::PROJECTION_ORTHOGRAPHIC),
     shader(ResourceManager::getShader("shadow")),
     distance(100.f),
-    size(size)
+    size(size), shadowMatrices()
 {
   glGenFramebuffers(1, &fbo);
   glGenTextures(3, depthTex);
