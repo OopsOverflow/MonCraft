@@ -17,18 +17,15 @@ public:
    * Constructs a voronoi noise generator.
    * samples are reproducible.
    */
-  VoronoiNoise(int seed, int size, float cellSize, glm::ivec2 offset);
+  VoronoiNoise(int seed, float cellSize);
 
   glm::vec2 get(glm::ivec2 cell) const;
 
   glm::ivec2 findCell(glm::vec2 pos) const;
 
-  bool isInRange(glm::ivec2 cell);
-
-
 private:
   XXHash noise;
-  int size;
   float cellSize;
-  Grid<glm::vec2> grid;
+
+  glm::vec2 sample(glm::ivec2 cell) const;
 };

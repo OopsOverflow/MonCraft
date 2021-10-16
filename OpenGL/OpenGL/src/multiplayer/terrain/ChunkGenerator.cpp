@@ -11,7 +11,6 @@ ChunkGenerator::ChunkGenerator(int chunkSize)
     valueNoise(rand())
 {
     noise.seed(rand());
-    biomeSampler.generate();
 }
 
 std::unique_ptr<Chunk> ChunkGenerator::generate(ivec3 cpos) const {

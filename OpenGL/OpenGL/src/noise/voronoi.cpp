@@ -4,20 +4,18 @@
 using glm::ivec2;
 using glm::vec2;
 
-VoronoiNoise::VoronoiNoise(int seed, int size, float cellSize, ivec2 offset)
-    : noise(seed),
-      size(size), cellSize(cellSize),
-      grid(ceil(size / cellSize) + 2)
-{
-  grid.for_each([&](ivec2 ipos, vec2& val) {
-    val = vec2(noise.sample<2, 2>(offset + ipos)) / vec2(UINT16_MAX);
-  });
-}
+VoronoiNoise::VoronoiNoise(int seed, float cellSize)
+    : noise(seed), cellSize(cellSize)
+{}
 
 #include "debug/Debug.hpp"
 
+glm::vec2 VoronoiNoise::sample(glm::ivec2 cell) const {
+  return vec2(noise.sample<2, 2>(cell)) / vec2(UINT16_MAX);
+}
+
 glm::vec2 VoronoiNoise::get(glm::ivec2 cell) const {
-  return (vec2(cell) + grid.at(cell + 1)) * cellSize;
+  return (vec2(cell) + sample(cell)) * cellSize;
 }
 
 glm::ivec2 VoronoiNoise::findCell(vec2 pos) const {
@@ -31,7 +29,7 @@ glm::ivec2 VoronoiNoise::findCell(vec2 pos) const {
     for (delta.y = -1; delta.y <= 1; delta.y++) {
 
       ivec2 otherCell = centerCell + delta;
-      vec2 otherGridPos = vec2(otherCell) + grid.at(otherCell + 1);
+      vec2 otherGridPos = vec2(otherCell) + sample(otherCell);
       float dist = distance(gridPos, otherGridPos); // TODO: distance squared
 
       if (dist < min_dist) {
@@ -42,10 +40,4 @@ glm::ivec2 VoronoiNoise::findCell(vec2 pos) const {
   }
 
   return res;
-}
-
-
-bool VoronoiNoise::isInRange(ivec2 cell) {
-  cell += 1;
-  return all(glm::greaterThanEqual(cell, ivec2(0)) && lessThan(cell, grid.size));
 }

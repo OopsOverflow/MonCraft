@@ -30,10 +30,18 @@ const octaves_t waterOctaves = {
 };
 
 BiomeMap::BiomeMap()
- : voronoi(rand(), size + 2 * displacement, cellSize, ivec2(0)),
-   value(rand()),
-   map(size)
+ : voronoi(rand(), cellSize),
+   value(rand())
 {
+  // TODO: not sure about the performance of all of that.
+  // Maybe the pipeline abstration layer is too much ? In principle, the
+  // compiler should be able to resolve this functional-style at compile-time.
+  auto step1 = std::bind(&BiomeMap::offsetSimplex, this, _1);
+  auto step2 = std::bind(&BiomeMap::offsetVoronoi, this, _1);
+  auto step3 = std::bind(&BiomeMap::sampleBiomes, this, _1);
+  auto step4 = std::bind(&BiomeMap::blendBiomes, this, _1);
+  generator = make_pipeline(step1, step2, step3, step4);
+
   simplexX.seed(rand());
   simplexY.seed(rand());
   simplexBiome.seed(rand());
@@ -132,30 +140,10 @@ BiomeMap::BiomeMap()
   biomeForest.elevation = 10;
 }
 
-
-void BiomeMap::generate() {
-  // TODO: not sure about the performance of all of that.
-  // Maybe the pipeline abstration layer is too much ? In principle, the
-  // compiler should be able to resolve this functional-style at compile-time.
-  auto step1 = std::bind(&BiomeMap::offsetSimplex, this, _1);
-  auto step2 = std::bind(&BiomeMap::offsetVoronoi, this, _1);
-  auto step3 = std::bind(&BiomeMap::sampleBiomes, this, _1);
-  auto step4 = std::bind(&BiomeMap::blendBiomes, this, _1);
-  auto pipeline = make_pipeline(step1, step2, step3, step4);
-
-  map.for_each_parallel([&](vec2 pos, Biome& val) {
-    val = pipeline(pos);
-  });
-}
-
 #include "debug/Debug.hpp"
 
-Biome const& BiomeMap::sampleWeighted(glm::ivec2 pos) const {
-  pos += size / 2;
-  auto inversion = (abs(pos / size) % 2);
-  pos = (size-1) * inversion - abs(pos % size);
-  pos = abs(-pos);
-  return map[pos];
+Biome BiomeMap::sampleWeighted(glm::ivec2 pos) const {
+  return generator(pos);
 }
 
 
@@ -194,7 +182,6 @@ BiomeMap::weightedBiomes_t BiomeMap::offsetVoronoi(ivec2 ipos) {
 
         if(delta == ivec2(0)) continue;
         ivec2 cell = mainCell + delta;
-        if(!voronoi.isInRange(cell)) continue;
 
         vec2 otherPos = voronoi.get(cell);
         float dist = distance(pos, otherPos);
@@ -231,7 +218,7 @@ BiomeMap::weightedBiomes_t BiomeMap::offsetVoronoi(ivec2 ipos) {
 };
 
 
-pixel_t BiomeMap::teststep(BiomeMap::weightedBiomes_t biomes) {
+pixel_t BiomeMap::bitmapStep(BiomeMap::weightedBiomes_t biomes) {
   pixel_t col(0);
 
   for(size_t i = 0; i < biomes.size(); i++) {

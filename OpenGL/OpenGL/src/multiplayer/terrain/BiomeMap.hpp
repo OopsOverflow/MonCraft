@@ -2,6 +2,7 @@
 
 #include <map>
 #include <utility>
+#include <functional>
 
 #include "noise/Noise.hpp"
 #include "Biome.hpp"
@@ -15,25 +16,13 @@ class BiomeMap {
 public:
   BiomeMap();
 
-
-  /**
-   * Generates the whole biome map.
-   * This is to be called once. It is expensive.
-   */
-  void generate();
-
   /**
    * Samples a position in the biome map and returns a Biome description that
    * possibly blends multiple biomes if near an edge.
    */
-  Biome const& sampleWeighted(glm::ivec2 pos) const;
+  Biome sampleWeighted(glm::ivec2 pos) const;
+
 private:
-    // biome gen tuning
-    #ifdef EMSCRIPTEN
-    int size = 100;               // generated texture size
-    #else
-    int size = 1000;              // generated texture size
-    #endif
     float cellSize = 150.f;         // voronoi single cell size
     float blendSmoothness = 0.4f;   // amount of smoothing to apply
     float biomeBlend = 40.f; // distance to smooth biomes borders
@@ -55,17 +44,14 @@ private:
     };
     using weightedBiomes_t = std::vector<weightedBiome_t>;
 
-    // bitmaps
-    Grid<Biome> map; // final Biome Map
-
     // pipeline functions
     // note: the compiler should be able to optimize copies with RVO
     glm::ivec2 offsetSimplex(glm::ivec2 pos);
     weightedBiomes_t offsetVoronoi(glm::ivec2 pos);
     weightedBiomes_t sampleBiomes(weightedBiomes_t biomes);
     Biome blendBiomes(weightedBiomes_t biomes);
-
-    pixel_t teststep(BiomeMap::weightedBiomes_t biomes);
+    pixel_t bitmapStep(BiomeMap::weightedBiomes_t biomes);
+    std::function<Biome(glm::ivec2)> generator;
 
     Biome biomePlains;
     Biome biomeSea;
