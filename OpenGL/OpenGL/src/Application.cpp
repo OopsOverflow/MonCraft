@@ -7,8 +7,9 @@
 #include "interface/MainMenu.hpp"
 #include "interface/ParametersMenu.hpp"
 
-
-
+#ifdef EMSCRIPTEN
+    #include <emscripten.h>
+#endif
 
 using namespace glm;
 
@@ -60,7 +61,20 @@ void loadResources() {
     ResourceManager::loadFont("vt323", "VT323-Regular");
 }
 
+void loop(float dt) {
+    World::getInst().t += dt;
+    World::getInst().dt = dt;
+}
 
+#ifdef EMSCRIPTEN
+    float dt;
+    Viewport* pwindow;
+    void em_loop() {
+        pwindow->beginFrame(dt);
+        loop(dt);
+        pwindow->endFrame();
+    }
+#endif
 
 int main(int argc, char* argv[]) {
     std::cout << "---- Main ----" << std::endl;
@@ -96,10 +110,12 @@ int main(int argc, char* argv[]) {
         window.quit();
     });
 
-    for (float dt = 0; window.beginFrame(dt); window.endFrame()) {
-        World::getInst().t += dt;
-        World::getInst().dt = dt;
-    }
+    #ifdef EMSCRIPTEN
+        pwindow = &window;
+        emscripten_set_main_loop(em_loop, 0, 1);
+    #else
+        for (float dt = 0; window.beginFrame(dt); window.endFrame()) loop(dt);
+    #endif
 
     ResourceManager::free();
     return 0;

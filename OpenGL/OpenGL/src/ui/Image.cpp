@@ -141,14 +141,13 @@ mat4 Image::computeModel() {
 }
 
 mat4 Image::computeTexture() {
-
     ivec2 offset = getTextureOffset();
     ivec2 size = getTextureSize();
     calculateCropping(offset, size);
-    int w, h;
-    int miplevel = 0;
-    glGetTexLevelParameteriv(GL_TEXTURE_2D, miplevel, GL_TEXTURE_WIDTH, &w);
-    glGetTexLevelParameteriv(GL_TEXTURE_2D, miplevel, GL_TEXTURE_HEIGHT, &h);
+    int w = 3840, h = 2160; // TODO: atlas size is hard-coded because glGetTexLevelParameteriv is not supported by wasm.
+    // int miplevel = 0;
+    // glGetTexLevelParameteriv(GL_TEXTURE_2D, miplevel, GL_TEXTURE_WIDTH, &w);
+    // glGetTexLevelParameteriv(GL_TEXTURE_2D, miplevel, GL_TEXTURE_HEIGHT, &h);
 
     auto texture = mat4(1.f);
     texture = translate(texture, vec3(offset.x / (float)w, offset.y/(float)h , 0.0f));

@@ -166,7 +166,10 @@ void MonCraftScene::draw() {
     server->update();
 
     // updates
-    musicPlayer.update();
+    #ifndef EMSCRIPTEN
+      musicPlayer.update();
+    #endif
+
     vp->keyboardController.apply(*player);
     vp->mouseController.apply(*player);
 

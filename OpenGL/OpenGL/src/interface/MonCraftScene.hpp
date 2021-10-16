@@ -6,7 +6,11 @@
 #include "controller/MouseController.hpp"
 #include "controller/KeyboardController.hpp"
 #include "multiplayer/client/Server.hpp"
-#include "audio/Music.hpp"
+
+#ifndef EMSCRIPTEN
+  #include "audio/Music.hpp"
+#endif
+
 #include "terrain/World.hpp"
 #include "terrain/SkyBox.hpp"
 #include "gl/ShadowMap.hpp"
@@ -57,8 +61,11 @@ public:
   SkyBox sky;
   Raycast caster;
   ShadowMap shadows;
-  Music musicPlayer;
   std::shared_ptr<Server> server;
+
+  #ifndef EMSCRIPTEN
+    Music musicPlayer;
+  #endif
 
   // other parameters
   bool fogEnabled;
