@@ -41,10 +41,10 @@ release:
 	cp -r OpenGL/data dist
 	rm -r Release
 
-# -O3 \
+# --source-map-base http://localhost:6931/sources/__SOURCE_MAP_BASE__/ -gsource-map -O0 -s NO_DISABLE_EXCEPTION_CATCHING \
 
 CFLAGS = -fexceptions \
---source-map-base http://localhost:6931/sources/__SOURCE_MAP_BASE__/ -gsource-map -O0 -s NO_DISABLE_EXCEPTION_CATCHING \
+-O3 \
 -s WASM=1 \
 -pthread -s PTHREAD_POOL_SIZE=4 \
 -s USE_SDL=2 \
@@ -82,7 +82,7 @@ wasm:
 	-cp WASM/MonCraft.wasm.map WASM/sources/__SOURCE_MAP_BASE__
 	cp -r OpenGL WASM/sources/OpenGL
 	rm -f WASM/MonCraft.html
-	cp MonCraft.html WASM
+	cp -r OpenGL/data/wasm/. WASM
 
 run_wasm: wasm
 	emrun --no_browser --serve_after_close --serve_root WASM WASM/MonCraft.html

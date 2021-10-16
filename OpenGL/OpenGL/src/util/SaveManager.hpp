@@ -17,14 +17,17 @@ struct Config {
     #ifdef EMSCRIPTEN
       bool multiplayer = true;
       unsigned short serverPort = 55001;
+      unsigned int threadCount = 3;
+      unsigned int renderDistH = 5;
+      unsigned int renderDistV = 2;
     #else
       bool multiplayer = false;
       unsigned short serverPort = 55000;
+      unsigned int threadCount = 8;
+      unsigned int renderDistH = 10;
+      unsigned int renderDistV = 5;
     #endif
 
-    unsigned int renderDistH = 10;
-    unsigned int renderDistV = 5;
-    unsigned int threadCount = 8;
 
     float fov = 70.0;
     SDL_Keycode forward = SDLK_z;
