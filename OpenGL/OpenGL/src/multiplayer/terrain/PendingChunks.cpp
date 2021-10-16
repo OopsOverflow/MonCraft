@@ -26,10 +26,15 @@ bool PendingChunks::changed(vec3 playerPos) {
 }
 
 std::vector<glm::ivec3> PendingChunks::get() {
+  std::lock_guard<std::mutex> lck(updateMutex);
   return waitingChunks;
 }
 
 void PendingChunks::updateWaitingChunks() {
+  if(!updateMutex.try_lock()) {
+    std::cout << "[WARN] already updating waiting chunks" << std::endl;
+    return;
+  }
   waitingChunks.clear();
 
   auto insert = [&](ivec2 const& pos) {
@@ -66,6 +71,8 @@ void PendingChunks::updateWaitingChunks() {
     insert({-dist, -dist});
     insert({dist, -dist});
   }
+  std::cout << "[INFO] waiting chunks : " << waitingChunks.size() << std::endl;
+  updateMutex.unlock();
 }
 
 void PendingChunks::remOldChunks() {

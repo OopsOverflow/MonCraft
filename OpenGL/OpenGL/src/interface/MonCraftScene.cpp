@@ -71,13 +71,12 @@ MonCraftScene::MonCraftScene(Viewport* vp)
     add(debugOverlay.get());
 }
 
-
-
 bool MonCraftScene::onMousePressed(glm::ivec2 pos) {
     vp->captureMouse();
     captured = true;
     return true;
 }
+
 bool MonCraftScene::onMouseMove(glm::ivec2 pos) {
     if(captured) return true;
     return false;
@@ -99,7 +98,6 @@ void MonCraftScene::updateShadowMaps() {
     world.render(shadows.camera);
     shadows.endFrame();
 }
-
 
 void MonCraftScene::updateUniforms(float t) {
     auto sunDirViewSpace = camera.view * vec4(sunDir, 0.0);
@@ -163,7 +161,6 @@ void MonCraftScene::drawEntities() {
 void MonCraftScene::draw() {
 
     glEnable(GL_DEPTH_TEST);
-    server->update();
 
     // updates
     #ifndef EMSCRIPTEN

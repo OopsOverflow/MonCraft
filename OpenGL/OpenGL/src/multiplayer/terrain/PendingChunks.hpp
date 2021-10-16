@@ -25,5 +25,6 @@ private:
   unsigned int maxChunks;
   glm::ivec3 cpos;
   std::vector<glm::ivec3> waitingChunks;
+  std::mutex updateMutex;
   World& world;
 };
