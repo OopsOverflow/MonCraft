@@ -1,53 +1,51 @@
-#!/usr/bin/env python
-
-# Hello World in GIMP Python
-
-from gimpfu import *
-
-def hello_world(img, drawable, tileCountX, tileCountY, level):
-
-    pdb.gimp_undo_push_group_start(img)
-    pdb.gimp_context_set_interpolation(INTERPOLATION_LINEAR)
-
-    tileCountX = int(tileCountX)
-    tileCountY = int(tileCountY)
-    level = int(level)
-    tileSize = img.width / tileCountX
+import numpy as np
+import cv2
+import argparse
+from pathlib import Path
+import math
 
 
-    factor = pow(2, level)
-
-    for i in range(tileCountX):
-        for j in range(tileCountX):
-
-            offX = i * tileSize
-            offY = j * tileSize
-
-            pdb.gimp_image_select_rectangle(img, CHANNEL_OP_REPLACE, offX, offY, tileSize, tileSize)
-            drawable = pdb.gimp_image_get_active_drawable(img)
-            sel = pdb.gimp_item_transform_scale(drawable, offX/factor, offY/factor, (offX+tileSize)/factor, (offY+tileSize)/factor)
-            pdb.gimp_floating_sel_anchor(sel)
-
-    img.resize(img.width/factor, img.height/factor, 0, 0)
-
-    pdb.gimp_undo_push_group_end(img)
+def isPow2(n):
+    return (n & (n-1) == 0) and n != 0
 
 
-register(
-    "python_fu_moncraft_mipmap",
-    "Gen MipMap for MonCraft",
-    "Generates mipmap levels for a texture atlas",
-    "Mathis Brossier",
-    "Mathis Brossier",
-    "2021",
-    "<Image>/File/MIPMAP",
-    "",
-    [
-        (PF_SPINNER, "tileCountX", "Tile count (X)", 8, (1, 100, 1)),
-        (PF_SPINNER, "tileCountY", "Tile count (Y)", 8, (1, 100, 1)),
-        (PF_SPINNER, "level", "Mipmap level", 1, (1, 10, 1)),
-    ],
-    [],
-    hello_world)
+parser = argparse.ArgumentParser(description='Generate mipmap for MonCraft.')
+parser.add_argument('atlas', help='original texture atlas')
+parser.add_argument('tileSize', type=int, help='tileSize of a tile in the atlas')
+args = parser.parse_args()
 
-main()
+atlasPath = Path(args.atlas)
+tileSize = args.tileSize
+levels = int(math.log2(tileSize))
+
+if not atlasPath.exists():
+    raise f"the atlas file does not exist: '{str(atlasPath)}'"
+
+if not isPow2(tileSize):
+    raise 'tileSize must be a power of 2'
+
+img = cv2.imread(args.atlas, cv2.IMREAD_UNCHANGED)
+imgSize = img.shape[0]
+
+if img.shape[0] != img.shape[1]:
+    raise 'image must be square'
+
+if imgSize % tileSize != 0:
+    raise "image size and tile size are incompatible"
+
+tileCount = int(imgSize / tileSize)
+
+newSize = tileSize
+
+for i in range(levels):
+    outPath = atlasPath.parent / (atlasPath.stem + str(i + 1) + atlasPath.suffix)
+    newSize = int(newSize / 2)
+    newImg = np.copy(img)[:tileCount * newSize, :tileCount * newSize]
+
+    for row in range(tileCount):
+        for col in range(tileCount):
+            oldTile = img[row * tileSize:(row+1) * tileSize, col * tileSize:(col+1) * tileSize]
+            newTile = newImg[row * newSize:(row+1) * newSize, col * newSize:(col+1) * newSize]
+            newTile[:] = cv2.resize(oldTile, (newSize, newSize), cv2.INTER_LINEAR)
+
+    cv2.imwrite(str(outPath), newImg)
