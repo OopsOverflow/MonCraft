@@ -21,7 +21,9 @@
 #include "Gravel_Block.hpp"
 #include "Brick_Block.hpp"
 #include "Cobalt_Block.hpp"
-
+#include "Glass_Block.hpp"
+#include "Oak_Planks_Block.hpp"
+#include "Birch_Planks_Block.hpp"
 #include <sstream>
 
 class AllBlocks {
@@ -35,7 +37,7 @@ public:
   * correctly inserted it the array.
   */
   static Block::unique_ptr_t create_static(BlockType type) {
-    static std::array<Block*(*)(), 18> factories {
+    static std::array<Block*(*)(), 21> factories {
       (Block*(*)())Air_Block::get,
       (Block*(*)())Grass_Block::get,
       (Block*(*)())Dirt_Block::get,
@@ -54,6 +56,9 @@ public:
       (Block*(*)())Gravel_Block::get,
       (Block*(*)())Brick_Block::get,
       (Block*(*)())Cobalt_Block::get,
+      (Block*(*)())Glass_Block::get,
+      (Block*(*)())Oak_Planks_Block::get,
+      (Block*(*)())Birch_Planks_Block::get,
     };
     auto index = (size_t)type;
     if(index > factories.size()) {

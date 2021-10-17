@@ -25,7 +25,10 @@ enum class BlockType
     Birch_Leaf,
     Gravel,
     Brick,
-    Cobalt
+    Cobalt,
+    Glass,
+    Oak_Planks,
+    Birch_Planks
 };
 
 enum class BlockFace { TOP, BOTTOM, FRONT, RIGHT, BACK, LEFT };
