@@ -11,15 +11,15 @@ enum class EntityClass{Character};
 
 
 struct Config {
-    std::string seed = "Moncraft";
+    std::string seed = "MonCraft";
 
     std::string serverAddr = "pi.thissma.fr";
     #ifdef EMSCRIPTEN
       bool multiplayer = true;
       unsigned short serverPort = 55001;
       unsigned int threadCount = 3;
-      unsigned int renderDistH = 5;
-      unsigned int renderDistV = 2;
+      unsigned int renderDistH = 8;
+      unsigned int renderDistV = 3;
     #else
       bool multiplayer = false;
       unsigned short serverPort = 55000;

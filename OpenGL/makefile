@@ -78,9 +78,10 @@ wasm:
 
 	rm -rf WASM/sources
 	mkdir WASM/sources
-	mkdir WASM/sources/__SOURCE_MAP_BASE__
-	-cp WASM/MonCraft.wasm.map WASM/sources/__SOURCE_MAP_BASE__
-	cp -r OpenGL WASM/sources/OpenGL
+	mkdir -p WASM/sources/__SOURCE_MAP_BASE__/
+	mkdir -p WASM/sources/OpenGL/src
+	cp WASM/MonCraft.wasm.map WASM/sources/__SOURCE_MAP_BASE__
+	cp -r OpenGL/src WASM/sources/OpenGL
 	rm -f WASM/MonCraft.html
 	cp -r OpenGL/data/wasm/. WASM
 

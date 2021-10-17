@@ -86,6 +86,7 @@ void WebSocketServer::on_open(websocketpp::connection_hdl hdl) {
 }
 
 void WebSocketServer::on_close(websocketpp::connection_hdl hdl) {
+  std::cout << "[INFO] client logout" << std::endl;
   if(auto handle = hdl.lock()) {
     for (auto it = clientLookup.begin(); it != clientLookup.end(); ) {
       if(auto other = it->second.lock()) {
@@ -145,7 +146,13 @@ WebSocketServer::context_ptr WebSocketServer::on_tls_init() {
 void WebSocketServer::send(sf::Packet &packet, ClientID client) {
   auto it = clientLookup.find(client);
   if(it != clientLookup.end()) {
-    server.send(it->second, packet.getData(), packet.getDataSize(), websocketpp::frame::opcode::binary);
+    try {
+      server.send(it->second, packet.getData(), packet.getDataSize(), websocketpp::frame::opcode::binary);
+    }
+    catch(websocketpp::exception const& e) {
+      std::cout << "[WARN] failed to send packet to client: port " << client.getPort()
+                << ", what: " << e.what() << std::endl;
+    }
   }
   else {
     std::cout << "[WARN] WebSocket client is missing: port " << client.getPort() << std::endl;

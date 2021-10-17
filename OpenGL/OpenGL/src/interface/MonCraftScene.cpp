@@ -184,7 +184,9 @@ void MonCraftScene::draw() {
     sunDir = -normalize(vec3(cos(sunTime), 1, sin(sunTime))) * sunDist;
 
     // update the shadow map
-    updateShadowMaps();
+    #ifndef EMSCRIPTEN
+      updateShadowMaps();
+    #endif
 
     // prepare render
     shader->activate();
