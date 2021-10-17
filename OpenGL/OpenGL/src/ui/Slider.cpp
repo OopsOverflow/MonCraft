@@ -44,7 +44,7 @@ void Slider::moveThumb(int pos) {
   auto tpos = thumb->getPosition();
   auto tsize = thumb->getAbsoluteSize();
   auto size = getAbsoluteSize();
-  tpos.x = pos - tsize.x / 2.f;
+  tpos.x = pos - tsize.x / 2;
   tpos.x = min(max(tpos.x, 0), size.x - tsize.x);
 
   thumb->setPosition({ tpos });
@@ -71,7 +71,7 @@ float Slider::posToValue(int pos) const {
 int Slider::valueToPos(float value) const {
   auto size = getAbsoluteSize();
   auto tsize = thumb->getAbsoluteSize();
-  return value * (size.x - tsize.x) + tsize.x / 2.f;
+  return (int)(value * (size.x - tsize.x) + tsize.x / 2);
 }
 
 void Slider::setValue(float value) {

@@ -53,7 +53,7 @@ Chunk::Chunk(ivec3 chunkPos, int chunkSize)
   : DataStore<Block::unique_ptr_t, 3>(glm::ivec3(chunkSize)),
     chunkPos(chunkPos),
     mesh(nullptr),
-    loaded(false), computed(false), mustRecompute(false)
+    loaded(false), computed(false), mustRecompute(false), model(1.f)
 {
   // std::cout << "created Chunk " << chunkPos << std::endl;
 }
@@ -155,10 +155,10 @@ void Chunk::compute() {
   loaded = true;
   mustRecompute = false;
 
-  solidOffset = meshData.indicesSolid.size();
-  transpOffset.x = solidOffset + meshData.indicesTranspX.size();
-  transpOffset.y = transpOffset.x + meshData.indicesTranspY.size();
-  transpOffset.z  = transpOffset.y + meshData.indicesTranspZ.size();
+  solidOffset = (unsigned int)meshData.indicesSolid.size();
+  transpOffset.x = solidOffset + (unsigned int)meshData.indicesTranspX.size();
+  transpOffset.y = transpOffset.x + (unsigned int)meshData.indicesTranspY.size();
+  transpOffset.z  = transpOffset.y + (unsigned int)meshData.indicesTranspZ.size();
 
   model = translate(mat4(1.0), vec3(size * chunkPos));
 }
@@ -301,7 +301,7 @@ void Chunk::setBlock(ivec3 pos, Block::unique_ptr_t block) {
       if(index == 0) continue;
       if(std::find(updates.begin(), updates.end(), index) != updates.end()) continue;
       updates.push_back(index);
-      if(auto neigh = neighbors[index - 1].lock()) {
+      if(auto neigh = neighbors[(size_t)index - 1].lock()) {
         neigh->markToRecompute();
       }
     }

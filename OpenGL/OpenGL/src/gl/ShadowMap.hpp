@@ -60,7 +60,6 @@ public:
 private:
   GLuint fbo;
   GLuint depthTex[3];
-  float resolution;
   Shader* shader;
   float distance;
   int size;

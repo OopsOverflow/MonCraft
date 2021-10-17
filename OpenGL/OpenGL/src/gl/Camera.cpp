@@ -13,7 +13,7 @@ Camera::Camera(glm::ivec2 size, const glm::vec3& position, const glm::vec3& cent
     size(size), projType(projType)
 {
   auto const& config = SaveManager::getInst().getConfig();
-  far_ = 16.0f * sqrt(2 * pow(config.renderDistH, 2) + pow(config.renderDistV, 2)); //TODO world config
+  far_ = 16.0f * (float)sqrt(2 * pow(config.renderDistH, 2) + pow(config.renderDistV, 2)); //TODO world config
   fovY = config.fov;
   computeView();
   computeProjection();
@@ -146,7 +146,7 @@ float Camera::getFovY() const {
 
 // see https://en.wikipedia.org/wiki/Field_of_view_in_video_games#Field_of_view_calculations
 float Camera::getFovX() const {
-  return glm::degrees(2 * atan(tan(glm::radians(fovY) * 0.5) * size.x / size.y));
+  return glm::degrees(2 * atan(tan(glm::radians(fovY) * 0.5f) * size.x / size.y));
 }
 
 glm::ivec2 Camera::getSize() const {
@@ -171,8 +171,8 @@ void Camera::computeProjection(float box[6]) {
 
   if (projType == Projection::PROJECTION_ORTHOGRAPHIC) {
     // kind of perspective division... To switch between persp & ortho.
-    tanFovY = tan(glm::radians(getFovY()) * 0.5);
-    tanFovX = tan(glm::radians(getFovX()) * 0.5);
+    tanFovY = tan(glm::radians(getFovY()) * 0.5f);
+    tanFovX = tan(glm::radians(getFovX()) * 0.5f);
     float y = glm::length(center - position) * tanFovY;
     float x = y * aspect;
     projection = glm::ortho(-x, x, -y, y, 0.f, 1000.f);
@@ -180,8 +180,8 @@ void Camera::computeProjection(float box[6]) {
 
   else if (projType == Projection::PROJECTION_PERSPECTIVE) {
     projection = glm::perspective(glm::radians(fovY), aspect, near_, far_);
-    tanFovY = tan(glm::radians(getFovY()) * 0.5);
-    tanFovX = tan(glm::radians(getFovX()) * 0.5);
+    tanFovY = tan(glm::radians(getFovY()) * 0.5f);
+    tanFovX = tan(glm::radians(getFovX()) * 0.5f);
 
   }
   else {

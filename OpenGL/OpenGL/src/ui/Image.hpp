@@ -3,7 +3,7 @@
 #include "Component.hpp"
 #include "gl/Shader.hpp"
 
-enum class Crop { NONE, BEGIN, CENTER, END };
+enum class Crop { NONE, BEGIN, CENTER, END, REPEAT };
 
 
 namespace ui {
@@ -22,6 +22,7 @@ namespace ui {
 		static const spec_t CROP;
 		static const spec_t TEXTURE_OFFSET;
 		static const spec_t TEXTURE_SIZE;
+		static const spec_t TEXTURE_DIMENSIONS;
 
 		virtual void setProperty(prop_t prop) override;
 		virtual prop_t getProperty(spec_t spec) const override;
@@ -35,6 +36,9 @@ namespace ui {
 
 		void setTextureSize(glm::ivec2 size);
 		glm::ivec2 getTextureSize() const;
+
+		void setTextureDimensions(glm::vec2 dimensions);
+		glm::vec2 getTextureDimensions() const;
 
 		void setMagFilter(GLint param);
 		void setMinFilter(GLint param);

@@ -84,7 +84,7 @@ SkyBox::SkyBox() :
 
 void SkyBox::calcBlendFactor(float skytime) {
 
-    int time = skytime * 10000;
+    int time = (int)(skytime * 10000);
     // 24 Hour system
     time %= 24000;
     int texture1, texture2;

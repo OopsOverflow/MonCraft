@@ -16,7 +16,7 @@ std::string SaveManager::configFilename = "config.txt";
 
 template <typename T> class Binary {
 public:
-  Binary() {}
+  Binary() : val() {}
   Binary(T val) : val(val) {}
   T val;
 };
@@ -146,12 +146,12 @@ bool SaveManager::saveConfig() {
 }
 
 std::ostream &operator<<(std::ostream &stream, const glm::vec3 &vec) {
-  Binary<int> x = vec.x, y = vec.y, z = vec.z;
+  Binary<float> x = vec.x, y = vec.y, z = vec.z;
   stream << x << y << z;
   return stream;
 }
 std::istream &operator>>(std::istream &stream, glm::vec3 &vec) {
-  Binary<int> x, y, z;
+  Binary<float> x, y, z;
   stream >> x >> y >> z;
   vec.x = x.val;
   vec.y = y.val;
@@ -243,6 +243,9 @@ std::unique_ptr<Entity> SaveManager::getEntity(Identifier uid) {
   switch (entityClass) {
   case EntityClass::Character:
     entity = new Character({});
+    break;
+  default :
+      throw std::runtime_error("Unknown entity type");
   }
   openedFile >> *entity;
 

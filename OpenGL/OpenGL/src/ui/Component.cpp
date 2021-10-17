@@ -128,9 +128,9 @@ prop_t Component::getProperty(spec_t spec) const {
 style_const_t Component::getDefaultStyle() const {
   static style_const_t style = Style::make_style(
     nullptr, // parent
-    Component::SIZE, ivec2(0.f),
-    Component::POSITION, ivec2(0.f),
-    Component::PADDING, ivec2(0.f),
+    Component::SIZE, ivec2(0),
+    Component::POSITION, ivec2(0),
+    Component::PADDING, ivec2(0),
     Component::ANCHOR_X, Anchor::BEGIN,
     Component::ANCHOR_Y, Anchor::BEGIN
   );
@@ -189,9 +189,9 @@ ivec2 Component::getOrigin() const {
   ivec2 parentSize = parent->computedSize - parent->getPadding() * 2;
 
   if(getAnchorX() == Anchor::END)         orig.x +=  parentSize.x - size.x;
-  else if(getAnchorX() == Anchor::CENTER) orig.x += (parentSize.x - size.x) / 2.f;
+  else if(getAnchorX() == Anchor::CENTER) orig.x += (parentSize.x - size.x) / 2;
   if(getAnchorY() == Anchor::END)         orig.y +=  parentSize.y - size.y;
-  else if(getAnchorY() == Anchor::CENTER) orig.y += (parentSize.y - size.y) / 2.f;
+  else if(getAnchorY() == Anchor::CENTER) orig.y += (parentSize.y - size.y) / 2;
 
   return orig;
 }

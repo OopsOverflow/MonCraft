@@ -50,7 +50,7 @@ MonCraftScene::MonCraftScene(Viewport* vp)
     // game seed
     std::hash<std::string> hashString;
     auto seed = hashString(config.seed);
-    std::srand(seed);
+    std::srand((unsigned int)seed);
     std::cout << "seed : " << config.seed << " (" << seed << ")" << std::endl;
 
     server = createServer(config);
@@ -61,9 +61,15 @@ MonCraftScene::MonCraftScene(Viewport* vp)
     gameMenu = std::make_unique<GameMenu>();
     debugOverlay = std::make_unique<DebugOverlay>(server);
     overlay = std::make_unique<Overlay>();
+    middleDot = Image::create(glm::ivec2(1, 1230), glm::ivec2(10, 10));
 
     debugOverlay->setAnchorY(Anchor::END);
 
+    middleDot->setAnchorX(Anchor::CENTER);
+    middleDot->setAnchorY(Anchor::CENTER);
+
+    middleDot->setSize(glm::ivec2(10, 10));
+    add(middleDot.get());
     overlay->btn_vsync->onclick([=] { vp->toggleVSync(); });
     overlay->btn_fullscreen->onclick([=] { vp->toggleFullscreen(); });
     overlay->btn_ping->onclick([&] { server->ping(); });
@@ -73,6 +79,8 @@ MonCraftScene::MonCraftScene(Viewport* vp)
     });
     add(overlay.get());
     add(debugOverlay.get());
+
+
 }
 
 bool MonCraftScene::onMousePressed(glm::ivec2 pos) {
@@ -113,7 +121,8 @@ void MonCraftScene::updateUniforms(float t) {
     glUniform1f(fogShader->getUniform("lightIntensity"), 1);
     glUniform3fv(fogShader->getUniform("lightDirection"), 1, value_ptr(sunDirViewSpace));
     glUniform1i(shader->getUniform("fog"), (int)fogEnabled); // TODO
-    shader->bindTexture(TEXTURE_NORMAL, normalMapID[(size_t)(t * 15) % 30]);
+    size_t normalMapIndex = (size_t)(t * 15) % 30;
+    shader->bindTexture(TEXTURE_NORMAL, normalMapID[normalMapIndex]);
 
     Block* block = world.getBlock(ivec3(camera.position + vec3(-0.5f, 0.6f, -0.5f)));
     if (block) {
@@ -128,19 +137,6 @@ void MonCraftScene::updateUniforms(float t) {
 
         shader->activate();
     }
-}
-
-void MonCraftScene::drawMiddleDot() {
-    glEnable(GL_SCISSOR_TEST);
-    {
-        auto size = getSize();
-        float pointSize = 8;
-        // TODO: make this properly use compnent position and size
-        glScissor((size.x - pointSize) / 2, (size.y - pointSize) / 2, pointSize, pointSize);
-        glClearColor(1, 0, 0, 1);
-        glClear(GL_COLOR_BUFFER_BIT); // draw point
-    }
-    glDisable(GL_SCISSOR_TEST);
 }
 
 void MonCraftScene::drawSkybox(float t) {
@@ -211,8 +207,5 @@ void MonCraftScene::draw() {
     drawEntities();
 
     glDisable(GL_DEPTH_TEST);
-    // draw dot in the middle of the screen
-    drawMiddleDot();
-
     Component::draw();
 }
