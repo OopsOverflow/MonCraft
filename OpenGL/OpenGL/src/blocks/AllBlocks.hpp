@@ -31,13 +31,15 @@ class AllBlocks {
 public:
   AllBlocks() = delete;
 
+  static const size_t BlockCount = 21;
+
   /**
   * convenience to create static blocks.
   * /!\ Take care ! using this function demands that the block has been
   * correctly inserted it the array.
   */
   static Block::unique_ptr_t create_static(BlockType type) {
-    static std::array<Block*(*)(), 21> factories {
+    static std::array<Block*(*)(), BlockCount> factories {
       (Block*(*)())Air_Block::get,
       (Block*(*)())Grass_Block::get,
       (Block*(*)())Dirt_Block::get,
@@ -67,5 +69,9 @@ public:
       throw std::runtime_error(err.str());
     }
     return Block::unique_ptr_t(factories[index]());
+  }
+
+  static BlockType nextBlock(BlockType type) {
+    return (BlockType)(((size_t)type + 1) % BlockCount);
   }
 };

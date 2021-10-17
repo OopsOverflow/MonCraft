@@ -66,6 +66,16 @@ public:
 
   void setSprint(bool sprint);
 
+  /**
+   * Set the selected block type (in hand).
+   */
+  void setCurrentBlock(BlockType type);
+
+  /**
+   * Return the selected block type (in hand).
+   */
+  BlockType getCurrentBlock() const;
+
 private:
   Node rootNode;
   Head head;

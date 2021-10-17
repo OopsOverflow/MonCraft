@@ -67,6 +67,10 @@ MonCraftScene::MonCraftScene(Viewport* vp)
     overlay->btn_vsync->onclick([=] { vp->toggleVSync(); });
     overlay->btn_fullscreen->onclick([=] { vp->toggleFullscreen(); });
     overlay->btn_ping->onclick([&] { server->ping(); });
+    overlay->btn_block->onclick([&] {
+        auto prev = player->getCurrentBlock();
+        player->setCurrentBlock(AllBlocks::nextBlock(prev));
+    });
     add(overlay.get());
     add(debugOverlay.get());
 }

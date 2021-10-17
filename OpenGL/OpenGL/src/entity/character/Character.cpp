@@ -194,3 +194,11 @@ BlockArray Character::getRecord() {
   record.clear();
   return res;
 }
+
+BlockType Character::getCurrentBlock() const {
+  return currentBlock;
+}
+
+void Character::setCurrentBlock(BlockType type) {
+  currentBlock = type;
+}

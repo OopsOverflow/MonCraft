@@ -12,9 +12,13 @@ Overlay::Overlay()
 
 	setPadding({ 15, 15 });
 
-	add(btn_vsync.get());
-	add(btn_fullscreen.get());
-	add(btn_ping.get());
+	// add(btn_vsync.get());
+	// add(btn_fullscreen.get());
+	// add(btn_ping.get());
+
+	btn_block = Button::createPaneButton("Change block", font);
+	add(btn_block.get());
+
 
 	btn_fullscreen->setAnchorX(Anchor::END);
 	btn_ping->setPosition({ 0, 80 });
