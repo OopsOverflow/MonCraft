@@ -7,6 +7,7 @@ public:
 	ParametersMenu();
 	void draw() override;
 
+	std::unique_ptr<ui::Image> quitButton;
 	std::unique_ptr<ui::Button> keyMenu;
 	std::unique_ptr<ui::Button> graphicMenu;
 	std::unique_ptr<ui::Button> audioMenu;

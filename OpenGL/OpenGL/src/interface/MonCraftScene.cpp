@@ -70,9 +70,6 @@ MonCraftScene::MonCraftScene(Viewport* vp)
 
     middleDot->setSize(glm::ivec2(10, 10));
     add(middleDot.get());
-    overlay->btn_vsync->onclick([=] { vp->toggleVSync(); });
-    overlay->btn_fullscreen->onclick([=] { vp->toggleFullscreen(); });
-    overlay->btn_ping->onclick([&] { server->ping(); });
     add(overlay.get());
     add(debugOverlay.get());
 

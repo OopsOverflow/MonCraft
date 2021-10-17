@@ -3,8 +3,10 @@
 
 using namespace ui;
 
-ParametersMenu::ParametersMenu() : Image({ 0, 1178 }, { 132, 116 })
+ParametersMenu::ParametersMenu() : Image({ 1, 1179 }, { 46, 46 })
 {
+	setCrop(Crop::BEGIN);
+	setPadding(glm::vec2(10));
 	auto font = ResourceManager::getFont("roboto");
 
 	parametersTitle = Text::create("Parametres", font);
@@ -15,19 +17,24 @@ ParametersMenu::ParametersMenu() : Image({ 0, 1178 }, { 132, 116 })
 	graphicDisplay = Box::create();
 	audioDisplay = Box::create();
 
+	quitButton = Image::create(glm::vec2(1923, 1), glm::vec2(659, 657));
 	keyMenu = Button::createPaneButton("Controles", font);
 	graphicMenu = Button::createPaneButton("Graphismes", font);
 	audioMenu = Button::createPaneButton("Audio", font);
-	add(display.get());
 
+	add(display.get());
+	display->setSize(getAbsoluteOrigin());
+
+	quitButton->setAnchorX(Anchor::BEGIN);
+	quitButton->setAnchorY(Anchor::END);
+	quitButton->setSize(glm::vec2(50, 50));
+	display->add(quitButton.get());
 	display->add(parametersTitle.get());
 	display->add(folders.get());
 
 	folders->add(keyMenu.get());
 	folders->add(graphicMenu.get());
 	folders->add(audioMenu.get());
-
-	setSize(getSize() * 2);
 }
 
 void ParametersMenu::draw() {
