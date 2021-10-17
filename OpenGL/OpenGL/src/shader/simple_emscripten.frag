@@ -64,13 +64,11 @@ void main() {
   float occl = .7;
   outputColor.xyz *= 1.0 - (vertexOcclusion * vertexOcclusion / 9.0) * occl;
 
-  if(outputColor.a < 0.1) {
-    discard;
+  if((flags & TRANSPARENT_FLAG) == 0) { // not transparent
+    if(outputColor.a < 0.2) discard;
+    outputColor /= outputColor.a;
   }
   if((flags & UNDERWATER_FLAG) == 1) { // is underwater
     outputColor.rgb *= vec3(127.0 / 255.0, 148.0 / 255.0, 1.0) ;
-  }
-  if((flags & TRANSPARENT_FLAG) == 0) { // not transparent
-    outputColor /= outputColor.a;
   }
 }
