@@ -71,6 +71,8 @@ public:
   * draws the left-most quad first and the right-most quad last.
   */
   void drawTransparent(glm::vec3 dir);
+  
+  void drawAllAsSolid();
 
   /**
   * Tells whether the chunks contains solid faces.

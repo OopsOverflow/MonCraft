@@ -173,13 +173,8 @@ void Viewport::endFrame() {
   //Display on screen (swap the buffer on screen and the buffer you are drawing on)
   SDL_GL_SwapWindow(window);
 
-  //Time in ms telling us when this frame ended. Useful for keeping a fix framerate
-  uint32_t timeEnd = SDL_GetTicks();
+  //Time in ms telling us when this frame ended. Useful for keeping a fixed framerate
   lastTime = timeBegin;
-
-  if (vsync && timeEnd - timeBegin < timePerFrame) {
-    SDL_Delay(timePerFrame - (timeEnd - timeBegin));
-  }
 }
 
 void Viewport::on_window_event(SDL_WindowEvent const& e) {

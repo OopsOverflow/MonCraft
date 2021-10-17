@@ -86,16 +86,16 @@ void MonCraftScene::updateShadowMaps() {
     shadows.update(sunDir);
     shadows.attach(camera, Frustum::NEAR);
     shadows.beginFrame(Frustum::NEAR);
-    world.render(shadows.camera);
+    world.renderSolid(shadows.camera);
     world.entities.renderAll();
 
     shadows.attach(camera, Frustum::MEDIUM);
     shadows.beginFrame(Frustum::MEDIUM);
-    world.render(shadows.camera);
+    world.renderSolid(shadows.camera);
 
     shadows.attach(camera, Frustum::FAR);
     shadows.beginFrame(Frustum::FAR);
-    world.render(shadows.camera);
+    world.renderSolid(shadows.camera);
     shadows.endFrame();
 }
 
@@ -114,12 +114,13 @@ void MonCraftScene::updateUniforms(float t) {
     Block* block = world.getBlock(ivec3(camera.position + vec3(-0.5f, 0.6f, -0.5f)));
     if (block) {
         bool isUnderWater = block->type == BlockType::Water;
-        GLint underWater = shader->getUniform("underWater");
-        glUniform1i(underWater, isUnderWater);
+        GLint flags;
+        glGetUniformiv(shader->program, shader->getUniform("flags"), &flags);
+        flags = (flags & 0b1110) | ((GLint)isUnderWater & 0b0001);
+        glUniform1i(shader->getUniform("flags"), flags);
 
         sky.skyBoxShader->activate();
-        underWater = sky.skyBoxShader->getUniform("underWater");
-        glUniform1i(underWater, isUnderWater);
+        glUniform1i(sky.skyBoxShader->getUniform("flags"), flags);
 
         shader->activate();
     }

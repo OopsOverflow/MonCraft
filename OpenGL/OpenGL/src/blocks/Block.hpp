@@ -71,6 +71,13 @@ public:
     virtual bool isTransparent() const { return false; }
 
     /**
+     * An opaque block has all no transparency at all, whereas a non-opaque
+     * block has some fully transparent pixels requiring to draw all faces.
+     * (e.g. leaves)
+     */
+    virtual bool isOpaque() const { return true; }
+
+    /**
     * Water block have differents physics and display
     */
     virtual bool isWater() const { return false; }

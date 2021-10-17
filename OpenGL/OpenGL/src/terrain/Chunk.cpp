@@ -246,31 +246,35 @@ void Chunk::drawTransparent(vec3 dir) {
     // order = 2 - order;
 
     const auto modelloc = Shader::getActive()->getUniform(MATRIX_MODEL);
+    glBindVertexArray(mesh->getVAO());
+    glUniformMatrix4fv(modelloc, 1, GL_FALSE, glm::value_ptr(mesh->model));
 
     for(int i = 0; i < 3; i++) {
 
       if(order[i] == 0 && transpOffset.x != solidOffset) {
-        glBindVertexArray(mesh->getVAO());
-        glUniformMatrix4fv(modelloc, 1, GL_FALSE, glm::value_ptr(mesh->model));
         auto offset = solidOffset;
         if(dir.x > 0) offset += signOffset;
         glDrawElements(GL_TRIANGLES, transpOffset.x - solidOffset, GL_UNSIGNED_INT, reinterpret_cast<void*>(offset * sizeof(GLuint)));
       }
       if(order[i] == 1 && transpOffset.y != transpOffset.x) {
-        glBindVertexArray(mesh->getVAO());
-        glUniformMatrix4fv(modelloc, 1, GL_FALSE, glm::value_ptr(mesh->model));
         auto offset = transpOffset.x;
         if(dir.y > 0) offset += signOffset;
         glDrawElements(GL_TRIANGLES, transpOffset.y - transpOffset.x, GL_UNSIGNED_INT, reinterpret_cast<void*>(offset * sizeof(GLuint)));
       }
       if(order[i] == 2 && transpOffset.z != transpOffset.y) {
-        glBindVertexArray(mesh->getVAO());
-        glUniformMatrix4fv(modelloc, 1, GL_FALSE, glm::value_ptr(mesh->model));
         auto offset = transpOffset.y;
         if(dir.z > 0) offset += signOffset;
         glDrawElements(GL_TRIANGLES, transpOffset.z - transpOffset.y, GL_UNSIGNED_INT, reinterpret_cast<void*>(offset * sizeof(GLuint)));
       }
     }
+  }
+}
+
+void Chunk::drawAllAsSolid() {
+  if(mesh && hasData()) {
+    glBindVertexArray(mesh->getVAO());
+    glUniformMatrix4fv(Shader::getActive()->getUniform(MATRIX_MODEL), 1, GL_FALSE, glm::value_ptr(mesh->model));
+    glDrawElements(GL_TRIANGLES, transpOffset.z, GL_UNSIGNED_INT, nullptr);
   }
 }
 

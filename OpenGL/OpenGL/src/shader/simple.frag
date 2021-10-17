@@ -2,6 +2,9 @@
 
 precision mediump float;
 
+#define UNDERWATER_FLAG 1
+#define TRANSPARENT_FLAG 2
+
 smooth in vec3 vertexPosition;
 smooth in vec3 vertexNormal;
 smooth in float vertexOcclusion;
@@ -18,8 +21,7 @@ uniform float skyTime;
 uniform sampler2D t_color;
 uniform sampler2D t_normal;
 uniform sampler2D t_shadow[3];
-uniform int underWater; //glUniform1b :(
-
+uniform int flags;
 
 out vec4 outputColor;
 
@@ -95,11 +97,13 @@ void main() {
   float occl = .7;
   outputColor.xyz *= 1.0 - (vertexOcclusion * vertexOcclusion / 9.0) * occl;
 
-  if(underWater == 1) {
-    outputColor.rgb *= vec3(127.0 / 255.0, 148.0 / 255.0, 1.0) ;
-  }
-
   if(outputColor.a < 0.1) {
     discard;
+  }
+  if((flags & UNDERWATER_FLAG) == 1) { // is underwater
+    outputColor.rgb *= vec3(127.0 / 255.0, 148.0 / 255.0, 1.0) ;
+  }
+  if((flags & TRANSPARENT_FLAG) == 0) { // not transparent
+    outputColor /= outputColor.a;
   }
 }

@@ -14,6 +14,7 @@ public:
     }
 
     bool isSolid() const override { return false; }
+    bool isOpaque() const override { return false; }
     bool isVisible() const override { return false; }
 
 private:

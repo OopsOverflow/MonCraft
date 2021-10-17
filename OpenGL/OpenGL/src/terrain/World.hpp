@@ -24,6 +24,11 @@ public:
   void render(Camera const& camera);
 
   /**
+  * Renders the visible chunks.
+  */
+  void renderSolid(Camera const& camera);
+
+  /**
   * Gets a block in the world.
   * if block is unavailable, returns nullptr.
   */

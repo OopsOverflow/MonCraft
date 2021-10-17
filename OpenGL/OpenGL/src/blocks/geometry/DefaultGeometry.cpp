@@ -75,7 +75,7 @@ void DefaultBlockGeometry::genFace(glm::ivec3 pos, BlockFace face, Block* block,
 void DefaultBlockGeometry::generateMesh(ivec3 pos, Block* block, std::array<Block*, 26> const& neighbors, MeshData& data) const {
   for(auto const& off : blockFaceOffsets) {
     auto neigh = neighbors[off.first];
-    if(!neigh->isSolid() || neigh->isTransparent()) {
+    if(!neigh->isOpaque() || neigh->isTransparent()) {
       genFace(pos, off.second, block, neighbors, data);
     }
   }
