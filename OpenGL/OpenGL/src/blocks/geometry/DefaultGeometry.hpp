@@ -14,7 +14,7 @@ public:
   static DefaultBlockGeometry* get();
   void generateMesh(glm::ivec3 pos, Block* block, std::array<Block*, 26> const& neighbors, MeshData& data) const override;
 
-private:
+protected:
   DefaultBlockGeometry();
   std::array<GLfloat, 4> genOcclusion(glm::ivec3 pos, std::array<Block*, 26> const& neighbors, BlockFace face) const;
   void genFace(glm::ivec3 pos, BlockFace face, Block* block, std::array<Block*, 26> const& neighbors, MeshData& data) const;
