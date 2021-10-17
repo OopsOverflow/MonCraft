@@ -5,8 +5,8 @@ if get_option('buildtype').startswith('debug')
 endif
 
 srcs = files(
-
   'OpenGL/src/debug/Debug.cpp',
+  'OpenGL/src/debug/Bench.cpp',
 
   'OpenGL/src/controller/KeyboardController.cpp',
   'OpenGL/src/controller/MouseController.cpp',
