@@ -50,6 +50,6 @@ private:
   std::shared_ptr<Character> player;
   PendingChunks pendingChunks;
 
-  std::time_t lastServerUpdate;
-  static const std::time_t timeout = 10;
+  sf::Time lastServerUpdate;
+  const sf::Time timeout = sf::seconds(10);
 };

@@ -81,6 +81,7 @@ websocketpp::connection_hdl WebSocketServer::client_to_hdl(ClientID client) {
 }
 
 void WebSocketServer::on_open(websocketpp::connection_hdl hdl) {
+  std::cout << "[INFO] client login" << std::endl;
   ClientID client = htdl_to_client(hdl);
   clientLookup.emplace(client, hdl);
 }
@@ -115,7 +116,6 @@ std::string get_password() {
 }
 
 WebSocketServer::context_ptr WebSocketServer::on_tls_init() {
-  std::cout << "on_tls_init called" << std::endl;
   context_ptr ctx = std::make_shared<boost::asio::ssl::context>(boost::asio::ssl::context::sslv23);
 
   try {

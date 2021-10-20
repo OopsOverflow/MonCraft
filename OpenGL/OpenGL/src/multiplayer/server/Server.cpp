@@ -50,7 +50,7 @@ void Server::on_packet_recv(sf::Packet& packet, ClientID client) {
       std::cout << "[WARN] Client not registered" << std::endl;
     }
     else {
-      it->second.lastUpdate = std::time(nullptr);
+      it->second.lastUpdate = clock.getElapsedTime();
       if(type == PacketType::PING) handle_ping(it->second);
       else if(type == PacketType::BLOCKS) handle_blocks(it->second, packet);
       else if(type == PacketType::PLAYER_TICK) handle_player_tick(it->second, packet);
@@ -153,7 +153,7 @@ void Server::handle_login(ClientID client, sf::Packet& packet) {
     packet_ack_login(it->first, it->second.player.uid);
   }
   else {
-    auto res = clients.emplace(client, Client(uid));
+    auto res = clients.emplace(client, Client(uid, clock.getElapsedTime()));
 
     if(res.second) {
       packet_ack_login(res.first->first, uid);
@@ -269,8 +269,8 @@ void Server::remOldChunks() {
 }
 
 void Server::handleTimeouts() {
-  std::time_t curTime = std::time(nullptr);
   std::vector<Identifier> erased;
+  auto curTime = clock.getElapsedTime();
 
   for(auto it = clients.cbegin(); it != clients.cend(); ) {
     auto client = *it;

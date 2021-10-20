@@ -53,5 +53,6 @@ protected:
   int renderDistH, renderDistV;
   static const unsigned int maxChunks = 50;
 
-  static const time_t timeout = 10;
+  sf::Clock clock;
+  const sf::Time timeout = sf::seconds(10);
 };

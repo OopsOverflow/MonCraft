@@ -20,8 +20,8 @@ bool ClientID::operator<(ClientID const& lhs) const {
 }
 
 
-Client::Client(Identifier uid)
-  : player(CharacterHitbox()), lastUpdate(std::time(nullptr))
+Client::Client(Identifier uid, sf::Time creation)
+  : player(CharacterHitbox()), lastUpdate(creation)
 {
   player.uid = uid;
   player.setPosition(NetworkConfig::SPAWN_POINT);

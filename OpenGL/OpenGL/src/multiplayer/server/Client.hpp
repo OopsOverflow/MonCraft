@@ -17,6 +17,7 @@ public:
   sf::IpAddress getAddr() const;
   unsigned short getPort() const;
 
+
 private:
   sf::IpAddress addr;
   unsigned short port;
@@ -24,9 +25,10 @@ private:
 
 class Client {
 public:
-  Client(Identifier uid);
+  Client(Identifier uid, sf::Time creation);
 
   Entity player;
   std::deque<glm::ivec3> waitingChunks;
-  std::time_t lastUpdate;
+  bool ack;
+  sf::Time lastUpdate;
 };

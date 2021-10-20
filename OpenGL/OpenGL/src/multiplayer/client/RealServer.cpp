@@ -21,7 +21,7 @@ RealServer::RealServer(std::string url, unsigned short port)
     throw NetworkError("Failed to bind to any port");
   }
 
-  lastServerUpdate = std::time(nullptr);
+  lastServerUpdate = clock.getElapsedTime();
 
   Identifier playerUid = generateIdentifier();
   auto newPlayer = std::make_unique<Character>(NetworkConfig::SPAWN_POINT);
@@ -44,7 +44,7 @@ bool RealServer::login() {
     PacketHeader header;
     packet >> header;
     auto type = header.getType();
-    lastServerUpdate = std::time(nullptr);
+    lastServerUpdate = clock.getElapsedTime();
 
     if(type == PacketType::ACK_LOGIN) return true; // TODO: check correct uid ?
     else std::cout << "[WARN] not a login packet: " << header << std::endl;
@@ -55,7 +55,7 @@ bool RealServer::login() {
 }
 
 void RealServer::update() {
-  if(std::time(nullptr) - lastServerUpdate > timeout) {
+  if(clock.getElapsedTime() - lastServerUpdate > timeout) {
     throw std::runtime_error("server timeout");
   }
 
@@ -89,7 +89,7 @@ bool RealServer::poll() {
   PacketHeader header;
   packet >> header;
   auto type = header.getType();
-  lastServerUpdate = std::time(nullptr);
+  lastServerUpdate = clock.getElapsedTime();
 
   if(type == PacketType::ENTITY_TICK) applyEntityTransforms(packet);
   else if(type == PacketType::LOGOUT) handle_logout(packet);
