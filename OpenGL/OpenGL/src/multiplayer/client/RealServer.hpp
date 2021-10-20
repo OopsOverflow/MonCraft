@@ -36,9 +36,9 @@ private:
   void handle_logout(sf::Packet& packet);
   void handle_blocks(sf::Packet& packet);
   void handle_chunks(sf::Packet& packet);
+  void handle_entity_tick(sf::Packet& packet);
   bool poll();
 
-  void applyEntityTransforms(sf::Packet& packet);
 
   sf::IpAddress addr;
   unsigned short port;
@@ -50,6 +50,7 @@ private:
   std::shared_ptr<Character> player;
   PendingChunks pendingChunks;
 
+  bool serverAck;
   sf::Time lastServerUpdate;
   const sf::Time timeout = sf::seconds(10);
 };

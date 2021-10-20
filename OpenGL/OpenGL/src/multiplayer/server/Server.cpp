@@ -79,7 +79,15 @@ void Server::packet_entity_tick() {
     packet << pair.second.player.uid;
     packet << pair.second.player;
   }
-  broadcast(packet);
+
+  auto curTime = clock.getElapsedTime();
+
+  for(auto& pair : clients) {
+    if(pair.second.ack || curTime - pair.second.lastUpdate > tickAckLimit) {
+      send(packet, pair.first);
+      pair.second.ack = false;
+    }
+  }
 }
 
 void Server::beep() {
@@ -191,6 +199,7 @@ void Server::handle_ping(Client& client) {
 
 void Server::handle_player_tick(Client& client, sf::Packet& packet) {
   packet >> client.player;
+  client.ack = true;
 }
 
 void Server::handle_chunks(Client& client, sf::Packet& packet) {

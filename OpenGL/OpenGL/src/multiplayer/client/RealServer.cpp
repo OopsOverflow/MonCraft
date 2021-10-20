@@ -11,7 +11,7 @@ using namespace glm;
 RealServer::RealServer(std::string url, unsigned short port)
   : addr(url), port(port),
     frameDuration(sf::milliseconds(NetworkConfig::SERVER_TICK)),
-    world(World::getInst())
+    world(World::getInst()), serverAck(true)
 {
   lastUpdate = clock.getElapsedTime() - frameDuration - frameDuration; // needs update
 
@@ -71,9 +71,10 @@ void RealServer::update() {
   packet_chunks();
 
   sf::Time now = clock.getElapsedTime();
-  if(now - lastUpdate > frameDuration) {
+  if(now - lastUpdate > frameDuration && serverAck) {
     packet_player_tick();
     lastUpdate = now;
+    serverAck = false;
   }
 }
 
@@ -90,8 +91,9 @@ bool RealServer::poll() {
   packet >> header;
   auto type = header.getType();
   lastServerUpdate = clock.getElapsedTime();
+  serverAck = true;
 
-  if(type == PacketType::ENTITY_TICK) applyEntityTransforms(packet);
+  if(type == PacketType::ENTITY_TICK) handle_entity_tick(packet);
   else if(type == PacketType::LOGOUT) handle_logout(packet);
   else if(type == PacketType::BLOCKS) handle_blocks(packet);
   else if(type == PacketType::CHUNKS) handle_chunks(packet);
@@ -100,7 +102,7 @@ bool RealServer::poll() {
   return true;
 }
 
-void RealServer::applyEntityTransforms(sf::Packet& packet) {
+void RealServer::handle_entity_tick(sf::Packet& packet) {
   sf::Uint64 size;
   packet >> size;
 
