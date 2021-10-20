@@ -70,8 +70,12 @@ configure_wasm:
 wasm:
 	rm -rf WASM/data
 	rm -rf WASM/src
+
+	# copy resources
 	mkdir WASM/src
-	cp -r OpenGL/data WASM
+	mkdir -p WASM/data/fonts WASM/data/img
+	cp -r OpenGL/data/fonts WASM/data
+	cp -r OpenGL/data/wasm/img WASM/data
 	cp -r OpenGL/src/shader WASM/src
 
 	EMMAKEN_CFLAGS="${CFLAGS}" ninja -C WASM --verbose
