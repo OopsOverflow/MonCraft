@@ -26,10 +26,10 @@ MainMenu::MainMenu() : Image({0, 0}, {1920, 1080})
 	buttonPannel->setAnchorY(Anchor::CENTER);
 	buttonPannel->setGap(10);
 
-	buttonPannel->pack_end(singleplayerButton.get());
-	buttonPannel->pack_end(multiplayerButton.get());
-	buttonPannel->pack_end(parameterButton.get());
-	buttonPannel->pack_end(quitButton.get());
+	buttonPannel->pack_start(singleplayerButton.get());
+	buttonPannel->pack_start(multiplayerButton.get());
+	buttonPannel->pack_start(parameterButton.get());
+	buttonPannel->pack_start(quitButton.get());
 
 	moncraftTitle->setAnchorX(Anchor::CENTER);
 	moncraftTitle->setAnchorY(Anchor::END);

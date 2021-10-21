@@ -4,8 +4,8 @@
 #include "gl/ResourceManager.hpp"
 #include "gl/Viewport.hpp"
 #include "interface/MonCraftScene.hpp"
-#include "interface/MainMenu.hpp"
-#include "interface/ParametersMenu.hpp"
+#include "interface/mainMenu/MainMenu.hpp"
+#include "interface/parametersMenu/ParametersMenu.hpp"
 
 
 

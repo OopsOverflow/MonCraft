@@ -195,7 +195,7 @@
     <ClCompile Include="src\ui\Key.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\interface\MainMenu.cpp">
+    <ClCompile Include="src\interface\mainMenu\MainMenu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\interface\Overlay.cpp">
@@ -222,7 +222,7 @@
     <ClCompile Include="src\ui\Box.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\interface\ParametersMenu.cpp">
+    <ClCompile Include="src\interface\parametersMenu\ParametersMenu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\interface\MultiplayerMenu.cpp">
@@ -231,7 +231,16 @@
     <ClCompile Include="src\ui\Slider.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\interface\MainMenuButton.cpp">
+    <ClCompile Include="src\interface\mainMenu\MainMenuButton.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\interface\parametersMenu\AudioMenu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\interface\parametersMenu\GraphicsMenu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\interface\parametersMenu\KeyMenu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -605,7 +614,7 @@
     <ClInclude Include="src\ui\Key.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\interface\MainMenu.hpp">
+    <ClInclude Include="src\interface\mainMenu\MainMenu.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\interface\Overlay.hpp">
@@ -629,7 +638,7 @@
     <ClInclude Include="src\ui\Box.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\interface\ParametersMenu.hpp">
+    <ClInclude Include="src\interface\parametersMenu\ParametersMenu.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\interface\MultiplayerMenu.hpp">
@@ -638,7 +647,16 @@
     <ClInclude Include="src\ui\Slider.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\interface\MainMenuButton.hpp">
+    <ClInclude Include="src\interface\mainMenu\MainMenuButton.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\interface\parametersMenu\AudioMenu.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\interface\parametersMenu\GraphicsMenu.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\interface\parametersMenu\KeyMenu.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
