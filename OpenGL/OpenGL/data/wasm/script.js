@@ -48,6 +48,28 @@ function updateStatus(text) {
   statusElement.innerHTML = text;
 }
 
+async function registerSW() {
+  if ('serviceWorker' in navigator) {
+    try {
+      const reg = await navigator.serviceWorker.register('sw.js', { scope: '/' });
+      if(reg.installing) {
+        console.log('[SW] installing');
+      } else if(reg.waiting) {
+        console.log('[SW] installed');
+      } else if(reg.active) {
+        console.log('[SW] active');
+      }
+    } catch (e) {
+      console.warn('[SW] failed :', error);
+    }
+  }
+  else {
+    console.warn('[SW] unavailable');
+  }
+}
+
+registerSW();
+
 var Module = {
   preRun: [],
   postRun: [],
@@ -64,7 +86,9 @@ var Module = {
 
   setStatus: updateStatus,
 };
+
 Module.setStatus('Downloading...');
+
 window.onerror = function(event) {
   // TODO: do not warn on ok events like simulating an infinite loop or exitStatus
   Module.setStatus('Exception thrown, see JavaScript console');
