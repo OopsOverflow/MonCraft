@@ -12,4 +12,7 @@ public:
 protected:
 	AudioMenu();
 
+private:
+	std::unique_ptr<ui::Box> mainVolume;
+	std::unique_ptr<ui::Box> musicVolume;
 };
