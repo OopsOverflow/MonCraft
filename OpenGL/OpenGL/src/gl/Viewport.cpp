@@ -29,7 +29,6 @@ extern "C" {
 Viewport::Viewport(glm::ivec2 size)
   :   size(size),
       window(nullptr), context(nullptr),
-      lastSpacePress(0), spaceIsPressed(false),
       timeBegin(0), lastTime(0),
       mouseCaptured(false), vsync(true), mustQuit(false),
       root(nullptr), config(SaveManager::getInst().getConfig())
@@ -192,89 +191,20 @@ void Viewport::on_window_event(SDL_WindowEvent const& e) {
   }
 }
 
-bool Viewport::isDoubleSpace() {
-  static const int thresold = 300;
-
-  bool res = false;
-
-  if(!spaceIsPressed) {
-    uint32_t time = SDL_GetTicks();
-    res = time - lastSpacePress < thresold;
-    lastSpacePress = time;
-    spaceIsPressed = true;
-  }
-
-  return res;
-}
-
 void Viewport::on_keydown(SDL_Keycode k) {
   root->keyPress(k); // controllers in ui (MonCraftScene)
 
-  if (k == config.forward) {
-      keyboardController.pressedForward();
-  }
-  else if(k == config.backward){
-      keyboardController.pressedBackward();
-  }
-  else if (k == config.right) {
-      keyboardController.pressedRight();
-  }
-  else if (k == config.left) {
-      keyboardController.pressedLeft();
-  }
-  else if (k == config.jump) {
-      if (isDoubleSpace()) keyboardController.changedMod();
-      else keyboardController.pressedUp();
-  }
-  else if (k == config.sneak) {
-      keyboardController.pressedDown();
-  }
-  else if (k == config.view) {
-      keyboardController.pressedF5();
-  }
-  else if (k == config.sprint) {
-      keyboardController.pressedControl();
-  }
-  else if (k == config.menu) {
+  if (k == config.menu) {
       SDL_SetRelativeMouseMode(SDL_FALSE);
       int x, y;
       SDL_GetMouseState(&x, &y);
       mouseController.rotateEnd(x, y);
       mouseCaptured = false;
   }
-  else if (k == SDLK_p) {
-      keyboardController.pressedPause();
-  }
-  else if (k == SDLK_f) {
-      toggleVSync();
-  }
 }
 
 void Viewport::on_keyup(SDL_Keycode k) {
   root->keyRelease(k); // controllers in ui (MonCraftScene)
-
-  if (k == config.forward) {
-      keyboardController.releasedForward();
-  }
-  else if (k == config.backward) {
-      keyboardController.releasedBackward();
-  }
-  else if (k == config.right) {
-      keyboardController.releasedRight();
-  }
-  else if (k == config.left) {
-      keyboardController.releasedLeft();
-  }
-  else if (k == config.jump) {
-      keyboardController.releasedUp();
-      spaceIsPressed = false;
-  }
-  else if (k == config.sneak) {
-      keyboardController.releasedDown();
-  }
-  else if (k == config.sprint) {
-      keyboardController.releasedControl();
-  }
 }
 
 void Viewport::on_mousedown(SDL_MouseButtonEvent const& e) {

@@ -23,6 +23,8 @@ public:
   Component& operator=(Component&) = delete;
 
   virtual void draw();
+  
+  void makeActive();
 
   static const spec_t SIZE;
   static const spec_t POSITION;
@@ -155,7 +157,6 @@ private:
   bool bubbleEvent(Event const& evt);
   void filterEvent(Event const& evt);
   bool overlaps(glm::ivec2 point) const;
-  void makeActive();
 };
 
 }; // namespace ui

@@ -72,20 +72,29 @@ MonCraftScene::MonCraftScene(Viewport* vp)
     add(middleDot.get());
     add(overlay.get());
     add(debugOverlay.get());
-
-
 }
-
-
 
 bool MonCraftScene::onMousePressed(glm::ivec2 pos) {
     vp->captureMouse();
     captured = true;
+    makeActive();
     return true;
 }
 bool MonCraftScene::onMouseMove(glm::ivec2 pos) {
     if(captured) return true;
     return false;
+}
+
+bool MonCraftScene::onActivate() {
+    return true;
+}
+
+void MonCraftScene::onKeyPressed(Key k) {
+    keyboardController.handleKeyPressed(k);
+}
+
+void MonCraftScene::onKeyReleased(Key k) {
+    keyboardController.handleKeyReleased(k);
 }
 
 void MonCraftScene::updateShadowMaps() {
@@ -160,7 +169,7 @@ void MonCraftScene::draw() {
 
     // updates
     musicPlayer.update();
-    vp->keyboardController.apply(*player);
+    keyboardController.apply(*player);
     vp->mouseController.apply(*player);
 
     world.entities.updateAll(world.dt);
