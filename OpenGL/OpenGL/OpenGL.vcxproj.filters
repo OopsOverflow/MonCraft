@@ -243,6 +243,18 @@
     <ClCompile Include="src\interface\parametersMenu\KeyMenu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\interface\parametersMenu\ParameterButton.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\interface\parametersMenu\ParameterSlider.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\interface\parametersMenu\ParameterList.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\interface\parametersMenu\MiscMenu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\util\mesh.hpp">
@@ -657,6 +669,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\interface\parametersMenu\KeyMenu.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\interface\parametersMenu\ParameterButton.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\interface\parametersMenu\ParameterSlider.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\interface\parametersMenu\ParameterList.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\interface\parametersMenu\MiscMenu.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

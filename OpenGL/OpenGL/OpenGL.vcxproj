@@ -195,6 +195,9 @@
     <ClCompile Include="src\gl\ShadowMap.cpp" />
     <ClCompile Include="src\gl\Viewport.cpp" />
     <ClCompile Include="src\interface\mainMenu\MainMenuButton.cpp" />
+    <ClCompile Include="src\interface\parametersMenu\MiscMenu.cpp" />
+    <ClCompile Include="src\interface\parametersMenu\ParameterList.cpp" />
+    <ClCompile Include="src\interface\parametersMenu\ParameterSlider.cpp" />
     <ClCompile Include="src\interface\MultiplayerMenu.cpp" />
     <ClCompile Include="src\interface\Overlay.cpp" />
     <ClCompile Include="src\interface\DebugOverlay.cpp" />
@@ -204,6 +207,7 @@
     <ClCompile Include="src\interface\parametersMenu\AudioMenu.cpp" />
     <ClCompile Include="src\interface\parametersMenu\GraphicsMenu.cpp" />
     <ClCompile Include="src\interface\parametersMenu\KeyMenu.cpp" />
+    <ClCompile Include="src\interface\parametersMenu\ParameterButton.cpp" />
     <ClCompile Include="src\interface\parametersMenu\ParametersMenu.cpp" />
     <ClCompile Include="src\multiplayer\client\ClientServer.cpp" />
     <ClCompile Include="src\multiplayer\client\RealServer.cpp" />
@@ -305,6 +309,9 @@
     <ClInclude Include="src\gl\ShadowMap.hpp" />
     <ClInclude Include="src\gl\Viewport.hpp" />
     <ClInclude Include="src\interface\mainMenu\MainMenuButton.hpp" />
+    <ClInclude Include="src\interface\parametersMenu\MiscMenu.hpp" />
+    <ClInclude Include="src\interface\parametersMenu\ParameterList.hpp" />
+    <ClInclude Include="src\interface\parametersMenu\ParameterSlider.hpp" />
     <ClInclude Include="src\interface\MultiplayerMenu.hpp" />
     <ClInclude Include="src\interface\Overlay.hpp" />
     <ClInclude Include="src\interface\DebugOverlay.hpp" />
@@ -314,6 +321,7 @@
     <ClInclude Include="src\interface\parametersMenu\AudioMenu.hpp" />
     <ClInclude Include="src\interface\parametersMenu\GraphicsMenu.hpp" />
     <ClInclude Include="src\interface\parametersMenu\KeyMenu.hpp" />
+    <ClInclude Include="src\interface\parametersMenu\ParameterButton.hpp" />
     <ClInclude Include="src\interface\parametersMenu\ParametersMenu.hpp" />
     <ClInclude Include="src\multiplayer\client\ClientServer.hpp" />
     <ClInclude Include="src\multiplayer\client\RealServer.hpp" />
