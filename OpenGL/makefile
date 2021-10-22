@@ -3,11 +3,11 @@
 
 configure:
 	rm -rf Debug
-	meson Debug
+	CXX=clang++ meson Debug
 
 configure_opti:
 	rm -rf DebugOptimized
-	meson DebugOptimized --buildtype debugoptimized
+	CXX=clang++ meson DebugOptimized --buildtype debugoptimized
 
 run:
 	ninja -C Debug
