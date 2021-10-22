@@ -10,6 +10,7 @@ public:
   virtual void draw() override;
 
 protected:
-  MainMenuButton(std::unique_ptr<Component> comp, std::string text, std::shared_ptr<const Font> font);
-
+  MainMenuButton(std::unique_ptr<ui::Pane> mainComp, std::unique_ptr<ui::Text> textComp);
+  std::unique_ptr<ui::Pane> mainComp;
+  std::unique_ptr<ui::Text> textComp;
 };

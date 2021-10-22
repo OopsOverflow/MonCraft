@@ -4,9 +4,12 @@
 using namespace ui;
 using namespace glm;
 
-MainMenuButton::MainMenuButton(std::unique_ptr<Component> comp, std::string text, std::shared_ptr<const Font> font)
-  : Button(move(comp), move(text), move(font))
-{}
+MainMenuButton::MainMenuButton(std::unique_ptr<Pane> mainComp, std::unique_ptr<Text> textComp)
+  : mainComp(move(mainComp)), textComp(move(textComp))
+{
+  this->mainComp->add(this->textComp.get());
+  add(this->mainComp.get());
+}
 
 void MainMenuButton::draw() {
   if(parent) mainComp->setSize(parent->getSize() - 2 * mainComp->getPadding());
@@ -15,12 +18,13 @@ void MainMenuButton::draw() {
 
 std::unique_ptr<Button> MainMenuButton::create(std::string text) {
   auto font = ResourceManager::getFont("roboto");
-  auto btn = new MainMenuButton(Pane::create(), text, font);
+  auto btn = new MainMenuButton(Pane::create(), Text::create(text, font));
   btn->initialize();
   btn->mainComp->setPadding({ 35, 20 });
   btn->textComp->setUseBaseline(true);
   btn->setProp(Pane::COLOR, vec4{ 0.f, 0.f, 0.f, .8f });
   btn->setProp(Text::COLOR, vec4(1.f));
-  // btn->setHoverStyle(make_prop(Pane::COLOR, vec4{ 1.f, 0.f, 0.f, .5f }));
+  btn->setHoverStyle(make_prop(Text::COLOR, vec4(1.0, 0.0, 0.0, 1.0)));
+  btn->setPressedStyle(make_prop(Text::COLOR, vec4(0.0, 1.0, 0.0, 1.0)));
   return std::unique_ptr<Button>(btn);
 }
