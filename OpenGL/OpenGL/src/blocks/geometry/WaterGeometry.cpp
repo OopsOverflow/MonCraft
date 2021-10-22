@@ -19,7 +19,7 @@ std::array<GLfloat, 4> WaterGeometry::genOcclusion(glm::ivec3 pos, std::array<Bl
     std::array<bool, 8> b{};
 
     for (int i = 0; i < 8; i++) {
-        b[i] = neighbors[offsets[i]]->isSolid();
+        b[i] = neighbors[offsets[i]]->isOpaque();
     }
 
     occl[0] = (float)(b[0] + b[1] + b[2]);
@@ -98,28 +98,29 @@ void WaterGeometry::genFace(glm::ivec3 pos, BlockFace face, Block* block, std::a
 void WaterGeometry::generateMesh(ivec3 pos, Block* block, std::array<Block*, 26> const& neighbors, MeshData& data) const {
     for (auto const& off : blockFaceOffsets) {
         auto neigh = neighbors[off.first];
-        bool printFace = false;
+        if(neighbors[off.first]->type == BlockType::Water) continue;
+        bool drawFace = false;
 
         //TODO optimise this mess
-
-        if (!neigh->isSolid() || off.second == BlockFace::TOP) {
-            if ((size_t)off.second >= 2) {
+        if (!neigh->isOpaque() || off.second == BlockFace::TOP) {
+            if (off.second != BlockFace::TOP && off.second != BlockFace::BOTTOM) {
                 Block* topBlock = neighbors[checkNeighbors[(size_t)off.second - 2][2]];
                 if (topBlock->type != BlockType::Water) {
-                    printFace = neigh->type!=BlockType::Water;
+                    drawFace = neigh->type != BlockType::Water;
                 }
                 else {
                     Block* topNeighborBlock = neighbors[checkNeighbors[(size_t)off.second - 2][1]];
                     if (neigh->type != BlockType::Water) {
-                        printFace = true;
-                    }else if(topNeighborBlock->type == BlockType::Air)printFace = true;
+                        drawFace = true;
+                    } else if(topNeighborBlock->type == BlockType::Air) drawFace = true;
                 }
             }
             else {
-                printFace = neigh->type!=BlockType::Water;
+                drawFace = neigh->type!=BlockType::Water;
             }
         }
-        if(printFace)genFace(pos, off.second, block, neighbors, data);
+
+        if(drawFace) genFace(pos, off.second, block, neighbors, data);
     }
 }
 

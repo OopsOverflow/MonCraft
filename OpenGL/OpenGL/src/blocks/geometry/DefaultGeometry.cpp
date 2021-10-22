@@ -19,7 +19,8 @@ std::array<GLfloat, 4> DefaultBlockGeometry::genOcclusion(glm::ivec3 pos, std::a
   std::array<bool, 8> b{};
 
   for(int i = 0; i < 8; i++) {
-    b[i] = neighbors[offsets[i]]->isSolid();
+    Block* neigh = neighbors[offsets[i]];
+    b[i] = neigh->isSolid() && !neigh->isTransparent();
   }
 
   occl[0] = (float)(b[0] + b[1] + b[2]);
@@ -75,7 +76,7 @@ void DefaultBlockGeometry::genFace(glm::ivec3 pos, BlockFace face, Block* block,
 void DefaultBlockGeometry::generateMesh(ivec3 pos, Block* block, std::array<Block*, 26> const& neighbors, MeshData& data) const {
   for(auto const& off : blockFaceOffsets) {
     auto neigh = neighbors[off.first];
-    if(!neigh->isOpaque() || neigh->isTransparent()) {
+    if(!neigh->isOpaque() || (neigh->isTransparent() && !block->isTransparent())) {
       genFace(pos, off.second, block, neighbors, data);
     }
   }
