@@ -14,11 +14,11 @@ DebugOverlay::DebugOverlay(std::shared_ptr<Server> server) :
 	text_uid = Text::create("UID : ", font);
 	text_gameTime = Text::create("Time : ", font);
 
-	pack_end(text_fps.get());
-	pack_end(text_posPlayer.get());
-	pack_end(text_players.get());
-	pack_end(text_uid.get());
-	pack_end(text_gameTime.get());
+	pack_start(text_fps.get());
+	pack_start(text_posPlayer.get());
+	pack_start(text_players.get());
+	pack_start(text_uid.get());
+	pack_start(text_gameTime.get());
 	setPadding(glm::ivec2(10));
 	setGap(10);
 

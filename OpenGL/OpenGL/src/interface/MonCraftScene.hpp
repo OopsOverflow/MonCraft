@@ -34,6 +34,9 @@ private:
 protected:
   virtual bool onMousePressed(glm::ivec2 pos) override;
   virtual bool onMouseMove(glm::ivec2 pos) override;
+  virtual void onKeyPressed(Key k) override;
+  virtual void onKeyReleased(Key k) override;
+  virtual bool onActivate() override;
 
 private:
   World& world;
@@ -42,6 +45,7 @@ private:
   // view controls
   Viewport* vp;
   Camera camera;
+  KeyboardController keyboardController;
 
   // resources
   Shader* shader;

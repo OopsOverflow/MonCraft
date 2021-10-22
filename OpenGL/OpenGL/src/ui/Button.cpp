@@ -4,33 +4,53 @@
 using namespace ui;
 using namespace glm;
 
-Button::Button(std::unique_ptr<Component> comp, std::string text, std::shared_ptr<const Font> font)
-  : mainComp(std::move(comp)),
-    hover(std::make_shared<Style>()),
+Button::Button()
+  : hover(std::make_shared<Style>()),
     pressed(std::make_shared<Style>())
 {
-  textComp = Text::create(std::move(text), std::move(font));
-  mainComp->add(textComp.get());
-  add(mainComp.get());
-
   hover->setParent(getOwnStylesheet());
-  hover->set(make_prop(Text::COLOR, vec4(1.0, 0.0, 0.0, 1.0)));
-
   pressed->setParent(hover);
-  pressed->set(make_prop(Text::COLOR, vec4(0.0, 1.0, 0.0, 1.0)));
-
-  textComp->setUseBaseline(false); // TODO: non-heritable styles ?
-  mainComp->setPadding(ivec2(10, 5));
 }
 
 std::unique_ptr<Button> Button::createPaneButton(std::string text, std::shared_ptr<const Font> font) {
-  auto btn = new Button(Pane::create(), text, font);
+  auto comp = Pane::create();
+  auto textComp = Text::create(std::move(text), std::move(font));
+  auto btn = new Button();
+
+  comp->setPadding(ivec2(10, 5));
+  textComp->setUseBaseline(false);
+
+  btn->setHoverStyle(make_prop(Text::COLOR, vec4(1.0, 0.0, 0.0, 1.0)));
+  btn->setPressedStyle(make_prop(Text::COLOR, vec4(0.0, 1.0, 0.0, 1.0)));
+
+  comp->add(move(textComp));
+  btn->add(move(comp));
+
   btn->initialize();
   return std::unique_ptr<Button>(btn);
 }
 
 std::unique_ptr<Button> Button::createImageButton(glm::ivec2 offset, glm::ivec2 size, std::string text, std::shared_ptr<const Font> font) {
-  auto btn = new Button(Image::create(offset, size), text, font);
+  auto comp = Image::create(offset, size);
+  auto textComp = Text::create(std::move(text), std::move(font));
+  auto btn = new Button();
+
+  comp->setPadding(ivec2(10, 5));
+  textComp->setUseBaseline(false);
+
+  btn->setHoverStyle(make_prop(Text::COLOR, vec4(1.0, 0.0, 0.0, 1.0)));
+  btn->setPressedStyle(make_prop(Text::COLOR, vec4(0.0, 1.0, 0.0, 1.0)));
+
+  comp->add(move(textComp));
+  btn->add(move(comp));
+
+  btn->initialize();
+  return std::unique_ptr<Button>(btn);
+}
+
+std::unique_ptr<Button> Button::create() {
+  auto btn = new Button();
+
   btn->initialize();
   return std::unique_ptr<Button>(btn);
 }
@@ -66,28 +86,4 @@ bool Button::onMousePressed(glm::ivec2 pos) {
 bool Button::onMouseReleased(glm::ivec2 pos) {
   setStylesheet(hover);
   return false;
-}
-
-void Button::setText(std::string text) {
-  textComp->setText(std::move(text));
-}
-
-std::string Button::getText() const {
-  return textComp->getText();
-}
-
-void Button::setTextColor(glm::vec4 color) {
-  textComp->setColor(color);
-}
-
-glm::vec4 Button::getTextColor() const {
-  return textComp->getColor();
-}
-
-void Button::setFontSize(float fontSize) {
-  textComp->setFontSize(fontSize);
-}
-
-float Button::getFontSize() const {
-  return textComp->getFontSize();
 }

@@ -56,12 +56,12 @@ void Box::pack(size_t index, Component* comp) {
   add(it->get());
 }
 
-void Box::pack_start(Component* comp) {
+void Box::pack_end(Component* comp) {
   cells.emplace_back(std::make_unique<Cell>(comp));
   add(cells.back().get());
 }
 
-void Box::pack_end(Component* comp) {
+void Box::pack_start(Component* comp) {
   auto it = cells.emplace(cells.begin(), std::make_unique<Cell>(comp));
   add(it->get());
 }
