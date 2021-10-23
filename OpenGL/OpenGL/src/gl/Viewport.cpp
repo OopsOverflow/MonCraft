@@ -37,6 +37,13 @@ Viewport::Viewport(glm::ivec2 size)
   if (SDL_Init(SDL_INIT_VIDEO) < 0)
     throw std::runtime_error(std::string("SDL init failed: ") + SDL_GetError());
 
+  // MSAA
+  auto& config = SaveManager::getInst().getConfig();
+  if(config.msaa) {
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, config.msaa);
+  }
+
   //Create a Window
   window = SDL_CreateWindow("MonCraft",
       SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
@@ -157,6 +164,7 @@ bool Viewport::beginFrame(float& dt) {
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);
   glEnable(GL_BLEND);
+  glEnable(GL_MULTISAMPLE);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   timeBegin = SDL_GetTicks();

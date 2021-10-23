@@ -45,7 +45,10 @@ for i in range(levels):
     for row in range(tileCount):
         for col in range(tileCount):
             oldTile = img[row * tileSize:(row+1) * tileSize, col * tileSize:(col+1) * tileSize]
+            oldTile = np.tile(oldTile, (3, 3, 1))
+            oldTile = cv2.resize(oldTile, (newSize * 3, newSize * 3), interpolation=cv2.INTER_AREA)
+
             newTile = newImg[row * newSize:(row+1) * newSize, col * newSize:(col+1) * newSize]
-            newTile[:] = cv2.resize(oldTile, (newSize, newSize), cv2.INTER_LINEAR)
+            newTile[:] = oldTile[newSize:2 * newSize, newSize:2 * newSize]
 
     cv2.imwrite(str(outPath), newImg)
