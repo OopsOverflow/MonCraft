@@ -28,15 +28,18 @@ enum class BlockType
     Cobalt,
     Glass,
     Oak_Planks,
-    Birch_Planks
+    Birch_Planks,
+    Oak_Stair
 };
 
-enum class BlockFace { TOP, BOTTOM, FRONT, RIGHT, BACK, LEFT };
+enum class BlockFace { TOP, BOTTOM, FRONT, RIGHT, BACK, LEFT, INNER };
+
+enum class Facing { NORTH, SOUTH, EAST, WEST, REV_NORTH, REV_SOUTH, REV_EAST, REV_WEST };
 
 class Block
 {
 public:
-    Block(BlockType type);
+    Block(BlockType type, bool static_ = true);
 
     virtual ~Block() { }
 
@@ -54,7 +57,7 @@ public:
      * per block whereas static blocks are all identical but also take no space
      * in memory (only the pointer).
      */
-    virtual bool isStatic() const { return true; }
+    bool isStatic() const { return static_; }
 
     /**
      * A visible block will be drawn (invisibles will be discarded by the mesh).
@@ -86,6 +89,11 @@ public:
     virtual bool isLiquid() const { return false; }
 
     /**
+     * Directional block have a facing property
+     */
+    virtual bool isDirectional() const { return false; }
+
+    /**
      * Gets the block geometry generator.
      */
     virtual BlockGeometry* getGeometry() const { return DefaultBlockGeometry::get(); }
@@ -102,6 +110,8 @@ private:
           delete block;
       }
     };
+
+    bool static_;
 
 public:
     using unique_ptr_t = std::unique_ptr<Block, Deleter>;

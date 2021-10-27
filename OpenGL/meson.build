@@ -51,6 +51,7 @@ srcs = files(
   'OpenGL/src/blocks/geometry/TallgrassGeometry.cpp',
   'OpenGL/src/blocks/geometry/WaterGeometry.cpp',
   'OpenGL/src/blocks/geometry/CactusGeometry.cpp',
+  'OpenGL/src/blocks/geometry/StairGeometry.cpp',
 
   'OpenGL/src/ui/Component.cpp',
   'OpenGL/src/ui/Root.cpp',

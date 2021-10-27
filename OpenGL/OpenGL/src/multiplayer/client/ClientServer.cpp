@@ -31,7 +31,7 @@ void ClientServer::update() {
       generator.waitingChunks.push(waiting.at(i));
     }
   }
-  
+
   pendingChunks.remOldChunks();
 
   // save changes since last update
@@ -40,8 +40,6 @@ void ClientServer::update() {
     ivec3 cpos = floor(vec3(blockData.pos) / float(world.chunkSize));
     auto chunk = world.chunks.find(cpos);
     if(chunk) {
-      ivec3 dpos = blockData.pos - cpos * world.chunkSize;
-      chunk->setBlock(dpos, AllBlocks::create_static(blockData.type));
       SaveManager::saveChunk(*chunk);
     }
   }

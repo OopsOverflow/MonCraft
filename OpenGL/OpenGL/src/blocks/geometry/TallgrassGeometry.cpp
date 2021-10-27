@@ -36,7 +36,7 @@ void TallgrassGeometry::generateMesh(glm::ivec3 pos, Block* block, std::array<Bl
 
     // textureCoords
     auto indexUV = block->getFaceUVs(BlockFace::FRONT);
-    auto uvFace = genFaceUV(indexUV);
+    auto uvFace = computeUV(indexUV, faceUVs);
     _uvs.insert(_uvs.end(), uvFace.begin(), uvFace.end());
 
     // occlusion

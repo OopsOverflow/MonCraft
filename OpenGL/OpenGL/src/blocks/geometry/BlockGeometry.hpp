@@ -14,6 +14,14 @@ using face_t = std::array<GLfloat, 4 * N>;
 template<size_t N>
 using BlockData = std::array<face_t<N>, 6>;
 
+using BlockMeshData = std::array<std::vector<GLfloat>, 7>;
+
+template<glm::length_t L>
+using Quad = std::array<glm::vec<L, float, glm::defaultp>, 4>;
+
+template<glm::length_t L>
+using QuadMesh = std::array<std::vector<Quad<L>>, 7>;
+
 /**
  * A block geometry is responsible to generate a block mesh components based on
  * the neighboring blocks. See DefaultGeometry for the standard cube geometry.
@@ -33,5 +41,35 @@ public:
 
 protected:
   BlockGeometry();
-  face_t<2> genFaceUV(glm::ivec2 index) const;
+
+  template<glm::length_t L>
+  static Quad<L> transform(Quad<L> quad, glm::mat<L+1, L+1, glm::f32, glm::defaultp> const& transform);
+
+  template<glm::length_t L>
+  static std::vector<Quad<L>> transform(std::vector<Quad<L>> quads, glm::mat<L+1, L+1, glm::f32, glm::defaultp> const& transform);
+
+  template<glm::length_t L>
+  static QuadMesh<L> transform(QuadMesh<L> mesh, glm::mat<L+1, L+1, glm::f32, glm::defaultp> const& transform);
+
+  template<glm::length_t L>
+  static std::vector<GLfloat> flatten(std::vector<Quad<L>> const& quads);
+
+  template<glm::length_t L>
+  static BlockMeshData flatten(QuadMesh<L> const& mesh);
+
+  static std::vector<GLfloat> computeUV(glm::vec2 index, std::vector<Quad<2>> quads);
+
+  template<glm::length_t L>
+  static std::array<std::vector<GLfloat>, 4> computeFacing(std::vector<Quad<L>> const& quads);
+
+  template<>
+  std::array<std::vector<GLfloat>, 4> computeFacing(std::vector<Quad<1>> const& quads);
+
+  template<glm::length_t L>
+  static std::array<BlockMeshData, 4> computeFacing(QuadMesh<L> const& mesh);
+
+  template<>
+  std::array<BlockMeshData, 4> computeFacing(QuadMesh<1> const& mesh);
+
+  static const std::array<glm::mat4, 4> facingTransforms;
 };

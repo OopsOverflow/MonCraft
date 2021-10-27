@@ -80,7 +80,7 @@ void WaterGeometry::genFace(glm::ivec3 pos, BlockFace face, Block* block, std::a
 
     // textureCoords
     auto indexUV = block->getFaceUVs(face);
-    auto uvFace = genFaceUV(indexUV);
+    auto uvFace = computeUV(indexUV, faceUVs);
     _uvs.insert(_uvs.end(), uvFace.begin(), uvFace.end());
     _uvs.insert(_uvs.end(), uvFace.begin(), uvFace.end());
 

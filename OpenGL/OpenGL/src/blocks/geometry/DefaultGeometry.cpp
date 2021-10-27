@@ -12,7 +12,7 @@ DefaultBlockGeometry* DefaultBlockGeometry::get() {
   return &inst;
 }
 
-std::array<GLfloat, 4> DefaultBlockGeometry::genOcclusion(glm::ivec3 pos, std::array<Block*, 26> const& neighbors, BlockFace face) const {
+face_t<1> DefaultBlockGeometry::genOcclusion(glm::ivec3 pos, std::array<Block*, 26> const& neighbors, BlockFace face) const {
   std::array<GLfloat, 4> occl{};
 
   auto const& offsets = blockOcclusionOffsets[static_cast<size_t>(face)];
@@ -61,7 +61,7 @@ void DefaultBlockGeometry::genFace(glm::ivec3 pos, BlockFace face, Block* block,
 
   // textureCoords
   auto indexUV = block->getFaceUVs(face);
-  auto uvFace = genFaceUV(indexUV);
+  auto uvFace = computeUV(indexUV, faceUVs);
   _uvs.insert(_uvs.end(), uvFace.begin(), uvFace.end());
 
   // occlusion
@@ -84,22 +84,32 @@ void DefaultBlockGeometry::generateMesh(ivec3 pos, Block* block, std::array<Bloc
 
 /// below is all the data and lookup tables
 
+const std::vector<Quad<2>> DefaultBlockGeometry::faceUVs = {
+  Quad<2>{
+    glm::vec2
+    { 1.f, 0.f },
+    { 0.f, 0.f },
+    { 0.f, 1.f },
+    { 1.f, 1.f },
+  }
+};
+
 const BlockData<3> DefaultBlockGeometry::blockPositions = {
   face_t<3>{ // TOP
     -0.5f,  0.5f,  0.5f,
-    0.5f,  0.5f,  0.5f,
-    0.5f,  0.5f, -0.5f,
+     0.5f,  0.5f,  0.5f,
+     0.5f,  0.5f, -0.5f,
     -0.5f,  0.5f, -0.5f,
   }, { // BOTTOM
-    0.5f, -0.5f,  0.5f,
+     0.5f, -0.5f,  0.5f,
     -0.5f, -0.5f,  0.5f,
     -0.5f, -0.5f, -0.5f,
-    0.5f, -0.5f, -0.5f,
+     0.5f, -0.5f, -0.5f,
   }, { // FRONT
-    0.5f,  0.5f,  0.5f,
+     0.5f,  0.5f,  0.5f,
     -0.5f,  0.5f,  0.5f,
     -0.5f, -0.5f,  0.5f,
-    0.5f, -0.5f,  0.5f,
+     0.5f, -0.5f,  0.5f,
   }, { // RIGHT
     0.5f,  0.5f, -0.5f,
     0.5f,  0.5f,  0.5f,
@@ -107,8 +117,8 @@ const BlockData<3> DefaultBlockGeometry::blockPositions = {
     0.5f, -0.5f, -0.5f,
   }, { // BACK
     -0.5f,  0.5f, -0.5f,
-    0.5f,  0.5f, -0.5f,
-    0.5f, -0.5f, -0.5f,
+     0.5f,  0.5f, -0.5f,
+     0.5f, -0.5f, -0.5f,
     -0.5f, -0.5f, -0.5f,
   }, { // LEFT
     -0.5f,  0.5f,  0.5f,

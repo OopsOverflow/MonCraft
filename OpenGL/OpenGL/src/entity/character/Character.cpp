@@ -18,7 +18,7 @@ const float sprintMultiplier = 2;
 Character::Character(vec3 pos)
     : Entity(CharacterHitbox()),
       caster(100), // distance the player can place blocks
-      currentBlock(BlockType::Dirt),
+      currentBlock(BlockType::Oak_Stair),
       god(true), sprint(false)
 {
   node.loc = pos;
@@ -101,6 +101,16 @@ void Character::breakBlock() {
   }
 }
 
+Facing getFacing(vec3 dir) {
+  if(abs(dir.x) > abs(dir.z)) {
+    if(dir.x > 0) return Facing::EAST;
+    else return Facing::WEST;
+  } else {
+    if(dir.z > 0) return Facing::SOUTH;
+    else return Facing::NORTH;
+  }
+}
+
 void Character::placeBlock() {
   auto& world = World::getInst();
   vec3 eyePos = headNode.model * vec4(0, 4, 4, 1);
@@ -113,7 +123,17 @@ void Character::placeBlock() {
     if(!block) return;
     if(block->type != BlockType::Air && block->type != BlockType::Water) return;
     ivec3 pos = cast.position + cast.normal;
-    world.setBlock(pos, AllBlocks::create_static(currentBlock));
+
+    Block::unique_ptr_t newBlock;
+    if(currentBlock == BlockType::Oak_Stair) {
+      Facing facing = getFacing(eyeTarget - eyePos);
+      newBlock = Block::create_dynamic<Oak_Stair_Block>(facing);
+    }
+    else {
+      newBlock = AllBlocks::create_static(currentBlock);
+    }
+
+    world.setBlock(pos, std::move(newBlock));
     record.push_back({ pos, currentBlock });
   }
 }

@@ -24,6 +24,8 @@
 #include "Glass_Block.hpp"
 #include "Oak_Planks_Block.hpp"
 #include "Birch_Planks_Block.hpp"
+#include "Oak_Stair_Block.hpp"
+
 #include <sstream>
 
 class AllBlocks {
@@ -31,7 +33,7 @@ class AllBlocks {
 public:
   AllBlocks() = delete;
 
-  static const size_t BlockCount = 21;
+  static const size_t BlockCount = 22;
 
   /**
   * convenience to create static blocks.
@@ -61,6 +63,7 @@ public:
       (Block*(*)())Glass_Block::get,
       (Block*(*)())Oak_Planks_Block::get,
       (Block*(*)())Birch_Planks_Block::get,
+      (Block*(*)())Oak_Stair_Block::get,
     };
     auto index = (size_t)type;
     if(index > factories.size()) {

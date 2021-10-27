@@ -1,8 +1,8 @@
 #pragma once
 
-#include "BlockGeometry.hpp"
+#include "DefaultGeometry.hpp"
 
-class TallgrassGeometry : public BlockGeometry {
+class TallgrassGeometry : public DefaultBlockGeometry {
 
 public:
   static TallgrassGeometry* get();

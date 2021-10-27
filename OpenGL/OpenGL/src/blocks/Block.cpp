@@ -1,7 +1,7 @@
 #include "Block.hpp"
 
-Block::Block(BlockType type)
-	: type(type)
+Block::Block(BlockType type, bool static_)
+	: type(type), static_(static_)
 {
 
 }

@@ -5,11 +5,11 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 #include "gl/Mesh.hpp"
-#include "BlockGeometry.hpp"
+#include "DefaultGeometry.hpp"
 
 enum class BlockFace;
 
-class WaterGeometry : public BlockGeometry {
+class WaterGeometry : public DefaultBlockGeometry {
 public:
 	static WaterGeometry* get();
 	void generateMesh(glm::ivec3 pos, Block* block, std::array<Block*, 26> const& neighbors, MeshData& data) const override;
