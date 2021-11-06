@@ -1,16 +1,16 @@
 #include <algorithm>
 
-#include "StairGeometry.hpp"
+#include "StairModel.hpp"
 #include "blocks/Stair_Block.hpp"
 #include <glm/gtc/matrix_transform.hpp>
 
 using namespace glm;
 
-StairGeometry::StairGeometry()
+StairModel::StairModel()
 {}
 
-StairGeometry* StairGeometry::get() {
-  static StairGeometry inst;
+StairModel* StairModel::get() {
+  static StairModel inst;
   return &inst;
 }
 
@@ -23,7 +23,7 @@ static const std::array<std::array<size_t, 7>, 4> facingLookup {
   { 0, 1, 5, 2, 3, 4, 6 }, // WEST
 };
 
-void StairGeometry::genFace(glm::ivec3 pos, BlockFace face, Stair_Block* block, std::array<Block*, 26> const& neighbors, MeshData& data) const {
+void StairModel::genFace(glm::ivec3 pos, BlockFace face, Stair_Block* block, std::array<Block*, 26> const& neighbors, MeshData& data) const {
     auto& _ind = data.indicesSolid;
     auto& _scheme = data.scheme;
     auto& _pos  = data.positions;
@@ -86,7 +86,7 @@ void StairGeometry::genFace(glm::ivec3 pos, BlockFace face, Stair_Block* block, 
     }
 }
 
-void StairGeometry::generateMesh(ivec3 pos, Block* block, std::array<Block*, 26> const& neighbors, MeshData& data) const {
+void StairModel::generateMesh(ivec3 pos, Block* block, std::array<Block*, 26> const& neighbors, MeshData& data) const {
   auto stair = dynamic_cast<Stair_Block*>(block);
 
   for(auto const& off : blockFaceOffsets) {
@@ -101,7 +101,7 @@ void StairGeometry::generateMesh(ivec3 pos, Block* block, std::array<Block*, 26>
 
 /// below is all the data and lookup tables
 
-const QuadMesh<3> StairGeometry::mesh = {
+const QuadMesh<3> StairModel::mesh = {
   std::vector<Quad<3>> { // TOP
     { vec3
       { -0.5f,  0.5f,  0.0f },
@@ -169,7 +169,7 @@ const QuadMesh<3> StairGeometry::mesh = {
   }
 };
 
-const QuadMesh<2> StairGeometry::UVMesh = {
+const QuadMesh<2> StairModel::UVMesh = {
   std::vector<Quad<2>> { // TOP
     { vec2
       { 1.0f, 0.5f },
@@ -237,7 +237,7 @@ const QuadMesh<2> StairGeometry::UVMesh = {
   }
 };
 
-const std::vector<Quad<1>> StairGeometry::innerOcclusions = {
+const std::vector<Quad<1>> StairModel::innerOcclusions = {
   Quad<1>{ // top
     vec1{ 0.0f },
     vec1{ 0.0f },
@@ -251,7 +251,7 @@ const std::vector<Quad<1>> StairGeometry::innerOcclusions = {
   }
 };
 
-const std::vector<Quad<3>> StairGeometry::innerNormals = {
+const std::vector<Quad<3>> StairModel::innerNormals = {
   Quad<3> { // top
     vec3
     { 0.0f, 1.0f, 0.0f },
@@ -267,6 +267,6 @@ const std::vector<Quad<3>> StairGeometry::innerNormals = {
   }
 };
 
-const std::array<BlockMeshData, 4> StairGeometry::blockPositions = computeFacing(mesh);
-const std::array<std::vector<GLfloat>, 4> StairGeometry::blockInnerOcclusions = computeFacing(innerOcclusions);
-const std::array<std::vector<GLfloat>, 4> StairGeometry::blockInnerNormals = computeFacing(innerNormals);
+const std::array<BlockMeshData, 4> StairModel::blockPositions = computeFacing(mesh);
+const std::array<std::vector<GLfloat>, 4> StairModel::blockInnerOcclusions = computeFacing(innerOcclusions);
+const std::array<std::vector<GLfloat>, 4> StairModel::blockInnerNormals = computeFacing(innerNormals);

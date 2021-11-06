@@ -1,18 +1,18 @@
 #include <algorithm>
 
-#include "WaterGeometry.hpp"
+#include "WaterModel.hpp"
 #include "blocks/Block.hpp"
 
 using namespace glm;
 
-WaterGeometry::WaterGeometry() {}
+WaterModel::WaterModel() {}
 
-WaterGeometry* WaterGeometry::get() {
-    static WaterGeometry inst;
+WaterModel* WaterModel::get() {
+    static WaterModel inst;
     return &inst;
 }
 
-std::array<GLfloat, 4> WaterGeometry::genOcclusion(glm::ivec3 pos, std::array<Block*, 26> const& neighbors, BlockFace face) const {
+std::array<GLfloat, 4> WaterModel::genOcclusion(glm::ivec3 pos, std::array<Block*, 26> const& neighbors, BlockFace face) const {
     std::array<GLfloat, 4> occl{};
 
     auto const& offsets = blockOcclusionOffsets[static_cast<size_t>(face)];
@@ -30,7 +30,7 @@ std::array<GLfloat, 4> WaterGeometry::genOcclusion(glm::ivec3 pos, std::array<Bl
     return occl;
 }
 
-void WaterGeometry::genFace(glm::ivec3 pos, BlockFace face, Block* block, std::array<Block*, 26> const& neighbors, MeshData& data) const {
+void WaterModel::genFace(glm::ivec3 pos, BlockFace face, Block* block, std::array<Block*, 26> const& neighbors, MeshData& data) const {
     auto& _scheme = data.scheme;
     auto& _ind =
       face == BlockFace::LEFT || face == BlockFace::RIGHT ? data.indicesTranspX :
@@ -95,7 +95,7 @@ void WaterGeometry::genFace(glm::ivec3 pos, BlockFace face, Block* block, std::a
 
 }
 
-void WaterGeometry::generateMesh(ivec3 pos, Block* block, std::array<Block*, 26> const& neighbors, MeshData& data) const {
+void WaterModel::generateMesh(ivec3 pos, Block* block, std::array<Block*, 26> const& neighbors, MeshData& data) const {
     for (auto const& off : blockFaceOffsets) {
         auto neigh = neighbors[off.first];
         if(neighbors[off.first]->type == BlockType::Water) continue;
@@ -126,7 +126,7 @@ void WaterGeometry::generateMesh(ivec3 pos, Block* block, std::array<Block*, 26>
 
 /// below is all the data and lookup tables
 
-const BlockData<3> WaterGeometry::blockPositions = {
+const BlockData<3> WaterModel::blockPositions = {
   face_t<3>{ // TOP
     -0.5f,  0.4f,  0.5f,
     0.5f,  0.4f,  0.5f,
@@ -160,7 +160,7 @@ const BlockData<3> WaterGeometry::blockPositions = {
   }
 };
 
-const BlockData<3> WaterGeometry::fillSpaceBlockPositions = {
+const BlockData<3> WaterModel::fillSpaceBlockPositions = {
   face_t<3>{ // TOP
     -0.5f,  0.5f,  0.5f,
     0.5f,  0.5f,  0.5f,
@@ -194,7 +194,7 @@ const BlockData<3> WaterGeometry::fillSpaceBlockPositions = {
   }
 };
 
-const BlockData<3> WaterGeometry::filledBlockPositions = {
+const BlockData<3> WaterModel::filledBlockPositions = {
   face_t<3>{ // TOP
     -0.5f,  0.5f,  0.5f,
     0.5f,  0.5f,  0.5f,
@@ -228,7 +228,7 @@ const BlockData<3> WaterGeometry::filledBlockPositions = {
   }
 };
 
-const BlockData<3> WaterGeometry::blockNormals{
+const BlockData<3> WaterModel::blockNormals{
   face_t<3>{ // TOP
     0.0f, 1.0f, 0.0f,
     0.0f, 1.0f, 0.0f,
@@ -262,7 +262,7 @@ const BlockData<3> WaterGeometry::blockNormals{
   }
 };
 
-const BlockData<3> WaterGeometry::invertBlockNormals{
+const BlockData<3> WaterModel::invertBlockNormals{
   face_t<3>{ // TOP
     0.0f, -1.0f, 0.0f,
     0.0f, -1.0f, 0.0f,
@@ -298,7 +298,7 @@ const BlockData<3> WaterGeometry::invertBlockNormals{
 
 // tells which neighbors to look at when computing a block occlusion
 // the ints stored are indices to a neighbor in a neighbor array (see Chunk.hpp neighbors)
-const std::array<std::array<int, 8>, 6> WaterGeometry::blockOcclusionOffsets = {
+const std::array<std::array<int, 8>, 6> WaterModel::blockOcclusionOffsets = {
   std::array<int, 8> { // TOP
     20, 21, 3, 12, 11, 13, 4, 22,
   },
@@ -321,7 +321,7 @@ const std::array<std::array<int, 8>, 6> WaterGeometry::blockOcclusionOffsets = {
 
 // tells which neighbor corresponds to which BlockFace
 // the ints stored are indices to a neighbor in a neighbor array (see Chunk.hpp neighbors)
-const std::array<std::pair<int, BlockFace>, 6> WaterGeometry::blockFaceOffsets = {
+const std::array<std::pair<int, BlockFace>, 6> WaterModel::blockFaceOffsets = {
   std::pair<int, BlockFace>
   {8, BlockFace::RIGHT},
   {17, BlockFace::LEFT},
@@ -331,7 +331,7 @@ const std::array<std::pair<int, BlockFace>, 6> WaterGeometry::blockFaceOffsets =
   {1, BlockFace::BACK},
 };
 
-const std::array<std::array<int, 3>, 4> WaterGeometry::checkNeighbors = {
+const std::array<std::array<int, 3>, 4> WaterModel::checkNeighbors = {
   std::array<int, 3>
   {0, 3, 2}, //BlockFace::FRONT
   {8, 11, 2},//BlockFace::RIGHT
@@ -341,7 +341,7 @@ const std::array<std::array<int, 3>, 4> WaterGeometry::checkNeighbors = {
 };
 
 //TODO post release maybe
-const face_t<2> WaterGeometry::faceNormalMap = {
+const face_t<2> WaterModel::faceNormalMap = {
     0.5f, 0.f,
     0.f, 0.f,
     0.f, 1.f,

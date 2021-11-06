@@ -23,15 +23,15 @@ template<glm::length_t L>
 using QuadMesh = std::array<std::vector<Quad<L>>, 7>;
 
 /**
- * A block geometry is responsible to generate a block mesh components based on
- * the neighboring blocks. See DefaultGeometry for the standard cube geometry.
- * This flexibility allows us to generate any geometry for a block, such as
+ * A block model is responsible to generate a block mesh components based on
+ * the neighboring blocks. See DefaultModel for the standard cube model.
+ * This flexibility allows us to generate any model for a block, such as
  * the tallgrass (cross-pattern) or the water (smaller than a block)
  */
 
-class BlockGeometry {
+class BlockModel {
 public:
-  virtual ~BlockGeometry();
+  virtual ~BlockModel();
 
   /**
    * Generates the mesh part caused by a given block.
@@ -40,7 +40,7 @@ public:
   virtual void generateMesh(glm::ivec3 pos, Block* block, std::array<Block*, 26> const& neighbors, MeshData& data) const = 0;
 
 protected:
-  BlockGeometry();
+  BlockModel();
 
   template<glm::length_t L>
   static Quad<L> transform(Quad<L> quad, glm::mat<L+1, L+1, glm::f32, glm::defaultp> const& transform);

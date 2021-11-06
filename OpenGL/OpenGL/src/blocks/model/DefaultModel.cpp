@@ -1,18 +1,18 @@
 #include <algorithm>
 
-#include "DefaultGeometry.hpp"
+#include "DefaultModel.hpp"
 #include "blocks/Block.hpp"
 
 using namespace glm;
 
-DefaultBlockGeometry::DefaultBlockGeometry() {}
+DefaultBlockModel::DefaultBlockModel() {}
 
-DefaultBlockGeometry* DefaultBlockGeometry::get() {
-  static DefaultBlockGeometry inst;
+DefaultBlockModel* DefaultBlockModel::get() {
+  static DefaultBlockModel inst;
   return &inst;
 }
 
-face_t<1> DefaultBlockGeometry::genOcclusion(glm::ivec3 pos, std::array<Block*, 26> const& neighbors, BlockFace face) const {
+face_t<1> DefaultBlockModel::genOcclusion(glm::ivec3 pos, std::array<Block*, 26> const& neighbors, BlockFace face) const {
   std::array<GLfloat, 4> occl{};
 
   auto const& offsets = blockOcclusionOffsets[static_cast<size_t>(face)];
@@ -31,7 +31,7 @@ face_t<1> DefaultBlockGeometry::genOcclusion(glm::ivec3 pos, std::array<Block*, 
   return occl;
 }
 
-void DefaultBlockGeometry::genFace(glm::ivec3 pos, BlockFace face, Block* block, std::array<Block*, 26> const& neighbors, MeshData& data) const {
+void DefaultBlockModel::genFace(glm::ivec3 pos, BlockFace face, Block* block, std::array<Block*, 26> const& neighbors, MeshData& data) const {
   auto& _ind =
     !block->isTransparent() ? data.indicesSolid :
     face == BlockFace::LEFT || face == BlockFace::RIGHT ? data.indicesTranspX :
@@ -73,7 +73,7 @@ void DefaultBlockGeometry::genFace(glm::ivec3 pos, BlockFace face, Block* block,
 
 }
 
-void DefaultBlockGeometry::generateMesh(ivec3 pos, Block* block, std::array<Block*, 26> const& neighbors, MeshData& data) const {
+void DefaultBlockModel::generateMesh(ivec3 pos, Block* block, std::array<Block*, 26> const& neighbors, MeshData& data) const {
   for(auto const& off : blockFaceOffsets) {
     auto neigh = neighbors[off.first];
     if(!neigh->isOpaque() || (neigh->isTransparent() && !block->isTransparent())) {
@@ -84,7 +84,7 @@ void DefaultBlockGeometry::generateMesh(ivec3 pos, Block* block, std::array<Bloc
 
 /// below is all the data and lookup tables
 
-const std::vector<Quad<2>> DefaultBlockGeometry::faceUVs = {
+const std::vector<Quad<2>> DefaultBlockModel::faceUVs = {
   Quad<2>{
     glm::vec2
     { 1.f, 0.f },
@@ -94,7 +94,7 @@ const std::vector<Quad<2>> DefaultBlockGeometry::faceUVs = {
   }
 };
 
-const BlockData<3> DefaultBlockGeometry::blockPositions = {
+const BlockData<3> DefaultBlockModel::blockPositions = {
   face_t<3>{ // TOP
     -0.5f,  0.5f,  0.5f,
      0.5f,  0.5f,  0.5f,
@@ -128,7 +128,7 @@ const BlockData<3> DefaultBlockGeometry::blockPositions = {
   }
 };
 
-const BlockData<3> DefaultBlockGeometry::blockNormals {
+const BlockData<3> DefaultBlockModel::blockNormals {
   face_t<3>{ // TOP
     0.0f, 1.0f, 0.0f,
     0.0f, 1.0f, 0.0f,
@@ -164,7 +164,7 @@ const BlockData<3> DefaultBlockGeometry::blockNormals {
 
 // tells which neighbors to look at when computing a block occlusion
 // the ints stored are indices to a neighbor in a neighbor array (see Chunk.hpp neighbors)
-const std::array<std::array<int, 8>, 6> DefaultBlockGeometry::blockOcclusionOffsets = {
+const std::array<std::array<int, 8>, 6> DefaultBlockModel::blockOcclusionOffsets = {
   std::array<int, 8> { // TOP
     20, 21, 3, 12, 11, 13, 4, 22,
   },
@@ -187,7 +187,7 @@ const std::array<std::array<int, 8>, 6> DefaultBlockGeometry::blockOcclusionOffs
 
 // tells which neighbor corresponds to which BlockFace
 // the ints stored are indices to a neighbor in a neighbor array (see Chunk.hpp neighbors)
-const std::array<std::pair<int, BlockFace>, 6> DefaultBlockGeometry::blockFaceOffsets = {
+const std::array<std::pair<int, BlockFace>, 6> DefaultBlockModel::blockFaceOffsets = {
   std::pair<int, BlockFace>
   {17, BlockFace::LEFT},
   {8, BlockFace::RIGHT},
@@ -197,7 +197,7 @@ const std::array<std::pair<int, BlockFace>, 6> DefaultBlockGeometry::blockFaceOf
   {0, BlockFace::FRONT},
 };
 
-const face_t<2> DefaultBlockGeometry::faceNormalMap = {
+const face_t<2> DefaultBlockModel::faceNormalMap = {
   1.f, 0.f,
   0.5f, 0.f,
   0.5f, 1.f,

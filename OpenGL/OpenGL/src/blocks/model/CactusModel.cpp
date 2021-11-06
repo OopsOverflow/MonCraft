@@ -1,18 +1,18 @@
 #include <algorithm>
 
-#include "CactusGeometry.hpp"
+#include "CactusModel.hpp"
 #include "blocks/Block.hpp"
 
 using namespace glm;
 
-CactusGeometry::CactusGeometry() {}
+CactusModel::CactusModel() {}
 
-CactusGeometry* CactusGeometry::get() {
-  static CactusGeometry inst;
+CactusModel* CactusModel::get() {
+  static CactusModel inst;
   return &inst;
 }
 
-void CactusGeometry::genFace(glm::ivec3 pos, BlockFace face, Block* block, std::array<Block*, 26> const& neighbors, MeshData& data) const {
+void CactusModel::genFace(glm::ivec3 pos, BlockFace face, Block* block, std::array<Block*, 26> const& neighbors, MeshData& data) const {
     auto& _ind = data.indicesSolid;
     auto& _scheme = data.scheme;
     auto& _pos  = data.positions;
@@ -49,7 +49,7 @@ void CactusGeometry::genFace(glm::ivec3 pos, BlockFace face, Block* block, std::
     _normm.insert(_normm.end(), faceNormalMap.begin(), faceNormalMap.end());
 }
 
-void CactusGeometry::generateMesh(ivec3 pos, Block* block, std::array<Block*, 26> const& neighbors, MeshData& data) const {
+void CactusModel::generateMesh(ivec3 pos, Block* block, std::array<Block*, 26> const& neighbors, MeshData& data) const {
   for(auto const& off : blockFaceOffsets) {
     auto neigh = neighbors[off.first];
     genFace(pos, off.second, block, neighbors, data);
@@ -60,7 +60,7 @@ void CactusGeometry::generateMesh(ivec3 pos, Block* block, std::array<Block*, 26
 
 static const float off = 1.f / 16.f;
 
-const BlockData<3> CactusGeometry::blockPositions = {
+const BlockData<3> CactusModel::blockPositions = {
   face_t<3>{ // TOP
     -0.5f,  0.5f,  0.5f,
      0.5f,  0.5f,  0.5f,

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Block.hpp"
-#include "geometry/CactusGeometry.hpp"
+#include "model/CactusModel.hpp"
 
 class Cactus_Block : public Block {
 public:
@@ -18,7 +18,7 @@ public:
     
     bool isOpaque() const override { return false; }
 
-    BlockGeometry * getGeometry() const override { return CactusGeometry::get(); }
+    BlockModel * getModel() const override { return CactusModel::get(); }
 
 private:
     Cactus_Block() : Block(BlockType::Cactus) {}

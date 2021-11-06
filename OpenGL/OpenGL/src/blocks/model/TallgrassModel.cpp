@@ -1,15 +1,15 @@
 #include <algorithm>
 
-#include "TallgrassGeometry.hpp"
+#include "TallgrassModel.hpp"
 #include "blocks/Block.hpp"
 
-TallgrassGeometry* TallgrassGeometry::get() {
-  static TallgrassGeometry inst;
+TallgrassModel* TallgrassModel::get() {
+  static TallgrassModel inst;
   return &inst;
 }
 
 
-void TallgrassGeometry::generateMesh(glm::ivec3 pos, Block* block, std::array<Block*, 26> const& neighbors, MeshData& data) const {
+void TallgrassModel::generateMesh(glm::ivec3 pos, Block* block, std::array<Block*, 26> const& neighbors, MeshData& data) const {
   auto& _ind = data.indicesTranspX; // COMBAK: does this have importance ?
   auto& _scheme = data.scheme;
   auto& _pos  = data.positions;
@@ -54,7 +54,7 @@ void TallgrassGeometry::generateMesh(glm::ivec3 pos, Block* block, std::array<Bl
 // the coordinates of x and y such that the diagonal face is of length 1
 static const float off = sqrt(2.f) / 4.f;
 
-const std::array<face_t<3>, 4> TallgrassGeometry::positions = {
+const std::array<face_t<3>, 4> TallgrassModel::positions = {
   face_t<3>{ // face looking towards -x, +z
     -off,  0.f, -off,
      off,  0.f,  off,
@@ -81,7 +81,7 @@ const std::array<face_t<3>, 4> TallgrassGeometry::positions = {
   },
 };
 
-const std::array<face_t<3>, 4> TallgrassGeometry::normals {
+const std::array<face_t<3>, 4> TallgrassModel::normals {
   face_t<3>{ // face looking towards -x, +z
     off,  0.f, -off,
     off,  0.f, -off,
@@ -110,7 +110,7 @@ const std::array<face_t<3>, 4> TallgrassGeometry::normals {
 
 static const float occl = 2.f;
 
-const std::array<std::array<GLfloat, 4>, 4> TallgrassGeometry::occlusions {
+const std::array<std::array<GLfloat, 4>, 4> TallgrassModel::occlusions {
   std::array<GLfloat, 4>{
     0.f, 0.f, occl, occl
   },
@@ -125,7 +125,7 @@ const std::array<std::array<GLfloat, 4>, 4> TallgrassGeometry::occlusions {
   },
 };
 
-const face_t<2> TallgrassGeometry::faceNormalMap = {
+const face_t<2> TallgrassModel::faceNormalMap = {
     -1.0f, -1.0f,
     -1.0f, -1.0f,
     -1.0f, -1.0f,

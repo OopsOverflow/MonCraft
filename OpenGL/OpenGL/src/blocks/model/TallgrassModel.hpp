@@ -1,11 +1,11 @@
 #pragma once
 
-#include "DefaultGeometry.hpp"
+#include "DefaultModel.hpp"
 
-class TallgrassGeometry : public DefaultBlockGeometry {
+class TallgrassModel : public DefaultBlockModel {
 
 public:
-  static TallgrassGeometry* get();
+  static TallgrassModel* get();
   void generateMesh(glm::ivec3 pos, Block* block, std::array<Block*, 26> const& neighbors, MeshData& data) const override;
 
 private:

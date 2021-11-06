@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Block.hpp"
-#include "geometry/WaterGeometry.hpp"
+#include "model/WaterModel.hpp"
 
 class Water_Block : public Block {
 public:
@@ -18,7 +18,7 @@ public:
     bool isOpaque() const override { return false; }
     bool isTransparent() const override { return true; }
     bool isLiquid() const override { return true; }
-    BlockGeometry* getGeometry() const override { return WaterGeometry::get(); }
+    BlockModel* getModel() const override { return WaterModel::get(); }
 
 private:
     Water_Block() : Block(BlockType::Water) {}

@@ -5,17 +5,17 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 #include "gl/Mesh.hpp"
-#include "BlockGeometry.hpp"
+#include "BlockModel.hpp"
 
 enum class BlockFace;
 
-class DefaultBlockGeometry : public BlockGeometry {
+class DefaultBlockModel : public BlockModel {
 public:
-  static DefaultBlockGeometry* get();
+  static DefaultBlockModel* get();
   void generateMesh(glm::ivec3 pos, Block* block, std::array<Block*, 26> const& neighbors, MeshData& data) const override;
 
 protected:
-  DefaultBlockGeometry();
+  DefaultBlockModel();
   face_t<1> genOcclusion(glm::ivec3 pos, std::array<Block*, 26> const& neighbors, BlockFace face) const;
   void genFace(glm::ivec3 pos, BlockFace face, Block* block, std::array<Block*, 26> const& neighbors, MeshData& data) const;
 

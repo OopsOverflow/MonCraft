@@ -46,12 +46,12 @@ srcs = files(
   'OpenGL/src/terrain/BlockArray.cpp',
 
   'OpenGL/src/blocks/Block.cpp',
-  'OpenGL/src/blocks/geometry/BlockGeometry.cpp',
-  'OpenGL/src/blocks/geometry/DefaultGeometry.cpp',
-  'OpenGL/src/blocks/geometry/TallgrassGeometry.cpp',
-  'OpenGL/src/blocks/geometry/WaterGeometry.cpp',
-  'OpenGL/src/blocks/geometry/CactusGeometry.cpp',
-  'OpenGL/src/blocks/geometry/StairGeometry.cpp',
+  'OpenGL/src/blocks/model/BlockModel.cpp',
+  'OpenGL/src/blocks/model/DefaultModel.cpp',
+  'OpenGL/src/blocks/model/TallgrassModel.cpp',
+  'OpenGL/src/blocks/model/WaterModel.cpp',
+  'OpenGL/src/blocks/model/CactusModel.cpp',
+  'OpenGL/src/blocks/model/StairModel.cpp',
 
   'OpenGL/src/ui/Component.cpp',
   'OpenGL/src/ui/Root.cpp',

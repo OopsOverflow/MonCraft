@@ -1,13 +1,13 @@
 #pragma once
 
 #include "Block.hpp"
-#include "geometry/StairGeometry.hpp"
+#include "model/StairModel.hpp"
 
 class Stair_Block : public Block {
 public:
     bool isOpaque() const override { return false; }
 
-    StairGeometry* getGeometry() const override { return StairGeometry::get(); }
+    StairModel* getModel() const override { return StairModel::get(); }
 
     Facing getFacing() const { return facing; }
 private:

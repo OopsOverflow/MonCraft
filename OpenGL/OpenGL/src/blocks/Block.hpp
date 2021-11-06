@@ -4,7 +4,7 @@
 #include <glm/glm.hpp>
 #include <vector>
 #include <memory>
-#include "geometry/DefaultGeometry.hpp"
+#include "model/DefaultModel.hpp"
 
 enum class BlockType
 {
@@ -94,9 +94,9 @@ public:
     virtual bool isDirectional() const { return false; }
 
     /**
-     * Gets the block geometry generator.
+     * Gets the block model generator.
      */
-    virtual BlockGeometry* getGeometry() const { return DefaultBlockGeometry::get(); }
+    virtual BlockModel* getModel() const { return DefaultBlockModel::get(); }
 
 private:
     /**

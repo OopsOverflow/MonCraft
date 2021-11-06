@@ -145,8 +145,8 @@ void Chunk::compute() {
 
         if(!neighborsValid) continue;
 
-        // generate this block's geometry
-        block->getGeometry()->generateMesh(pos, block, neighbors, meshData);
+        // generate this block's model
+        block->getModel()->generateMesh(pos, block, neighbors, meshData);
       }
     }
   }

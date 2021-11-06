@@ -5,19 +5,19 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 #include "gl/Mesh.hpp"
-#include "DefaultGeometry.hpp"
+#include "DefaultModel.hpp"
 
 class Stair_Block;
 
 enum class BlockFace;
 
-class StairGeometry : public DefaultBlockGeometry {
+class StairModel : public DefaultBlockModel {
 public:
-	static StairGeometry* get();
+	static StairModel* get();
 	void generateMesh(glm::ivec3 pos, Block* block, std::array<Block*, 26> const& neighbors, MeshData& data) const override;
 
 private:
-	StairGeometry();
+	StairModel();
 	void genFace(glm::ivec3 pos, BlockFace face, Stair_Block* block, std::array<Block*, 26> const& neighbors, MeshData& data) const;
 
 	static const QuadMesh<3> mesh;
