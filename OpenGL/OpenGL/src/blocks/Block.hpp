@@ -36,12 +36,20 @@ enum class BlockFace { TOP, BOTTOM, FRONT, RIGHT, BACK, LEFT, INNER };
 
 enum class Facing { NORTH, SOUTH, EAST, WEST, REV_NORTH, REV_SOUTH, REV_EAST, REV_WEST };
 
+std::ostream& operator<<(std::ostream& stream, BlockType type);
+std::istream& operator>>(std::istream& stream, BlockType& type);
+
+std::ostream& operator<<(std::ostream& stream, Facing facing);
+std::istream& operator>>(std::istream& stream, Facing& facing);
+
 class Block
 {
 public:
-    Block(BlockType type, bool static_ = true);
+    Block(BlockType type, bool static_ = true)
+      : type(type), static_(static_)
+    {}
 
-    virtual ~Block() { }
+    virtual ~Block() {}
 
     const BlockType type;
 
@@ -97,6 +105,17 @@ public:
      * Gets the block model generator.
      */
     virtual BlockModel* getModel() const { return DefaultBlockModel::get(); }
+
+    /**
+     * Stringify the block data.
+     */
+    virtual std::ostream& serialize(std::ostream &stream) const { return stream; }
+
+    /**
+     * Creates the block (static or dynamic, whichever is necessary)
+     * from serialized data.
+     */
+    virtual Block* deserialize(std::istream &stream) { return this; }
 
 private:
     /**

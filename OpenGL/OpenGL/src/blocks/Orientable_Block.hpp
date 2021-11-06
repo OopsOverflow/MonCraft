@@ -10,10 +10,10 @@ public:
     StairModel* getModel() const override { return StairModel::get(); }
 
     Facing getFacing() const { return facing; }
-private:
-    Facing facing;
 
 protected:
+    Facing facing;
+
     Orientable_Block(BlockType type, Facing facing, bool static_)
         : Block(type, static_), facing(facing)
     {}

@@ -63,3 +63,16 @@ Block::unique_ptr_t AllBlocks::create_static(BlockType type) {
 BlockType AllBlocks::nextBlock(BlockType type) {
   return (BlockType)(((size_t)type + 1) % BlockCount);
 }
+
+std::ostream& AllBlocks::serialize(std::ostream& stream, Block::unique_ptr_t const& block) {
+  stream << block->type;
+  block->serialize(stream);
+  return stream;
+}
+
+Block::unique_ptr_t AllBlocks::deserialize(std::istream& stream) {
+  BlockType type;
+  stream >> type;
+  auto b = create_static(type);
+  return Block::unique_ptr_t(b->deserialize(stream));
+}

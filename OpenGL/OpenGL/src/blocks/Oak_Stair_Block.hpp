@@ -13,8 +13,19 @@ public:
         return {7, 1};
     }
 
+    virtual std::ostream& serialize(std::ostream &stream) const override {
+        stream << facing;
+        return stream;
+    }
+
+    virtual Block* deserialize(std::istream &stream) override {
+        Facing facing;
+        stream >> facing;
+        return new Oak_Stair_Block(facing);
+    }
+
 private:
-    Oak_Stair_Block() : Orientable_Block(BlockType::Oak_Stair, Facing::EAST, true) {}
+    Oak_Stair_Block() : Orientable_Block(BlockType::Oak_Stair, Facing::NORTH, true) {}
 public:
     Oak_Stair_Block(Facing facing) : Orientable_Block(BlockType::Oak_Stair, facing, false) {}
 };

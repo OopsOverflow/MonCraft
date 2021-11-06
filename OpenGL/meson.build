@@ -31,6 +31,7 @@ srcs = files(
   'OpenGL/src/util/Random.cpp',
   'OpenGL/src/util/Identifier.cpp',
   'OpenGL/src/util/SaveManager.cpp',
+  'OpenGL/src/util/Serde.cpp',
 
   'OpenGL/src/entity/Entity.cpp',
   'OpenGL/src/entity/Hitbox.cpp',

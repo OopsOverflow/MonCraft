@@ -14,7 +14,10 @@ public:
   */
   static Block::unique_ptr_t create_static(BlockType type);
 
-  BlockType nextBlock(BlockType type);
+  static std::ostream& serialize(std::ostream& stream, Block::unique_ptr_t const& block);
+  static Block::unique_ptr_t deserialize(std::istream& stream);
+
+  static BlockType nextBlock(BlockType type);
 
 private:
   static const size_t BlockCount = 22;

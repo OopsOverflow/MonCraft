@@ -3,42 +3,18 @@
 #include <SDL2/SDL_keyboard.h>
 
 #include "SaveManager.hpp"
+#include "Serde.hpp"
 #include "blocks/AllBlocks.hpp"
 #include "debug/Debug.hpp"
 #include "entity/character/Character.hpp"
 #include "zstr.hpp"
 
+using Serde::Binary;
+
 std::string SaveManager::chunkSaveDir = "save/defaultWorld/chunks";
 std::string SaveManager::entitySaveDir = "save/defaultWorld/entities";
 std::string SaveManager::configSaveDir = "save";
 std::string SaveManager::configFilename = "config.txt";
-
-template <typename T> class Binary {
-public:
-  Binary() : val() {}
-  Binary(T val) : val(val) {}
-  T val;
-};
-template <typename T>
-std::ostream &operator<<(std::ostream &stream, Binary<T> &bin) {
-  stream.write((char *)&bin.val, sizeof(T));
-  return stream;
-}
-template <typename T>
-std::istream &operator>>(std::istream &stream, Binary<T> &bin) {
-  stream.read((char *)&bin.val, sizeof(T));
-  return stream;
-}
-
-std::string remainder(std::stringstream &ss) {
-  std::string s;
-  std::string res;
-  ss >> res;
-  while (ss >> s) {
-    res += " " + s;
-  }
-  return res;
-}
 
 SaveManager::SaveManager()
   : config(loadConfig())
@@ -66,7 +42,7 @@ Config SaveManager::loadConfig() {
 
 #define KEY_PARAM(NAME)                                                        \
   if (param == #NAME ":") {                                                    \
-    config.NAME = SDL_GetKeyFromName(remainder(ss).c_str());                   \
+    config.NAME = SDL_GetKeyFromName(Serde::remainder(ss).c_str());            \
     continue;                                                                  \
   }
 #define PARAM(NAME)                                                            \
@@ -167,6 +143,18 @@ std::istream &operator>>(std::istream &stream, State &state) {
   Binary<uint8_t> temp;
   stream >> temp;
   state = (State)temp.val;
+  return stream;
+}
+
+std::ostream &operator<<(std::ostream &stream, Facing facing) {
+  Binary temp((uint8_t)facing);
+  stream << temp;
+  return stream;
+}
+std::istream &operator>>(std::istream &stream, Facing &facing) {
+  Binary<uint8_t> temp;
+  stream >> temp;
+  facing = (Facing)temp.val;
   return stream;
 }
 
@@ -280,9 +268,7 @@ std::ostream &operator<<(std::ostream &stream, Chunk const &chunk) {
   for (pos.y = 0; pos.y < chunk.size.y; pos.y++) {
     for (pos.z = 0; pos.z < chunk.size.z; pos.z++) {
       for (pos.x = 0; pos.x < chunk.size.x; pos.x++) {
-        auto const& block = chunk.at(pos);
-        stream << block->type;
-        block->serialize(stream);
+        AllBlocks::serialize(stream, chunk.at(pos));
       }
     }
   }
