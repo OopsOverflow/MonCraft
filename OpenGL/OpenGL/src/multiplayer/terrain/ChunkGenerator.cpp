@@ -1,6 +1,18 @@
 #include "ChunkGenerator.hpp"
 #include "blocks/AllBlocks.hpp"
 
+#include "blocks/Air_Block.hpp"
+#include "blocks/Cobalt_Block.hpp"
+#include "blocks/Ice_Block.hpp"
+#include "blocks/Stone_Block.hpp"
+#include "blocks/Dirt_Block.hpp"
+#include "blocks/Grass_Block.hpp"
+#include "blocks/Tallgrass_Block.hpp"
+#include "blocks/Water_Block.hpp"
+#include "blocks/Snow_Block.hpp"
+#include "blocks/Sand_Block.hpp"
+#include "blocks/Sandstone_Block.hpp"
+
 #include <functional>
 #include <map>
 

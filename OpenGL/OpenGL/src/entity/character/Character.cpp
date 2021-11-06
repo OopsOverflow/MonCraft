@@ -1,11 +1,11 @@
 #include "Character.hpp"
 #include "CharacterHitbox.hpp"
-#include "blocks/Debug_Block.hpp"
-#include "blocks/Air_Block.hpp"
-#include "blocks/Dirt_Block.hpp"
-#include "blocks/Tallgrass_Block.hpp"
-#include "blocks/Water_Block.hpp"
+
 #include "blocks/AllBlocks.hpp"
+
+#include "blocks/Air_Block.hpp"
+#include "blocks/Oak_Stair_Block.hpp"
+
 #include "gl/ResourceManager.hpp"
 #include "terrain/World.hpp"
 

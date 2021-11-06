@@ -45,7 +45,7 @@ srcs = files(
   'OpenGL/src/terrain/SkyBox.cpp',
   'OpenGL/src/terrain/BlockArray.cpp',
 
-  'OpenGL/src/blocks/Block.cpp',
+  'OpenGL/src/blocks/AllBlocks.cpp',
   'OpenGL/src/blocks/model/BlockModel.cpp',
   'OpenGL/src/blocks/model/DefaultModel.cpp',
   'OpenGL/src/blocks/model/TallgrassModel.cpp',
