@@ -1,13 +1,12 @@
 #include <filesystem>
 #include <fstream>
-#include <iostream>
-#include <sstream>
+#include <SDL2/SDL_keyboard.h>
 
 #include "SaveManager.hpp"
 #include "blocks/AllBlocks.hpp"
 #include "debug/Debug.hpp"
 #include "entity/character/Character.hpp"
-#include <SDL2/SDL_keyboard.h>
+#include "zstr.hpp"
 
 std::string SaveManager::chunkSaveDir = "save/defaultWorld/chunks";
 std::string SaveManager::entitySaveDir = "save/defaultWorld/entities";
@@ -252,7 +251,7 @@ std::unique_ptr<Entity> SaveManager::getEntity(Identifier uid) {
   return std::unique_ptr<Entity>(entity);
 }
 
-std::ostream &operator<<(std::ostream &stream, BlockType &type) {
+std::ostream &operator<<(std::ostream &stream, BlockType type) {
   Binary bin((uint8_t)type);
   stream << bin;
   return stream;
@@ -265,39 +264,29 @@ std::istream &operator>>(std::istream &stream, BlockType &type) {
 }
 
 std::istream &operator>>(std::istream &stream, Chunk &chunk) {
-  int maxIndex = chunk.size.x * chunk.size.y * chunk.size.z;
-  uint16_t offset = 0;
-
-  while (offset < maxIndex) {
-    Binary<uint16_t> blockCount;
-    BlockType type;
-    stream >> blockCount >> type;
-
-    for (uint16_t i = 0; i < blockCount.val; i += 1) {
-      chunk.at(offset + i) = AllBlocks::create_static(type);
+  glm::vec3 pos(0);
+  for (pos.y = 0; pos.y < chunk.size.y; pos.y++) {
+    for (pos.z = 0; pos.z < chunk.size.z; pos.z++) {
+      for (pos.x = 0; pos.x < chunk.size.x; pos.x++) {
+        chunk.at(pos) = AllBlocks::deserialize(stream);
+      }
     }
-
-    offset += blockCount.val;
   }
 
   return stream;
 }
 std::ostream &operator<<(std::ostream &stream, Chunk const &chunk) {
-  int maxIndex = chunk.size.x * chunk.size.y * chunk.size.z;
-  Binary<uint16_t> blockCount(1);
-  BlockType last = chunk.at(0)->type;
-
-  for (int i = 1; i < maxIndex; i += 1) {
-    if (chunk.at(i)->type == last) {
-      blockCount.val += 1;
-    } else {
-      stream << blockCount << last;
-      blockCount.val = 1;
-      last = chunk.at(i)->type;
+  glm::vec3 pos(0);
+  for (pos.y = 0; pos.y < chunk.size.y; pos.y++) {
+    for (pos.z = 0; pos.z < chunk.size.z; pos.z++) {
+      for (pos.x = 0; pos.x < chunk.size.x; pos.x++) {
+        auto const& block = chunk.at(pos);
+        stream << block->type;
+        block->serialize(stream);
+      }
     }
   }
 
-  stream << blockCount << last;
   return stream;
 }
 
@@ -307,22 +296,18 @@ std::unique_ptr<Chunk> SaveManager::getChunk(glm::ivec3 chunkPos) {
                          std::to_string(chunkPos.y) + "_" +
                          std::to_string(chunkPos.z) + ".chunk";
 
-  std::ifstream openedFile(filePath, std::fstream::binary);
+  zstr::ifstream openedFile(filePath, std::fstream::binary);
   if (!openedFile.is_open())
     return nullptr;
 
   Binary<uint8_t> chunkSize;
   openedFile >> chunkSize;
 
-  if (chunkPos == glm::ivec3(0, 2, -1)) {
-  }
-
   Chunk *newChunk = new Chunk(chunkPos, chunkSize.val);
   openedFile >> *newChunk;
   openedFile.close();
 
-  return std::unique_ptr
-<Chunk>(newChunk);
+  return std::unique_ptr<Chunk>(newChunk);
 }
 
 bool SaveManager::saveChunk(Chunk const &chunk) {
@@ -332,7 +317,7 @@ bool SaveManager::saveChunk(Chunk const &chunk) {
                          std::to_string(chunk.chunkPos.y) + "_" +
                          std::to_string(chunk.chunkPos.z) + ".chunk";
 
-  std::ofstream openedFile(filePath, std::fstream::trunc | std::fstream::binary);
+  zstr::ofstream openedFile(filePath, std::fstream::trunc | std::fstream::binary);
   if (!openedFile) {
     std::cout << "[WARN] failed to open file: " << filePath << std::endl;
     return false;

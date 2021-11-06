@@ -151,6 +151,7 @@ else
     dependency('sfml-network'),
     dependency('freetype2'),
     dependency('openssl'),
+    dependency('zlib'),
   ]
 
   srcs += files('OpenGL/src/audio/Music.cpp')
