@@ -5,6 +5,9 @@
 
 #include "blocks/Air_Block.hpp"
 #include "blocks/Oak_Stair_Block.hpp"
+#include "blocks/Oak_Planks_Block.hpp"
+#include "blocks/Birch_Stair_Block.hpp"
+#include "blocks/Birch_Planks_Block.hpp"
 
 #include "gl/ResourceManager.hpp"
 #include "terrain/World.hpp"
@@ -125,13 +128,18 @@ void Character::placeBlock() {
     ivec3 pos = cast.position + cast.normal;
 
     Block::unique_ptr_t newBlock;
-    if(currentBlock == BlockType::Oak_Stair) {
-      Facing facing = getFacing(eyeTarget - eyePos);
+    Facing facing = getFacing(eyeTarget - eyePos);
+
+    if(currentBlock == BlockType::Oak_Stair)
       newBlock = Block::create_dynamic<Oak_Stair_Block>(facing);
-    }
-    else {
+    else if(currentBlock == BlockType::Oak_Planks)
+      newBlock = Block::create_dynamic<Oak_Planks_Block>(facing);
+    else if(currentBlock == BlockType::Birch_Stair)
+      newBlock = Block::create_dynamic<Birch_Stair_Block>(facing);
+    else if(currentBlock == BlockType::Birch_Planks)
+      newBlock = Block::create_dynamic<Birch_Planks_Block>(facing);
+    else
       newBlock = AllBlocks::create_static(currentBlock);
-    }
 
     world.setBlock(pos, std::move(newBlock));
     record.push_back({ pos, currentBlock });

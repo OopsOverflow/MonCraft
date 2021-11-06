@@ -22,6 +22,7 @@
 #include "Oak_Planks_Block.hpp"
 #include "Birch_Planks_Block.hpp"
 #include "Oak_Stair_Block.hpp"
+#include "Birch_Stair_Block.hpp"
 
 #include <sstream>
 
@@ -48,6 +49,7 @@ const std::array<Block*(*)(), AllBlocks::BlockCount> AllBlocks::factories = {
   (Block*(*)())Oak_Planks_Block::get,
   (Block*(*)())Birch_Planks_Block::get,
   (Block*(*)())Oak_Stair_Block::get,
+  (Block*(*)())Birch_Stair_Block::get,
 };
 
 Block::unique_ptr_t AllBlocks::create_static(BlockType type) {

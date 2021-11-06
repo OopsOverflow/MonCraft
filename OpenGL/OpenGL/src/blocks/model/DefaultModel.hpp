@@ -19,10 +19,13 @@ protected:
   face_t<1> genOcclusion(glm::ivec3 pos, std::array<Block*, 26> const& neighbors, BlockFace face) const;
   void genFace(glm::ivec3 pos, BlockFace face, Block* block, std::array<Block*, 26> const& neighbors, MeshData& data) const;
 
-  static const BlockData<3> blockPositions;
-  static const BlockData<3> blockNormals;
+  static const QuadMesh<3> mesh;
+  static const QuadMesh<3> meshNormals;
+  static const Quad<2> faceUVs;
 
-  static const std::vector<Quad<2>> faceUVs;
+  static const BlockMeshData blockPositions;
+  static const BlockMeshData blockNormals;
+
   static const face_t<2> faceNormalMap;
 
   static const std::array<std::array<int, 8>, 6> blockOcclusionOffsets;

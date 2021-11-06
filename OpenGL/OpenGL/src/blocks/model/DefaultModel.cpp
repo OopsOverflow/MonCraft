@@ -5,7 +5,8 @@
 
 using namespace glm;
 
-DefaultBlockModel::DefaultBlockModel() {}
+DefaultBlockModel::DefaultBlockModel()
+{}
 
 DefaultBlockModel* DefaultBlockModel::get() {
   static DefaultBlockModel inst;
@@ -84,81 +85,106 @@ void DefaultBlockModel::generateMesh(ivec3 pos, Block* block, std::array<Block*,
 
 /// below is all the data and lookup tables
 
-const std::vector<Quad<2>> DefaultBlockModel::faceUVs = {
-  Quad<2>{
-    glm::vec2
-    { 1.f, 0.f },
-    { 0.f, 0.f },
-    { 0.f, 1.f },
-    { 1.f, 1.f },
+const Quad<2> DefaultBlockModel::faceUVs = { vec2
+  { 1.f, 0.f },
+  { 0.f, 0.f },
+  { 0.f, 1.f },
+  { 1.f, 1.f },
+};
+
+const QuadMesh<3> DefaultBlockModel::mesh = {
+  std::vector<Quad<3>> { // TOP
+    { glm::vec3
+      { -0.5f,  0.5f,  0.5f },
+      {  0.5f,  0.5f,  0.5f },
+      {  0.5f,  0.5f, -0.5f },
+      { -0.5f,  0.5f, -0.5f },
+    }
+  }, { // BOTTOM
+    { glm::vec3
+      {  0.5f, -0.5f,  0.5f },
+      { -0.5f, -0.5f,  0.5f },
+      { -0.5f, -0.5f, -0.5f },
+      {  0.5f, -0.5f, -0.5f },
+    }
+  }, { // FRONT
+    { glm::vec3
+      {  0.5f,  0.5f,  0.5f },
+      { -0.5f,  0.5f,  0.5f },
+      { -0.5f, -0.5f,  0.5f },
+      {  0.5f, -0.5f,  0.5f },
+    }
+  }, { // RIGHT
+    { glm::vec3
+      { 0.5f,  0.5f, -0.5f },
+      { 0.5f,  0.5f,  0.5f },
+      { 0.5f, -0.5f,  0.5f },
+      { 0.5f, -0.5f, -0.5f },
+    }
+  }, { // BACK
+    { glm::vec3
+      { -0.5f,  0.5f, -0.5f },
+      {  0.5f,  0.5f, -0.5f },
+      {  0.5f, -0.5f, -0.5f },
+      { -0.5f, -0.5f, -0.5f },
+    }
+  }, { // LEFT
+    { glm::vec3
+      { -0.5f,  0.5f,  0.5f },
+      { -0.5f,  0.5f, -0.5f },
+      { -0.5f, -0.5f, -0.5f },
+      { -0.5f, -0.5f,  0.5f },
+    }
+  }, { // INNER
+
   }
 };
 
-const BlockData<3> DefaultBlockModel::blockPositions = {
-  face_t<3>{ // TOP
-    -0.5f,  0.5f,  0.5f,
-     0.5f,  0.5f,  0.5f,
-     0.5f,  0.5f, -0.5f,
-    -0.5f,  0.5f, -0.5f,
+const QuadMesh<3> DefaultBlockModel::meshNormals {
+  std::vector<Quad<3>>{ // TOP
+    { glm::vec3
+      { 0.0f, 1.0f, 0.0f },
+      { 0.0f, 1.0f, 0.0f },
+      { 0.0f, 1.0f, 0.0f },
+      { 0.0f, 1.0f, 0.0f },
+    }
   }, { // BOTTOM
-     0.5f, -0.5f,  0.5f,
-    -0.5f, -0.5f,  0.5f,
-    -0.5f, -0.5f, -0.5f,
-     0.5f, -0.5f, -0.5f,
+    { glm::vec3
+      { 0.0f, -1.0f, 0.0f },
+      { 0.0f, -1.0f, 0.0f },
+      { 0.0f, -1.0f, 0.0f },
+      { 0.0f, -1.0f, 0.0f },
+    }
   }, { // FRONT
-     0.5f,  0.5f,  0.5f,
-    -0.5f,  0.5f,  0.5f,
-    -0.5f, -0.5f,  0.5f,
-     0.5f, -0.5f,  0.5f,
+    { glm::vec3
+      { 0.0f, 0.0f, 1.0f },
+      { 0.0f, 0.0f, 1.0f },
+      { 0.0f, 0.0f, 1.0f },
+      { 0.0f, 0.0f, 1.0f },
+    }
   }, { // RIGHT
-    0.5f,  0.5f, -0.5f,
-    0.5f,  0.5f,  0.5f,
-    0.5f, -0.5f,  0.5f,
-    0.5f, -0.5f, -0.5f,
+    { glm::vec3
+      { 1.0f, 0.0f, 0.0f },
+      { 1.0f, 0.0f, 0.0f },
+      { 1.0f, 0.0f, 0.0f },
+      { 1.0f, 0.0f, 0.0f },
+    }
   }, { // BACK
-    -0.5f,  0.5f, -0.5f,
-     0.5f,  0.5f, -0.5f,
-     0.5f, -0.5f, -0.5f,
-    -0.5f, -0.5f, -0.5f,
+    { glm::vec3
+      { 0.0f, 0.0f, -1.0f },
+      { 0.0f, 0.0f, -1.0f },
+      { 0.0f, 0.0f, -1.0f },
+      { 0.0f, 0.0f, -1.0f },
+    }
   }, { // LEFT
-    -0.5f,  0.5f,  0.5f,
-    -0.5f,  0.5f, -0.5f,
-    -0.5f, -0.5f, -0.5f,
-    -0.5f, -0.5f,  0.5f,
-  }
-};
+    { glm::vec3
+      { -1.0f, 0.0f, 0.0f },
+      { -1.0f, 0.0f, 0.0f },
+      { -1.0f, 0.0f, 0.0f },
+      { -1.0f, 0.0f, 0.0f },
+    }
+  }, { // INNER
 
-const BlockData<3> DefaultBlockModel::blockNormals {
-  face_t<3>{ // TOP
-    0.0f, 1.0f, 0.0f,
-    0.0f, 1.0f, 0.0f,
-    0.0f, 1.0f, 0.0f,
-    0.0f, 1.0f, 0.0f,
-  }, { // BOTTOM
-    0.0f, -1.0f, 0.0f,
-    0.0f, -1.0f, 0.0f,
-    0.0f, -1.0f, 0.0f,
-    0.0f, -1.0f, 0.0f,
-  }, { // FRONT
-    0.0f, 0.0f, 1.0f,
-    0.0f, 0.0f, 1.0f,
-    0.0f, 0.0f, 1.0f,
-    0.0f, 0.0f, 1.0f,
-  }, { // RIGHT
-    1.0f, 0.0f, 0.0f,
-    1.0f, 0.0f, 0.0f,
-    1.0f, 0.0f, 0.0f,
-    1.0f, 0.0f, 0.0f,
-  }, { // BACK
-    0.0f, 0.0f, -1.0f,
-    0.0f, 0.0f, -1.0f,
-    0.0f, 0.0f, -1.0f,
-    0.0f, 0.0f, -1.0f,
-  }, { // LEFT
-    -1.0f, 0.0f, 0.0f,
-    -1.0f, 0.0f, 0.0f,
-    -1.0f, 0.0f, 0.0f,
-    -1.0f, 0.0f, 0.0f,
   }
 };
 
@@ -203,3 +229,7 @@ const face_t<2> DefaultBlockModel::faceNormalMap = {
   0.5f, 1.f,
   1.f, 1.f,
 };
+
+
+const BlockMeshData DefaultBlockModel::blockPositions(flatten(mesh));
+const BlockMeshData DefaultBlockModel::blockNormals(flatten(meshNormals));

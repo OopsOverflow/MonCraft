@@ -1,20 +1,22 @@
 #pragma once
 
 #include "Block.hpp"
-#include "model/StairModel.hpp"
+#include "model/OrientableModel.hpp"
 
 class Orientable_Block : public Block {
 public:
-    bool isOpaque() const override { return false; }
-
-    StairModel* getModel() const override { return StairModel::get(); }
+    OrientableModel* getModel() const override { return OrientableModel::get(); }
 
     Facing getFacing() const { return facing; }
 
 protected:
     Facing facing;
 
-    Orientable_Block(BlockType type, Facing facing, bool static_)
-        : Block(type, static_), facing(facing)
+    Orientable_Block(BlockType type)
+        : Block(type, true), facing(Facing::NORTH)
+    {}
+
+    Orientable_Block(BlockType type, Facing facing)
+        : Block(type, false), facing(facing)
     {}
 };

@@ -56,11 +56,16 @@ protected:
   static QuadMesh<3> normals(QuadMesh<3> mesh);
 
   template<glm::length_t L>
+  static std::vector<GLfloat> flatten(Quad<L> const& quad);
+
+  template<glm::length_t L>
   static std::vector<GLfloat> flatten(std::vector<Quad<L>> const& quads);
 
   template<glm::length_t L>
   static BlockMeshData flatten(QuadMesh<L> const& mesh);
 
+  static std::vector<GLfloat> computeUV(glm::vec2 index, Quad<2> quad);
+  
   static std::vector<GLfloat> computeUV(glm::vec2 index, std::vector<Quad<2>> quads);
 
   template<glm::length_t L>

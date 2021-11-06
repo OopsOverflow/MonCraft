@@ -13,6 +13,7 @@ enum class BlockFace;
 
 class OrientableModel : public DefaultBlockModel {
 public:
+	static OrientableModel* get();
 	void generateMesh(glm::ivec3 pos, Block* block, std::array<Block*, 26> const& neighbors, MeshData& data) const override;
 
 protected:

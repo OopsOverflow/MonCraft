@@ -3,10 +3,10 @@
 #include "Orientable_Block.hpp"
 #include "model/StairModel.hpp"
 
-class Oak_Stair_Block : public Orientable_Block {
+class Birch_Stair_Block : public Orientable_Block {
 public:
-    static Oak_Stair_Block* get() {
-        static Oak_Stair_Block inst;
+    static Birch_Stair_Block* get() {
+        static Birch_Stair_Block inst;
         return &inst;
     }
 
@@ -15,7 +15,7 @@ public:
     StairModel* getModel() const override { return StairModel::get(); }
 
     glm::ivec2 getFaceUVs(BlockFace face) const override {
-        return {7, 1};
+        return {6, 1};
     }
 
     virtual std::ostream& serialize(std::ostream &stream) const override {
@@ -26,11 +26,11 @@ public:
     virtual Block* deserialize(std::istream &stream) override {
         Facing facing;
         stream >> facing;
-        return new Oak_Stair_Block(facing);
+        return new Birch_Stair_Block(facing);
     }
 
 private:
-    Oak_Stair_Block() : Orientable_Block(BlockType::Oak_Stair) {}
+    Birch_Stair_Block() : Orientable_Block(BlockType::Birch_Stair) {}
 public:
-    Oak_Stair_Block(Facing facing) : Orientable_Block(BlockType::Oak_Stair, facing) {}
+    Birch_Stair_Block(Facing facing) : Orientable_Block(BlockType::Birch_Stair, facing) {}
 };

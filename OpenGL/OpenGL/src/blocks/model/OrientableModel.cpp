@@ -16,6 +16,21 @@ OrientableModel::OrientableModel(QuadMesh<3> mesh, QuadMesh<2> UVMesh)
   }
 }
 
+OrientableModel* OrientableModel::get() {
+  static const QuadMesh<2> UVMesh = {
+    std::vector<Quad<2>>
+    { faceUVs },
+    { faceUVs },
+    { faceUVs },
+    { faceUVs },
+    { faceUVs },
+    { faceUVs },
+    { }, // INNER
+  };
+  static OrientableModel inst(mesh, UVMesh);
+  return &inst;
+}
+
 static const std::array<std::array<size_t, 7>, 4> facingLookup {
   // TOP, BOTTOM, FRONT, RIGHT, BACK, LEFT, INNER
   std::array<size_t, 7>

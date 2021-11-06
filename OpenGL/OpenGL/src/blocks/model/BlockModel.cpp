@@ -65,6 +65,17 @@ QuadMesh<3> BlockModel::normals(QuadMesh<3> mesh) {
 }
 
 template<glm::length_t L>
+std::vector<GLfloat> BlockModel::flatten(Quad<L> const& quad) {
+  std::vector<GLfloat> res;
+  res.reserve(4 * L);
+
+  GLfloat *data = (GLfloat*)quad.data();
+  std::copy(data, data + (4 * L), std::back_inserter(res));
+
+  return res;
+}
+
+template<glm::length_t L>
 std::vector<GLfloat> BlockModel::flatten(std::vector<Quad<L>> const& quads) {
   size_t size = quads.size() * 4 * L;
   std::vector<GLfloat> res;
@@ -87,6 +98,14 @@ BlockMeshData BlockModel::flatten(QuadMesh<L> const& mesh) {
   }
 
   return res;
+}
+
+std::vector<GLfloat> BlockModel::computeUV(glm::vec2 index, Quad<2> quad) {
+  static const int atlasSize = 8.f;
+  glm::mat3 tr = glm::mat3(1.f);
+  tr = glm::scale(tr, glm::vec2(1.f / atlasSize));
+  tr = glm::translate(tr, index);
+  return flatten(transform(quad, tr));
 }
 
 std::vector<GLfloat> BlockModel::computeUV(glm::vec2 index, std::vector<Quad<2>> quads) {
