@@ -41,6 +41,29 @@ QuadMesh<L> BlockModel::transform(QuadMesh<L> mesh, glm::mat<L+1, L+1, glm::f32,
   return mesh;
 }
 
+Quad<3> BlockModel::normals(Quad<3> quad) {
+  auto v1 = quad[3] - quad[2];
+  auto v2 = quad[1] - quad[2];
+  auto norm = glm::normalize(glm::cross(v1, v2));
+  return Quad<3> { norm, norm, norm, norm };
+}
+
+std::vector<Quad<3>> BlockModel::normals(std::vector<Quad<3>> quads) {
+  for(auto& quad : quads) {
+    quad = normals(quad);
+  }
+
+  return quads;
+}
+
+QuadMesh<3> BlockModel::normals(QuadMesh<3> mesh) {
+  for(auto& quads : mesh) {
+    quads = normals(quads);
+  }
+
+  return mesh;
+}
+
 template<glm::length_t L>
 std::vector<GLfloat> BlockModel::flatten(std::vector<Quad<L>> const& quads) {
   size_t size = quads.size() * 4 * L;

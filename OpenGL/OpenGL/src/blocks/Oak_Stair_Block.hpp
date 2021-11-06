@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Stair_Block.hpp"
+#include "Orientable_Block.hpp"
 
-class Oak_Stair_Block : public Stair_Block {
+class Oak_Stair_Block : public Orientable_Block {
 public:
     static Oak_Stair_Block* get() {
         static Oak_Stair_Block inst;
@@ -14,7 +14,7 @@ public:
     }
 
 private:
-    Oak_Stair_Block() : Stair_Block(BlockType::Oak_Stair, Facing::EAST, true) {}
+    Oak_Stair_Block() : Orientable_Block(BlockType::Oak_Stair, Facing::EAST, true) {}
 public:
-    Oak_Stair_Block(Facing facing) : Stair_Block(BlockType::Oak_Stair, facing, false) {}
+    Oak_Stair_Block(Facing facing) : Orientable_Block(BlockType::Oak_Stair, facing, false) {}
 };

@@ -3,7 +3,7 @@
 #include "Block.hpp"
 #include "model/StairModel.hpp"
 
-class Stair_Block : public Block {
+class Orientable_Block : public Block {
 public:
     bool isOpaque() const override { return false; }
 
@@ -14,7 +14,7 @@ private:
     Facing facing;
 
 protected:
-    Stair_Block(BlockType type, Facing facing, bool static_)
+    Orientable_Block(BlockType type, Facing facing, bool static_)
         : Block(type, static_), facing(facing)
     {}
 };

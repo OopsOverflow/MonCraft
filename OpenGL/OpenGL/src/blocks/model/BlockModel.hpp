@@ -51,6 +51,10 @@ protected:
   template<glm::length_t L>
   static QuadMesh<L> transform(QuadMesh<L> mesh, glm::mat<L+1, L+1, glm::f32, glm::defaultp> const& transform);
 
+  static Quad<3> normals(Quad<3> quad);
+  static std::vector<Quad<3>> normals(std::vector<Quad<3>> quads);
+  static QuadMesh<3> normals(QuadMesh<3> mesh);
+
   template<glm::length_t L>
   static std::vector<GLfloat> flatten(std::vector<Quad<L>> const& quads);
 
