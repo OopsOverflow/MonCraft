@@ -92,14 +92,16 @@ void Character::setSprint(bool sprint) {
 
 
 void Character::breakBlock() {
+  auto& world = World::getInst();
   vec3 eyePos = headNode.model * vec4(0, 4, 0, 1);
   vec3 eyeTarget = headNode.model * vec4(0, 4, 5, 1);
   auto cast = caster.cast(eyePos + .5f, eyeTarget - eyePos);
   if (cast.success) {
       BlockType block = cast.block->type;
       if (block != BlockType::Air && block != BlockType::Water) {
-          World::getInst().setBlock(cast.position, Block::create_static<Air_Block>());
-          record.push_back({ cast.position, BlockType::Air });
+          auto airBlock = Block::create_static<Air_Block>();
+          record.push(cast.position, airBlock.get());
+          world.setBlock(cast.position, move(airBlock));
       }
   }
 }
@@ -141,8 +143,8 @@ void Character::placeBlock() {
     else
       newBlock = AllBlocks::create_static(currentBlock);
 
+    record.push(pos, newBlock.get());
     world.setBlock(pos, std::move(newBlock));
-    record.push_back({ pos, currentBlock });
   }
 }
 
@@ -217,10 +219,8 @@ void Character::render() {
   r_leg.draw();
 }
 
-BlockArray Character::getRecord() {
-  BlockArray res = record;
-  record.clear();
-  return res;
+BlockArray& Character::getRecord() {
+  return record;
 }
 
 BlockType Character::getCurrentBlock() const {

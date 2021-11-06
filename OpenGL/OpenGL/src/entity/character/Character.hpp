@@ -57,7 +57,7 @@ public:
   /**
   * Gets the blocks placed since the last call to this method.
   */
-  BlockArray getRecord();
+  BlockArray& getRecord();
 
   void enableGodMode();
   void disableGodMode();

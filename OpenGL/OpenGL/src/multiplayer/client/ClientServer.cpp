@@ -36,8 +36,7 @@ void ClientServer::update() {
 
   // save changes since last update
   auto rec = player->getRecord();
-  for(auto const& blockData : rec) {
-    ivec3 cpos = floor(vec3(blockData.pos) / float(world.chunkSize));
+  for(auto cpos : rec.getChangedChunks()) {
     auto chunk = world.chunks.find(cpos);
     if(chunk) {
       SaveManager::saveChunk(*chunk);

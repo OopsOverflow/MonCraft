@@ -14,7 +14,7 @@ public:
   */
   static Block::unique_ptr_t create_static(BlockType type);
 
-  static std::ostream& serialize(std::ostream& stream, Block::unique_ptr_t const& block);
+  static std::ostream& serialize(std::ostream& stream, Block* block);
   static Block::unique_ptr_t deserialize(std::istream& stream);
 
   static BlockType nextBlock(BlockType type);

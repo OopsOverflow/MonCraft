@@ -5,12 +5,20 @@
 #include "blocks/Block.hpp"
 #include "multiplayer/common/Packet.hpp"
 
-struct BlockArrayElement {
-  glm::ivec3 pos;
-  BlockType type;
+class BlockArray  {
+public:
+  void clear();
+  bool empty() const;
+  void push(glm::ivec3 pos, Block* block);
+  void copyToWorld();
+  std::vector<glm::ivec3> getChangedChunks() const;
+  sf::Packet& serialize(sf::Packet& packet);
+  sf::Packet& deserialize(sf::Packet& packet);
 
-  friend sf::Packet& operator<<(sf::Packet& packet, BlockArrayElement const& blockData);
-  friend sf::Packet& operator>>(sf::Packet& packet, BlockArrayElement& blockData);
+private:
+  struct elt {
+    glm::ivec3 pos;
+    std::string ser;
+  };
+  std::vector<elt> blocks;
 };
-
-using BlockArray = std::vector<BlockArrayElement>;

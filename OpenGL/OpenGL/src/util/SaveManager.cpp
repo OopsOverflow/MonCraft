@@ -268,7 +268,7 @@ std::ostream &operator<<(std::ostream &stream, Chunk const &chunk) {
   for (pos.y = 0; pos.y < chunk.size.y; pos.y++) {
     for (pos.z = 0; pos.z < chunk.size.z; pos.z++) {
       for (pos.x = 0; pos.x < chunk.size.x; pos.x++) {
-        AllBlocks::serialize(stream, chunk.at(pos));
+        AllBlocks::serialize(stream, chunk.at(pos).get());
       }
     }
   }

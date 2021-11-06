@@ -66,7 +66,7 @@ BlockType AllBlocks::nextBlock(BlockType type) {
   return (BlockType)(((size_t)type + 1) % BlockCount);
 }
 
-std::ostream& AllBlocks::serialize(std::ostream& stream, Block::unique_ptr_t const& block) {
+std::ostream& AllBlocks::serialize(std::ostream& stream, Block* block) {
   stream << block->type;
   block->serialize(stream);
   return stream;

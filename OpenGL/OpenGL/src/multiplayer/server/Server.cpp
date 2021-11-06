@@ -105,7 +105,8 @@ void Server::packet_logout(Identifier uid) {
 void Server::packet_blocks(Identifier uid, BlockArray changedBlocks) {
   sf::Packet packet;
   PacketHeader header(PacketType::BLOCKS);
-  packet << header << uid << changedBlocks;
+  packet << header << uid;
+  changedBlocks.serialize(packet);
   broadcast(packet);
 }
 
@@ -219,14 +220,12 @@ void Server::handle_ack_chunks(Client& client, sf::Packet& packet) {
 
 void Server::handle_blocks(Client const& client, sf::Packet& packet) {
   BlockArray blocks;
-  packet >> blocks;
+  blocks.deserialize(packet);
+  blocks.copyToWorld();
 
-  for(auto const& blockData : blocks) {
-    ivec3 cpos = floor(vec3(blockData.pos) / float(world.chunkSize));
+  for(auto cpos : blocks.getChangedChunks()) {
     auto chunk = world.chunks.find(cpos);
     if(chunk) {
-      ivec3 dpos = blockData.pos - cpos * world.chunkSize;
-      chunk->setBlock(dpos, AllBlocks::create_static(blockData.type));
       SaveManager::saveChunk(*chunk);
     }
   }

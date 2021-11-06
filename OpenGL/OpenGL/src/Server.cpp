@@ -7,8 +7,8 @@
 
 std::unique_ptr<Server> make_server() {
   auto port = SaveManager::getInst().getConfig().serverPort;
-  return std::make_unique<WebSocketServer>(port);
   // return std::make_unique<WebSocketServer>(port);
+  return std::make_unique<UdpServer>(port);
 }
 
 int main() {

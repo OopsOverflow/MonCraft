@@ -131,11 +131,13 @@ void RealServer::ping() {
 }
 
 void RealServer::packet_blocks() {
-  auto blocks = player->getRecord();
-  if(blocks.size() != 0) {
+  BlockArray& blocks = player->getRecord();
+  if(!blocks.empty()) {
     sf::Packet packet;
     PacketHeader header(PacketType::BLOCKS);
-    packet << header << blocks;
+    packet << header;
+    blocks.serialize(packet);
+    blocks.clear();
 
     auto send_res = socket.send(packet, addr, port);
 
@@ -238,11 +240,8 @@ void RealServer::handle_blocks(sf::Packet& packet) {
 
   if(uid != player->uid) {
     BlockArray blocks;
-    packet >> blocks;
-
-    for(auto const& blockData : blocks) {
-      world.setBlock(blockData.pos, AllBlocks::create_static(blockData.type));
-    }
+    blocks.deserialize(packet);
+    blocks.copyToWorld();
   }
 }
 
