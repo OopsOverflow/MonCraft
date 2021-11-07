@@ -1,4 +1,6 @@
 #include "BiomeMap.hpp"
+#include "noise/prng.hpp"
+
 #include <functional>
 #include <algorithm>
 #include <numeric>
@@ -30,8 +32,8 @@ const octaves_t waterOctaves = {
 };
 
 BiomeMap::BiomeMap()
- : voronoi(rand(), cellSize),
-   value(rand())
+ : voronoi(prng::rand(), cellSize),
+   value(prng::rand())
 {
   // TODO: not sure about the performance of all of that.
   // Maybe the pipeline abstration layer is too much ? In principle, the
@@ -42,9 +44,9 @@ BiomeMap::BiomeMap()
   auto step4 = std::bind(&BiomeMap::blendBiomes, this, _1);
   generator = make_pipeline(step1, step2, step3, step4);
 
-  simplexX.seed(rand());
-  simplexY.seed(rand());
-  simplexBiome.seed(rand());
+  simplexX.seed(prng::rand());
+  simplexY.seed(prng::rand());
+  simplexBiome.seed(prng::rand());
 
   biomePlains.type = BiomeType::PLAINS;
   biomePlains.elevation = 7;

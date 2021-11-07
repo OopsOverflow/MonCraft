@@ -20,6 +20,10 @@ uint32_t XXHash::sample<1, 1>(int32_t val) const {
   return h32;
 }
 
+uint32_t XXHash::sample(int32_t val) const {
+  return sample<1, 1>(val);
+}
+
 template<glm::length_t IN>
 uint32_t XXHash::sample1D(typename in_t<IN>::type val) const {
   uint32_t h32 = seed + PRIME32_5 + IN * 4;

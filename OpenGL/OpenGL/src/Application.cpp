@@ -6,6 +6,7 @@
 #include "interface/MonCraftScene.hpp"
 #include "interface/mainMenu/MainMenu.hpp"
 #include "interface/parametersMenu/ParametersMenu.hpp"
+#include "noise/prng.hpp"
 
 #ifdef EMSCRIPTEN
     #include <emscripten.h>
@@ -79,6 +80,11 @@ void loop(float dt) {
 int main(int argc, char* argv[]) {
     std::cout << "---- Main ----" << std::endl;
     Config& config = SaveManager::getInst().getConfig();
+
+    // game seed
+    auto seed = prng::srands(config.seed);
+    std::cout << "seed : " << config.seed << " (" << seed << ")" << std::endl;
+
     Viewport window({ 800, 800 });
     loadResources();
     window.createRoot();

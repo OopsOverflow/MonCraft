@@ -47,12 +47,6 @@ MonCraftScene::MonCraftScene(Viewport* vp)
         normalMapID[i] = ResourceManager::getTexture("waterNormal" + std::to_string(i));
     }
 
-    // game seed
-    std::hash<std::string> hashString;
-    auto seed = hashString(config.seed);
-    std::srand((unsigned int)seed);
-    std::cout << "seed : " << config.seed << " (" << seed << ")" << std::endl;
-
     server = createServer(config);
     server->start();
     player = server->getPlayer();

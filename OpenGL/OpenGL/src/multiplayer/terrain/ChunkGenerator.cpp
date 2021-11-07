@@ -1,4 +1,5 @@
 #include "ChunkGenerator.hpp"
+#include "noise/prng.hpp"
 #include "blocks/AllBlocks.hpp"
 
 #include "blocks/Air_Block.hpp"
@@ -20,9 +21,9 @@ using namespace glm;
 
 ChunkGenerator::ChunkGenerator(int chunkSize)
   : chunkSize(chunkSize),
-    valueNoise(rand())
+    valueNoise(prng::rand())
 {
-    noise.seed(rand());
+    noise.seed(prng::rand());
 }
 
 std::unique_ptr<Chunk> ChunkGenerator::generate(ivec3 cpos) const {

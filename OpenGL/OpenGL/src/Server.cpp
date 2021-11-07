@@ -3,12 +3,13 @@
 #include "multiplayer/server/WebSocketServer.hpp"
 #include "multiplayer/common/Config.hpp"
 #include "util/SaveManager.hpp"
+#include "noise/prng.hpp"
 
 
 std::unique_ptr<Server> make_server() {
   auto port = SaveManager::getInst().getConfig().serverPort;
-  // return std::make_unique<WebSocketServer>(port);
-  return std::make_unique<UdpServer>(port);
+  return std::make_unique<WebSocketServer>(port);
+  // return std::make_unique<UdpServer>(port);
 }
 
 int main() {
@@ -16,9 +17,7 @@ int main() {
   Config config = SaveManager::getInst().getConfig();
 
   // game seed
-  std::hash<std::string> hashString;
-  auto seed = hashString(config.seed);
-  std::srand(seed);
+  auto seed = prng::srands(config.seed);
   std::cout << "seed : " << config.seed << " (" << seed << ")" << std::endl;
 
   SaveManager::configSaveDir = "save";
