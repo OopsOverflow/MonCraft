@@ -1,10 +1,10 @@
 #include "KeyboardController.hpp"
 
 KeyboardController::KeyboardController()
-  : config(SaveManager::getInst().getConfig()),
+  : config(Config::getClientConfig()),
     direction(0.f),
     state(State::Idle),
-    view(View::FIRST_PERSON),
+    view(CharacterView::FIRST_PERSON),
     sprint(false), toggleGod(false),
     spaceIsPressed(false), lastSpacePress(0.f)
 {}

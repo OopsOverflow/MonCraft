@@ -4,8 +4,6 @@
 #include "ParameterSlider.hpp"
 #include "ParameterList.hpp"
 #include "gl/ResourceManager.hpp"
-#include "util/SaveManager.hpp"
-
 
 using namespace ui;
 using namespace glm;
@@ -13,7 +11,6 @@ using namespace glm;
 GraphicsMenu::GraphicsMenu()
 	: Box()
 {
-	auto config = SaveManager::getInst().getConfig();
 	auto font = ResourceManager::getFont("roboto");
 	glm::vec2 imageOffset;
 	glm::vec2 imageSize;
@@ -54,4 +51,3 @@ std::unique_ptr<Box> GraphicsMenu::create() {
 	btn->initialize();
 	return std::unique_ptr<Box>(btn);
 }
-

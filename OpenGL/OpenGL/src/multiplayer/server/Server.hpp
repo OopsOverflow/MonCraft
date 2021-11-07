@@ -3,7 +3,7 @@
 #include <string>
 #include <map>
 #include <SFML/Network.hpp>
-#include "../common/Packet.hpp"
+#include "../Packet.hpp"
 #include "terrain/BlockArray.hpp"
 #include "terrain/World.hpp"
 #include "multiplayer/terrain/TerrainGenerator.hpp"

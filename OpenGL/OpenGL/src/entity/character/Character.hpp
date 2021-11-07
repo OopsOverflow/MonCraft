@@ -1,5 +1,6 @@
 #pragma once
 
+#include "gl/Camera.hpp"
 #include "../Entity.hpp"
 #include "terrain/BlockArray.hpp"
 #include "util/Raycast.hpp"
@@ -17,6 +18,8 @@
  * The main character.
  */
 
+enum class CharacterView { FIRST_PERSON, THIRD_PERSON };
+
 class Character : public Entity {
 
 public:
@@ -32,6 +35,8 @@ public:
    * Draws the character entirely, including body parts.
    */
 	void render() override;
+
+  void cameraToHead(Camera& camera);
 
   /**
    * Update the character state.
@@ -75,6 +80,8 @@ public:
    * Return the selected block type (in hand).
    */
   BlockType getCurrentBlock() const;
+
+  CharacterView view;
 
 private:
   Node rootNode;

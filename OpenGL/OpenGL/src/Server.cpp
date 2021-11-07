@@ -1,27 +1,26 @@
 #include "debug/Debug.hpp"
 #include "multiplayer/server/UdpServer.hpp"
 #include "multiplayer/server/WebSocketServer.hpp"
-#include "multiplayer/common/Config.hpp"
-#include "util/SaveManager.hpp"
+#include "save/SaveManager.hpp"
+#include "save/ServerConfig.hpp"
 #include "noise/prng.hpp"
 
 
 std::unique_ptr<Server> make_server() {
-  auto port = SaveManager::getInst().getConfig().serverPort;
-  return std::make_unique<WebSocketServer>(port);
-  // return std::make_unique<UdpServer>(port);
+  auto port = Config::getServerConfig().serverPort;
+  // return std::make_unique<WebSocketServer>(port);
+  return std::make_unique<UdpServer>(port);
 }
 
 int main() {
   std::cout << "---- Server ----" << std::endl;
-  Config config = SaveManager::getInst().getConfig();
+  auto& config = Config::getServerConfig();
 
   // game seed
   auto seed = prng::srands(config.seed);
   std::cout << "seed : " << config.seed << " (" << seed << ")" << std::endl;
 
   SaveManager::configSaveDir = "save";
-  SaveManager::configFilename = "serverConfig.txt";
   SaveManager::entitySaveDir = "save/serverWorld/entities";
   SaveManager::chunkSaveDir = "save/serverWorld/chunks";
   std::unique_ptr<Server> server = make_server();

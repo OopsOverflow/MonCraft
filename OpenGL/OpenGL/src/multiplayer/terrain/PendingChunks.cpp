@@ -1,5 +1,5 @@
 #include "PendingChunks.hpp"
-#include "util/SaveManager.hpp"
+#include "save/ServerConfig.hpp"
 
 using namespace glm;
 
@@ -8,7 +8,7 @@ PendingChunks::PendingChunks()
     hasChanged(false),
     world(World::getInst())
 {
-  auto& config = SaveManager::getInst().getConfig();
+  auto& config = Config::getServerConfig();
   renderDistH = config.renderDistH;
   renderDistV = config.renderDistV;
   maxChunks = renderDistH * renderDistH * renderDistV;
@@ -58,7 +58,7 @@ void PendingChunks::updateWorker() {
     for(int i = -renderDistV; i <= renderDistV; i++) {
       ivec3 p = tcpos + ivec3(pos.x, i, pos.y);
       auto chunk = world.chunks.find(p);
-      if(!chunk || !chunk->isComputed()) {
+      if(!chunk) {
         newWaitingChunks.push_back(p);
       }
     }

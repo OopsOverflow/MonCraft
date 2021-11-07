@@ -18,7 +18,6 @@ std::shared_ptr<Entity> Entities::get(Identifier uid) {
 }
 
 std::shared_ptr<Entity> Entities::add(Identifier uid, std::unique_ptr<Entity> entity) {
-  entity->uid = uid;
   auto res = emplace(uid, std::move(entity));
   return res.first->second;
 }

@@ -31,14 +31,13 @@ Viewport::Viewport(glm::ivec2 size)
       window(nullptr), context(nullptr),
       timeBegin(0), lastTime(0),
       mouseCaptured(false), vsync(true), mustQuit(false),
-      root(nullptr), config(SaveManager::getInst().getConfig())
+      root(nullptr), config(Config::getClientConfig())
 {
   // Initialize SDL2
   if (SDL_Init(SDL_INIT_VIDEO) < 0)
     throw std::runtime_error(std::string("SDL init failed: ") + SDL_GetError());
 
   // MSAA
-  auto& config = SaveManager::getInst().getConfig();
   if(config.msaa) {
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, config.msaa);

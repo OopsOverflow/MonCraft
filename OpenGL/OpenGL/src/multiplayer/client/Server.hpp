@@ -23,6 +23,7 @@ public:
    * Returns nullptr if the player was not created.
    */
   virtual std::shared_ptr<Character> getPlayer() = 0;
+  virtual Identifier getUid() = 0;
 
 private:
   void loop();

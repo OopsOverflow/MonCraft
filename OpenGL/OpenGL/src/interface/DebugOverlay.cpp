@@ -60,7 +60,7 @@ void DebugOverlay::draw() {
 	text_players->setText(text.str());
 
 	text.str(""); // "clears" the string stream
-	text << "UID : " << server->getPlayer()->uid;
+	text << "UID : " << server->getUid();
 	text_uid->setText(text.str());
 
 	text.str(""); // "clears" the string stream

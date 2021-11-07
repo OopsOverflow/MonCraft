@@ -1,5 +1,5 @@
 #include "Server.hpp"
-#include "multiplayer/common/Config.hpp"
+#include "save/ServerConfig.hpp"
 
 
 Server::Server()
@@ -16,7 +16,7 @@ bool Server::sleepFor(std::chrono::milliseconds millis) {
 
 void Server::loop() {
   bool stop = false;
-  auto sleep = std::chrono::milliseconds(NetworkConfig::SERVER_TICK);
+  auto sleep = std::chrono::milliseconds(Config::getServerConfig().serverTick);
   bool logged = false;
 
   while(!stop && !logged) {

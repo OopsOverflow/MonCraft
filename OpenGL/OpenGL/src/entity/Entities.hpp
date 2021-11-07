@@ -4,6 +4,7 @@
 #include "Entity.hpp"
 
 #include <unordered_map>
+#include <memory>
 
 using entityMap_t = std::unordered_map<Identifier, std::shared_ptr<Entity>>;
 

@@ -7,6 +7,8 @@
 #include "interface/mainMenu/MainMenu.hpp"
 #include "interface/parametersMenu/ParametersMenu.hpp"
 #include "noise/prng.hpp"
+#include "save/ClientConfig.hpp"
+#include "save/ServerConfig.hpp"
 
 #ifdef EMSCRIPTEN
     #include <emscripten.h>
@@ -79,11 +81,10 @@ void loop(float dt) {
 
 int main(int argc, char* argv[]) {
     std::cout << "---- Main ----" << std::endl;
-    Config& config = SaveManager::getInst().getConfig();
 
     // game seed
-    auto seed = prng::srands(config.seed);
-    std::cout << "seed : " << config.seed << " (" << seed << ")" << std::endl;
+    auto seed = prng::srands(Config::getServerConfig().seed);
+    std::cout << "seed : " << Config::getServerConfig().seed << " (" << seed << ")" << std::endl;
 
     Viewport window({ 800, 800 });
     loadResources();
@@ -93,14 +94,14 @@ int main(int argc, char* argv[]) {
     window.getRoot()->add(&mainMenu);
 
     mainMenu.singleplayerButton->onclick([&] {
-        config.multiplayer = false;
+        Config::getClientConfig().multiplayer = false;
         auto scene = std::make_unique<MonCraftScene>(&window);
         window.getRoot()->remove(&mainMenu);
         window.getRoot()->add(move(scene));
     });
 
     mainMenu.multiplayerButton->onclick([&] {
-        config.multiplayer = true;
+        Config::getClientConfig().multiplayer = true;
         auto scene = std::make_unique<MonCraftScene>(&window);
         window.getRoot()->remove(&mainMenu);
         window.getRoot()->add(move(scene));

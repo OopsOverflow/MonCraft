@@ -9,8 +9,7 @@ using glm::mat4;
 using glm::vec2;
 
 Member::Member()
-  : mesh(nullptr),
-    geometryModel(1.f)
+  : geometryModel(1.f), mesh(nullptr)
 {}
 
 Member::~Member() {

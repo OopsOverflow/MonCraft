@@ -2,8 +2,9 @@
 #include "ui/Button.hpp"
 #include "ParameterButton.hpp"
 #include "gl/ResourceManager.hpp"
-#include "util/SaveManager.hpp"
-#include "SDL2/include/SDL2/SDL_keyboard.h"
+#include "save/ClientConfig.hpp"
+
+#include <SDL2/SDL_keyboard.h>
 
 using namespace ui;
 using namespace glm;
@@ -11,7 +12,7 @@ using namespace glm;
 KeyMenu::KeyMenu()
 	: Box()
 {
-	auto config = SaveManager::getInst().getConfig();
+	auto& config = Config::getClientConfig();
 	auto font = ResourceManager::getFont("roboto");
 
 	forward = ParameterButton::create("Avancer", Button::createPaneButton(SDL_GetKeyName(config.forward), font));
@@ -46,4 +47,3 @@ std::unique_ptr<Box> KeyMenu::create() {
 	btn->initialize();
 	return std::unique_ptr<Box>(btn);
 }
-

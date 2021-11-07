@@ -20,16 +20,17 @@ const float sprintMultiplier = 2;
 
 Character::Character(vec3 pos)
     : Entity(CharacterHitbox()),
+      view(CharacterView::FIRST_PERSON),
       caster(100), // distance the player can place blocks
       currentBlock(BlockType::Oak_Stair),
       god(true), sprint(false)
 {
-  node.loc = pos;
+  bodyNode.loc = pos;
   rootNode.sca = vec3(1.85f / 32.f); // steve is 1.85 blocks high, 32 pixels high
   rootNode.rot.y = glm::pi<float>();
   rootNode.loc.y = 9.5 / 32. * 1.85;
   headNode.loc = {0, 6, 0};
-  node.addChild(&rootNode);
+  bodyNode.addChild(&rootNode);
   rootNode.addChild(&headNode);
   rootNode.addChild(&chest.node);
   rootNode.addChild(&head.node);
@@ -46,8 +47,19 @@ Character::Character(vec3 pos)
 
 Character::~Character() {}
 
-#include "debug/Debug.hpp"
 
+void Character::cameraToHead(Camera& camera) {
+	if(view == CharacterView::FIRST_PERSON) {
+		vec3 eyePos = headNode.model * vec4(0, 4, 0, 1);
+		vec3 eyeTarget = headNode.model * vec4(0, 4, 50, 1);
+		camera.setLookAt(eyePos, eyeTarget);
+	}
+	else {
+		vec3 eyePos = headNode.model * vec4(0, 4, 4, 1);
+		vec3 eyeTarget = headNode.model * vec4(0, 4, -100, 1);
+		camera.setLookAt(eyeTarget, eyePos);
+	}
+}
 
 void Character::enableGodMode() {
   if(god) return;
@@ -123,7 +135,7 @@ void Character::placeBlock() {
   auto cast = caster.cast(eyePos + .5f, eyeTarget - eyePos);
 
   if(cast.success) {
-    if(hitbox.collides(node.loc, cast.position + cast.normal)) return;
+    if(hitbox.collides(bodyNode.loc, cast.position + cast.normal)) return;
     Block* block = world.getBlock(cast.position + cast.normal);
     if(!block) return;
     if(block->type != BlockType::Air && block->type != BlockType::Water) return;

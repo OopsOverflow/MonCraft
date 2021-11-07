@@ -5,7 +5,7 @@
 #include "controller/MouseController.hpp"
 #include "controller/KeyboardController.hpp"
 #include "ui/Root.hpp"
-#include "util/SaveManager.hpp"
+#include "save/ClientConfig.hpp"
 
 #include <SDL2/SDL.h>
 
@@ -71,5 +71,5 @@ private:
 
   std::unique_ptr<ui::Root> root;
 
-  Config config;
+  Config::ClientConfig config;
 };

@@ -12,9 +12,10 @@
 #endif
 
 #include "terrain/World.hpp"
-#include "terrain/SkyBox.hpp"
+#include "gl/SkyBox.hpp"
 #include "gl/ShadowMap.hpp"
 #include "gl/Viewport.hpp"
+#include "terrain/Renderer.hpp"
 #include "interface/GameMenu.hpp"
 #include "interface/Overlay.hpp"
 #include "interface/DebugOverlay.hpp"
@@ -25,6 +26,7 @@ public:
   MonCraftScene(Viewport* vp);
 
 private:
+  void updateFov(float dt);
   void updateShadowMaps();
   void updateUniforms(float t);
   void drawSkybox(float t);
@@ -40,7 +42,10 @@ protected:
 
 private:
   World& world;
+  Config::ClientConfig& config;
+  Renderer renderer;
   std::shared_ptr<Character> player;
+  Identifier playerUid;
 
   // view controls
   Viewport* vp;

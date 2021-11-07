@@ -26,9 +26,9 @@ ChunkGenerator::ChunkGenerator(int chunkSize)
     noise.seed(prng::rand());
 }
 
-std::unique_ptr<Chunk> ChunkGenerator::generate(ivec3 cpos) const {
+std::unique_ptr<AbstractChunk> ChunkGenerator::generate(ivec3 cpos) const {
 
-    std::unique_ptr<Chunk> chunk(new Chunk(cpos, chunkSize));
+    std::unique_ptr<AbstractChunk> chunk(AbstractChunk::create(cpos, chunkSize));
 
     ivec3 dpos(0);
     ivec3 orig = cpos * chunkSize;
@@ -95,7 +95,7 @@ Block::unique_ptr_t ChunkGenerator::createBlock(ivec3 pos, Biome const& biome) c
     return Block::create_static<Stone_Block>();
 }
 
-std::vector<Structure::Slice> ChunkGenerator::generateStructures(Chunk& chunk) const {
+std::vector<Structure::Slice> ChunkGenerator::generateStructures(AbstractChunk& chunk) const {
   std::vector<Structure::Slice> slices;
   ivec3 dpos(0);
   ivec3 orig = chunk.chunkPos * chunkSize;

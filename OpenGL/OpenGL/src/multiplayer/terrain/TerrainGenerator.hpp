@@ -47,9 +47,9 @@ private:
   std::mutex workerMutex;
   void genWorker();
 
-  std::shared_ptr<Chunk> getOrGen(glm::ivec3 cpos);
-  void setupNeighbors(std::shared_ptr<Chunk> chunk);
-  void computeChunk(std::shared_ptr<Chunk> chunk);
+  std::shared_ptr<AbstractChunk> getOrGen(glm::ivec3 cpos);
+  void setupNeighbors(std::shared_ptr<AbstractChunk> chunk);
+  void computeChunk(std::shared_ptr<AbstractChunk> chunk);
 
   // utilities for workers
   bool sleepFor(std::chrono::milliseconds);

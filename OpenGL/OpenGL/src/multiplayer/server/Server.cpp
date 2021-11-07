@@ -1,17 +1,19 @@
 #include "Server.hpp"
-#include "../common/NetworkError.hpp"
-#include "../common/Config.hpp"
+#include "../NetworkError.hpp"
 #include "util/Identifier.hpp"
 #include "debug/Debug.hpp"
-#include "util/SaveManager.hpp"
+#include "save/ServerConfig.hpp"
+#include "save/SaveManager.hpp"
+#include "../Serialize.hpp"
 #include <csignal>
 
 using namespace glm;
+using namespace Serde;
 
 Server::Server(unsigned short port)
   : port(port), world(World::getInst())
 {
-  auto& config = SaveManager::getInst().getConfig();
+  auto& config = Config::getServerConfig();
   renderDistH = config.renderDistH;
   renderDistV = config.renderDistV;
 }
@@ -76,7 +78,7 @@ void Server::packet_entity_tick() {
   packet << (sf::Uint64)clients.size();
 
   for(auto const& pair : clients) {
-    packet << pair.second.player.uid;
+    packet << pair.second.uid;
     packet << pair.second.player;
   }
 
@@ -105,8 +107,7 @@ void Server::packet_logout(Identifier uid) {
 void Server::packet_blocks(Identifier uid, BlockArray changedBlocks) {
   sf::Packet packet;
   PacketHeader header(PacketType::BLOCKS);
-  packet << header << uid;
-  changedBlocks.serialize(packet);
+  packet << header << uid << changedBlocks;
   broadcast(packet);
 }
 
@@ -124,12 +125,12 @@ void Server::packet_chunks() {
     auto& client = pair.second;
     int count = std::min(client.waitingChunks.size(), maxChunks);
 
-    std::vector<std::shared_ptr<Chunk>> chunks;
+    std::vector<std::shared_ptr<AbstractChunk>> chunks;
     for(int i = 0, j = 0; i < count; i++) {
       ivec3 cpos = client.waitingChunks.at(j);
       auto chunk = world.chunks.find(cpos);
 
-      if(chunk && chunk->isComputed()) {
+      if(chunk) {
         chunks.push_back(chunk);
         client.waitingChunks.pop_front(); // move chunk to the back (low priority)
         client.waitingChunks.push_back(cpos);
@@ -159,7 +160,7 @@ void Server::handle_login(ClientID client, sf::Packet& packet) {
 
   if(it != clients.end()) {
     std::cout << "[WARN] Login of already registered client" << std::endl;
-    packet_ack_login(it->first, it->second.player.uid);
+    packet_ack_login(it->first, it->second.uid);
   }
   else {
     auto res = clients.emplace(client, Client(uid, clock.getElapsedTime()));
@@ -168,7 +169,7 @@ void Server::handle_login(ClientID client, sf::Packet& packet) {
       packet_ack_login(res.first->first, uid);
       beep();
       std::cout << "client connected: " << std::endl;
-      std::cout << "uid: " << res.first->second.player.uid << std::endl;
+      std::cout << "uid: " << res.first->second.uid << std::endl;
       std::cout << "addr: " << res.first->first.getAddr() << std::endl;
       std::cout << "port: " << res.first->first.getPort() << std::endl;
     }
@@ -185,7 +186,7 @@ void Server::handle_logout(ClientID client) {
     std::cout << "[WARN] Logout of unregistered client" << std::endl;
   }
   else {
-    Identifier uid = it->second.player.uid;
+    Identifier uid = it->second.uid;
     clients.erase(it);
     packet_logout(uid);
     beep();
@@ -220,7 +221,7 @@ void Server::handle_ack_chunks(Client& client, sf::Packet& packet) {
 
 void Server::handle_blocks(Client const& client, sf::Packet& packet) {
   BlockArray blocks;
-  blocks.deserialize(packet);
+  packet >> blocks;
   blocks.copyToWorld();
 
   for(auto cpos : blocks.getChangedChunks()) {
@@ -230,7 +231,7 @@ void Server::handle_blocks(Client const& client, sf::Packet& packet) {
     }
   }
 
-  packet_blocks(client.player.uid, blocks);
+  packet_blocks(client.uid, blocks);
 }
 
 void Server::updateWaitingChunks() {
@@ -283,7 +284,7 @@ void Server::handleTimeouts() {
   for(auto it = clients.cbegin(); it != clients.cend(); ) {
     auto client = *it;
     if(curTime - it->second.lastUpdate > timeout) {
-      Identifier uid = it->second.player.uid;
+      Identifier uid = it->second.uid;
       std::cout << "Client timeout: uid " << uid << std::endl;
       it = clients.erase(it);
       erased.push_back(uid);

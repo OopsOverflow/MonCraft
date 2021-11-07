@@ -1,6 +1,6 @@
 // websockets stuff
 #include "WebSocketServer.hpp"
-#include "multiplayer/common/Config.hpp"
+#include "save/ServerConfig.hpp"
 
 #include <SFML/Network.hpp>
 
@@ -31,8 +31,9 @@ void WebSocketServer::sigStop(int signal) {
 }
 
 void WebSocketServer::loop() {
+  auto& config = Config::getServerConfig();
   sf::Clock clock;
-  const sf::Time frameDuration = sf::milliseconds(NetworkConfig::WEBSOCKET_SERVER_TICK);
+  const sf::Time frameDuration = sf::milliseconds(config.webSocketServerTick);
 
   while(!stopSignal) {
     sf::Time start = clock.getElapsedTime();

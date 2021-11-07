@@ -1,17 +1,17 @@
 #include "ClientServer.hpp"
 #include <iostream>
-#include "multiplayer/common/Config.hpp"
+#include "save/ServerConfig.hpp"
 #include "terrain/World.hpp"
 #include "entity/character/Character.hpp"
-#include "util/SaveManager.hpp"
+#include "save/SaveManager.hpp"
 
 using namespace glm;
 
 ClientServer::ClientServer()
   : world(World::getInst())
 {
-  auto newPlayer = std::make_unique<Character>(NetworkConfig::SPAWN_POINT);
-  auto entity = World::getInst().entities.add(0, std::move(newPlayer));
+  auto newPlayer = std::make_unique<Character>(Config::getServerConfig().spawnPoint);
+  auto entity = World::getInst().entities.add(getUid(), std::move(newPlayer));
   player = std::dynamic_pointer_cast<Character>(entity);
 }
 
@@ -51,4 +51,8 @@ bool ClientServer::login() {
 
 std::shared_ptr<Character> ClientServer::getPlayer() {
   return player;
+}
+
+Identifier ClientServer::getUid() {
+  return 0;
 }

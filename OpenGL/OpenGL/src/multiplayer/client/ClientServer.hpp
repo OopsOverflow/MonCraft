@@ -13,6 +13,7 @@ public:
   void update() override;
   bool login() override;
   std::shared_ptr<Character> getPlayer() override;
+  Identifier getUid() override;
 
 private:
   std::shared_ptr<Character> player;

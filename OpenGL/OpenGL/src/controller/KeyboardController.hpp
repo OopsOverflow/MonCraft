@@ -2,7 +2,7 @@
 
 #include "entity/character/Character.hpp"
 #include "ui/Key.hpp"
-#include "util/SaveManager.hpp"
+#include "save/ClientConfig.hpp"
 
 #include <glm/glm.hpp>
 
@@ -17,11 +17,11 @@ public:
 private:
   bool isDoubleSpace();
 
-  Config& config;
+  Config::ClientConfig& config;
 
   glm::vec3 direction;
   State state;
-  View view;
+  CharacterView view;
 
   bool sprint;
   bool toggleGod;

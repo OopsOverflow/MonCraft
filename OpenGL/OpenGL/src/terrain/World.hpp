@@ -4,7 +4,6 @@
 #include <glm/glm.hpp>
 
 #include "ChunkMap.hpp"
-#include "gl/Camera.hpp"
 #include "entity/Entities.hpp"
 
 class Entity;
@@ -17,16 +16,6 @@ class World
 {
 public:
   static World& getInst();
-
-  /**
-  * Renders the visible chunks.
-  */
-  void render(Camera const& camera);
-
-  /**
-  * Renders the visible chunks.
-  */
-  void renderSolid(Camera const& camera);
 
   /**
   * Gets a block in the world.
@@ -50,5 +39,4 @@ public:
 private:
   World();
   ~World();
-
 };

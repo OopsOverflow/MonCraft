@@ -1,20 +1,16 @@
 #include "Camera.hpp"
 #include "../gl/Shader.hpp"
-#include "util/SaveManager.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 
-Camera::Camera(glm::ivec2 size, const glm::vec3& position, const glm::vec3& center, Projection projType)
+Camera::Camera(glm::ivec2 size)
   : view(1.f), projection(1.f),
-    position(position), center(center),
-    near_(0.1f),
-    size(size), projType(projType)
+    position(0.f), center(position + glm::vec3(0, 0, -1)),
+    near_(0.1f), far_(1000.f), fovY(75.f),
+    size(size), projType(Projection::PROJECTION_PERSPECTIVE)
 {
-  auto const& config = SaveManager::getInst().getConfig();
-  far_ = 16.0f * (float)sqrt(2 * pow(config.renderDistH, 2) + pow(config.renderDistV, 2)); //TODO world config
-  fovY = config.fov;
   computeView();
   computeProjection();
 }
@@ -45,7 +41,6 @@ void Camera::setLookAt(const glm::vec3 &position, const glm::vec3 &center) {
   computeView();
   computeProjection();
 }
-
 
 void Camera::translate(const glm::vec3 &translation, bool localSpace) {
   glm::mat4 trans = glm::translate(glm::mat4(1.f), translation);
@@ -136,6 +131,17 @@ void Camera::rotatePixels(int x, int y, bool localSpace) {
 
 void Camera::setFovY(float fovY) {
   this->fovY = fovY;
+  computeProjection();
+}
+
+void Camera::setFar(float f) {
+  far_ = f;
+  computeProjection();
+}
+
+void Camera::setNear(float n) {
+  near_ = n;
+  computeProjection();
 }
 
 // ----------- getters -----------
@@ -147,6 +153,14 @@ float Camera::getFovY() const {
 // see https://en.wikipedia.org/wiki/Field_of_view_in_video_games#Field_of_view_calculations
 float Camera::getFovX() const {
   return glm::degrees(2 * atan(tan(glm::radians(fovY) * 0.5f) * size.x / size.y));
+}
+
+float Camera::getFar() const {
+  return far_;
+}
+
+float Camera::getNear() const {
+  return near_;
 }
 
 glm::ivec2 Camera::getSize() const {

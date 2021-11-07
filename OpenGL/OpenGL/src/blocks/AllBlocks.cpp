@@ -1,4 +1,5 @@
 #include "AllBlocks.hpp"
+#include "save/SaveManager.hpp"
 
 #include "Air_Block.hpp"
 #include "Grass_Block.hpp"
@@ -67,12 +68,14 @@ BlockType AllBlocks::nextBlock(BlockType type) {
 }
 
 std::ostream& AllBlocks::serialize(std::ostream& stream, Block* block) {
+  using namespace Serde;
   stream << block->type;
   block->serialize(stream);
   return stream;
 }
 
 Block::unique_ptr_t AllBlocks::deserialize(std::istream& stream) {
+  using namespace Serde;
   BlockType type;
   stream >> type;
   auto b = create_static(type);

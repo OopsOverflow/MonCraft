@@ -27,6 +27,7 @@ class Client {
 public:
   Client(Identifier uid, sf::Time creation);
 
+  Identifier uid;
   Entity player;
   std::deque<glm::ivec3> waitingChunks;
   bool ack;

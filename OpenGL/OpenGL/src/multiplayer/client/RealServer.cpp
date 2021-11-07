@@ -1,17 +1,21 @@
 #include "RealServer.hpp"
-#include "../common/NetworkError.hpp"
-#include "../common/Config.hpp"
+#include "../NetworkError.hpp"
+#include "save/ServerConfig.hpp"
 #include <iostream>
 #include "debug/Debug.hpp"
 #include "blocks/AllBlocks.hpp"
-#include "util/SaveManager.hpp"
+#include "save/SaveManager.hpp"
+#include "../Serialize.hpp"
 
 using namespace glm;
+using namespace Serde;
 
 RealServer::RealServer(std::string url, unsigned short port)
   : addr(url), port(port),
-    frameDuration(sf::milliseconds(NetworkConfig::SERVER_TICK)),
-    world(World::getInst()), serverAck(true)
+    frameDuration(sf::milliseconds(Config::getServerConfig().serverTick)),
+    world(World::getInst()),
+    playerUid(generateIdentifier()),
+    serverAck(true)
 {
   lastUpdate = clock.getElapsedTime() - frameDuration - frameDuration; // needs update
 
@@ -23,8 +27,7 @@ RealServer::RealServer(std::string url, unsigned short port)
 
   lastServerUpdate = clock.getElapsedTime();
 
-  Identifier playerUid = generateIdentifier();
-  auto newPlayer = std::make_unique<Character>(NetworkConfig::SPAWN_POINT);
+  auto newPlayer = std::make_unique<Character>(Config::getServerConfig().spawnPoint);
   auto entity = world.entities.add(playerUid, std::move(newPlayer));
   player = std::dynamic_pointer_cast<Character>(entity);
 }
@@ -112,12 +115,12 @@ void RealServer::handle_entity_tick(sf::Packet& packet) {
 
     auto entity = world.entities.get(uid);
 
-    if(uid == player->uid) {
-      entity->consume(packet);
+    if(uid == playerUid) {
+      consume(*entity, packet);
     }
     else {
       if(entity == nullptr) { // create the player if not found
-        world.entities.add(uid, std::make_unique<Character>(NetworkConfig::SPAWN_POINT));
+        world.entities.add(uid, std::make_unique<Character>(Config::getServerConfig().spawnPoint));
         entity = world.entities.get(uid);
       }
 
@@ -135,8 +138,7 @@ void RealServer::packet_blocks() {
   if(!blocks.empty()) {
     sf::Packet packet;
     PacketHeader header(PacketType::BLOCKS);
-    packet << header;
-    blocks.serialize(packet);
+    packet << header << blocks;
     blocks.clear();
 
     auto send_res = socket.send(packet, addr, port);
@@ -164,7 +166,7 @@ void RealServer::packet_login() {
   sf::Packet packet;
   PacketHeader header(PacketType::LOGIN);
 
-  packet << header << player->uid;
+  packet << header << playerUid;
 
   auto send_res = socket.send(packet, addr, port);
 
@@ -239,9 +241,9 @@ void RealServer::handle_blocks(sf::Packet& packet) {
   Identifier uid;
   packet >> uid;
 
-  if(uid != player->uid) {
+  if(uid != playerUid) {
     BlockArray blocks;
-    blocks.deserialize(packet);
+    packet >> blocks;
     blocks.copyToWorld();
   }
 }
@@ -255,18 +257,18 @@ void RealServer::handle_chunks(sf::Packet& packet) {
     sf::Uint8 chunkSize;
     glm::ivec3 chunkPos;
     packet >> chunkSize >> chunkPos;
-    auto newChunk = std::make_unique<Chunk>(chunkPos, chunkSize);
+    auto newChunk = AbstractChunk::create(chunkPos, chunkSize);
     packet >> *newChunk;
 
     if(!world.chunks.find(chunkPos)) {
-      auto chunk = world.chunks.insert(chunkPos, std::move(newChunk));
+      auto chunk = world.chunks.insert(chunkPos, std::unique_ptr<AbstractChunk>(newChunk));
 
       for(size_t j = 0; j < 26; j++) {
         if(!chunk->neighbors[j].lock()) {
-          ivec3 thisPos = chunkPos + Chunk::neighborOffsets[j];
+          ivec3 thisPos = chunkPos + AbstractChunk::neighborOffsets[j];
           if(auto neigh = world.chunks.find(thisPos)) {
             chunk->neighbors[j] = neigh;
-            neigh->neighbors[Chunk::neighborOffsetsInverse[j]] = chunk;
+            neigh->neighbors[AbstractChunk::neighborOffsetsInverse[j]] = chunk;
             if(neigh->hasAllNeighbors()) {
               neigh->compute();
             }
@@ -287,4 +289,8 @@ void RealServer::handle_chunks(sf::Packet& packet) {
 
 std::shared_ptr<Character> RealServer::getPlayer() {
   return player;
+}
+
+Identifier RealServer::getUid() {
+  return playerUid;
 }

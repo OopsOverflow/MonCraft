@@ -3,7 +3,7 @@
 #include <glm/glm.hpp>
 #include <array>
 
-#include "terrain/Chunk.hpp"
+#include "terrain/AbstractChunk.hpp"
 #include "noise/Noise.hpp"
 #include "Structure.hpp"
 #include "BiomeMap.hpp"
@@ -19,13 +19,13 @@ public:
   /**
   * Generates a chunk at the given chunk index.
   */
-  std::unique_ptr<Chunk> generate(glm::ivec3 cpos) const;
+  std::unique_ptr<AbstractChunk> generate(glm::ivec3 cpos) const;
 
   /**
   * Generates the structures inside the given chunk.
   * returns a list of slices to be applied to the chunks.
   */
-  Structure::slices_t generateStructures(Chunk& chunk) const;
+  Structure::slices_t generateStructures(AbstractChunk& chunk) const;
 
 private:
   Block::unique_ptr_t createBlock(glm::ivec3 pos, Biome const& biome) const;

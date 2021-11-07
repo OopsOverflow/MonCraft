@@ -5,11 +5,12 @@
 using namespace glm;
 
 ShadowMap::ShadowMap(int size)
-  : camera(ivec2(size), {10, 10, 10}, {0, 0, 0}, Projection::PROJECTION_ORTHOGRAPHIC),
+  : camera(ivec2(size)),
+    shadowMatrices(),
     shader(ResourceManager::getShader("shadow")),
-    distance(100.f),
-    size(size), shadowMatrices()
+    distance(100.f), size(size)
 {
+  camera.setProjectionType(Projection::PROJECTION_ORTHOGRAPHIC);
   glGenFramebuffers(1, &fbo);
   glGenTextures(3, depthTex);
 

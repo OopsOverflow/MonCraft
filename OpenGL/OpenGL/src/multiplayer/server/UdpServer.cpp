@@ -1,9 +1,8 @@
 #include "UdpServer.hpp"
-#include "../common/NetworkError.hpp"
-#include "../common/Config.hpp"
+#include "../NetworkError.hpp"
+#include "save/ServerConfig.hpp"
 #include "util/Identifier.hpp"
 #include "debug/Debug.hpp"
-#include "util/SaveManager.hpp"
 
 bool UdpServer::stopSignal = false;
 
@@ -21,8 +20,9 @@ UdpServer::~UdpServer()
 {}
 
 void UdpServer::run() {
+  auto& config = Config::getServerConfig();
   sf::Clock clock;
-  const sf::Time frameDuration = sf::milliseconds(NetworkConfig::SERVER_TICK);
+  const sf::Time frameDuration = sf::milliseconds(config.serverTick);
 
   std::signal(SIGINT, UdpServer::sigStop);
 

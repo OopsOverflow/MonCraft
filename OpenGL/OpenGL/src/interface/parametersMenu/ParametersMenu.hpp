@@ -1,6 +1,5 @@
 #pragma once
 #include "ui/ui.hpp"
-#include "util/SaveManager.hpp"
 
 class ParametersMenu : public ui::Image
 {
@@ -18,7 +17,7 @@ public:
 private:
 	std::unique_ptr<ui::Box> mainDisplay;
 	std::unique_ptr<ui::Box> topDiv;
-	std::unique_ptr<ui::Text> parametersTitle;	
+	std::unique_ptr<ui::Text> parametersTitle;
 	std::unique_ptr<ui::Box> folderDiv;
 	std::unique_ptr<ui::Box> menuDiv;
 

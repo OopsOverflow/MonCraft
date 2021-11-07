@@ -3,14 +3,10 @@
 #include <glm/glm.hpp>
 
 #include "Hitbox.hpp"
-#include "Member.hpp"
 #include "Node.hpp"
-#include "gl/Camera.hpp"
-#include "audio/SoundEffect.hpp"
-#include "multiplayer/common/Packet.hpp"
+#include "multiplayer/Packet.hpp"
 #include "util/Identifier.hpp"
 
-enum class View { FIRST_PERSON, THIRD_PERSON };
 enum class State { Walking, Idle };
 
 /**
@@ -45,12 +41,6 @@ public:
 	void turn(glm::vec2 rotation);
 
 	/**
- 	 * Moves a camera to the head of this creature. The camera will be the eyes
-	 * of this entity.
-	 */
-	void cameraToHead(Camera& cam);
-
-	/**
 	 * Update the state of the entity
 	 */
 	virtual void update(float dt);
@@ -61,30 +51,19 @@ public:
 
 	void setPosition(glm::vec3 pos);
 
-	View view;
+	static float gravity;
+
 	State state;
-	Identifier uid;
 
-	friend sf::Packet& operator<<(sf::Packet& packet, Entity const& entity);
-	friend sf::Packet& operator>>(sf::Packet& packet, Entity& entity);
-	sf::Packet& consume(sf::Packet& packet);
+	Node bodyNode;
+	Node headNode;
 
-	Node getHead() const { return headNode; }
-	Node getNode() const { return node; }
-
-	void setHead(Node node) { this->headNode = node; }
-	void setNode(Node node) { this->node = node; }
-
-protected:
 	float maxSpeed;
 	float maxAccel;
 	float verticalFriction;
 	float horizontalFriction;
-	float gravity;
 	float jumpSpeed;
 	float maxFallSpeed;
-	float playerFovY;
-	float defaultFovY;
 
 	glm::vec3 speed;
 	glm::vec3 accel;
@@ -92,7 +71,4 @@ protected:
 
 	bool onFloor;
 	Hitbox hitbox;
-
-	Node node;
-	Node headNode;
 };

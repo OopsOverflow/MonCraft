@@ -2,6 +2,7 @@
 
 #include "Orientable_Block.hpp"
 #include "model/StairModel.hpp"
+#include "save/SaveManager.hpp"
 
 class Oak_Stair_Block : public Orientable_Block {
 public:
@@ -19,11 +20,13 @@ public:
     }
 
     virtual std::ostream& serialize(std::ostream &stream) const override {
+        using namespace Serde;
         stream << facing;
         return stream;
     }
 
     virtual Block* deserialize(std::istream &stream) override {
+        using namespace Serde;
         Facing facing;
         stream >> facing;
         return new Oak_Stair_Block(facing);

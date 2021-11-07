@@ -1,5 +1,5 @@
 #include "Client.hpp"
-#include "../common/Config.hpp"
+#include "save/ServerConfig.hpp"
 #include "entity/character/CharacterHitbox.hpp"
 
 
@@ -21,10 +21,9 @@ bool ClientID::operator<(ClientID const& lhs) const {
 
 
 Client::Client(Identifier uid, sf::Time creation)
-  : player(CharacterHitbox()), lastUpdate(creation)
+  : uid(uid), player(CharacterHitbox()), lastUpdate(creation)
 {
-  player.uid = uid;
-  player.setPosition(NetworkConfig::SPAWN_POINT);
+  player.setPosition(Config::getServerConfig().spawnPoint);
 }
 
 

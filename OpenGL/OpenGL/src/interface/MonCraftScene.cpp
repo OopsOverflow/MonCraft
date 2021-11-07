@@ -2,18 +2,19 @@
 
 #include "MonCraftScene.hpp"
 #include "gl/ResourceManager.hpp"
-#include "multiplayer/common/Config.hpp"
+#include "save/ClientConfig.hpp"
+#include "save/ServerConfig.hpp"
 
 #include "multiplayer/client/RealServer.hpp"
 #include "multiplayer/client/ClientServer.hpp"
 #include "ui/ui.hpp"
-#include "util/SaveManager.hpp"
 #include "debug/Debug.hpp"
 
 using namespace glm;
 using namespace ui;
 
-std::shared_ptr<Server> createServer(Config const& config) {
+std::shared_ptr<Server> createServer() {
+    auto& config = Config::getClientConfig();
     std::unique_ptr<Server> server;
     if (config.multiplayer) {
         server = std::make_unique<RealServer>(config.serverAddr, config.serverPort);
@@ -28,15 +29,18 @@ std::shared_ptr<Server> createServer(Config const& config) {
 MonCraftScene::MonCraftScene(Viewport* vp)
     : Component(),
       world(World::getInst()),
+      config(Config::getClientConfig()),
       vp(vp),
-      camera(ivec2(1), {0, 32, 10}, {0, 32, 0}),
+      camera(ivec2(1)),
       caster(100.f),
       shadows(4096),
       fogEnabled(false),
       sunSpeed(0.0075f), skyboxSpeed(0.0075f),
       captured(false)
 {
-    Config config = SaveManager::getInst().getConfig();
+    auto const& serverConf = Config::getServerConfig();
+    camera.setFar(16.0f * (float)sqrt(2 * pow(serverConf.renderDistH, 2) + pow(serverConf.renderDistV, 2)));
+    camera.setFovY(config.fov);
 
     // load resources
     shader = ResourceManager::getShader("simple");
@@ -47,9 +51,10 @@ MonCraftScene::MonCraftScene(Viewport* vp)
         normalMapID[i] = ResourceManager::getTexture("waterNormal" + std::to_string(i));
     }
 
-    server = createServer(config);
+    server = createServer();
     server->start();
     player = server->getPlayer();
+    playerUid = server->getUid();
 
     // UI stuff
     gameMenu = std::make_unique<GameMenu>();
@@ -102,16 +107,16 @@ void MonCraftScene::updateShadowMaps() {
     shadows.update(sunDir);
     shadows.attach(camera, Frustum::NEAR);
     shadows.beginFrame(Frustum::NEAR);
-    world.renderSolid(shadows.camera);
+    renderer.renderSolid(shadows.camera);
     world.entities.renderAll();
 
     shadows.attach(camera, Frustum::MEDIUM);
     shadows.beginFrame(Frustum::MEDIUM);
-    world.renderSolid(shadows.camera);
+    renderer.renderSolid(shadows.camera);
 
     shadows.attach(camera, Frustum::FAR);
     shadows.beginFrame(Frustum::FAR);
-    world.renderSolid(shadows.camera);
+    renderer.renderSolid(shadows.camera);
     shadows.endFrame();
 }
 
@@ -143,6 +148,16 @@ void MonCraftScene::updateUniforms(float t) {
     }
 }
 
+void MonCraftScene::updateFov(float dt) {
+  const float maxFov = 180.0f;
+  const float smoothing = 0.005f;
+  const float transition = 10.f;
+  const float speed = glm::length(player->speed);
+  const float fov = camera.getFovY();
+  const auto targetFov = fov - (maxFov + (config.fov - maxFov) * exp(-smoothing * speed));
+  camera.setFovY(fov - targetFov * transition * dt);
+}
+
 void MonCraftScene::drawSkybox(float t) {
     sky.render(camera, t * skyboxSpeed);
     shader->activate();
@@ -153,8 +168,8 @@ void MonCraftScene::drawSkybox(float t) {
 void MonCraftScene::drawEntities() {
     shader->bindTexture(TEXTURE_COLOR, texCharacter);
     for(auto pair : world.entities) {
-        if(pair.first == player->uid) {
-            if(player->view == View::THIRD_PERSON)
+        if(pair.first == playerUid) {
+            if(player->view == CharacterView::THIRD_PERSON)
                 player->render();
         }
         else {
@@ -164,7 +179,6 @@ void MonCraftScene::drawEntities() {
 }
 
 void MonCraftScene::draw() {
-
     glEnable(GL_DEPTH_TEST);
 
     // updates
@@ -181,6 +195,7 @@ void MonCraftScene::draw() {
     camera.setSize(getSize());
 
     player->cameraToHead(camera);
+    updateFov(world.dt);
 
     // update sun
     float sunTime = quarter_pi<float>() + world.t * sunSpeed; // sun is fixed
@@ -205,7 +220,7 @@ void MonCraftScene::draw() {
 
     // draw the terrain
     shader->bindTexture(TEXTURE_COLOR, texAtlas);
-    world.render(camera);
+    renderer.render(camera);
 
     // draw the entities
     drawEntities();

@@ -37,12 +37,6 @@ enum class BlockFace { TOP, BOTTOM, FRONT, RIGHT, BACK, LEFT, INNER };
 
 enum class Facing { NORTH, SOUTH, EAST, WEST, REV_NORTH, REV_SOUTH, REV_EAST, REV_WEST };
 
-std::ostream& operator<<(std::ostream& stream, BlockType type);
-std::istream& operator>>(std::istream& stream, BlockType& type);
-
-std::ostream& operator<<(std::ostream& stream, Facing facing);
-std::istream& operator>>(std::istream& stream, Facing& facing);
-
 class Block
 {
 public:

@@ -2,7 +2,8 @@
 #include <algorithm>
 
 #include "TerrainGenerator.hpp"
-#include "util/SaveManager.hpp"
+#include "save/ServerConfig.hpp"
+#include "save/SaveManager.hpp"
 
 using namespace glm;
 using namespace std::chrono_literals;
@@ -16,7 +17,7 @@ TerrainGenerator::TerrainGenerator()
     generator(chunkSize),
     world(World::getInst())
 {
-  auto& config = SaveManager::getInst().getConfig();
+  auto& config = Config::getServerConfig();
   threadCount = config.threadCount;
   startGeneration();
 }
@@ -49,15 +50,15 @@ void TerrainGenerator::remFromBusyList(ivec3 cpos) {
   else throw std::runtime_error("remFromBusyList failed");
 }
 
-std::shared_ptr<Chunk> TerrainGenerator::getOrGen(ivec3 cpos) {
+std::shared_ptr<AbstractChunk> TerrainGenerator::getOrGen(ivec3 cpos) {
   static const auto sleep = 10ms;
 
   if(auto neigh = world.chunks.find(cpos)) {
     return neigh;
   }
   else if(addToBusyList(cpos)) {
-      std::shared_ptr<Chunk> chunk;
-      std::unique_ptr<Chunk> savedChunk = SaveManager::getChunk(cpos);
+      std::shared_ptr<AbstractChunk> chunk;
+      std::unique_ptr<AbstractChunk> savedChunk = SaveManager::loadChunk(cpos);
       if (!savedChunk) {
         chunk = world.chunks.insert(cpos, generator.generate(cpos));
         sliceMap.insert(generator.generateStructures(*chunk));
@@ -75,13 +76,13 @@ std::shared_ptr<Chunk> TerrainGenerator::getOrGen(ivec3 cpos) {
   }
 }
 
-void TerrainGenerator::setupNeighbors(std::shared_ptr<Chunk> chunk) {
+void TerrainGenerator::setupNeighbors(std::shared_ptr<AbstractChunk> chunk) {
   for(size_t j = 0; j < 26; j++) {
     if(!chunk->neighbors[j].lock()) {
-      ivec3 thisPos = chunk->chunkPos + Chunk::neighborOffsets[j];
+      ivec3 thisPos = chunk->chunkPos + AbstractChunk::neighborOffsets[j];
       if(auto neigh = world.chunks.find(thisPos)) {
         chunk->neighbors[j] = neigh;
-        neigh->neighbors[Chunk::neighborOffsetsInverse[j]] = chunk;
+        neigh->neighbors[AbstractChunk::neighborOffsetsInverse[j]] = chunk;
         if(neigh->hasAllNeighbors()) {
           computeChunk(neigh);
         }
@@ -94,7 +95,7 @@ void TerrainGenerator::setupNeighbors(std::shared_ptr<Chunk> chunk) {
   }
 }
 
-void TerrainGenerator::computeChunk(std::shared_ptr<Chunk> chunk) {
+void TerrainGenerator::computeChunk(std::shared_ptr<AbstractChunk> chunk) {
   auto slices = sliceMap.pop(chunk->chunkPos);
   for(auto const& slice : slices) {
     Structure::applySlice(*chunk, slice);

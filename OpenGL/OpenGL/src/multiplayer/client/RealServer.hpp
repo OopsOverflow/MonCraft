@@ -5,7 +5,7 @@
 #include <glm/glm.hpp>
 #include <functional>
 #include "util/Identifier.hpp"
-#include "../common/Packet.hpp"
+#include "../Packet.hpp"
 #include "entity/character/Character.hpp"
 #include "Server.hpp"
 #include "multiplayer/terrain/PendingChunks.hpp"
@@ -24,6 +24,11 @@ public:
    * Returns nullptr if the player was not created.
    */
   std::shared_ptr<Character> getPlayer() override;
+
+  /**
+  * Returns 0 if the player was not created.
+  */
+  Identifier getUid() override;
 
 private:
   void packet_login();
@@ -48,6 +53,7 @@ private:
   sf::Clock clock;
   World& world;
   std::shared_ptr<Character> player;
+  Identifier playerUid;
   PendingChunks pendingChunks;
 
   bool serverAck;

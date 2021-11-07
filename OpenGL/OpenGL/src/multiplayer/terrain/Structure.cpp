@@ -4,7 +4,7 @@
 
 using namespace glm;
 
-void Structure::applySlice(Chunk& chunk, Slice const& slice) {
+void Structure::applySlice(AbstractChunk& chunk, Slice const& slice) {
   ivec3 dpos;
   for(dpos.x = slice.start.x; dpos.x < slice.end.x; dpos.x++) {
     for(dpos.y = slice.start.y; dpos.y < slice.end.y; dpos.y++) {
@@ -62,7 +62,7 @@ Oak_Tree::Oak_Tree()
 }
 
 
-std::vector<Oak_Tree::Slice> Oak_Tree::spawn(Chunk& chunk, ivec3 pos) const {
+std::vector<Oak_Tree::Slice> Oak_Tree::spawn(AbstractChunk& chunk, ivec3 pos) const {
     std::vector<Oak_Tree::Slice> slices;
     ivec3 origin(2, -1, 2); // the tree is generated centered on the trunk, one block above
     ivec3 start = pos - origin;
@@ -137,7 +137,7 @@ Birch_Tree::Birch_Tree()
 }
 
 
-std::vector<Birch_Tree::Slice> Birch_Tree::spawn(Chunk& chunk, ivec3 pos) const {
+std::vector<Birch_Tree::Slice> Birch_Tree::spawn(AbstractChunk& chunk, ivec3 pos) const {
     std::vector<Birch_Tree::Slice> slices;
     ivec3 origin(2, -1, 2); // the tree is generated centered on the trunk, one block above
     ivec3 start = pos - origin;
@@ -193,7 +193,7 @@ EditPlateforme::EditPlateforme()
 }
 
 
-std::vector<EditPlateforme::Slice> EditPlateforme::spawn(Chunk& chunk, ivec3 pos) const {
+std::vector<EditPlateforme::Slice> EditPlateforme::spawn(AbstractChunk& chunk, ivec3 pos) const {
     std::vector<EditPlateforme::Slice> slices;
     ivec3 origin(0, -1, 0); // the tree is generated centered on the trunk, one block above
     ivec3 start = pos - origin;
@@ -243,7 +243,7 @@ Cactus::Cactus()
 }
 
 
-std::vector<Cactus::Slice> Cactus::spawn(Chunk& chunk, ivec3 pos) const {
+std::vector<Cactus::Slice> Cactus::spawn(AbstractChunk& chunk, ivec3 pos) const {
     std::vector<Cactus::Slice> slices;
     ivec3 origin(0, -1, 0); // the tree is generated centered on the trunk, one block above
     ivec3 start = pos - origin;
