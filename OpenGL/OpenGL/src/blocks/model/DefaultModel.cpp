@@ -16,18 +16,19 @@ DefaultBlockModel* DefaultBlockModel::get() {
 face_t<1> DefaultBlockModel::genOcclusion(glm::ivec3 pos, std::array<Block*, 26> const& neighbors, BlockFace face) const {
   std::array<GLfloat, 4> occl{};
 
-  auto const& offsets = blockOcclusionOffsets[static_cast<size_t>(face)];
-  std::array<bool, 8> b{};
+  std::array<bool, 9> b{};
 
-  for(int i = 0; i < 8; i++) {
+  auto const& offsets = blockOcclusionOffsets[static_cast<size_t>(face)];
+
+  for(int i = 0; i < 9; i++) {
     Block* neigh = neighbors[offsets[i]];
     b[i] = neigh->isSolid() && !neigh->isTransparent();
   }
 
-  occl[0] = (float)(b[0] + b[1] + b[2]);
-  occl[1] = (float)(b[2] + b[3] + b[4]);
-  occl[2] = (float)(b[4] + b[5] + b[6]);
-  occl[3] = (float)(b[6] + b[7] + b[0]);
+  occl[0] = min((float)(b[0] + b[1] + b[2] + b[8]), 3.f);
+  occl[1] = min((float)(b[2] + b[3] + b[4] + b[8]), 3.f);
+  occl[2] = min((float)(b[4] + b[5] + b[6] + b[8]), 3.f);
+  occl[3] = min((float)(b[6] + b[7] + b[0] + b[8]), 3.f);
 
   return occl;
 }
@@ -77,9 +78,15 @@ void DefaultBlockModel::genFace(glm::ivec3 pos, BlockFace face, Block* block, st
 void DefaultBlockModel::generateMesh(ivec3 pos, Block* block, std::array<Block*, 26> const& neighbors, MeshData& data) const {
   for(auto const& off : blockFaceOffsets) {
     auto neigh = neighbors[off.first];
-    if(!neigh->isOpaque() || (neigh->isTransparent() && !block->isTransparent())) {
+
+    if(neigh->isOpaque())
+      continue;
+
+    else if(block->isTransparent() && block->type == neigh->type)
+      continue;
+
+    else
       genFace(pos, off.second, block, neighbors, data);
-    }
   }
 }
 
@@ -190,24 +197,19 @@ const QuadMesh<3> DefaultBlockModel::meshNormals {
 
 // tells which neighbors to look at when computing a block occlusion
 // the ints stored are indices to a neighbor in a neighbor array (see Chunk.hpp neighbors)
-const std::array<std::array<int, 8>, 6> DefaultBlockModel::blockOcclusionOffsets = {
-  std::array<int, 8> { // TOP
-    20, 21, 3, 12, 11, 13, 4, 22,
-  },
-  std::array<int, 8> { // BOTTOM
-    14, 15, 6, 24, 23, 25, 7, 16,
-  },
-  std::array<int, 8> { // FRONT
-    9, 12, 3, 21, 18, 24, 6, 15,
-  },
-  std::array<int, 8> { // RIGHT
-    10, 13, 11, 12, 9, 15, 14, 16,
-  },
-  std::array<int, 8> { // BACK
-    19, 22, 4, 13, 10, 16, 7, 25,
-  },
-  std::array<int, 8> { // LEFT
-    18, 21, 20, 22, 19, 25, 23, 24,
+const std::array<std::array<int, 9>, 6> DefaultBlockModel::blockOcclusionOffsets = {
+  std::array<int, 9> { // TOP
+    20, 21, 3, 12, 11, 13, 4, 22, 2,
+  }, { // BOTTOM
+    14, 15, 6, 24, 23, 25, 7, 16, 5,
+  }, { // FRONT
+    9, 12, 3, 21, 18, 24, 6, 15, 0,
+  }, { // RIGHT
+    10, 13, 11, 12, 9, 15, 14, 16, 8,
+  }, { // BACK
+    19, 22, 4, 13, 10, 16, 7, 25, 1,
+  }, { // LEFT
+    18, 21, 20, 22, 19, 25, 23, 24, 17,
   },
 };
 
@@ -215,12 +217,12 @@ const std::array<std::array<int, 8>, 6> DefaultBlockModel::blockOcclusionOffsets
 // the ints stored are indices to a neighbor in a neighbor array (see Chunk.hpp neighbors)
 const std::array<std::pair<int, BlockFace>, 6> DefaultBlockModel::blockFaceOffsets = {
   std::pair<int, BlockFace>
-  {17, BlockFace::LEFT},
-  {8, BlockFace::RIGHT},
-  {5, BlockFace::BOTTOM},
   {2, BlockFace::TOP},
-  {1, BlockFace::BACK},
+  {5, BlockFace::BOTTOM},
   {0, BlockFace::FRONT},
+  {8, BlockFace::RIGHT},
+  {1, BlockFace::BACK},
+  {17, BlockFace::LEFT},
 };
 
 const face_t<2> DefaultBlockModel::faceNormalMap = {

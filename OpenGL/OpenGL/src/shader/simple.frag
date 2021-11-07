@@ -9,7 +9,7 @@ smooth in vec3 vertexPosition;
 smooth in vec3 vertexNormal;
 smooth in float vertexOcclusion;
 centroid in vec2 txrCoords;
-smooth in vec2 normalCoords;
+centroid in vec2 normalCoords;
 smooth in vec3 shadowCoords[3];
 smooth in mat3 TBN;
 

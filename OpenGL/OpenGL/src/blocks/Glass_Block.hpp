@@ -13,6 +13,7 @@ public:
       return {5, 0};
     }
 
+    bool isOpaque() const override { return false; }
     bool isTransparent() const override { return true; }
 
 private:

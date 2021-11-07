@@ -81,7 +81,7 @@ public:
     /**
      * A transparent block has an alpha channel. it is sorted to deal properly
      * with draw orders. Internal faces of two adjacent transparent blocks
-     * are drawn (see tree leaves).
+     * are not drawn (see glass).
      */
     virtual bool isTransparent() const { return false; }
 

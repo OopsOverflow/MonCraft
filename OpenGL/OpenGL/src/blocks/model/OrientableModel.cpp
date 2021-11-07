@@ -99,14 +99,20 @@ void OrientableModel::genFace(glm::ivec3 pos, BlockFace face, Orientable_Block* 
 }
 
 void OrientableModel::generateMesh(ivec3 pos, Block* block, std::array<Block*, 26> const& neighbors, MeshData& data) const {
-  auto stair = dynamic_cast<Orientable_Block*>(block);
+  auto orient = dynamic_cast<Orientable_Block*>(block);
 
   for(auto const& off : blockFaceOffsets) {
     auto neigh = neighbors[off.first];
-    if(!neigh->isOpaque()) {
-      genFace(pos, off.second, stair, neighbors, data);
-    }
+
+    if(neigh->isOpaque())
+      continue;
+
+    else if(block->isTransparent() && block->type == neigh->type)
+      continue;
+
+    else
+      genFace(pos, off.second, orient, neighbors, data);
   }
 
-  genFace(pos, BlockFace::INNER, stair, neighbors, data);
+  genFace(pos, BlockFace::INNER, orient, neighbors, data);
 }

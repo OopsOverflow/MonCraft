@@ -4,7 +4,7 @@
 using namespace glm;
 
 PendingChunks::PendingChunks()
-  : cpos(0),
+  : cpos(std::numeric_limits<int>::max()),
     world(World::getInst())
 {
   auto& config = SaveManager::getInst().getConfig();
@@ -13,6 +13,8 @@ PendingChunks::PendingChunks()
   maxChunks = renderDistH * renderDistH * renderDistV;
   updateWaitingChunks();
 }
+
+#include "debug/Debug.hpp"
 
 bool PendingChunks::changed(vec3 playerPos) {
   ivec3 newChunkPos = floor(playerPos / float(chunkSize));
