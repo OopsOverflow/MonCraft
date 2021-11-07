@@ -199,7 +199,8 @@ void RealServer::packet_player_tick() {
 }
 
 void RealServer::packet_chunks() {
-  if(!pendingChunks.changed(player->getPosition())) return;
+  pendingChunks.update(player->getPosition());
+  if(!pendingChunks.changed()) return;
   sf::Packet packet;
   PacketHeader header(PacketType::CHUNKS);
   packet << header << pendingChunks.get();

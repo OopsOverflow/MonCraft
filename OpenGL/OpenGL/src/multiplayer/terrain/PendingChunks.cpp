@@ -5,48 +5,64 @@ using namespace glm;
 
 PendingChunks::PendingChunks()
   : cpos(std::numeric_limits<int>::max()),
+    hasChanged(false),
     world(World::getInst())
 {
   auto& config = SaveManager::getInst().getConfig();
   renderDistH = config.renderDistH;
   renderDistV = config.renderDistV;
   maxChunks = renderDistH * renderDistH * renderDistV;
-  updateWaitingChunks();
 }
 
-#include "debug/Debug.hpp"
+PendingChunks::~PendingChunks() {
+  if(thread.get_id() != std::thread::id())
+    thread.join();
+}
 
-bool PendingChunks::changed(vec3 playerPos) {
+void PendingChunks::update(vec3 playerPos) {
   ivec3 newChunkPos = floor(playerPos / float(chunkSize));
-  if(newChunkPos != cpos) {
+  if(glm::length(vec3(newChunkPos - cpos)) > 2) {
     cpos = newChunkPos;
     updateWaitingChunks();
-    return true;
   }
+}
 
-  return false;
+bool PendingChunks::changed() {
+  std::lock_guard<std::mutex> lck(copyMutex);
+  return hasChanged;
 }
 
 std::vector<glm::ivec3> PendingChunks::get() {
-  std::lock_guard<std::mutex> lck(updateMutex);
+  std::lock_guard<std::mutex> lck(copyMutex);
+  hasChanged = false;
+  if(tcpos != cpos) updateWaitingChunks();
   return waitingChunks;
 }
 
 void PendingChunks::updateWaitingChunks() {
-  if(!updateMutex.try_lock()) {
-    std::cout << "[WARN] already updating waiting chunks" << std::endl;
-    return;
+  if(running.try_lock()) {
+    if(thread.get_id() != std::thread::id()) {
+      thread.join();
+    }
+    tcpos = cpos;
+    thread = std::thread(&PendingChunks::updateWorker, this);
   }
-  waitingChunks.clear();
+}
+
+#include "debug/Debug.hpp"
+
+void PendingChunks::updateWorker() {
+  newWaitingChunks.clear();
 
   auto insert = [&](ivec2 const& pos) {
     for(int i = -renderDistV; i <= renderDistV; i++) {
-      ivec3 p = cpos + ivec3(pos.x, i, pos.y);
+      ivec3 p = tcpos + ivec3(pos.x, i, pos.y);
       auto chunk = world.chunks.find(p);
       if(!chunk || !chunk->isComputed()) {
-        waitingChunks.push_back(p);
+        newWaitingChunks.push_back(p);
       }
     }
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
   };
 
   insert({0, 0});
@@ -73,8 +89,14 @@ void PendingChunks::updateWaitingChunks() {
     insert({-dist, -dist});
     insert({dist, -dist});
   }
-  std::cout << "[INFO] waiting chunks : " << waitingChunks.size() << std::endl;
-  updateMutex.unlock();
+
+  {
+    std::lock_guard<std::mutex> lck(copyMutex);
+    waitingChunks = newWaitingChunks;
+    hasChanged = true;
+  }
+
+  running.unlock();
 }
 
 void PendingChunks::remOldChunks() {

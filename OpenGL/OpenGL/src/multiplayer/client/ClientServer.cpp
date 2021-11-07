@@ -23,7 +23,8 @@ void ClientServer::ping() {
 }
 
 void ClientServer::update() {
-  if(pendingChunks.changed(player->getPosition())) {
+  pendingChunks.update(player->getPosition());
+  if(pendingChunks.changed()) {
     auto waiting = pendingChunks.get();
     auto count = std::min(waiting.size(), generator.waitingChunks.capacity());
     generator.waitingChunks.clear();
