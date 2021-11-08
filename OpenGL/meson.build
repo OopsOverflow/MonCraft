@@ -173,6 +173,7 @@ else
 
   server_deps = [
     dependency('openssl'),
+    dependency('boost', modules : ['system']),
   ]
 
   client_srcs += files('OpenGL/src/audio/Music.cpp')
