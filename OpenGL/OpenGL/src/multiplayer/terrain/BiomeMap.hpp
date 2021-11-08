@@ -1,14 +1,14 @@
 #pragma once
 
-#include <map>
-#include <utility>
 #include <functional>
+#include <vector>
+#include <glm/glm.hpp>
 
-#include "noise/Noise.hpp"
 #include "Biome.hpp"
-// #include "Plains.hpp"
-// #include "Sea.hpp"
-// #include "Desert.hpp"
+#include "noise/XXHash.hpp"
+#include "noise/bitmap.hpp"
+#include "noise/simplex.hpp"
+#include "noise/voronoi.hpp"
 
 
 class BiomeMap {

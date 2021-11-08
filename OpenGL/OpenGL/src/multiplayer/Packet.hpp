@@ -1,6 +1,6 @@
 #pragma once
-#include <SFML/Network.hpp>
-#include <glm/glm.hpp>
+
+#include <SFML/Config.hpp>
 
 enum class PacketType {
   LOGIN,

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "bitmap.hpp"
+#include <glm/glm.hpp>
 
 /**
  * A non-iterative 2D-space value noise generator.

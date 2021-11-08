@@ -1,11 +1,26 @@
 #include "RealServer.hpp"
-#include "../NetworkError.hpp"
-#include "save/ServerConfig.hpp"
+
+#include <SFML/Config.hpp>
+#include <SFML/Network/Packet.hpp>
+#include <SFML/Network/Socket.hpp>
 #include <iostream>
-#include "debug/Debug.hpp"
-#include "blocks/AllBlocks.hpp"
+#include <algorithm>
+#include <array>
+#include <stdexcept>
+#include <glm/glm.hpp>
+
+#include "multiplayer/NetworkError.hpp"
+#include "multiplayer/Serialize.hpp"
+#include "multiplayer/Packet.hpp"
+#include "save/ServerConfig.hpp"
 #include "save/SaveManager.hpp"
-#include "../Serialize.hpp"
+#include "entity/Entities.hpp"
+#include "entity/Entity.hpp"
+#include "entity/character/Character.hpp"
+#include "terrain/AbstractChunk.hpp"
+#include "terrain/BlockArray.hpp"
+#include "terrain/ChunkMap.hpp"
+#include "terrain/World.hpp"
 
 using namespace glm;
 using namespace Serde;

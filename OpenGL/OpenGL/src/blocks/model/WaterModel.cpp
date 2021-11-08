@@ -1,7 +1,12 @@
-#include <algorithm>
-
 #include "WaterModel.hpp"
+
+#include <algorithm>
+#include <vector>
+#include <glm/glm.hpp>
+
 #include "blocks/Block.hpp"
+#include "blocks/model/DefaultModel.hpp"
+#include "gl/Mesh.hpp"
 
 using namespace glm;
 

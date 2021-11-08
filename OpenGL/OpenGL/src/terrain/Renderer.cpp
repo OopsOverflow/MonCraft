@@ -1,6 +1,17 @@
 #include "Renderer.hpp"
+
+#include <GL/glew.h>
+#include <algorithm>
+#include <memory>
+#include <vector>
+#include <glm/glm.hpp>
+
 #include "gl/Shader.hpp"
 #include "terrain/Chunk.hpp"
+#include "terrain/ChunkMap.hpp"
+#include "terrain/World.hpp"
+
+class AbstractChunk;
 
 using namespace glm;
 

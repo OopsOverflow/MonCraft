@@ -1,13 +1,13 @@
 #pragma once
 
-#include <string>
+#include <memory>
+#include <SDL2/SDL.h>
+#include <glm/glm.hpp>
 
 #include "controller/MouseController.hpp"
-#include "controller/KeyboardController.hpp"
-#include "ui/Root.hpp"
 #include "save/ClientConfig.hpp"
 
-#include <SDL2/SDL.h>
+namespace ui { class Root; }
 
 /**
  * The viewport is an abstration layer for the whole opengl context.

@@ -1,9 +1,10 @@
 #pragma once
 
-#include "Mesh.hpp"
-
 #include <memory>
 #include <mutex>
+#include <vector>
+
+class Mesh;
 
 class SafeMesh {
 

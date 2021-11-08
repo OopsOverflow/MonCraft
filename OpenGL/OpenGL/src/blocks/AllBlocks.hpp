@@ -1,5 +1,8 @@
 #pragma once
 
+#include <array>
+#include <ostream>
+
 #include "Block.hpp"
 
 class AllBlocks {

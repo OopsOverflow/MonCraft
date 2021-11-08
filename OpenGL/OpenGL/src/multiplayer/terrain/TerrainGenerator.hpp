@@ -2,18 +2,18 @@
 
 #include <thread>
 #include <mutex>
-#include <future>
 #include <condition_variable>
-#include <unordered_map>
+#include <chrono>
+#include <memory>
+#include <vector>
 #include <glm/glm.hpp>
 
-#include "terrain/ChunkMap.hpp"
-#include "SliceMap.hpp"
-#include "ChunkGenerator.hpp"
-#include "gl/Camera.hpp"
-#include "util/PriorityList.hpp"
+#include "multiplayer/terrain/SliceMap.hpp"
+#include "multiplayer/terrain/ChunkGenerator.hpp"
 #include "util/AtomicCyclicList.hpp"
-#include "terrain/World.hpp"
+
+class AbstractChunk;
+class World;
 
 
 class TerrainGenerator

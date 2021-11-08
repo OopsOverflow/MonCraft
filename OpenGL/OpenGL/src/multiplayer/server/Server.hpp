@@ -1,14 +1,16 @@
 #pragma once
 
-#include <string>
+#include <SFML/System/Clock.hpp>
+#include <SFML/System/Time.hpp>
 #include <map>
-#include <SFML/Network.hpp>
-#include "../Packet.hpp"
-#include "terrain/BlockArray.hpp"
-#include "terrain/World.hpp"
-#include "multiplayer/terrain/TerrainGenerator.hpp"
 
-#include "Client.hpp"
+#include "multiplayer/terrain/TerrainGenerator.hpp"
+#include "multiplayer/server/Client.hpp"
+#include "util/Identifier.hpp"
+
+class BlockArray;
+class World;
+namespace sf { class Packet; }
 
 class Server {
 

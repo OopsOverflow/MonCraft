@@ -1,6 +1,11 @@
 #pragma once
 
-#include "Server.hpp"
+#include <SFML/Network/UdpSocket.hpp>
+
+#include "multiplayer/server/Server.hpp"
+
+class ClientID;
+namespace sf { class Packet; }
 
 
 class UdpServer : public Server {

@@ -1,5 +1,10 @@
 #include "KeyboardController.hpp"
 
+#include <glm/glm.hpp>
+
+#include "save/ClientConfig.hpp"
+#include "terrain/World.hpp"
+
 KeyboardController::KeyboardController()
   : config(Config::getClientConfig()),
     direction(0.f),

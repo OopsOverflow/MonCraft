@@ -1,5 +1,8 @@
 #include "Random.hpp"
 
+#include <ctime>
+#include <random>
+
 namespace Random
 {
     namespace

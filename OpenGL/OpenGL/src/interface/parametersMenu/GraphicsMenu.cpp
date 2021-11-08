@@ -1,9 +1,16 @@
 #include "GraphicsMenu.hpp"
-#include "ui/Button.hpp"
-#include "ParameterButton.hpp"
-#include "ParameterSlider.hpp"
-#include "ParameterList.hpp"
+
+#include <string>
+#include <vector>
+#include <glm/glm.hpp>
+
+#include "interface/parametersMenu/ParameterButton.hpp"
+#include "interface/parametersMenu/ParameterSlider.hpp"
+#include "interface/parametersMenu/ParameterList.hpp"
 #include "gl/ResourceManager.hpp"
+#include "ui/Button.hpp"
+#include "ui/Slider.hpp"
+#include "ui/style/Type.hpp"
 
 using namespace ui;
 using namespace glm;

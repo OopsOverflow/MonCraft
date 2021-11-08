@@ -1,5 +1,10 @@
 #include "Slider.hpp"
-#include "Pane.hpp"
+
+#include <stdexcept>
+#include <glm/glm.hpp>
+
+#include "ui/Pane.hpp"
+#include "ui/style/Type.hpp"
 
 using namespace ui;
 using namespace glm;

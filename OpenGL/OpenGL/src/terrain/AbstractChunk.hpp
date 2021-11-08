@@ -1,9 +1,8 @@
 #pragma once
 
-#include <glm/glm.hpp>
 #include <memory>
-#include <mutex>
 #include <array>
+#include <glm/glm.hpp>
 
 #include "util/DataStore.hpp"
 #include "blocks/Block.hpp"

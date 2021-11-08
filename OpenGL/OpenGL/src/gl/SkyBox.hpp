@@ -1,6 +1,9 @@
 #pragma once
-#include "gl/Shader.hpp"
-#include "gl/Camera.hpp"
+
+#include <GL/glew.h>
+
+class Camera;
+class Shader;
 
 class SkyBox
 {

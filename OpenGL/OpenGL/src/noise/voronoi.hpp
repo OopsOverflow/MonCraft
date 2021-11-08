@@ -1,8 +1,8 @@
 #pragma once
 
-#include <array>
-#include "bitmap.hpp"
-#include "XXHash.hpp"
+#include <glm/glm.hpp>
+
+#include "noise/XXHash.hpp"
 
 /**
  * A grid based voronoi noise.

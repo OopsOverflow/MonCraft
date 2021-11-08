@@ -1,7 +1,8 @@
 #pragma once
 
-#include "World.hpp"
 #include "gl/Camera.hpp"
+
+class World;
 
 
 class Renderer {

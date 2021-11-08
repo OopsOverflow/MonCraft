@@ -1,5 +1,7 @@
 #include "Overlay.hpp"
+
 #include "gl/ResourceManager.hpp"
+#include "ui/style/Type.hpp"
 
 using namespace ui;
 

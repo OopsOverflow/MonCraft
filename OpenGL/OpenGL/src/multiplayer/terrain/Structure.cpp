@@ -1,6 +1,9 @@
 #include "Structure.hpp"
 
+#include <glm/glm.hpp>
+
 #include "blocks/AllBlocks.hpp"
+#include "terrain/AbstractChunk.hpp"
 
 using namespace glm;
 

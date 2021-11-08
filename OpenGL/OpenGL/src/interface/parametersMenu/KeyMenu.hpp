@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "ui/Box.hpp"
 
 class KeyMenu : public ui::Box {

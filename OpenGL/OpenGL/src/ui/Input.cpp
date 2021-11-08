@@ -1,5 +1,13 @@
 #include "Input.hpp"
 
+#include <glm/glm.hpp>
+
+#include "ui/Text.hpp"
+#include "ui/style/Property.hpp"
+#include "ui/style/Type.hpp"
+
+class Font;
+
 using namespace ui;
 using namespace glm;
 
@@ -26,8 +34,6 @@ std::unique_ptr<Input> Input::create(std::string text, std::shared_ptr<const Fon
 void Input::onChange(std::function<void()> callback) {
   this->changeCallback = callback;
 }
-
-#include "debug/Debug.hpp"
 
 void Input::onMouseIn(glm::ivec2 pos) {
   if(!isActive()) setStylesheet(hover);

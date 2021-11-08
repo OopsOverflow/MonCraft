@@ -1,6 +1,11 @@
 #pragma once
 
+#include <memory>
+#include <string>
+
 #include "ui/Button.hpp"
+#include "ui/Pane.hpp"
+#include "ui/Text.hpp"
 
 class MainMenuButton : public ui::Button {
 

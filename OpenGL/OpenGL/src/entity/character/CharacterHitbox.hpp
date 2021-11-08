@@ -1,4 +1,4 @@
-#include "../Hitbox.hpp"
+#include "entity/Hitbox.hpp"
 
 class CharacterHitbox : public Hitbox {
 public:

@@ -1,6 +1,12 @@
 #pragma once
 
-#include "Component.hpp"
+#include <memory>
+#include <vector>
+
+#include "ui/Component.hpp"
+#include "ui/style/Property.hpp"
+#include "ui/style/Specification.hpp"
+#include "ui/style/Style.hpp"
 
 namespace ui {
 

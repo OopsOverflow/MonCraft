@@ -1,6 +1,14 @@
 #pragma once
 
-#include "DefaultModel.hpp"
+#include <GL/glew.h>
+#include <array>
+#include <glm/glm.hpp>
+
+#include "blocks/model/DefaultModel.hpp"
+#include "blocks/model/BlockModel.hpp"
+
+class Block;
+struct MeshData;
 
 class TallgrassModel : public DefaultBlockModel {
 

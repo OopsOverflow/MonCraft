@@ -1,21 +1,26 @@
 #include "ChunkGenerator.hpp"
-#include "noise/prng.hpp"
-#include "blocks/AllBlocks.hpp"
 
+#include <vector>
+#include <glm/glm.hpp>
+
+#include "noise/prng.hpp"
+
+#include "blocks/AllBlocks.hpp"
 #include "blocks/Air_Block.hpp"
 #include "blocks/Cobalt_Block.hpp"
 #include "blocks/Ice_Block.hpp"
 #include "blocks/Stone_Block.hpp"
 #include "blocks/Dirt_Block.hpp"
-#include "blocks/Grass_Block.hpp"
 #include "blocks/Tallgrass_Block.hpp"
 #include "blocks/Water_Block.hpp"
 #include "blocks/Snow_Block.hpp"
 #include "blocks/Sand_Block.hpp"
 #include "blocks/Sandstone_Block.hpp"
-
-#include <functional>
-#include <map>
+#include "multiplayer/terrain/Biome.hpp"
+#include "multiplayer/terrain/BiomeMap.hpp"
+#include "multiplayer/terrain/Structure.hpp"
+#include "terrain/AbstractChunk.hpp"
+#include "util/DataStore.hpp"
 
 using namespace glm;
 

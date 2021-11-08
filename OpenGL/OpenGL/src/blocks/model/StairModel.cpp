@@ -1,5 +1,10 @@
 #include "StairModel.hpp"
 
+#include <vector>
+#include <glm/glm.hpp>
+
+#include "blocks/model/OrientableModel.hpp"
+
 using namespace glm;
 
 StairModel::StairModel()

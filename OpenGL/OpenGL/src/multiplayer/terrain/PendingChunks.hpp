@@ -1,11 +1,11 @@
 #pragma once
 
-#include "util/AtomicCyclicList.hpp"
-#include "terrain/World.hpp"
-
-#include <glm/glm.hpp>
 #include <vector>
 #include <thread>
+#include <mutex>
+#include <glm/glm.hpp>
+
+class World;
 
 class PendingChunks {
 

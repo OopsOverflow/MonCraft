@@ -2,10 +2,8 @@
 
 #include <glm/glm.hpp>
 
-#include "Hitbox.hpp"
-#include "Node.hpp"
-#include "multiplayer/Packet.hpp"
-#include "util/Identifier.hpp"
+#include "entity/Hitbox.hpp"
+#include "entity/Node.hpp"
 
 enum class State { Walking, Idle };
 

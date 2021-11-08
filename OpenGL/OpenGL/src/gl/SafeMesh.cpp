@@ -1,5 +1,7 @@
 #include "SafeMesh.hpp"
+
 #include "debug/Debug.hpp"
+#include "gl/Mesh.hpp"
 
 std::vector<std::unique_ptr<Mesh>> SafeMesh::destructions;
 std::mutex SafeMesh::mutex;

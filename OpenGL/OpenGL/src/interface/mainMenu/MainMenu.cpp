@@ -1,6 +1,11 @@
 #include "MainMenu.hpp"
-#include "gl/ResourceManager.hpp"
-#include "MainMenuButton.hpp"
+
+#include <GL/glew.h>
+#include <glm/glm.hpp>
+
+#include "interface/mainMenu/MainMenuButton.hpp"
+#include "ui/Component.hpp"
+#include "ui/style/Type.hpp"
 
 using namespace ui;
 
@@ -25,7 +30,7 @@ MainMenu::MainMenu() : Image({0, 0}, {1920, 1080})
 	buttonPannel->setAnchorX(Anchor::CENTER);
 	buttonPannel->setAnchorY(Anchor::CENTER);
 	buttonPannel->setGap(10);
-	
+
 	buttonPannel->pack_start(singleplayerButton.get());
 	buttonPannel->pack_start(multiplayerButton.get());
 	#ifndef EMSCRIPTEN

@@ -1,5 +1,9 @@
 #include "GameMenu.hpp"
+
+#include <glm/glm.hpp>
+
 #include "gl/ResourceManager.hpp"
+#include "ui/style/Type.hpp"
 
 using namespace ui;
 

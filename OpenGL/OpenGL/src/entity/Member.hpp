@@ -1,12 +1,11 @@
 #pragma once
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <vector>
 #include <memory>
+#include <glm/glm.hpp>
 
 #include "Node.hpp"
-#include "../gl/Mesh.hpp"
+
+class Mesh;
 
 /**
  * An entity's single body part.

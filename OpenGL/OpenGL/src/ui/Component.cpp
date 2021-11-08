@@ -1,5 +1,16 @@
 #include <algorithm>
-#include "Component.hpp"
+#include <stdexcept>
+#include <string>
+#include <unordered_map>
+#include <glm/glm.hpp>
+
+#include "ui/Component.hpp"
+#include "ui/Event.hpp"
+#include "ui/Key.hpp"
+#include "ui/style/Style.hpp"
+#include "ui/style/StyleError.hpp"
+#include "ui/style/Type.hpp"
+#include "ui/style/Value.hpp"
 
 using namespace ui;
 using namespace glm;

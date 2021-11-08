@@ -1,12 +1,16 @@
 #pragma once
 
+#include <memory>
 #include <glm/glm.hpp>
-#include <array>
 
-#include "terrain/AbstractChunk.hpp"
-#include "noise/Noise.hpp"
 #include "Structure.hpp"
 #include "BiomeMap.hpp"
+#include "blocks/Block.hpp"
+#include "noise/XXHash.hpp"
+#include "noise/simplex.hpp"
+
+class AbstractChunk;
+struct Biome;
 
 /**
 * Generates new chunks.

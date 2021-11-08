@@ -1,11 +1,15 @@
 #pragma once
 
-#include <glm/glm.hpp>
 #include <vector>
+#include <memory>
+#include <glm/glm.hpp>
 
 #include "style/Style.hpp"
-#include "Event.hpp"
-#include "Key.hpp"
+#include "ui/Key.hpp"
+#include "ui/style/Property.hpp"
+#include "ui/style/Specification.hpp"
+
+class Event;
 
 namespace ui {
 
@@ -23,7 +27,7 @@ public:
   Component& operator=(Component&) = delete;
 
   virtual void draw();
-  
+
   void makeActive();
 
   static const spec_t SIZE;

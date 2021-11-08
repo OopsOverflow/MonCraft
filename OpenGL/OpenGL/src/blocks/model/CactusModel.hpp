@@ -1,11 +1,13 @@
 #pragma once
 
-#include <vector>
 #include <array>
-#include <GL/glew.h>
 #include <glm/glm.hpp>
-#include "gl/Mesh.hpp"
+
 #include "DefaultModel.hpp"
+#include "blocks/model/BlockModel.hpp"
+
+class Block;
+struct MeshData;
 
 enum class BlockFace;
 

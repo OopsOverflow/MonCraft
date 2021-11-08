@@ -1,10 +1,16 @@
 #pragma once
 
-#include <glm/glm.hpp>
 #include <memory>
+#include <string>
+#include <glm/glm.hpp>
 
-#include "Component.hpp"
-#include "gl/Font.hpp"
+#include "ui/Component.hpp"
+#include "ui/style/Property.hpp"
+#include "ui/style/Specification.hpp"
+#include "ui/style/Style.hpp"
+
+class Font;
+class Shader;
 
 namespace ui {
 

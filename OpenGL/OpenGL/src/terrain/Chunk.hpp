@@ -1,13 +1,13 @@
 #pragma once
 
-#include <glm/glm.hpp>
+#include <GL/glew.h>
 #include <memory>
 #include <mutex>
-#include <array>
+#include <glm/glm.hpp>
 
-#include "gl/SafeMesh.hpp"
-#include "AbstractChunk.hpp"
+#include "terrain/AbstractChunk.hpp"
 #include "blocks/Block.hpp"
+#include "gl/Mesh.hpp"
 
 /**
 * Describes a subdivision of the terrain.

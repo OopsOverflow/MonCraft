@@ -1,12 +1,10 @@
 #pragma once
 
-#include <unordered_map>
 #include <glm/glm.hpp>
 
-#include "ChunkMap.hpp"
+#include "terrain/ChunkMap.hpp"
 #include "entity/Entities.hpp"
-
-class Entity;
+#include "blocks/Block.hpp"
 
 /**
 * Manages the chunks, load/unload, render and manipulation of blocks.

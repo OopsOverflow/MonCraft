@@ -1,14 +1,10 @@
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <algorithm>
-
 #include "AbstractChunk.hpp"
-#include "gl/Shader.hpp"
+
+#include <algorithm>
+#include <glm/glm.hpp>
 
 using namespace glm;
 using std::move;
-
-#include "debug/Debug.hpp"
 
 const std::array<ivec3, 26> AbstractChunk::neighborOffsets = {
   // ivec3{ 0, 0, 0 },

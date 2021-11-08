@@ -1,5 +1,11 @@
 #include "MainMenuButton.hpp"
+
+#include <glm/glm.hpp>
+
 #include "gl/ResourceManager.hpp"
+#include "ui/Component.hpp"
+#include "ui/style/Property.hpp"
+#include "ui/style/Type.hpp"
 
 using namespace ui;
 using namespace glm;

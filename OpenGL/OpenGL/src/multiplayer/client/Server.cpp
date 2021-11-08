@@ -1,4 +1,7 @@
 #include "Server.hpp"
+
+#include <iostream>
+
 #include "save/ServerConfig.hpp"
 
 

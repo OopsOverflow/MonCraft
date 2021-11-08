@@ -1,6 +1,13 @@
 #pragma once
 
-#include "ui/ui.hpp"
+#include <memory>
+#include <string>
+
+#include "ui/Box.hpp"
+#include "ui/Slider.hpp"
+#include "ui/Text.hpp"
+
+class Font;
 
 class ParameterSlider : public ui::Box {
 

@@ -1,9 +1,18 @@
 #include "ClientServer.hpp"
+
 #include <iostream>
+#include <algorithm>
+#include <vector>
+#include <glm/glm.hpp>
+
 #include "save/ServerConfig.hpp"
 #include "terrain/World.hpp"
 #include "entity/character/Character.hpp"
 #include "save/SaveManager.hpp"
+#include "entity/Entities.hpp"
+#include "entity/Entity.hpp"
+#include "terrain/BlockArray.hpp"
+#include "terrain/ChunkMap.hpp"
 
 using namespace glm;
 

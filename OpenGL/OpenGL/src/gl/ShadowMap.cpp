@@ -1,6 +1,12 @@
 #include "ShadowMap.hpp"
-#include "ResourceManager.hpp"
+
+#include <vector>
+#include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
+#include "gl/ResourceManager.hpp"
+#include "gl/Camera.hpp"
+#include "gl/Shader.hpp"
 
 using namespace glm;
 

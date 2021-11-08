@@ -1,10 +1,15 @@
 #pragma once
 
-#include "Component.hpp"
-#include "Pane.hpp"
-#include "Text.hpp"
-
 #include <functional>
+#include <memory>
+#include <string>
+#include <glm/glm.hpp>
+
+#include "ui/Component.hpp"
+#include "ui/style/Style.hpp"
+
+class Font;
+namespace ui { struct prop_t; }
 
 namespace ui {
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include "bitmap.hpp"
+#include <glm/glm.hpp>
 
 /**
  * A procedural noise sampler for perlin and simplex noise.

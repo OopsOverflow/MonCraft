@@ -1,16 +1,15 @@
 #pragma once
-#ifndef Music_HPP_INCLUDED
-#define Music_HPP_INCLUDED
 
-#include <SFML/Audio.hpp>
 #include <vector>
+#include <string>
 #include <SFML/Audio/Music.hpp>
+#include <SFML/System/Clock.hpp>
+#include <SFML/System/Time.hpp>
 
 
 #define Music_ACTIVE
 
-class Music
-{
+class Music {
 public:
     Music();
 
@@ -26,5 +25,3 @@ private:
     std::vector<std::string> playlist;
     uint32_t currentSong = 0;
 };
-
-#endif // MusicPlayer_HPP_INCLUDED

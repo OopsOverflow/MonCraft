@@ -1,4 +1,5 @@
 #include "Key.hpp"
+
 #include <SDL2/SDL_keycode.h> // sdl is kept as a weak implementation detail
 
 Key::Key(int32_t keycode)

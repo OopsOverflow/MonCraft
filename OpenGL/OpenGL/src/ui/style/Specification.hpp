@@ -3,7 +3,8 @@
 #include <unordered_map>
 #include <string>
 #include <vector>
-#include "Type.hpp"
+
+#include "ui/style/Type.hpp"
 
 namespace ui {
 

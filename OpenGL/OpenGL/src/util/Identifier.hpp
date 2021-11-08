@@ -1,7 +1,6 @@
 #pragma once
 
-#include <SFML/Network.hpp>
-#include <random>
+#include <SFML/Config.hpp>
 
 /**
  * UUID for entities and other network-shared resources.

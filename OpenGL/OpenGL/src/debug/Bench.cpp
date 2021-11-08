@@ -1,8 +1,8 @@
 #include "Bench.hpp"
-#include "Debug.hpp"
 
 #include <algorithm>
 #include <numeric>
+#include <iostream>
 #include <fstream>
 
 Bench::Bench() : enabled(true) {}

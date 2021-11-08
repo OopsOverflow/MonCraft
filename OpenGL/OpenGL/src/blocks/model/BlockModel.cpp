@@ -1,7 +1,8 @@
-#include <algorithm>
-
 #include "BlockModel.hpp"
-#include "blocks/Block.hpp"
+
+#include <algorithm>
+#include <glm/glm.hpp>
+
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/matrix_transform_2d.hpp>
 #include <glm/gtc/matrix_transform.hpp>

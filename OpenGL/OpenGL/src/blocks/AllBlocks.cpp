@@ -1,5 +1,11 @@
 #include "AllBlocks.hpp"
+
+#include <sstream>
+#include <memory>
+#include <stdexcept>
+
 #include "save/SaveManager.hpp"
+#include "blocks/Block.hpp"
 
 #include "Air_Block.hpp"
 #include "Grass_Block.hpp"
@@ -24,8 +30,6 @@
 #include "Birch_Planks_Block.hpp"
 #include "Oak_Stair_Block.hpp"
 #include "Birch_Stair_Block.hpp"
-
-#include <sstream>
 
 const std::array<Block*(*)(), AllBlocks::BlockCount> AllBlocks::factories = {
   (Block*(*)())Air_Block::get,

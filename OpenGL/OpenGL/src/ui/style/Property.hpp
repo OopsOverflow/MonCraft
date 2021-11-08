@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Specification.hpp"
-#include "Value.hpp"
+#include "ui/style/Specification.hpp"
+#include "ui/style/Value.hpp"
 #include <memory>
 
 namespace ui {

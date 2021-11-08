@@ -1,9 +1,13 @@
 #include "Font.hpp"
-#include "debug/Debug.hpp"
+
 #include <stdexcept>
-#include <array>
+#include <iostream>
+#include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include "UTF8Iter.hpp"
+
+#include "debug/Debug.hpp"
+#include "gl/UTF8Iter.hpp"
+#include "gl/Shader.hpp"
 
 using namespace glm;
 

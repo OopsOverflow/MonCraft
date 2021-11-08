@@ -1,6 +1,9 @@
 #include "Style.hpp"
 
-#include "../Component.hpp"
+#include <unordered_set>
+
+#include "ui/style/Property.hpp"
+#include "ui/style/Type.hpp"
 
 using namespace ui;
 

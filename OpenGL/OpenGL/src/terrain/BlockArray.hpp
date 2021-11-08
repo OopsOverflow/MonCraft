@@ -1,9 +1,10 @@
 #pragma once
 
 #include <vector>
+#include <string>
 #include <glm/glm.hpp>
-#include "blocks/Block.hpp"
-#include "multiplayer/Packet.hpp"
+
+class Block;
 
 struct BlockArrayElement {
   glm::ivec3 pos;

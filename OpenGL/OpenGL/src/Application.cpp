@@ -1,6 +1,9 @@
 #include <iostream>
 #include <memory>
 #include <vector>
+#include <string>
+#include <glm/glm.hpp>
+
 #include "gl/ResourceManager.hpp"
 #include "gl/Viewport.hpp"
 #include "interface/MonCraftScene.hpp"
@@ -9,6 +12,10 @@
 #include "noise/prng.hpp"
 #include "save/ClientConfig.hpp"
 #include "save/ServerConfig.hpp"
+#include "terrain/World.hpp"
+#include "ui/Button.hpp"
+#include "ui/Component.hpp"
+#include "ui/Root.hpp"
 
 #ifdef EMSCRIPTEN
     #include <emscripten.h>

@@ -1,5 +1,7 @@
 #include "value.hpp"
 
+#include <glm/glm.hpp>
+
 using glm::ivec2;
 
 // --------- a (probably very bad), but fast LCG.

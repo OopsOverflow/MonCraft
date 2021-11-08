@@ -1,14 +1,21 @@
 #pragma once
 
+#include <SFML/Network/IpAddress.hpp>
+#include <SFML/Network/UdpSocket.hpp>
+#include <SFML/System/Clock.hpp>
+#include <SFML/System/Time.hpp>
 #include <string>
-#include <SFML/Network.hpp>
+#include <memory>
+#include <vector>
 #include <glm/glm.hpp>
-#include <functional>
+
 #include "util/Identifier.hpp"
-#include "../Packet.hpp"
-#include "entity/character/Character.hpp"
-#include "Server.hpp"
+#include "multiplayer/client/Server.hpp"
 #include "multiplayer/terrain/PendingChunks.hpp"
+
+class Character;
+class World;
+namespace sf { class Packet; }
 
 class RealServer: public Server {
 

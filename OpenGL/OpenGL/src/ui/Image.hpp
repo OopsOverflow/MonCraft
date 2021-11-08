@@ -1,7 +1,15 @@
 #pragma once
 
-#include "Component.hpp"
-#include "gl/Shader.hpp"
+#include <GL/glew.h>
+#include <memory>
+#include <glm/glm.hpp>
+
+#include "ui/Component.hpp"
+#include "ui/style/Property.hpp"
+#include "ui/style/Specification.hpp"
+#include "ui/style/Style.hpp"
+
+class Shader;
 
 enum class Crop { NONE, BEGIN, CENTER, END, REPEAT };
 

@@ -1,9 +1,9 @@
 #ifndef Mesh_H
 #define Mesh_H
 
-#include "GL/glew.h"
-#include <glm/glm.hpp>
+#include <GL/glew.h>
 #include <vector>
+#include <glm/glm.hpp>
 
 struct MeshData {
   std::vector<GLuint> scheme;

@@ -1,6 +1,11 @@
 #include "ResourceManager.hpp"
-#include <debug/Debug.hpp>
+
 #include <SDL2/SDL_image.h>
+#include <iostream>
+#include <stdexcept>
+
+#include "gl/Font.hpp"
+#include "gl/Shader.hpp"
 
 std::unordered_map<std::string, std::unique_ptr<Shader>> ResourceManager::shaders;
 std::unordered_map<std::string, GLuint> ResourceManager::textures;

@@ -1,8 +1,11 @@
 #include "AudioMenu.hpp"
-#include "ParameterButton.hpp"
-#include "ParameterSlider.hpp"
-#include "ParameterList.hpp"
+
+#include <glm/glm.hpp>
+
+#include "interface/parametersMenu/ParameterSlider.hpp"
 #include "gl/ResourceManager.hpp"
+#include "ui/Slider.hpp"
+#include "ui/style/Type.hpp"
 
 using namespace ui;
 using namespace glm;

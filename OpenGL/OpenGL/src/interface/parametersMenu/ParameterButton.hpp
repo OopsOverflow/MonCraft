@@ -1,6 +1,13 @@
 #pragma once
 
-#include "ui/ui.hpp"
+#include <memory>
+#include <string>
+
+#include "ui/Box.hpp"
+#include "ui/Button.hpp"
+#include "ui/Text.hpp"
+
+class Font;
 
 class ParameterButton : public ui::Box {
 

@@ -1,7 +1,12 @@
 #pragma once
-#include "ui/ui.hpp"
-#include "terrain/World.hpp"
-#include "multiplayer/client/Server.hpp"
+
+#include <memory>
+
+#include "ui/Box.hpp"
+#include "ui/Text.hpp"
+
+class Server;
+class World;
 
 class DebugOverlay : public ui::Box
 {

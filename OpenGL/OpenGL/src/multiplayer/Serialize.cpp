@@ -1,5 +1,17 @@
 #include "Serialize.hpp"
 
+#include <ostream>
+#include <string>
+#include <vector>
+#include <glm/glm.hpp>
+
+#include "save/SaveManager.hpp"
+#include "entity/Node.hpp"
+#include "terrain/BlockArray.hpp"
+#include "util/Serde.hpp"
+
+class AbstractChunk;
+
 sf::Packet& Serde::operator<<(sf::Packet& packet, Entity const& entity) {
 	packet << entity.bodyNode.loc;
 	packet << entity.bodyNode.rot;
@@ -102,8 +114,6 @@ sf::Packet& Serde::operator>>(sf::Packet& packet, BlockArray& record) {
 
   return packet;
 }
-
-#include "save/SaveManager.hpp"
 
 sf::Packet& Serde::operator<<(sf::Packet &packet, AbstractChunk const& chunk) {
   std::ostringstream stream;

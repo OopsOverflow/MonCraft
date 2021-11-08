@@ -2,11 +2,10 @@
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
+#include <GL/glew.h>
 #include <string>
-#include <map>
+#include <vector>
 #include <glm/glm.hpp>
-#include "gl/Shader.hpp"
-#include "gl/Mesh.hpp"
 
 // thanks https://learnopengl.com/In-Practice/Text-Rendering
 class Font {

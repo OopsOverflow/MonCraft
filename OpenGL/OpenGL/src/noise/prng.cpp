@@ -1,6 +1,6 @@
 #include "prng.hpp"
-#include "XXHash.hpp"
-#include <iostream>
+
+#include "noise/XXHash.hpp"
 
 XXHash hash(0);
 uint32_t seed;

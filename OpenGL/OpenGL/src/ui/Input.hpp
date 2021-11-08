@@ -1,10 +1,16 @@
 #pragma once
 
-#include "Component.hpp"
-#include "Pane.hpp"
-#include "Text.hpp"
-
 #include <functional>
+#include <memory>
+#include <string>
+#include <glm/glm.hpp>
+
+#include "ui/Pane.hpp"
+#include "ui/Text.hpp"
+#include "ui/Key.hpp"
+#include "ui/style/Style.hpp"
+
+class Font;
 
 namespace ui {
 

@@ -1,11 +1,13 @@
 #pragma once
 
-#include "Shader.hpp"
-
+#include <GL/glew.h>
 #include <unordered_map>
 #include <memory>
 #include <vector>
-#include "Font.hpp"
+#include <string>
+
+class Font;
+class Shader;
 
 class ResourceManager {
 

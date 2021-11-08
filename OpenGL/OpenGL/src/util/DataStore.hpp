@@ -1,6 +1,5 @@
 #pragma once
 
-#include <stddef.h>
 #include <glm/glm.hpp>
 #include <stdexcept>
 #include <iostream>

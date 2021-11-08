@@ -1,9 +1,16 @@
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <algorithm>
-
 #include "Chunk.hpp"
+
+#include <algorithm>
+#include <array>
+#include <vector>
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
+#include "terrain/AbstractChunk.hpp"
 #include "gl/Shader.hpp"
+#include "gl/SafeMesh.hpp"
+#include "blocks/model/BlockModel.hpp"
+#include "util/DataStore.hpp"
 
 using namespace glm;
 using std::move;

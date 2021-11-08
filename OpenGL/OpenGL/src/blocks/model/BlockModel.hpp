@@ -1,12 +1,12 @@
 #pragma once
 
+#include <GL/glew.h>
 #include <vector>
 #include <array>
-#include <GL/glew.h>
 #include <glm/glm.hpp>
-#include "gl/Mesh.hpp"
 
 class Block;
+struct MeshData;
 
 template<size_t N>
 using face_t = std::array<GLfloat, 4 * N>;
@@ -65,7 +65,7 @@ protected:
   static BlockMeshData flatten(QuadMesh<L> const& mesh);
 
   static std::vector<GLfloat> computeUV(glm::vec2 index, Quad<2> quad);
-  
+
   static std::vector<GLfloat> computeUV(glm::vec2 index, std::vector<Quad<2>> quads);
 
   template<glm::length_t L>

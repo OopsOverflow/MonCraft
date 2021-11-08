@@ -1,9 +1,14 @@
 #include "BiomeMap.hpp"
-#include "noise/prng.hpp"
 
 #include <functional>
-#include <algorithm>
-#include <numeric>
+#include <cmath>
+#include <memory>
+#include <glm/glm.hpp>
+
+#include "noise/prng.hpp"
+#include "blocks/Block.hpp"
+#include "multiplayer/terrain/Biome.hpp"
+#include "noise/pipeline.hpp"
 
 using namespace glm;
 using namespace std::placeholders;
@@ -141,8 +146,6 @@ BiomeMap::BiomeMap()
   // biomeHills.tallgrass = 0;
   biomeForest.elevation = 10;
 }
-
-#include "debug/Debug.hpp"
 
 Biome BiomeMap::sampleWeighted(glm::ivec2 pos) const {
   return generator(pos);

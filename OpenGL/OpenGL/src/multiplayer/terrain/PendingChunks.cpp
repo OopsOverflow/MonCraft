@@ -1,5 +1,14 @@
 #include "PendingChunks.hpp"
+
+#include <algorithm>
+#include <chrono>
+#include <limits>
+#include <memory>
+#include <glm/glm.hpp>
+
 #include "save/ServerConfig.hpp"
+#include "terrain/ChunkMap.hpp"
+#include "terrain/World.hpp"
 
 using namespace glm;
 
@@ -48,8 +57,6 @@ void PendingChunks::updateWaitingChunks() {
     thread = std::thread(&PendingChunks::updateWorker, this);
   }
 }
-
-#include "debug/Debug.hpp"
 
 void PendingChunks::updateWorker() {
   newWaitingChunks.clear();

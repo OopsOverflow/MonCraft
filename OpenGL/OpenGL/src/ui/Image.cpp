@@ -1,8 +1,14 @@
 #include "Image.hpp"
+
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 #include "debug/Debug.hpp"
 #include "gl/ResourceManager.hpp"
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include "gl/Shader.hpp"
+#include "ui/Component.hpp"
+#include "ui/style/Type.hpp"
+#include "ui/style/Value.hpp"
 
 using namespace ui;
 using namespace glm;

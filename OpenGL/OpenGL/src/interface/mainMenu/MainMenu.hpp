@@ -1,5 +1,10 @@
 #pragma once
-#include "ui/ui.hpp"
+
+#include <memory>
+
+#include "ui/Box.hpp"
+#include "ui/Button.hpp"
+#include "ui/Image.hpp"
 
 class MainMenu : public ui::Image
 {

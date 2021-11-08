@@ -1,10 +1,13 @@
 #pragma once
-#include "entity/Entity.hpp"
-#include "terrain/BlockArray.hpp"
-#include "terrain/AbstractChunk.hpp"
-#include "util/Serde.hpp"
+#include <SFML/Config.hpp>
+#include <SFML/Network/Packet.hpp>
+#include <glm/glm.hpp>
 
-#include <SFML/Network.hpp>
+#include "entity/Entity.hpp"
+#include "multiplayer/Packet.hpp"
+
+class AbstractChunk;
+class BlockArray;
 
 namespace Serde {
   sf::Packet& consume(Entity& e, sf::Packet& packet);

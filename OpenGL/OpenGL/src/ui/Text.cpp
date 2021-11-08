@@ -1,5 +1,13 @@
 #include "Text.hpp"
+
+#include <glm/glm.hpp>
+
 #include "gl/ResourceManager.hpp"
+#include "gl/Font.hpp"
+#include "gl/Shader.hpp"
+#include "ui/Component.hpp"
+#include "ui/style/Type.hpp"
+#include "ui/style/Value.hpp"
 
 using namespace ui;
 using namespace glm;

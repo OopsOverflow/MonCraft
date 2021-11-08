@@ -1,5 +1,15 @@
 #include "Button.hpp"
-#include "Image.hpp"
+
+#include <glm/glm.hpp>
+
+#include "ui/Image.hpp"
+#include "ui/Component.hpp"
+#include "ui/Pane.hpp"
+#include "ui/Text.hpp"
+#include "ui/style/Property.hpp"
+#include "ui/style/Type.hpp"
+
+class Font;
 
 using namespace ui;
 using namespace glm;
@@ -66,8 +76,6 @@ void Button::setHoverStyle(prop_t prop) {
 void Button::setPressedStyle(prop_t prop) {
   pressed->set(prop);
 }
-
-#include "debug/Debug.hpp"
 
 void Button::onMouseIn(glm::ivec2 pos) {
   setStylesheet(hover);

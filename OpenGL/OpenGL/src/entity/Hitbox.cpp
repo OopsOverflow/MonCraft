@@ -1,6 +1,9 @@
 #include "Hitbox.hpp"
-#include "debug/Debug.hpp"
+
+#include <glm/glm.hpp>
+
 #include "terrain/World.hpp"
+#include "blocks/Block.hpp"
 
 using namespace glm;
 

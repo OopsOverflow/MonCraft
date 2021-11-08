@@ -1,9 +1,14 @@
 #include "Member.hpp"
-#include <glm/gtc/matrix_transform.hpp>
+
+#include <GL/glew.h>
+#include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include "../gl/Shader.hpp"
+
 #include "debug/Debug.hpp"
+#include "gl/Shader.hpp"
 #include "gl/SafeMesh.hpp"
+#include "gl/Mesh.hpp"
+#include "entity/Node.hpp"
 
 using glm::mat4;
 using glm::vec2;

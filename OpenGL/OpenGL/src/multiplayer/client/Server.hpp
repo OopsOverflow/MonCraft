@@ -3,9 +3,12 @@
 #include <memory>
 #include <thread>
 #include <condition_variable>
+#include <chrono>
+#include <mutex>
 
-#include "entity/character/Character.hpp"
 #include "util/Identifier.hpp"
+
+class Character;
 
 class Server {
 

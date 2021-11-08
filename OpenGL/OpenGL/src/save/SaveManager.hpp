@@ -1,10 +1,14 @@
 #pragma once
 
+#include <memory>
+#include <string>
 #include <glm/glm.hpp>
-#include "terrain/AbstractChunk.hpp"
-#include "entity/Entity.hpp"
 
-class Entity;
+#include "entity/Entity.hpp"
+#include "blocks/Block.hpp"
+
+class AbstractChunk;
+class Node;
 
 enum class EntityClass{Character};
 

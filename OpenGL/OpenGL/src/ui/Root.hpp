@@ -1,8 +1,12 @@
 #pragma once
 
-#include "Component.hpp"
-#include "gl/Shader.hpp"
-#include "Event.hpp"
+#include <vector>
+#include <glm/glm.hpp>
+
+#include "ui/Component.hpp"
+#include "ui/Event.hpp"
+
+class Shader;
 
 namespace ui {
 

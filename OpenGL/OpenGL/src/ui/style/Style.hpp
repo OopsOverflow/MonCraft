@@ -1,15 +1,13 @@
 #pragma once
 
-#include "Property.hpp"
-#include "Value.hpp"
-#include "Type.hpp"
-
 #include <memory>
-#include <unordered_set>
+#include <unordered_map>
+
+#include "ui/style/Property.hpp"
+#include "ui/style/Specification.hpp"
 
 namespace ui {
 
-class Component;
 class Style;
 
 using style_t = std::shared_ptr<Style>;

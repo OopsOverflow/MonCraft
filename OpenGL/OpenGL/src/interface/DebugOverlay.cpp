@@ -1,5 +1,17 @@
 #include "DebugOverlay.hpp"
+
+#include <iomanip>
+#include <ostream>
+#include <glm/glm.hpp>
+
 #include "gl/ResourceManager.hpp"
+#include "debug/Debug.hpp"
+#include "entity/Entities.hpp"
+#include "entity/character/Character.hpp"
+#include "multiplayer/client/Server.hpp"
+#include "terrain/World.hpp"
+#include "ui/Component.hpp"
+#include "ui/style/Type.hpp"
 
 using namespace ui;
 

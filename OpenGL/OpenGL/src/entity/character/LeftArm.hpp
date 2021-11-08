@@ -1,7 +1,12 @@
 #pragma once
 
-#include "../Member.hpp"
-#include "../Cube.hpp"
+#include <memory>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
+#include "entity/Member.hpp"
+#include "entity/Cube.hpp"
+#include "gl/Mesh.hpp"
 
 static const std::vector<GLfloat> leftArmUVs= {
   //TOP

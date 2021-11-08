@@ -1,5 +1,8 @@
 #include "Entities.hpp"
+
 #include <iostream>
+
+#include "entity/Entity.hpp"
 
 Entities::Entities()
 {}

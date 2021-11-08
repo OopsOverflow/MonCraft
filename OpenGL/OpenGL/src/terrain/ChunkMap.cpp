@@ -1,5 +1,9 @@
 #include "ChunkMap.hpp"
 
+#include <iostream>
+
+#include "debug/Debug.hpp"
+#include "terrain/AbstractChunk.hpp"
 
 ChunkMap::ChunkMap()
 {}
@@ -10,8 +14,6 @@ std::shared_ptr<AbstractChunk> ChunkMap::find(glm::ivec3 cpos) {
   if(it == chunks.end()) return nullptr;
   return it->second;
 }
-
-#include "debug/Debug.hpp"
 
 std::shared_ptr<AbstractChunk> ChunkMap::insert(glm::ivec3 cpos, std::unique_ptr<AbstractChunk> chunk) {
   std::lock_guard<std::mutex> lck(chunksMutex);
@@ -25,8 +27,6 @@ std::shared_ptr<AbstractChunk> ChunkMap::insert(glm::ivec3 cpos, std::unique_ptr
 size_t ChunkMap::size() {
   return chunks.size();
 }
-
-#include "debug/Debug.hpp"
 
 void ChunkMap::eraseChunks(int count, std::function<bool(glm::ivec3)> predicate) {
   std::lock_guard<std::mutex> lck(chunksMutex);

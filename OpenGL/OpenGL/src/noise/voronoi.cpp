@@ -1,5 +1,8 @@
 #include "voronoi.hpp"
-#include <memory>
+
+#include <glm/glm.hpp>
+
+#include "noise/XXHash.hpp"
 
 using glm::ivec2;
 using glm::vec2;
@@ -7,8 +10,6 @@ using glm::vec2;
 VoronoiNoise::VoronoiNoise(int seed, float cellSize)
     : noise(seed), cellSize(cellSize)
 {}
-
-#include "debug/Debug.hpp"
 
 glm::vec2 VoronoiNoise::sample(glm::ivec2 cell) const {
   return vec2(noise.sample<2, 2>(cell)) / vec2(UINT16_MAX);

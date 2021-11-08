@@ -1,14 +1,27 @@
+#include "MonCraftScene.hpp"
+
+#include <string>
+#include <unordered_map>
+#include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "MonCraftScene.hpp"
 #include "gl/ResourceManager.hpp"
+#include "gl/Shader.hpp"
+#include "gl/Viewport.hpp"
 #include "save/ClientConfig.hpp"
 #include "save/ServerConfig.hpp"
-
 #include "multiplayer/client/RealServer.hpp"
 #include "multiplayer/client/ClientServer.hpp"
-#include "ui/ui.hpp"
-#include "debug/Debug.hpp"
+#include "blocks/AllBlocks.hpp"
+#include "blocks/Block.hpp"
+#include "controller/MouseController.hpp"
+#include "entity/Entities.hpp"
+#include "entity/Entity.hpp"
+#include "entity/character/Character.hpp"
+#include "multiplayer/client/Server.hpp"
+#include "terrain/World.hpp"
+#include "ui/Button.hpp"
+#include "ui/style/Type.hpp"
 
 using namespace glm;
 using namespace ui;

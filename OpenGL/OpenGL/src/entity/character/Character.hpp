@@ -1,18 +1,21 @@
 #pragma once
 
-#include "gl/Camera.hpp"
-#include "../Entity.hpp"
+#include <glm/glm.hpp>
+
+#include "entity/Entity.hpp"
+#include "entity/Node.hpp"
 #include "terrain/BlockArray.hpp"
 #include "util/Raycast.hpp"
+#include "blocks/Block.hpp"
 
 #include "LeftArm.hpp"
 #include "RightArm.hpp"
 #include "LeftLeg.hpp"
 #include "RightLeg.hpp"
-#include "LeftLeg.hpp"
-#include "RightLeg.hpp"
 #include "Head.hpp"
 #include "Chest.hpp"
+
+class Camera;
 
 /**
  * The main character.

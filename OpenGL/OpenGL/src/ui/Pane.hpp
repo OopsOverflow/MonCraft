@@ -1,7 +1,15 @@
 #pragma once
 
-#include "Component.hpp"
-#include "gl/Shader.hpp"
+#include <GL/glew.h>
+#include <memory>
+#include <glm/glm.hpp>
+
+#include "ui/Component.hpp"
+#include "ui/style/Property.hpp"
+#include "ui/style/Specification.hpp"
+#include "ui/style/Style.hpp"
+
+class Shader;
 
 namespace ui {
 
@@ -17,7 +25,7 @@ public:
   void draw() override;
 
   static const spec_t COLOR;
-  
+
   virtual void setProperty(prop_t prop) override;
   virtual prop_t getProperty(spec_t spec) const override;
   virtual style_const_t getDefaultStyle() const override;

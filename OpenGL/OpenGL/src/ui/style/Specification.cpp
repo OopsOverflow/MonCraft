@@ -1,5 +1,9 @@
 #include "Specification.hpp"
-#include "StyleError.hpp"
+
+#include <memory>
+
+#include "ui/style/StyleError.hpp"
+#include "ui/style/Type.hpp"
 
 using namespace ui;
 

@@ -1,24 +1,34 @@
 #pragma once
 
-#include "ui/Component.hpp"
+#include <GL/glew.h>
+#include <memory>
+#include <glm/glm.hpp>
 
+#include "ui/Component.hpp"
 #include "gl/Camera.hpp"
-#include "controller/MouseController.hpp"
 #include "controller/KeyboardController.hpp"
-#include "multiplayer/client/Server.hpp"
+#include "ui/Image.hpp"
+#include "ui/Key.hpp"
+#include "util/Identifier.hpp"
+#include "util/Raycast.hpp"
 
 #ifndef EMSCRIPTEN
   #include "audio/Music.hpp"
 #endif
 
-#include "terrain/World.hpp"
 #include "gl/SkyBox.hpp"
 #include "gl/ShadowMap.hpp"
-#include "gl/Viewport.hpp"
 #include "terrain/Renderer.hpp"
 #include "interface/GameMenu.hpp"
 #include "interface/Overlay.hpp"
 #include "interface/DebugOverlay.hpp"
+
+class Character;
+class Server;
+class Shader;
+class Viewport;
+class World;
+namespace Config { struct ClientConfig; }
 
 class MonCraftScene : public ui::Component {
 

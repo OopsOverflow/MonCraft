@@ -1,9 +1,12 @@
 #include "SkyBox.hpp"
-#include "gl/Camera.hpp"
-#include "gl/Viewport.hpp"
-#include "gl/ResourceManager.hpp"
+
+#include <memory>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
+#include "gl/Camera.hpp"
+#include "gl/ResourceManager.hpp"
+#include "gl/Shader.hpp"
 
 GLuint SkyBox::initSky() {
     float skyboxVertices[] = {

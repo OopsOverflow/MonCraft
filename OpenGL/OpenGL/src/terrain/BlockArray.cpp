@@ -1,8 +1,13 @@
 #include "BlockArray.hpp"
-#include "blocks/AllBlocks.hpp"
-#include "terrain/World.hpp"
+
+#include <algorithm>
+#include <iostream>
 #include <sstream>
-#include <set>
+#include <glm/glm.hpp>
+
+#include "terrain/World.hpp"
+#include "blocks/AllBlocks.hpp"
+#include "blocks/Block.hpp"
 
 std::vector<glm::ivec3> BlockArray::getChangedChunks() const {
   float chunkSize = World::getInst().chunkSize; // TODO: in config

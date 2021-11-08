@@ -1,6 +1,12 @@
 #include "ParameterButton.hpp"
-#include "ui/Text.hpp"
+
+#include <glm/glm.hpp>
+
 #include "gl/ResourceManager.hpp"
+#include "ui/Text.hpp"
+#include "ui/style/Type.hpp"
+
+class Font;
 
 using namespace ui;
 using namespace glm;

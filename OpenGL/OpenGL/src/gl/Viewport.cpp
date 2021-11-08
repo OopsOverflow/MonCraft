@@ -1,19 +1,19 @@
 #include "Viewport.hpp"
 
-//SDL Libraries
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_syswm.h>
-
 #ifdef EMSCRIPTEN
-#include <emscripten.h>
-#include <emscripten/html5.h>
+  #include <emscripten.h>
+  #include <emscripten/html5.h>
 #endif
 
-// GLEW Libraries
 #include <GL/glew.h>
-#include <GL/gl.h>
-
+#include <SDL2/SDL.h>
 #include <iostream>
+#include <stdexcept>
+#include <string>
+#include <glm/glm.hpp>
+
+#include "ui/Event.hpp"
+#include "ui/Root.hpp"
 
 const int Viewport::framerate = 60;
 const int Viewport::timePerFrame = 1000 / framerate;

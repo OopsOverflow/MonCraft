@@ -1,7 +1,12 @@
 #pragma once
 
-#include "../Member.hpp"
-#include "../Cube.hpp"
+#include <memory>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
+#include "entity/Member.hpp"
+#include "entity/Cube.hpp"
+#include "gl/Mesh.hpp"
 
 static const std::vector<GLfloat> rightLegUVs = {
   //TOP
@@ -50,7 +55,7 @@ public:
 
     node.loc = {-2, -6, 0};
   }
-  
+
 protected:
   std::unique_ptr<Mesh> createMesh() override {
     return std::make_unique<Mesh>(Cube::vertices, Cube::normals, rightLegUVs, Cube::occlusions, Cube::indices, Cube::normalMap);

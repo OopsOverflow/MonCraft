@@ -1,5 +1,9 @@
 #include "Raycast.hpp"
-#include "../debug/Debug.hpp"
+
+#include <glm/glm.hpp>
+
+#include "blocks/Block.hpp"
+#include "terrain/World.hpp"
 
 using glm::vec3;
 using glm::ivec3;

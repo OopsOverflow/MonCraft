@@ -1,5 +1,7 @@
 #include "SliceMap.hpp"
 
+#include "multiplayer/terrain/Structure.hpp"
+
 SliceMap::SliceMap() {}
 
 void SliceMap::insert(std::vector<Structure::Slice> const& slices) {

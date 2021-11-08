@@ -1,5 +1,9 @@
 #pragma once
-#include "ui/ui.hpp"
+
+#include <memory>
+
+#include "ui/Button.hpp"
+#include "ui/Component.hpp"
 
 class Overlay : public ui::Component
 {

@@ -1,9 +1,13 @@
 #include "Camera.hpp"
-#include "../gl/Shader.hpp"
 
+#include <GL/glew.h>
+#include <iostream>
+#include <stdexcept>
+#include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <iostream>
+
+#include "gl/Shader.hpp"
 
 Camera::Camera(glm::ivec2 size)
   : view(1.f), projection(1.f),

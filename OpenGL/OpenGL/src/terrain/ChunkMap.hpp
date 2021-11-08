@@ -1,11 +1,12 @@
 #pragma once
 
 #include <unordered_map>
-#include <glm/glm.hpp>
 #include <memory>
 #include <functional>
+#include <mutex>
+#include <glm/glm.hpp>
 
-#include "AbstractChunk.hpp"
+class AbstractChunk;
 
 /**
  * Stores all the chunks in a hashmap.

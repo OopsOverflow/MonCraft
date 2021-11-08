@@ -1,10 +1,12 @@
 #pragma once
 
+#include <glm/glm.hpp>
+
 #include "entity/character/Character.hpp"
 #include "ui/Key.hpp"
-#include "save/ClientConfig.hpp"
+#include "entity/Entity.hpp"
 
-#include <glm/glm.hpp>
+namespace Config { struct ClientConfig; }
 
 class KeyboardController {
 public:

@@ -1,8 +1,18 @@
 #include "UdpServer.hpp"
-#include "../NetworkError.hpp"
+
+#include <SFML/Network/IpAddress.hpp>
+#include <SFML/Network/Packet.hpp>
+#include <SFML/Network/Socket.hpp>
+#include <SFML/System/Clock.hpp>
+#include <SFML/System/Sleep.hpp>
+#include <SFML/System/Time.hpp>
+#include <csignal>
+#include <string>
+
+#include "multiplayer/NetworkError.hpp"
 #include "save/ServerConfig.hpp"
-#include "util/Identifier.hpp"
-#include "debug/Debug.hpp"
+#include "multiplayer/server/Client.hpp"
+#include "multiplayer/server/Server.hpp"
 
 bool UdpServer::stopSignal = false;
 

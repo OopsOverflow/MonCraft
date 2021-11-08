@@ -1,7 +1,8 @@
 #pragma once
 
-#include <SFML/Network.hpp>
 #include <glm/glm.hpp>
+#include <SFML/Network/IpAddress.hpp>
+#include <SFML/System/Time.hpp>
 #include <deque>
 
 #include "util/Identifier.hpp"

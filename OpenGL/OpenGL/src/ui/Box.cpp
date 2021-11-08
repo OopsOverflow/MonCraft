@@ -1,6 +1,10 @@
 #include "Box.hpp"
 
-#include <algorithm>
+#include <glm/glm.hpp>
+
+#include "ui/Component.hpp"
+#include "ui/style/Type.hpp"
+#include "ui/style/Value.hpp"
 
 using namespace ui;
 using namespace glm;

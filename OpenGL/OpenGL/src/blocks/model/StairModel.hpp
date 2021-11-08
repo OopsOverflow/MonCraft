@@ -1,11 +1,7 @@
 #pragma once
 
-#include <vector>
-#include <array>
-#include <GL/glew.h>
-#include <glm/glm.hpp>
-#include "gl/Mesh.hpp"
-#include "OrientableModel.hpp"
+#include "blocks/model/OrientableModel.hpp"
+#include "blocks/model/BlockModel.hpp"
 
 class StairModel : public OrientableModel {
 public:

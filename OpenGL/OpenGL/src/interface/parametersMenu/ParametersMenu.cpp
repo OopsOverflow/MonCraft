@@ -1,9 +1,14 @@
 #include "ParametersMenu.hpp"
-#include "AudioMenu.hpp"
-#include "KeyMenu.hpp"
-#include "MiscMenu.hpp"
-#include "GraphicsMenu.hpp"
+
+#include <glm/glm.hpp>
+
+#include "interface/parametersMenu/AudioMenu.hpp"
+#include "interface/parametersMenu/KeyMenu.hpp"
+#include "interface/parametersMenu/MiscMenu.hpp"
+#include "interface/parametersMenu/GraphicsMenu.hpp"
 #include "gl/ResourceManager.hpp"
+#include "ui/Component.hpp"
+#include "ui/style/Type.hpp"
 
 using namespace ui;
 

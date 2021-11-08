@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Block.hpp"
+#include "blocks/Block.hpp"
 
 class Air_Block : public Block {
 public:

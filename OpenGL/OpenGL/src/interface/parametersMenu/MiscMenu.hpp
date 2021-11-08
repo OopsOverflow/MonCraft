@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "ui/Box.hpp"
 
 class MiscMenu : public ui::Box {

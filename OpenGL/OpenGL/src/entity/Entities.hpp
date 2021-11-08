@@ -1,10 +1,11 @@
 #pragma once
 
-#include "util/Identifier.hpp"
-#include "Entity.hpp"
-
 #include <unordered_map>
 #include <memory>
+
+#include "util/Identifier.hpp"
+
+class Entity;
 
 using entityMap_t = std::unordered_map<Identifier, std::shared_ptr<Entity>>;
 

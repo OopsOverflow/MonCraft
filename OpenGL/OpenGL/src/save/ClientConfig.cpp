@@ -1,12 +1,13 @@
 #include "ClientConfig.hpp"
-#include "SaveManager.hpp"
-#include "util/Serde.hpp"
 
 #include <SDL2/SDL_keyboard.h>
 #include <filesystem>
+#include <algorithm>
 #include <fstream>
-#include <sstream>
+#include <iostream>
 
+#include "save/SaveManager.hpp"
+#include "util/Serde.hpp"
 
 Config::ClientConfig::ClientConfig() {
   const std::string path = SaveManager::configSaveDir + "/clientConfig.txt";

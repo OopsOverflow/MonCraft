@@ -1,8 +1,17 @@
 // websockets stuff
 #include "WebSocketServer.hpp"
-#include "save/ServerConfig.hpp"
 
-#include <SFML/Network.hpp>
+#include <SFML/Network/IpAddress.hpp>
+#include <SFML/Network/Packet.hpp>
+#include <SFML/System/Clock.hpp>
+#include <SFML/System/Sleep.hpp>
+#include <SFML/System/Time.hpp>
+#include <csignal>
+#include <functional>
+#include <iostream>
+
+#include "save/ServerConfig.hpp"
+#include "multiplayer/server/Server.hpp"
 
 using websocketpp::lib::placeholders::_1;
 using websocketpp::lib::placeholders::_2;

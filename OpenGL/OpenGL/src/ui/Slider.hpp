@@ -1,6 +1,10 @@
 #pragma once
 
-#include "Pane.hpp"
+#include <memory>
+#include <glm/glm.hpp>
+
+#include "ui/Pane.hpp"
+#include "ui/Component.hpp"
 
 
 namespace ui {

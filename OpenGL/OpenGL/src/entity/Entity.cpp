@@ -1,6 +1,10 @@
 #include "Entity.hpp"
 
+#include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+
+#include "entity/Hitbox.hpp"
+#include "entity/Node.hpp"
 
 using namespace glm;
 static const highp_dmat4 I(1.0);

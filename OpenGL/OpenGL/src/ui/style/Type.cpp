@@ -1,6 +1,9 @@
 #include "Type.hpp"
-#include "StyleError.hpp"
+
 #include <string>
+#include <glm/glm.hpp>
+
+#include "ui/style/StyleError.hpp"
 
 using namespace ui;
 
@@ -26,8 +29,6 @@ std::string Type::getName(type_t type) {
 }
 
 // some predefined types
-
-#include <glm/glm.hpp>
 
 MAKE_TYPE(bool);
 MAKE_TYPE(int);

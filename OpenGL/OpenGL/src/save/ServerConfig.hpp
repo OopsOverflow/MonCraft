@@ -1,5 +1,7 @@
-#include <glm/glm.hpp>
+#pragma once
+
 #include <string>
+#include <glm/glm.hpp>
 
 namespace Config {
 

@@ -1,8 +1,13 @@
 #pragma once
 
+#include <memory>
+#include <vector>
+#include <glm/glm.hpp>
+
 #include "util/DataStore.hpp"
 #include "blocks/Block.hpp"
-#include "terrain/AbstractChunk.hpp"
+
+class AbstractChunk;
 
 /**
  * A structure allows the generation of complex block structures
