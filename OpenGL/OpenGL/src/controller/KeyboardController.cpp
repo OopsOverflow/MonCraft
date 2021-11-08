@@ -8,7 +8,6 @@
 KeyboardController::KeyboardController()
   : config(Config::getClientConfig()),
     direction(0.f),
-    state(State::Idle),
     view(CharacterView::FIRST_PERSON),
     sprint(false), toggleGod(false),
     spaceIsPressed(false), lastSpacePress(0.f)

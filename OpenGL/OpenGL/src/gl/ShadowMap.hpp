@@ -65,6 +65,4 @@ private:
   GLuint fbo;
   GLuint depthTex[3];
   Shader* shader;
-  float distance;
-  int size;
 };

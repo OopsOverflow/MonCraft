@@ -24,8 +24,6 @@ public:
 
 private:
     float cellSize = 150.f;         // voronoi single cell size
-    float blendSmoothness = 0.4f;   // amount of smoothing to apply
-    float biomeBlend = 40.f; // distance to smooth biomes borders
     float globalFrequency = .5f;   // adjust the frequencies overall (high values gives)
     float globalAmplitude = 5.2f;  // adjust the amplitude overall (high values gives AMPLIFIED terrain)
 

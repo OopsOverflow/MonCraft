@@ -76,7 +76,7 @@ float Slider::posToValue(int pos) const {
 int Slider::valueToPos(float value) const {
   auto size = getAbsoluteSize();
   auto tsize = thumb->getAbsoluteSize();
-  return (int)(value * (size.x - tsize.x) + tsize.x / 2);
+  return (int)(value * (size.x - tsize.x) + tsize.x / 2.f);
 }
 
 void Slider::setValue(float value) {

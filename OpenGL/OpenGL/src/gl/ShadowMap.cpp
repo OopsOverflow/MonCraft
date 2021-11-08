@@ -13,8 +13,7 @@ using namespace glm;
 ShadowMap::ShadowMap(int size)
   : camera(ivec2(size)),
     shadowMatrices(),
-    shader(ResourceManager::getShader("shadow")),
-    distance(100.f), size(size)
+    shader(ResourceManager::getShader("shadow"))
 {
   camera.setProjectionType(Projection::PROJECTION_ORTHOGRAPHIC);
   glGenFramebuffers(1, &fbo);

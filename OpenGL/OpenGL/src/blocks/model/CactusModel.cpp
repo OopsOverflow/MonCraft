@@ -56,7 +56,6 @@ void CactusModel::genFace(glm::ivec3 pos, BlockFace face, Block* block, std::arr
 
 void CactusModel::generateMesh(ivec3 pos, Block* block, std::array<Block*, 26> const& neighbors, MeshData& data) const {
   for(auto const& off : blockFaceOffsets) {
-    auto neigh = neighbors[off.first];
     genFace(pos, off.second, block, neighbors, data);
   }
 }

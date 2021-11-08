@@ -22,7 +22,6 @@ private:
   Config::ClientConfig& config;
 
   glm::vec3 direction;
-  State state;
   CharacterView view;
 
   bool sprint;
