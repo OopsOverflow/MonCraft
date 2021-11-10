@@ -1,0 +1,4 @@
+[
+  { "include": ["@\"glm/.*\"", "private", "<glm/glm.hpp>", "public"] },
+  { "symbol": [ "glm::value_ptr", "private", "<glm/gtc/type_ptr.hpp>", "public" ] }
+]
