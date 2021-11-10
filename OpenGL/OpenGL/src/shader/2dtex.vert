@@ -2,7 +2,7 @@
 
 in vec2 vPosition;
 uniform mat2 uMvp;
-smooth out vec2 vertexPosition;
+out vec2 vertexPosition;
 
 void main() {
   vertexPosition = (vPosition + vec2(1.0)) / 2.0;

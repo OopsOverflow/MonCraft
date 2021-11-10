@@ -5,8 +5,8 @@ uniform mat4 m_model;
 uniform mat4 m_view;
 uniform mat4 m_projection;
 
-smooth out vec3 vertexPosition;
-smooth out vec3 fogColor;
+out vec3 vertexPosition;
+out vec3 fogColor;
 
 
 out vec2 texCoords;

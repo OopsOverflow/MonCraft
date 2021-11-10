@@ -2,7 +2,7 @@
 
 precision mediump float;
 
-smooth in vec2 texCoords;
+in vec2 texCoords;
 
 uniform sampler2D uTexture;
 uniform vec2 scale;

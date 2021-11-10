@@ -47,7 +47,7 @@ void loadResources() {
     ResourceManager::loadCubeMap("skyboxNight", skyboxNightFaces);
 
     #ifdef EMSCRIPTEN
-      ResourceManager::loadShader("simple", "simple.vert", "simple_emscripten.frag");
+      ResourceManager::loadShader("simple", "simple_emscripten.vert", "simple_emscripten.frag");
     #else
       ResourceManager::loadShader("simple", "simple.vert", "simple.frag");
     #endif

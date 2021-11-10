@@ -6,7 +6,7 @@ precision mediump float;
 
 out vec4 outputColor;
 
-in vec3 txrCoords;
+in vec3 texCoords;
 
 uniform samplerCube skyboxD;
 uniform samplerCube skyboxN;
@@ -15,8 +15,8 @@ uniform int flags;
 
 void main()
 {
-    vec4 textureD = texture(skyboxD, txrCoords);
-    vec4 textureN = texture(skyboxN, txrCoords);
+    vec4 textureD = texture(skyboxD, texCoords);
+    vec4 textureN = texture(skyboxN, texCoords);
 
     outputColor = mix(textureD, textureN, blendFactor);
 

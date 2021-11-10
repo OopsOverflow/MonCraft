@@ -5,13 +5,13 @@ precision mediump float;
 #define UNDERWATER_FLAG 1
 #define TRANSPARENT_FLAG 2
 
-smooth in vec3 vertexPosition;
-smooth in vec3 vertexNormal;
-smooth in float vertexOcclusion;
-centroid in vec2 txrCoords;
+in vec3 vertexPosition;
+in vec3 vertexNormal;
+in float vertexOcclusion;
+centroid in vec2 texCoords;
 centroid in vec2 normalCoords;
-smooth in vec3 shadowCoords[3];
-smooth in mat3 TBN;
+in vec3 shadowCoords[3];
+in mat3 TBN;
 
 
 uniform vec3 lightDirection;
@@ -78,7 +78,7 @@ void main() {
   float specular = pow(specAngle, 200.0);
 
   // Textures
-  outputColor = texture(t_color, txrCoords);
+  outputColor = texture(t_color, texCoords);
 
   // shadow
   float shadow = 0.0;
