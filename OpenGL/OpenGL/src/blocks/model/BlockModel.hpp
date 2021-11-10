@@ -71,14 +71,16 @@ protected:
   template<glm::length_t L>
   static std::array<std::vector<GLfloat>, 4> computeFacing(std::vector<Quad<L>> const& quads);
 
-  template<>
-  std::array<std::vector<GLfloat>, 4> computeFacing(std::vector<Quad<1>> const& quads);
-
   template<glm::length_t L>
   static std::array<BlockMeshData, 4> computeFacing(QuadMesh<L> const& mesh);
 
-  template<>
-  std::array<BlockMeshData, 4> computeFacing(QuadMesh<1> const& mesh);
-
   static const std::array<glm::mat4, 4> facingTransforms;
 };
+
+
+template<>
+std::array<std::vector<GLfloat>, 4> BlockModel::computeFacing(std::vector<Quad<1>> const& quads);
+
+
+template<>
+std::array<BlockMeshData, 4> BlockModel::computeFacing(QuadMesh<1> const& mesh);
