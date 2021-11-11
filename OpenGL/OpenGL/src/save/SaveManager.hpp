@@ -28,7 +28,7 @@ private:
     SaveManager() = delete;
 };
 
-namespace Serde {
+namespace serde {
     std::ostream &operator<<(std::ostream &stream, const glm::vec3 &vec);
     std::istream &operator>>(std::istream &stream, glm::vec3 &vec);
 

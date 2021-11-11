@@ -23,7 +23,7 @@
 #include "terrain/World.hpp"
 
 using namespace glm;
-using namespace Serde;
+using namespace serde;
 
 RealServer::RealServer(std::string url, unsigned short port)
   : addr(url), port(port),

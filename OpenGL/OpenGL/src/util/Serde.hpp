@@ -3,7 +3,7 @@
 #include <sstream>
 #include <string>
 
-namespace Serde {
+namespace serde {
 
   template <typename T> class Binary {
   public:

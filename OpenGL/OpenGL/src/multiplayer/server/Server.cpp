@@ -23,7 +23,7 @@
 #include "terrain/World.hpp"
 
 using namespace glm;
-using namespace Serde;
+using namespace serde;
 
 Server::Server(unsigned short port)
   : port(port), world(World::getInst())

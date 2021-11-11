@@ -72,14 +72,14 @@ BlockType AllBlocks::nextBlock(BlockType type) {
 }
 
 std::ostream& AllBlocks::serialize(std::ostream& stream, Block* block) {
-  using namespace Serde;
+  using namespace serde;
   stream << block->type;
   block->serialize(stream);
   return stream;
 }
 
 Block::unique_ptr_t AllBlocks::deserialize(std::istream& stream) {
-  using namespace Serde;
+  using namespace serde;
   BlockType type;
   stream >> type;
   auto b = create_static(type);

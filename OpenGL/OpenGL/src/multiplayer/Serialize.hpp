@@ -9,7 +9,7 @@
 class AbstractChunk;
 class BlockArray;
 
-namespace Serde {
+namespace serde {
   sf::Packet& consume(Entity& e, sf::Packet& packet);
   sf::Packet& operator<<(sf::Packet& packet, Entity const& entity);
   sf::Packet& operator>>(sf::Packet& packet, Entity& entity);

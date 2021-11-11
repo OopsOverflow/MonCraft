@@ -20,13 +20,13 @@ public:
     }
 
     virtual std::ostream& serialize(std::ostream &stream) const override {
-        using namespace Serde;
+        using namespace serde;
         stream << facing;
         return stream;
     }
 
     virtual Block* deserialize(std::istream &stream) override {
-        using namespace Serde;
+        using namespace serde;
         Facing facing;
         stream >> facing;
         return new Birch_Stair_Block(facing);

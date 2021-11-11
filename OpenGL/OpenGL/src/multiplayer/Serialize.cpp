@@ -12,7 +12,7 @@
 
 class AbstractChunk;
 
-sf::Packet& Serde::operator<<(sf::Packet& packet, Entity const& entity) {
+sf::Packet& serde::operator<<(sf::Packet& packet, Entity const& entity) {
 	packet << entity.bodyNode.loc;
 	packet << entity.bodyNode.rot;
 	packet << entity.headNode.rot;
@@ -23,7 +23,7 @@ sf::Packet& Serde::operator<<(sf::Packet& packet, Entity const& entity) {
 	return packet;
 }
 
-sf::Packet& Serde::operator>>(sf::Packet& packet, Entity& entity) {
+sf::Packet& serde::operator>>(sf::Packet& packet, Entity& entity) {
 	sf::Uint8 state;
 	packet >> entity.bodyNode.loc;
 	packet >> entity.bodyNode.rot;
@@ -36,7 +36,7 @@ sf::Packet& Serde::operator>>(sf::Packet& packet, Entity& entity) {
 	return packet;
 }
 
-sf::Packet& Serde::consume(Entity& e, sf::Packet& packet) {
+sf::Packet& serde::consume(Entity& e, sf::Packet& packet) {
 	decltype(e.bodyNode.loc) loc;
 	decltype(e.bodyNode.rot) rot;
 	decltype(e.headNode.rot) headRot;
@@ -54,7 +54,7 @@ sf::Packet& Serde::consume(Entity& e, sf::Packet& packet) {
 	return packet;
 }
 
-sf::Packet& Serde::operator<<(sf::Packet& packet, PacketHeader const& header) {
+sf::Packet& serde::operator<<(sf::Packet& packet, PacketHeader const& header) {
   #ifdef VERBOSE_PACKET
     std::stringstream ss;
     ss << header;
@@ -63,7 +63,7 @@ sf::Packet& Serde::operator<<(sf::Packet& packet, PacketHeader const& header) {
   return packet << (sf::Uint8)header.getType();
 }
 
-sf::Packet& Serde::operator>>(sf::Packet& packet, PacketHeader& header) {
+sf::Packet& serde::operator>>(sf::Packet& packet, PacketHeader& header) {
   #ifdef VERBOSE_PACKET
     std::string s;
     packet >> s;
@@ -74,7 +74,7 @@ sf::Packet& Serde::operator>>(sf::Packet& packet, PacketHeader& header) {
   return packet;
 }
 
-std::ostream& Serde::operator<<(std::ostream& os, PacketHeader const& header) {
+std::ostream& serde::operator<<(std::ostream& os, PacketHeader const& header) {
   PacketType type = header.getType();
   if(type == PacketType::LOGIN) os << "LOGIN";
   else if(type == PacketType::ACK_LOGIN) os << "ACK_LOGIN";
@@ -90,8 +90,8 @@ std::ostream& Serde::operator<<(std::ostream& os, PacketHeader const& header) {
   return os;
 }
 
-sf::Packet& Serde::operator<<(sf::Packet& packet, BlockArray const& record) {
-  using namespace Serde;
+sf::Packet& serde::operator<<(sf::Packet& packet, BlockArray const& record) {
+  using namespace serde;
   packet << (sf::Uint64)record.size();
 
   for (auto const& elt : record) {
@@ -101,8 +101,8 @@ sf::Packet& Serde::operator<<(sf::Packet& packet, BlockArray const& record) {
   return packet;
 }
 
-sf::Packet& Serde::operator>>(sf::Packet& packet, BlockArray& record) {
-  using namespace Serde;
+sf::Packet& serde::operator>>(sf::Packet& packet, BlockArray& record) {
+  using namespace serde;
   sf::Uint64 count;
   packet >> count;
 
@@ -115,14 +115,14 @@ sf::Packet& Serde::operator>>(sf::Packet& packet, BlockArray& record) {
   return packet;
 }
 
-sf::Packet& Serde::operator<<(sf::Packet &packet, AbstractChunk const& chunk) {
+sf::Packet& serde::operator<<(sf::Packet &packet, AbstractChunk const& chunk) {
   std::ostringstream stream;
   stream << chunk;
   packet << stream.str();
   return packet;
 }
 
-sf::Packet& Serde::operator>>(sf::Packet &packet, AbstractChunk &chunk) {
+sf::Packet& serde::operator>>(sf::Packet &packet, AbstractChunk &chunk) {
   std::string str;
   packet >> str;
   std::stringstream stream(str);

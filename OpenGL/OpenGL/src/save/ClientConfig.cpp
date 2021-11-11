@@ -19,7 +19,7 @@ Config::ClientConfig::ClientConfig() {
 
 #define KEY_PARAM(NAME)                                                        \
   if (param == #NAME ":") {                                                    \
-    this->NAME = SDL_GetKeyFromName(Serde::remainder(ss).c_str());             \
+    this->NAME = SDL_GetKeyFromName(serde::remainder(ss).c_str());             \
     continue;                                                                  \
   }
 #define PARAM(NAME)                                                            \
