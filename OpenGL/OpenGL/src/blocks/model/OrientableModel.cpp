@@ -67,7 +67,7 @@ void OrientableModel::genFace(glm::ivec3 pos, BlockFace face, Orientable_Block* 
     // positions
     auto& posFace = blockPositions[(size_t)facing][flookup];
     _pos.insert(_pos.end(), posFace.begin(), posFace.end());
-    for(int i = 0, k = 0; i < posFace.size(); i++, k = (k+1) % 3) {
+    for(size_t i = 0, k = 0; i < posFace.size(); i++, k = (k+1) % 3) {
       _pos[_pos.size() - posFace.size() + i] += pos[k];
     }
 
