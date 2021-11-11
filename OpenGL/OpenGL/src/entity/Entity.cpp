@@ -1,7 +1,11 @@
 #include "Entity.hpp"
 
 #include <glm/glm.hpp>
+#include <glm/gtc/constants.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <stdlib.h>
+#include <cmath>
+#include <utility>
 
 #include "entity/Hitbox.hpp"
 #include "entity/Node.hpp"

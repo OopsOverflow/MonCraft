@@ -1,8 +1,9 @@
 #pragma once
 
-#include <memory>
 #include <SDL2/SDL.h>
 #include <glm/glm.hpp>
+#include <stdint.h>
+#include <memory>
 
 #include "controller/MouseController.hpp"
 #include "save/ClientConfig.hpp"

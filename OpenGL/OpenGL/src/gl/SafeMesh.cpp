@@ -1,5 +1,7 @@
 #include "SafeMesh.hpp"
 
+#include <utility>
+
 #include "debug/Debug.hpp"
 #include "gl/Mesh.hpp"
 

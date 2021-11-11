@@ -1,13 +1,13 @@
 #include "KeyMenu.hpp"
 
-#include <SDL2/SDL_keyboard.h>
+#include <SDL2/SDL.h>
 #include <glm/glm.hpp>
 
+#include "gl/ResourceManager.hpp"
 #include "interface/parametersMenu/ParameterButton.hpp"
+#include "save/ClientConfig.hpp"
 #include "ui/Button.hpp"
 #include "ui/style/Type.hpp"
-#include "gl/ResourceManager.hpp"
-#include "save/ClientConfig.hpp"
 
 using namespace ui;
 using namespace glm;

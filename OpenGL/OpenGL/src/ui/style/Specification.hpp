@@ -1,7 +1,8 @@
 #pragma once
 
-#include <unordered_map>
+#include <stddef.h>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "ui/style/Type.hpp"

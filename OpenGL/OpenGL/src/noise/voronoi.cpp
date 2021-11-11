@@ -1,6 +1,7 @@
 #include "voronoi.hpp"
 
 #include <glm/glm.hpp>
+#include <stdint.h>
 
 #include "noise/XXHash.hpp"
 

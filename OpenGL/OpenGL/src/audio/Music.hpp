@@ -1,10 +1,11 @@
 #pragma once
 
-#include <vector>
-#include <string>
 #include <SFML/Audio/Music.hpp>
 #include <SFML/System/Clock.hpp>
 #include <SFML/System/Time.hpp>
+#include <stdint.h>
+#include <string>
+#include <vector>
 
 
 #define Music_ACTIVE

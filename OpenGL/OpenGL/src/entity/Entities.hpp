@@ -1,7 +1,8 @@
 #pragma once
 
-#include <unordered_map>
+#include <stddef.h>
 #include <memory>
+#include <unordered_map>
 
 #include "util/Identifier.hpp"
 

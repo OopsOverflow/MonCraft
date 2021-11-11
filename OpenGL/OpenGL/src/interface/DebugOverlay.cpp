@@ -1,13 +1,13 @@
 #include "DebugOverlay.hpp"
 
-#include <iomanip>
-#include <ostream>
 #include <glm/glm.hpp>
+#include <iomanip>
+#include <sstream>
 
-#include "gl/ResourceManager.hpp"
 #include "debug/Debug.hpp"
 #include "entity/Entities.hpp"
 #include "entity/character/Character.hpp"
+#include "gl/ResourceManager.hpp"
 #include "multiplayer/client/Server.hpp"
 #include "terrain/World.hpp"
 #include "ui/Component.hpp"

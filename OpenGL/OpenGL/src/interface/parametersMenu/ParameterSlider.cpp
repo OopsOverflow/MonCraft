@@ -1,9 +1,10 @@
 #include "ParameterSlider.hpp"
 
 #include <glm/glm.hpp>
+#include <utility>
 
-#include "ui/Text.hpp"
 #include "gl/ResourceManager.hpp"
+#include "ui/Text.hpp"
 #include "ui/style/Type.hpp"
 
 class Font;

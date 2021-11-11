@@ -1,9 +1,10 @@
 #include "Bench.hpp"
 
+#include <stddef.h>
 #include <algorithm>
-#include <numeric>
-#include <iostream>
 #include <fstream>
+#include <iostream>
+#include <numeric>
 
 Bench::Bench() : enabled(true) {}
 

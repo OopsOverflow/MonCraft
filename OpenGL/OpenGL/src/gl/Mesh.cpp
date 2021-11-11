@@ -1,11 +1,13 @@
 #include "Mesh.hpp"
 
 #include <GL/glew.h>
+#include <stddef.h>
 #include <algorithm>
+#include <iterator>
 #include <stdexcept>
 
-#include "gl/Shader.hpp"
 #include "debug/Debug.hpp"
+#include "gl/Shader.hpp"
 
 Mesh::Mesh(GLuint vao, GLuint vbo, GLuint ebo, GLsizei vertCount) noexcept
     : vao(vao), vbo(vbo), ebo(ebo), vertCount(vertCount)

@@ -2,12 +2,15 @@
 #include <SFML/Config.hpp>
 #include <SFML/Network/Packet.hpp>
 #include <glm/glm.hpp>
+#include <iosfwd>
+#include <type_traits>
 
 #include "entity/Entity.hpp"
 #include "multiplayer/Packet.hpp"
 
 class AbstractChunk;
 class BlockArray;
+
 
 namespace serde {
   sf::Packet& consume(Entity& e, sf::Packet& packet);

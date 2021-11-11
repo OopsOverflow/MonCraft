@@ -1,9 +1,10 @@
 #pragma once
 
 #include <GL/glew.h>
-#include <vector>
-#include <array>
 #include <glm/glm.hpp>
+#include <stddef.h>
+#include <array>
+#include <vector>
 
 class Block;
 struct MeshData;

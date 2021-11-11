@@ -1,15 +1,18 @@
 #include "Chunk.hpp"
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <stddef.h>
 #include <algorithm>
 #include <array>
+#include <utility>
 #include <vector>
-#include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
 
-#include "terrain/AbstractChunk.hpp"
-#include "gl/Shader.hpp"
-#include "gl/SafeMesh.hpp"
 #include "blocks/model/BlockModel.hpp"
+#include "gl/SafeMesh.hpp"
+#include "gl/Shader.hpp"
+#include "terrain/AbstractChunk.hpp"
 #include "util/DataStore.hpp"
 
 using namespace glm;

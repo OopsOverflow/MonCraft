@@ -1,13 +1,14 @@
 #pragma once
 
-#include <array>
 #include <glm/glm.hpp>
+#include <stddef.h>
+#include <array>
 
-#include "blocks/model/DefaultModel.hpp"
 #include "blocks/model/BlockModel.hpp"
+#include "blocks/model/DefaultModel.hpp"
 
-class Orientable_Block;
 class Block;
+class Orientable_Block;
 struct MeshData;
 
 enum class BlockFace;

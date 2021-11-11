@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <stdint.h>
 
 /**
  * A non-iterative 2D-space value noise generator.

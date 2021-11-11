@@ -1,16 +1,18 @@
 #include "Character.hpp"
 
-#include <memory>
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/constants.hpp>
+#include <stdlib.h>
+#include <cmath>
+#include <memory>
+#include <utility>
 
-#include "blocks/AllBlocks.hpp"
 #include "blocks/Air_Block.hpp"
-#include "blocks/Oak_Stair_Block.hpp"
-#include "blocks/Oak_Planks_Block.hpp"
-#include "blocks/Birch_Stair_Block.hpp"
+#include "blocks/AllBlocks.hpp"
 #include "blocks/Birch_Planks_Block.hpp"
-#include "terrain/World.hpp"
+#include "blocks/Birch_Stair_Block.hpp"
+#include "blocks/Oak_Planks_Block.hpp"
+#include "blocks/Oak_Stair_Block.hpp"
 #include "entity/Entity.hpp"
 #include "entity/Hitbox.hpp"
 #include "entity/character/CharacterHitbox.hpp"
@@ -21,6 +23,7 @@
 #include "entity/character/RightArm.hpp"
 #include "entity/character/RightLeg.hpp"
 #include "gl/Camera.hpp"
+#include "terrain/World.hpp"
 
 using namespace glm;
 

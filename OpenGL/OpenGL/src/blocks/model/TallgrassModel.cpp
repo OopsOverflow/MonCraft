@@ -1,8 +1,10 @@
 #include "TallgrassModel.hpp"
 
-#include <algorithm>
-#include <vector>
 #include <glm/glm.hpp>
+#include <stddef.h>
+#include <algorithm>
+#include <cmath>
+#include <vector>
 
 #include "blocks/Block.hpp"
 #include "blocks/model/DefaultModel.hpp"

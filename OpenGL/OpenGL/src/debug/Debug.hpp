@@ -1,9 +1,9 @@
 #pragma once
 
-#include <iostream>
-#include <iomanip>
-#include <chrono>
 #include <glm/glm.hpp>
+#include <chrono>
+#include <iomanip>
+#include <iostream>
 
 class DebugTimer {
 
@@ -43,8 +43,8 @@ public:
 #define ASSERT_GL_MAIN_THREAD()
 #else
 
-#include <thread>
 #include <csignal>
+#include <thread>
 
 static const std::thread::id mainThread = std::this_thread::get_id();
 

@@ -1,11 +1,13 @@
 #include "ShadowMap.hpp"
 
-#include <vector>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <stddef.h>
+#include <limits>
+#include <vector>
 
-#include "gl/ResourceManager.hpp"
 #include "gl/Camera.hpp"
+#include "gl/ResourceManager.hpp"
 #include "gl/Shader.hpp"
 
 using namespace glm;
@@ -56,12 +58,12 @@ void ShadowMap::attach(Camera const& cam, Frustum frustum) {
 
     std::vector<vec3> corners = cam.getBoxCorners(frustum);
 
-    float minX = FLT_MAX;
-    float maxX = -FLT_MAX;
-    float minY = FLT_MAX;
-    float maxY = -FLT_MAX;
-    float minZ = FLT_MAX;
-    float maxZ = -FLT_MAX;
+    float minX = std::numeric_limits<float>::max();
+    float maxX = std::numeric_limits<float>::min();
+    float minY = std::numeric_limits<float>::max();
+    float maxY = std::numeric_limits<float>::min();
+    float minZ = std::numeric_limits<float>::max();
+    float maxZ = std::numeric_limits<float>::min();
 
     for (auto vec : corners) {
       vec = vec3(camera.view * vec4(vec, 1.0f));

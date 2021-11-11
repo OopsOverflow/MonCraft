@@ -1,10 +1,11 @@
 #pragma once
 
-#include <unordered_map>
-#include <memory>
-#include <functional>
-#include <mutex>
 #include <glm/glm.hpp>
+#include <stddef.h>
+#include <functional>
+#include <memory>
+#include <mutex>
+#include <unordered_map>
 
 class AbstractChunk;
 

@@ -1,11 +1,12 @@
 #pragma once
 
+#include <glm/glm.hpp>
+#include <iosfwd>
 #include <memory>
 #include <string>
-#include <glm/glm.hpp>
 
-#include "entity/Entity.hpp"
 #include "blocks/Block.hpp"
+#include "entity/Entity.hpp"
 
 class AbstractChunk;
 class Node;

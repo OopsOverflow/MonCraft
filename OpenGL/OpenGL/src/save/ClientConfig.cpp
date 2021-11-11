@@ -1,10 +1,11 @@
 #include "ClientConfig.hpp"
 
-#include <SDL2/SDL_keyboard.h>
-#include <filesystem>
+#include <SDL2/SDL.h>
 #include <algorithm>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <sstream>
 
 #include "save/SaveManager.hpp"
 #include "util/Serde.hpp"

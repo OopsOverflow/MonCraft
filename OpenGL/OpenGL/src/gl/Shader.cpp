@@ -1,8 +1,9 @@
 #include "Shader.hpp"
 
-#include <sstream>
+#include <stddef.h>
 #include <fstream>
 #include <iostream>
+#include <sstream>
 
 #define SHADER_ENABLE_DEBUG 0
 

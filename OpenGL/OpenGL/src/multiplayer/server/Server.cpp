@@ -3,24 +3,26 @@
 #include <SFML/Config.hpp>
 #include <SFML/Network/IpAddress.hpp>
 #include <SFML/Network/Packet.hpp>
+#include <glm/glm.hpp>
+#include <stddef.h>
 #include <algorithm>
 #include <deque>
 #include <iostream>
 #include <memory>
+#include <utility>
 #include <vector>
-#include <glm/glm.hpp>
 
-#include "util/Identifier.hpp"
-#include "save/ServerConfig.hpp"
-#include "save/SaveManager.hpp"
 #include "entity/Entity.hpp"
-#include "multiplayer/Serialize.hpp"
 #include "multiplayer/Packet.hpp"
+#include "multiplayer/Serialize.hpp"
 #include "multiplayer/server/Client.hpp"
+#include "save/SaveManager.hpp"
+#include "save/ServerConfig.hpp"
 #include "terrain/AbstractChunk.hpp"
 #include "terrain/BlockArray.hpp"
 #include "terrain/ChunkMap.hpp"
 #include "terrain/World.hpp"
+#include "util/Identifier.hpp"
 
 using namespace glm;
 using namespace serde;

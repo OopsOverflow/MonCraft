@@ -1,11 +1,12 @@
 #include "Camera.hpp"
 
 #include <GL/glew.h>
-#include <iostream>
-#include <stdexcept>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <cmath>
+#include <iostream>
+#include <stdexcept>
 
 #include "gl/Shader.hpp"
 

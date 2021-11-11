@@ -2,14 +2,17 @@
 
 OUT=$PWD/iwyu.txt
 MAP=$PWD/iwyu_mapping.json
-echo $OUT
+CLANG_INC=$(clang++ -print-resource-dir)/include
+
+echo "output: $OUT"
+echo "clang includes: $CLANG_INC"
 
 cd ../DebugOptimized
 
 # -Xiwyu --verbose=3 \
-iwyu_tool.py -j 6 -p . -- \
+iwyu_tool.py -j 10 -p . -- \
 -Xiwyu --mapping_file="$MAP" \
--I/usr/lib64/clang/12.0.1/include > $OUT
+-I$CLANG_INC > $OUT
 
 cd ../DebugOptimized && fix_includes.py \
 -b -m \

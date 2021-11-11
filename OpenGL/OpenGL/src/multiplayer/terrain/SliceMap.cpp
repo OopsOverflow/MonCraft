@@ -1,5 +1,7 @@
 #include "SliceMap.hpp"
 
+#include <utility>
+
 #include "multiplayer/terrain/Structure.hpp"
 
 SliceMap::SliceMap() {}

@@ -1,8 +1,9 @@
 #include "WaterModel.hpp"
 
+#include <glm/glm.hpp>
+#include <stddef.h>
 #include <algorithm>
 #include <vector>
-#include <glm/glm.hpp>
 
 #include "blocks/Block.hpp"
 #include "blocks/model/DefaultModel.hpp"

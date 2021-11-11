@@ -4,7 +4,6 @@
 
 #include "entity/character/Character.hpp"
 #include "ui/Key.hpp"
-#include "entity/Entity.hpp"
 
 namespace Config { struct ClientConfig; }
 

@@ -1,9 +1,10 @@
 #pragma once
 
-#include <unordered_map>
-#include <mutex>
-#include <vector>
 #include <glm/glm.hpp>
+#include <stddef.h>
+#include <mutex>
+#include <unordered_map>
+#include <vector>
 
 #include "multiplayer/terrain/Structure.hpp"
 

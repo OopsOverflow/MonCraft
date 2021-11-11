@@ -1,8 +1,11 @@
 #include "ResourceManager.hpp"
 
+#include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <stddef.h>
 #include <iostream>
 #include <stdexcept>
+#include <utility>
 
 #include "gl/Font.hpp"
 #include "gl/Shader.hpp"

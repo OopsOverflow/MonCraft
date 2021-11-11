@@ -1,7 +1,8 @@
 #include "AbstractChunk.hpp"
 
-#include <algorithm>
 #include <glm/glm.hpp>
+#include <algorithm>
+#include <utility>
 
 using namespace glm;
 using std::move;
