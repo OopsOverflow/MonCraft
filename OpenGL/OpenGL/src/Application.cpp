@@ -11,9 +11,7 @@
 #include "interface/MonCraftScene.hpp"
 #include "interface/mainMenu/MainMenu.hpp"
 #include "interface/parametersMenu/ParametersMenu.hpp"
-#include "noise/prng.hpp"
 #include "save/ClientConfig.hpp"
-#include "save/ServerConfig.hpp"
 #include "terrain/World.hpp"
 #include "ui/Button.hpp"
 #include "ui/Component.hpp"
@@ -90,10 +88,6 @@ void loop(float dt) {
 
 int main(int argc, char* argv[]) {
     std::cout << "---- Main ----" << std::endl;
-
-    // game seed
-    auto seed = prng::srands(Config::getServerConfig().seed);
-    std::cout << "seed : " << Config::getServerConfig().seed << " (" << seed << ")" << std::endl;
 
     Viewport window({ 800, 800 });
     loadResources();

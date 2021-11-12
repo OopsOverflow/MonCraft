@@ -21,6 +21,7 @@
 #include "multiplayer/client/ClientServer.hpp"
 #include "multiplayer/client/RealServer.hpp"
 #include "multiplayer/client/Server.hpp"
+#include "noise/prng.hpp"
 #include "save/ClientConfig.hpp"
 #include "save/ServerConfig.hpp"
 #include "terrain/World.hpp"
@@ -30,11 +31,17 @@
 using namespace glm;
 using namespace ui;
 
-std::shared_ptr<Server> createServer() {
-    auto& config = Config::getClientConfig();
+std::shared_ptr<Server> createServer(bool multiplayer) {
+    auto& cconf = Config::getClientConfig();
+    auto& sconf = Config::getServerConfig();
+
+    // game seed
+    auto seed = prng::srands(sconf.seed);
+    std::cout << "seed : " << sconf.seed << " (" << seed << ")" << std::endl;
+
     std::unique_ptr<Server> server;
-    if (config.multiplayer) {
-        server = std::make_unique<RealServer>(config.serverAddr, config.serverPort);
+    if (multiplayer) {
+        server = std::make_unique<RealServer>(cconf.serverAddr, cconf.serverPort);
     }
     else {
         server = std::make_unique<ClientServer>();
@@ -68,7 +75,7 @@ MonCraftScene::MonCraftScene(Viewport* vp)
         normalMapID[i] = ResourceManager::getTexture("waterNormal" + std::to_string(i));
     }
 
-    server = createServer();
+    server = createServer(Config::getClientConfig().multiplayer);
     server->start();
     player = server->getPlayer();
     playerUid = server->getUid();
