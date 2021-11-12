@@ -11,28 +11,39 @@
 #include "terrain/World.hpp"
 
 using namespace glm;
+using namespace std::chrono_literals;
+
+#include "debug/Debug.hpp"
 
 PendingChunks::PendingChunks()
   : cpos(std::numeric_limits<int>::max()),
+    tcpos(cpos),
     hasChanged(false),
-    world(World::getInst())
+    world(World::getInst()),
+    stopFlag(false)
 {
   auto& config = Config::getServerConfig();
   renderDistH = config.renderDistH;
   renderDistV = config.renderDistV;
   maxChunks = renderDistH * renderDistH * renderDistV;
+
+  thread = std::thread(&PendingChunks::updateWorker, this);
 }
 
 PendingChunks::~PendingChunks() {
-  if(thread.get_id() != std::thread::id())
-    thread.join();
+  {
+    std::lock_guard<std::mutex> lk(stopMutex);
+    stopFlag = true;
+  }
+  stopSignal.notify_all();
+  thread.join();
 }
 
 void PendingChunks::update(vec3 playerPos) {
   ivec3 newChunkPos = floor(playerPos / float(chunkSize));
-  if(glm::length(vec3(newChunkPos - cpos)) > 2) {
+  if(newChunkPos != cpos) {
+    std::lock_guard<std::mutex> lck(copyMutex);
     cpos = newChunkPos;
-    updateWaitingChunks();
   }
 }
 
@@ -44,22 +55,11 @@ bool PendingChunks::changed() {
 std::vector<glm::ivec3> PendingChunks::get() {
   std::lock_guard<std::mutex> lck(copyMutex);
   hasChanged = false;
-  if(tcpos != cpos) updateWaitingChunks();
   return waitingChunks;
 }
 
 void PendingChunks::updateWaitingChunks() {
-  if(running.try_lock()) {
-    if(thread.get_id() != std::thread::id()) {
-      thread.join();
-    }
-    tcpos = cpos;
-    thread = std::thread(&PendingChunks::updateWorker, this);
-  }
-}
-
-void PendingChunks::updateWorker() {
-  newWaitingChunks.clear();
+  std::vector<glm::ivec3> newWaitingChunks;
 
   auto insert = [&](ivec2 const& pos) {
     for(int i = -renderDistV; i <= renderDistV; i++) {
@@ -69,7 +69,6 @@ void PendingChunks::updateWorker() {
         newWaitingChunks.push_back(p);
       }
     }
-    std::this_thread::sleep_for(std::chrono::milliseconds(1));
   };
 
   insert({0, 0});
@@ -102,8 +101,28 @@ void PendingChunks::updateWorker() {
     waitingChunks = newWaitingChunks;
     hasChanged = true;
   }
+}
 
-  running.unlock();
+bool PendingChunks::sleepFor(std::chrono::milliseconds millis) {
+  std::unique_lock<std::mutex> stopLck(stopMutex);
+  auto res = stopSignal.wait_for(stopLck, millis, [&]{return stopFlag;});
+  return res;
+}
+
+void PendingChunks::updateWorker() {
+  static const auto sleep = 500ms;
+  bool mustUpdate = false;
+
+  do {
+    {
+      std::lock_guard<std::mutex> lck(copyMutex);
+      mustUpdate = cpos != tcpos;
+      tcpos = cpos;
+    }
+    if(mustUpdate) {
+      updateWaitingChunks();
+    }
+  } while(!sleepFor(sleep));
 }
 
 void PendingChunks::remOldChunks() {

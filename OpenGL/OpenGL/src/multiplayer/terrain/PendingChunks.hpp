@@ -3,6 +3,7 @@
 #include <vector>
 #include <thread>
 #include <mutex>
+#include <condition_variable>
 #include <glm/glm.hpp>
 
 class World;
@@ -21,6 +22,7 @@ public:
   void remOldChunks();
 
 private:
+  bool sleepFor(std::chrono::milliseconds);
   void updateWorker();
   void updateWaitingChunks();
 
@@ -29,8 +31,13 @@ private:
   unsigned int maxChunks;
   glm::ivec3 cpos, tcpos;
   bool hasChanged;
-  std::vector<glm::ivec3> waitingChunks, newWaitingChunks;
-  std::mutex running, copyMutex;
+  std::vector<glm::ivec3> waitingChunks;
+  std::mutex copyMutex;
   std::thread thread;
   World& world;
+
+  // signals to stop the threads
+  bool stopFlag;
+  std::mutex stopMutex;
+  std::condition_variable stopSignal;
 };
