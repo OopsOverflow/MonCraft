@@ -32,8 +32,9 @@ server:
 release:
 	rm -rf Release
 	rm -rf dist
-	meson Release --buildtype release
-	ninja -C Release
+	meson Release --buildtype release -Db_lto=true -Dcpp_args="-Ofast"
+	meson configure Release
+	ninja --verbose -C Release
 	mkdir dist
 	cp Release/MonCraft dist
 	mkdir dist/src

@@ -76,7 +76,7 @@ void ShadowMap::attach(Camera const& cam, Frustum frustum) {
     }
 
     //render out of the view in case we have to cast shadows from a moutain
-    float box[6] = { minX, maxX, minY, maxY, 5 * minZ - 4 * maxZ, maxZ };
+    float box[6] = { minX, maxX, minY, maxY, minZ - 10.f * (maxZ - minZ), maxZ };
     camera.setProjectionType(Projection::CUSTOM_PROJECTION, box);
     if(frustum != Frustum::ALL)shadowMatrices[(size_t)frustum] = camera.projection * camera.view;
 }

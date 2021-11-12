@@ -45,7 +45,7 @@ Viewport::Viewport(glm::ivec2 size)
 
   //Create a Window
   window = SDL_CreateWindow("MonCraft",
-      SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+      SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
       size.x, size.y,
       SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
 

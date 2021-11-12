@@ -224,6 +224,9 @@ std::vector<glm::vec3> Camera::getBoxCorners(Frustum frustum) const {
     float z1 = -near_, z2 = -far_;
     float range = far_ - near_;
 
+    float b1 = -near_ - 5.f;
+    float b2 = -near_ - 30.f;
+
     switch (frustum)
     {
     case Frustum::ALL:
@@ -232,14 +235,14 @@ std::vector<glm::vec3> Camera::getBoxCorners(Frustum frustum) const {
         break;
     case Frustum::NEAR:
         z1 = -near_;
-        z2 = -near_ - range / 8.0f;
+        z2 = b1;
         break;
     case Frustum::MEDIUM:
-        z1 = -near_ - range / 8.0f;
-        z2 = -near_ - 3.0f * range / 8.0f;
+        z1 = b1;
+        z2 = b2;
         break;
     case Frustum::FAR:
-        z1 = -near_ - 3.0f * range / 8.0f;
+        z1 = b2;
         z2 = -far_;
         break;
     default:
