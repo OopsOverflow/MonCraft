@@ -286,12 +286,15 @@ bool Component::bubbleEvent(Event const& evt) { // goes to the bottom
   }
 
   else {
+    bool bubbled = false;
     for(auto it = children.rbegin(); it != children.rend(); it++) {
       Component* child = *it;
-      if(child->bubbleEvent(evt)) return true;
+      bubbled |= child->bubbleEvent(evt);
     }
-    if(evt.getType() == Event::Type::PRESS) makeActive();
-    filterEvent(evt);
+    if(!bubbled) {
+      if(evt.getType() == Event::Type::PRESS) makeActive();
+      filterEvent(evt);
+    }
     return true;
   }
 }
