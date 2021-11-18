@@ -11,31 +11,31 @@ class Font;
 using namespace ui;
 using namespace glm;
 
-ParameterList::ParameterList(std::string parameterName, std::shared_ptr<const Font> font, std::vector<std::string> paramNames, size_t index)
-	:Box()
+ParameterList::ParameterList(std::string name, std::shared_ptr<const Font> font, std::vector<std::string> options, size_t index)
+	: Box(),
+		paramID(index),
+		paramNames(options)
 {
 	setOrientation(ui::Box::Orientation::HORIZONTAL);
-	title = ui::Text::create(parameterName, font);
-	parameter = ui::Text::create(paramNames.at(paramID), font);
-	this->paramNames = paramNames;
-	this->paramID = index;
+	title = ui::Text::create(name, font);
+	parameter = ui::Text::create(paramNames.at(index), font);
 
-	leftButton = Button::createImageButton(glm::vec2(14,1229), glm::vec2(32),"", font);
+	leftButton = Button::createImageButton(glm::vec2(14, 1229), glm::vec2(32), "", font);
 	leftButton->onclick([&] {
 		if (paramID == 0) {
-			paramID = this->paramNames.size()-1;
+			paramID = this->paramNames.size() - 1;
 		}
 		else {
 			paramID -= 1;
 		}
 		parameter->setText(this->paramNames.at(paramID));
-		});
+	});
 
-	rightButton = Button::createImageButton(glm::vec2(49,1229), glm::vec2(32),"", font);
+	rightButton = Button::createImageButton(glm::vec2(49, 1229), glm::vec2(32), "", font);
 	rightButton->onclick([&] {
 		paramID = (paramID + 1) % this->paramNames.size();
 		parameter->setText(this->paramNames.at(paramID));
-		});
+	});
 
 	pack_end(title.get());
 	pack_end(leftButton.get());

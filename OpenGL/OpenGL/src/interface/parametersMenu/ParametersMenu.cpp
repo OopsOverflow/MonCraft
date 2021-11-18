@@ -70,7 +70,7 @@ ParametersMenu::ParametersMenu() : Image({ 1, 1179 }, { 46, 46 })
 		folderDiv->unpack(miscMenu.get());
 		folderDiv->unpack(audioMenu.get());
 		folderDiv->pack_start(keyMenu.get());
-		});
+	});
 
 	menuDiv->pack_end(graphicsButton.get());
 	graphicsButton->onclick([&] {
@@ -79,7 +79,7 @@ ParametersMenu::ParametersMenu() : Image({ 1, 1179 }, { 46, 46 })
 		folderDiv->unpack(miscMenu.get());
 		folderDiv->unpack(audioMenu.get());
 		folderDiv->pack_start(graphicsMenu.get());
-		});
+	});
 
 	menuDiv->pack_end(audioButton.get());
 	audioButton->onclick([&] {
@@ -88,7 +88,7 @@ ParametersMenu::ParametersMenu() : Image({ 1, 1179 }, { 46, 46 })
 		folderDiv->unpack(miscMenu.get());
 		folderDiv->unpack(audioMenu.get());
 		folderDiv->pack_start(audioMenu.get());
-		});
+	});
 
 	menuDiv->pack_end(miscButton.get());
 	miscButton->onclick([&] {
@@ -97,7 +97,7 @@ ParametersMenu::ParametersMenu() : Image({ 1, 1179 }, { 46, 46 })
 		folderDiv->unpack(miscMenu.get());
 		folderDiv->unpack(audioMenu.get());
 		folderDiv->pack_start(miscMenu.get());
-		});
+	});
 
 	//quitButton->onclick([&] {
 	//	SaveManager::getInst().saveConfig(this->config);
