@@ -151,6 +151,7 @@ if host_machine.system() == 'emscripten'
 
   exe = executable(
     'MonCraft', [emsfml_srcs, client_srcs, srcs],
+    cpp_args: ['-DMONCRAFT_CLIENT'],
     include_directories: incs
   )
 

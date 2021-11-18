@@ -11,12 +11,13 @@ namespace Config {
 
         #ifdef EMSCRIPTEN
           unsigned short serverPort = 55001;
+          unsigned int threadCount = 4;
         #else
           unsigned short serverPort = 55000;
+          unsigned int threadCount = 8;
         #endif
 
         std::string seed = "MonCraft";
-        unsigned int threadCount = 8;
         unsigned int renderDistH = 10;
         unsigned int renderDistV = 5;
         unsigned short packetSize = 100;

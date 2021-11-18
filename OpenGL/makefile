@@ -43,11 +43,19 @@ release:
 	rm -r Release
 
 # --source-map-base http://localhost:6931/sources/__SOURCE_MAP_BASE__/ -gsource-map -O0 -s NO_DISABLE_EXCEPTION_CATCHING \
+-fexceptions \
+-fno-exceptions \
+--closure 1 \
+-flto \
 
-CFLAGS = -fexceptions \
--O3 \
+
+CFLAGS = \
+-g0 -O3 \
+-fno-rtti \
+-Wno-error \
+-Wno-pthreads-mem-growth \
 -s WASM=1 \
--pthread -s PTHREAD_POOL_SIZE=4 \
+-pthread -s PTHREAD_POOL_SIZE=5 \
 -s USE_SDL=2 \
 -s USE_SDL_IMAGE=2 \
 -s SDL2_IMAGE_FORMATS='["png"]' \
@@ -85,7 +93,7 @@ wasm:
 	mkdir WASM/sources
 	mkdir -p WASM/sources/__SOURCE_MAP_BASE__/
 	mkdir -p WASM/sources/OpenGL/src
-	cp WASM/MonCraft.wasm.map WASM/sources/__SOURCE_MAP_BASE__
+	-cp WASM/MonCraft.wasm.map WASM/sources/__SOURCE_MAP_BASE__
 	cp -r OpenGL/src WASM/sources/OpenGL
 	rm -f WASM/MonCraft.html
 	cp -r OpenGL/data/wasm/. WASM
