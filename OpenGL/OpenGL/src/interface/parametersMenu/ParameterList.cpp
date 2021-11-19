@@ -37,6 +37,7 @@ ParameterList::ParameterList(std::string name, std::shared_ptr<const Font> font,
 		parameter->setText(this->paramNames.at(paramID));
 	});
 
+	setGap(20);
 	pack_end(title.get());
 	pack_end(leftButton.get());
 	pack_end(parameter.get());

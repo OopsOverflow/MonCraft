@@ -40,6 +40,7 @@ GraphicsMenu::GraphicsMenu()
 	renderDistanceV = ParameterSlider::create("Distance verticale", Slider::create());;
 	vSync = ParameterButton::create("VSync", Button::createImageButton(imageOffset, imageSize, "", font));;
 
+	setGap(20);
 	pack_start(fullscreen.get());
 	pack_start(fov.get());
 	pack_start(shadows.get());

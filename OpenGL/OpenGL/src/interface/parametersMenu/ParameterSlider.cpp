@@ -20,6 +20,7 @@ ParameterSlider::ParameterSlider(std::string parameterName, std::shared_ptr<cons
 	slider = std::move(inputComponent);
 	sliderValue = ui::Text::create(std::to_string(slider->getValue()), font);
 
+	setGap(20);
 	pack_end(title.get());
 	pack_end(slider.get());
 	pack_end(sliderValue.get());

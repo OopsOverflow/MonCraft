@@ -1,4 +1,4 @@
-#include "MainMenuButton.hpp"
+#include "MonCraftButton.hpp"
 
 #include <glm/glm.hpp>
 #include <utility>
@@ -11,21 +11,21 @@
 using namespace ui;
 using namespace glm;
 
-MainMenuButton::MainMenuButton(std::unique_ptr<Pane> mainComp, std::unique_ptr<Text> textComp)
+MonCraftButton::MonCraftButton(std::unique_ptr<Pane> mainComp, std::unique_ptr<Text> textComp)
   : mainComp(move(mainComp)), textComp(move(textComp))
 {
   this->mainComp->add(this->textComp.get());
   add(this->mainComp.get());
 }
 
-void MainMenuButton::draw() {
+void MonCraftButton::draw() {
   if(parent) mainComp->setSize(parent->getSize() - 2 * mainComp->getPadding());
   Button::draw();
 }
 
-std::unique_ptr<Button> MainMenuButton::create(std::string text) {
+std::unique_ptr<Button> MonCraftButton::create(std::string text) {
   auto font = ResourceManager::getFont("roboto");
-  auto btn = new MainMenuButton(Pane::create(), Text::create(text, font));
+  auto btn = new MonCraftButton(Pane::create(), Text::create(text, font));
   btn->initialize();
   btn->mainComp->setPadding({ 35, 20 });
   btn->textComp->setUseBaseline(true);

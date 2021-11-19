@@ -35,6 +35,7 @@ MiscMenu::MiscMenu()
 	button->add(std::move(buttonImage));
 	enableMobileVersionButton = ParameterButton::create("Version Mobile", std::move(button));;
 
+	setGap(20);
 	pack_start(enableMobileVersionButton.get());
 }
 

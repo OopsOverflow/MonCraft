@@ -72,8 +72,8 @@ client_srcs = files(
   'OpenGL/src/controller/KeyboardController.cpp',
   'OpenGL/src/controller/MouseController.cpp',
 
-  'OpenGL/src/interface/mainMenu/MainMenu.cpp',
-  'OpenGL/src/interface/mainMenu/MainMenuButton.cpp',
+  'OpenGL/src/interface/widgets/MonCraftButton.cpp',
+  'OpenGL/src/interface/widgets/ComboBox.cpp',
   'OpenGL/src/interface/parametersMenu/AudioMenu.cpp',
   'OpenGL/src/interface/parametersMenu/GraphicsMenu.cpp',
   'OpenGL/src/interface/parametersMenu/KeyMenu.cpp',
@@ -82,6 +82,7 @@ client_srcs = files(
   'OpenGL/src/interface/parametersMenu/ParameterList.cpp',
   'OpenGL/src/interface/parametersMenu/ParameterSlider.cpp',
   'OpenGL/src/interface/parametersMenu/ParametersMenu.cpp',
+  'OpenGL/src/interface/MainMenu.cpp',
   'OpenGL/src/interface/MonCraftScene.cpp',
   'OpenGL/src/interface/GameMenu.cpp',
   'OpenGL/src/interface/Overlay.cpp',
@@ -190,10 +191,10 @@ else
     include_directories: incs
   )
 
-  exe_server = executable(
-    'MonCraftServer', [server_srcs, srcs],
-    cpp_args: ['-DMONCRAFT_SERVER'],
-    dependencies: [deps, server_deps],
-    include_directories: incs
-  )
+  # exe_server = executable(
+  #   'MonCraftServer', [server_srcs, srcs],
+  #   cpp_args: ['-DMONCRAFT_SERVER'],
+  #   dependencies: [deps, server_deps],
+  #   include_directories: incs
+  # )
 endif

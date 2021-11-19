@@ -32,7 +32,10 @@ public:
   void pack_start(Component* comp);
   void pack_end(Component* comp);
   void unpack(Component* comp);
-
+  void unpackAt(size_t index);
+  void pack(size_t index, std::unique_ptr<Component> comp);
+  void pack_start(std::unique_ptr<Component> comp);
+  void pack_end(std::unique_ptr<Component> comp);
   void draw() override;
 
   void setGap(int gap);
@@ -45,9 +48,13 @@ private:
 
   class Cell : public Component {
   public:
-    Cell(Component* comp);
+    static std::unique_ptr<Cell> create(Component* comp);
+    static std::unique_ptr<Cell> create(std::unique_ptr<Component> comp);
 
     bool contains(Component* comp) const;
+
+  private:
+    Cell();
   };
 
   void updateCells();

@@ -20,6 +20,7 @@ ParameterButton::ParameterButton(std::string parameterName, std::shared_ptr<cons
 
 	button = std::move(inputComponent);
 
+	setGap(20);
 	pack_end(title.get());
 	pack_end(button.get());
 }

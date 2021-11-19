@@ -23,7 +23,6 @@ public:
 private:
 	std::unique_ptr<ui::Box> mainDisplay;
 	std::unique_ptr<ui::Box> topDiv;
-	std::unique_ptr<ui::Text> parametersTitle;
 	std::unique_ptr<ui::Box> folderDiv;
 	std::unique_ptr<ui::Box> menuDiv;
 
@@ -31,5 +30,4 @@ private:
 	std::unique_ptr<ui::Box> graphicsMenu;
 	std::unique_ptr<ui::Box> audioMenu;
 	std::unique_ptr<ui::Box> miscMenu;
-
 };

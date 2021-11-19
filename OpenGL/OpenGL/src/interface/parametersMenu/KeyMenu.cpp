@@ -28,6 +28,7 @@ KeyMenu::KeyMenu()
 	changeView = ParameterButton::create("Changer de vue", Button::createPaneButton(SDL_GetKeyName(config.view), font));
 	debug = ParameterButton::create("Debug", Button::createPaneButton(SDL_GetKeyName(config.view), font));//TODO
 
+	setGap(20);
 	pack_start(forward.get());
 	pack_start(backward.get());
 	pack_start(left.get());

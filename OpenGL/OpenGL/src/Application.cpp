@@ -9,7 +9,7 @@
 #include "gl/ResourceManager.hpp"
 #include "gl/Viewport.hpp"
 #include "interface/MonCraftScene.hpp"
-#include "interface/mainMenu/MainMenu.hpp"
+#include "interface/MainMenu.hpp"
 #include "interface/parametersMenu/ParametersMenu.hpp"
 #include "save/ClientConfig.hpp"
 #include "terrain/World.hpp"

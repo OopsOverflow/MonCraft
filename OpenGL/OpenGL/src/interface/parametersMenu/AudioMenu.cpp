@@ -16,6 +16,7 @@ AudioMenu::AudioMenu()
 	mainVolume = ParameterSlider::create("Volume principal", Slider::create());;
 	musicVolume = ParameterSlider::create("Volume de la musique", Slider::create());;
 
+	setGap(20);
 	pack_start(mainVolume.get());
 	pack_start(musicVolume.get());
 }

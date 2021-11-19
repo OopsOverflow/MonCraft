@@ -3,7 +3,7 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 
-#include "interface/mainMenu/MainMenuButton.hpp"
+#include "interface/widgets/MonCraftButton.hpp"
 #include "ui/Component.hpp"
 #include "ui/style/Type.hpp"
 
@@ -19,10 +19,10 @@ MainMenu::MainMenu() : Image({0, 0}, {1920, 1080})
 	moncraftTitle = Image::create(glm::ivec2(0, 1083), glm::ivec2(429, 92));
 	buttonPannel = Box::create();
 
-	singleplayerButton = MainMenuButton::create("Solo");
-	multiplayerButton = MainMenuButton::create("Multijoueur");
-	parameterButton = MainMenuButton::create("Paramètres");
-	quitButton = MainMenuButton::create("Quitter");
+	singleplayerButton = MonCraftButton::create("Solo");
+	multiplayerButton = MonCraftButton::create("Multijoueur");
+	parameterButton = MonCraftButton::create("Paramètres");
+	quitButton = MonCraftButton::create("Quitter");
 
 	add(moncraftTitle.get());
 	add(buttonPannel.get());
