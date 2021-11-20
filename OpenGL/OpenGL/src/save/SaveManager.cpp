@@ -106,9 +106,9 @@ std::istream& serde::operator>>(std::istream &stream, BlockType &type) {
 
 std::istream& serde::operator>>(std::istream &stream, AbstractChunk &chunk) {
   glm::vec3 pos(0);
-  for (pos.y = 0; pos.y < chunk.size.y; pos.y++) {
-    for (pos.z = 0; pos.z < chunk.size.z; pos.z++) {
-      for (pos.x = 0; pos.x < chunk.size.x; pos.x++) {
+  for (pos.y = 0; pos.y < chunk.size().y; pos.y++) {
+    for (pos.z = 0; pos.z < chunk.size().z; pos.z++) {
+      for (pos.x = 0; pos.x < chunk.size().x; pos.x++) {
         chunk.at(pos) = AllBlocks::deserialize(stream);
       }
     }
@@ -118,9 +118,9 @@ std::istream& serde::operator>>(std::istream &stream, AbstractChunk &chunk) {
 }
 std::ostream& serde::operator<<(std::ostream &stream, AbstractChunk const &chunk) {
   glm::vec3 pos(0);
-  for (pos.y = 0; pos.y < chunk.size.y; pos.y++) {
-    for (pos.z = 0; pos.z < chunk.size.z; pos.z++) {
-      for (pos.x = 0; pos.x < chunk.size.x; pos.x++) {
+  for (pos.y = 0; pos.y < chunk.size().y; pos.y++) {
+    for (pos.z = 0; pos.z < chunk.size().z; pos.z++) {
+      for (pos.x = 0; pos.x < chunk.size().x; pos.x++) {
         AllBlocks::serialize(stream, chunk.at(pos).get());
       }
     }
@@ -164,7 +164,7 @@ bool SaveManager::saveChunk(AbstractChunk const &chunk) {
     return false;
   }
 
-  Binary<uint8_t> chunkSize(chunk.size.x);
+  Binary<uint8_t> chunkSize(chunk.size().x);
   openedFile << chunkSize << chunk;
   openedFile.close();
   return true;

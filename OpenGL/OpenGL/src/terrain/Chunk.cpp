@@ -39,12 +39,12 @@ void Chunk::compute() {
   // indices scheme // TODO: remove from MeshData ?
   meshData.scheme = { 0, 1, 2, 0, 2, 3 };
 
-  DataStore<Block*, 3> blocksCache(size + 2); // a cache to limit calls to getBlockAccrossChunks
+  DataStore<Block*, 3> blocksCache(size() + 2); // a cache to limit calls to getBlockAccrossChunks
 
   ivec3 pos{};
-  for(pos.x = 0; pos.x < size.x + 2; pos.x++) {
-    for(pos.y = 0; pos.y < size.y + 2; pos.y++) {
-      for(pos.z = 0; pos.z < size.z + 2; pos.z++) {
+  for(pos.x = 0; pos.x < size().x + 2; pos.x++) {
+    for(pos.y = 0; pos.y < size().y + 2; pos.y++) {
+      for(pos.z = 0; pos.z < size().z + 2; pos.z++) {
         blocksCache[pos] = getBlockAccrossChunks(pos - 1);
       }
     }
@@ -53,9 +53,9 @@ void Chunk::compute() {
   std::array<Block*, 26> neighbors;
 
   // now generate all the blocks
-  for(pos.x = 0; pos.x < size.x; pos.x++) {
-    for(pos.y = 0; pos.y < size.y; pos.y++) {
-      for(pos.z = 0; pos.z < size.z; pos.z++) {
+  for(pos.x = 0; pos.x < size().x; pos.x++) {
+    for(pos.y = 0; pos.y < size().y; pos.y++) {
+      for(pos.z = 0; pos.z < size().z; pos.z++) {
 
         Block* block = blocksCache[pos + 1];
         if(!block->isVisible()) continue;
@@ -86,7 +86,7 @@ void Chunk::compute() {
   transpOffset.y = transpOffset.x + (unsigned int)meshData.indicesTranspY.size();
   transpOffset.z  = transpOffset.y + (unsigned int)meshData.indicesTranspZ.size();
 
-  model = translate(mat4(1.0), vec3(size * chunkPos));
+  model = translate(mat4(1.0), vec3(size() * chunkPos));
 }
 
 void Chunk::markToRecompute() {
@@ -209,7 +209,7 @@ void Chunk::setBlock(ivec3 pos, Block::unique_ptr_t block) {
 
   static const ivec3 mask(9, 3, 1);
 
-  auto greater = equal(pos, size - 1);
+  auto greater = equal(pos, size() - 1);
   auto lesser = equal(pos, ivec3(0));
 
   if(any(greater) || any(lesser)) {

@@ -70,7 +70,7 @@ std::weak_ptr<AbstractChunk> AbstractChunk::getNeighbor(glm::ivec3 off) {
 
 Block* AbstractChunk::getBlockAccrossChunks(ivec3 pos) const {
   static const ivec3 mask(9, 3, 1);
-  auto greater = greaterThanEqual(pos, size);
+  auto greater = greaterThanEqual(pos, size());
   auto lesser = lessThan(pos, ivec3(0));
 
   if(any(greater) || any(lesser)) {
@@ -78,7 +78,7 @@ Block* AbstractChunk::getBlockAccrossChunks(ivec3 pos) const {
     int index = tmp.x + tmp.y + tmp.z - 1;
 
     if(auto neigh = neighbors[index].lock()) {
-      ivec3 otherChunkPos = pos - size * (ivec3(greater) - ivec3(lesser));
+      ivec3 otherChunkPos = pos - size() * (ivec3(greater) - ivec3(lesser));
       return neigh->at(otherChunkPos).get();
     }
     else return nullptr;
@@ -88,7 +88,7 @@ Block* AbstractChunk::getBlockAccrossChunks(ivec3 pos) const {
 
 void AbstractChunk::setBlockAccrossChunks(ivec3 pos, Block::unique_ptr_t block) {
   static const ivec3 mask(9, 3, 1);
-  auto greater = greaterThanEqual(pos, size);
+  auto greater = greaterThanEqual(pos, size());
   auto lesser = lessThan(pos, ivec3(0));
 
   if(any(greater) || any(lesser)) {
@@ -96,7 +96,7 @@ void AbstractChunk::setBlockAccrossChunks(ivec3 pos, Block::unique_ptr_t block) 
     int index = tmp.x + tmp.y + tmp.z - 1;
 
     if(auto neigh = neighbors[index].lock()) {
-      ivec3 otherChunkPos = pos - size * (ivec3(greater) - ivec3(lesser));
+      ivec3 otherChunkPos = pos - size() * (ivec3(greater) - ivec3(lesser));
       return neigh->setBlock(otherChunkPos, std::move(block));
     }
   }
