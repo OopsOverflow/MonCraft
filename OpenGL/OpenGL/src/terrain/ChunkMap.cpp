@@ -29,10 +29,10 @@ size_t ChunkMap::size() {
   return chunks.size();
 }
 
-void ChunkMap::eraseChunks(int count, std::function<bool(glm::ivec3)> predicate) {
+void ChunkMap::eraseChunks(int count, std::function<bool(AbstractChunk*)> predicate) {
   std::lock_guard<std::mutex> lck(chunksMutex);
   for(auto it = chunks.begin(); it != chunks.end() && count; ) {
-    if(predicate(it->first)) {
+    if(predicate(it->second.get())) {
       count --;
       auto useCount = it->second.use_count();
       if(useCount > 1) {

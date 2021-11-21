@@ -161,7 +161,7 @@ void Server::packet_chunks() {
       packet << header << (sf::Uint8)chunks.size();
 
       for(auto const& chunk : chunks) {
-        packet << (sf::Uint8)chunk->size.x << chunk->chunkPos << *chunk;
+        packet << (sf::Uint8)chunk->size().x << chunk->chunkPos << *chunk;
       }
 
       send(packet, pair.first);
@@ -281,15 +281,16 @@ void Server::remOldChunks() {
   }
 
   int delCount = std::max<int>(world.chunks.size() - maxChunks, 0);
-  world.chunks.eraseChunks(delCount, [&](ivec3 thisChunkPos) {
+  world.chunks.eraseChunks(delCount, [&](AbstractChunk* chunk) {
     for(auto const& cpos : playersCpos) {
-      ivec3 dist = abs(cpos - thisChunkPos);
+      ivec3 dist = abs(cpos - chunk->chunkPos);
       bool cond = true;
       cond &= dist.x <= renderDistH + 1;
       cond &= dist.z <= renderDistH + 1;
       cond &= dist.y <= renderDistV + 1;
       if(cond) return false;
     }
+    generator.removeSlices(chunk->chunkPos);
     return true;
   });
 }

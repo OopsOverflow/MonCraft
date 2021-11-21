@@ -74,11 +74,11 @@ bool RealServer::login() {
 }
 
 void RealServer::update() {
+  Server::update();
+  
   if(clock.getElapsedTime() - lastServerUpdate > timeout) {
     throw std::runtime_error("server timeout");
   }
-
-  pendingChunks.remOldChunks();
 
   #ifdef EMSCRIPTEN
     poll(); // TODO: this hack avoids waiting too long and timeout

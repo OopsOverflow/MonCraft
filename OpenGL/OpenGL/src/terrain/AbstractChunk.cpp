@@ -109,6 +109,12 @@ bool AbstractChunk::hasAllNeighbors() const {
   });
 }
 
+bool AbstractChunk::hasNoNeighbors() const {
+  return std::all_of(neighbors.begin(), neighbors.end(), [](auto neigh) {
+    return neigh.lock() == nullptr;
+  });
+}
+
 void AbstractChunk::setBlock(ivec3 pos, Block::unique_ptr_t block) {
   at(pos) = std::move(block);
 }

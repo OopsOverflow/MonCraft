@@ -41,6 +41,7 @@ public:
   virtual void update();
 
   bool hasAllNeighbors() const;
+  bool hasNoNeighbors() const;
 
   /// Some lookups for efficient code execution ///
 

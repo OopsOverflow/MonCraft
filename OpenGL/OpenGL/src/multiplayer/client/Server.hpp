@@ -17,7 +17,7 @@ public:
   virtual ~Server();
 
   virtual void ping() = 0;
-  virtual void update() = 0;
+  virtual void update();
   virtual bool login() = 0;
   void start();
   void stop();
@@ -29,6 +29,7 @@ public:
   virtual Identifier getUid() = 0;
 
 private:
+  void remOldChunks();
   void loop();
   bool sleepFor(std::chrono::milliseconds);
   std::thread serverThread;
@@ -36,4 +37,7 @@ private:
   bool stopFlag;
   std::mutex stopMutex;
   std::condition_variable stopSignal;
+
+  int renderDistH, renderDistV;
+  unsigned int maxChunks;
 };

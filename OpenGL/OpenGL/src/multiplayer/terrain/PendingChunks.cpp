@@ -9,6 +9,7 @@
 #include "save/ServerConfig.hpp"
 #include "terrain/ChunkMap.hpp"
 #include "terrain/World.hpp"
+#include "terrain/AbstractChunk.hpp"
 
 using namespace glm;
 using namespace std::chrono_literals;
@@ -25,7 +26,6 @@ PendingChunks::PendingChunks()
   auto& config = Config::getServerConfig();
   renderDistH = config.renderDistH;
   renderDistV = config.renderDistV;
-  maxChunks = renderDistH * renderDistH * renderDistV;
 
   thread = std::thread(&PendingChunks::updateWorker, this);
 }
@@ -123,12 +123,4 @@ void PendingChunks::updateWorker() {
       updateWaitingChunks();
     }
   } while(!sleepFor(sleep));
-}
-
-void PendingChunks::remOldChunks() {
-  int delCount = std::max<int>((unsigned int)world.chunks.size() - maxChunks, 0);
-  world.chunks.eraseChunks(delCount, [=](ivec3 thisChunkPos) {
-    ivec3 dist = abs(cpos - thisChunkPos);
-    return dist.x > renderDistH + 1 || dist.z > renderDistH + 1 || dist.y > renderDistV + 1;
-  });
 }

@@ -34,6 +34,8 @@ void ClientServer::ping() {
 }
 
 void ClientServer::update() {
+  Server::update();
+
   pendingChunks.update(player->getPosition());
   if(pendingChunks.changed()) {
     auto waiting = pendingChunks.get();
@@ -43,8 +45,6 @@ void ClientServer::update() {
       generator.waitingChunks.push(waiting.at(i));
     }
   }
-
-  pendingChunks.remOldChunks();
 
   // save changes since last update
   auto rec = player->getRecord();

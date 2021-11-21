@@ -19,8 +19,6 @@ public:
 
   std::vector<glm::ivec3> get();
 
-  void remOldChunks();
-
 private:
   bool sleepFor(std::chrono::milliseconds);
   void updateWorker();
@@ -28,7 +26,6 @@ private:
 
   static const int chunkSize = 16; // TODO: in a config file
   int renderDistH, renderDistV;
-  unsigned int maxChunks;
   glm::ivec3 cpos, tcpos;
   bool hasChanged;
   std::vector<glm::ivec3> waitingChunks;

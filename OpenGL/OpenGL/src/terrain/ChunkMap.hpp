@@ -40,7 +40,7 @@ public:
    * the predicate must return true if the chunk is to be deleted. It takes
    * the chunk index of a given stored chunk.
    */
-  void eraseChunks(int count, std::function<bool(glm::ivec3)> predicate);
+  void eraseChunks(int count, std::function<bool(AbstractChunk*)> predicate);
 
   /**
    * Analogous to std::unordered_map.size().

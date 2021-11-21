@@ -38,6 +38,10 @@ TerrainGenerator::~TerrainGenerator() {
   stopGeneration();
 }
 
+void TerrainGenerator::removeSlices(glm::ivec3 cpos) {
+  sliceMap.pop(cpos);
+}
+
 bool TerrainGenerator::sleepFor(std::chrono::milliseconds millis) {
   std::unique_lock<std::mutex> stopLck(stopMutex);
   return stopSignal.wait_for(stopLck, millis, [&]{return stopFlag;});
