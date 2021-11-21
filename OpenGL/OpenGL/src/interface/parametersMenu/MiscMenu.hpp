@@ -2,18 +2,16 @@
 
 #include <memory>
 
-#include "ui/Box.hpp"
+#include "interface/widgets/ParamList.hpp"
 
-class MiscMenu : public ui::Box {
+class MiscMenu : public ParamList {
 
 public:
-	static std::unique_ptr<Box> create();
-
-	virtual void draw() override;
+	static std::unique_ptr<MiscMenu> create();
 
 protected:
 	MiscMenu();
 
 private:
-	std::unique_ptr<ui::Box> enableMobileVersionButton;
+	// std::unique_ptr<ui::Box> mobileVersion;
 };

@@ -84,14 +84,14 @@ MonCraftScene::MonCraftScene(Viewport* vp)
     gameMenu = std::make_unique<GameMenu>();
     debugOverlay = std::make_unique<DebugOverlay>(server);
     overlay = std::make_unique<Overlay>();
-    middleDot = Image::create(glm::ivec2(1, 1230), glm::ivec2(10, 10));
+    middleDot = Image::create({1, 1230}, {10, 10});
 
     debugOverlay->setAnchorY(Anchor::END);
 
     middleDot->setAnchorX(Anchor::CENTER);
     middleDot->setAnchorY(Anchor::CENTER);
 
-    middleDot->setSize(glm::ivec2(10, 10));
+    middleDot->setSize({10, 10});
 
     overlay->btn_block->onclick([&] {
         auto prev = player->getCurrentBlock();
@@ -113,10 +113,6 @@ bool MonCraftScene::onMousePressed(glm::ivec2 pos) {
 bool MonCraftScene::onMouseMove(glm::ivec2 pos) {
     if(captured) return true;
     return false;
-}
-
-bool MonCraftScene::onActivate() {
-    return true;
 }
 
 void MonCraftScene::onKeyPressed(Key k) {

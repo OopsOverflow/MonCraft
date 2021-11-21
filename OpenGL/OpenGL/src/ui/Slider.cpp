@@ -41,6 +41,7 @@ void Slider::onMouseOut(glm::ivec2 pos) {
 bool Slider::onMouseMove(glm::ivec2 pos) {
   if(isPressed()) {
     moveThumb(pos.x);
+    value = posToValue(thumb->getPosition().x);
   }
   return false;
 }
@@ -53,12 +54,12 @@ void Slider::moveThumb(int pos) {
   tpos.x = min(max(tpos.x, 0), size.x - tsize.x);
 
   thumb->setPosition({ tpos });
-  value = posToValue(tpos.x);
 }
 
 bool Slider::onMousePressed(glm::ivec2 pos) {
   thumb->setColor({ 1, 0, 1, 1 });
   moveThumb(pos.x);
+  value = posToValue(thumb->getPosition().x);
   return true;
 }
 
@@ -83,6 +84,7 @@ void Slider::setValue(float value) {
   if(value < 0 || value > 1)
     throw std::runtime_error("value must be in range [0, 1]");
   moveThumb(valueToPos(value));
+  this->value = value;
 }
 
 float Slider::getValue() const {
@@ -93,6 +95,7 @@ void Slider::draw() {
   auto size = getSize();
   track->setSize(size);
   thumb->setSize({ size.y, size.y });
+  moveThumb(valueToPos(value));
 
   Component::draw();
 }

@@ -2,24 +2,21 @@
 
 #include <memory>
 
-#include "ui/Box.hpp"
+#include "ui/Component.hpp"
+#include "interface/widgets/ParamList.hpp"
+#include "interface/widgets/ComboBox.hpp"
+#include "interface/widgets/RangeSlider.hpp"
 
-class GraphicsMenu : public ui::Box {
+class GraphicsMenu : public ParamList {
 
 public:
-	static std::unique_ptr<Box> create();
+	static std::unique_ptr<GraphicsMenu> create();
+	~GraphicsMenu();
 
-	virtual void draw() override;
-
-protected:
+private:
 	GraphicsMenu();
 
-private: 
-	std::unique_ptr<ui::Box> fullscreen;
-	std::unique_ptr<ui::Box> fov;
-	std::unique_ptr<ui::Box> shadows;
-	std::unique_ptr<ui::Box> renderDistanceH;
-	std::unique_ptr<ui::Box> renderDistanceV;
-	std::unique_ptr<ui::Box> vSync;
-
+	std::unique_ptr<RangeSlider> fov;
+	std::unique_ptr<ComboBox> shadows;
+	std::unique_ptr<RangeSlider> renderDistH, renderDistV;
 };

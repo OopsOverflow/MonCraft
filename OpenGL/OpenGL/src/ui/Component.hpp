@@ -114,6 +114,7 @@ public:
   void add(Component* child);
   void add(std::unique_ptr<Component> child);
   void remove(Component* child);
+  std::vector<Component*> getChildren() const;
 
 //// PROTECTED STUFF ////
 protected:

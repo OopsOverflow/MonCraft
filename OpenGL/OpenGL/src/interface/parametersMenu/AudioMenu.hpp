@@ -3,18 +3,18 @@
 #include <memory>
 
 #include "ui/Box.hpp"
+#include "interface/widgets/ParamList.hpp"
+#include "interface/widgets/RangeSlider.hpp"
 
-class AudioMenu : public ui::Box {
+class AudioMenu : public ParamList {
 
 public:
-	static std::unique_ptr<Box> create();
-
-	virtual void draw() override;
+	static std::unique_ptr<AudioMenu> create();
 
 protected:
 	AudioMenu();
 
 private:
-	std::unique_ptr<ui::Box> mainVolume;
-	std::unique_ptr<ui::Box> musicVolume;
+	std::unique_ptr<RangeSlider> mainVolume;
+	std::unique_ptr<RangeSlider> musicVolume;
 };

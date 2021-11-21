@@ -1,10 +1,11 @@
 #include "KeyMenu.hpp"
 
+#include <utility>
 #include <SDL2/SDL.h>
 #include <glm/glm.hpp>
 
+#include "interface/widgets/KeySelector.hpp"
 #include "gl/ResourceManager.hpp"
-#include "interface/parametersMenu/ParameterButton.hpp"
 #include "save/ClientConfig.hpp"
 #include "ui/Button.hpp"
 #include "ui/style/Type.hpp"
@@ -13,41 +14,46 @@ using namespace ui;
 using namespace glm;
 
 KeyMenu::KeyMenu()
-	: Box()
 {
 	auto& config = Config::getClientConfig();
 	auto font = ResourceManager::getFont("roboto");
 
-	forward = ParameterButton::create("Avancer", Button::createPaneButton(SDL_GetKeyName(config.forward), font));
-	backward = ParameterButton::create("Reculer", Button::createPaneButton(SDL_GetKeyName(config.backward), font));
-	left = ParameterButton::create("Gauche", Button::createPaneButton(SDL_GetKeyName(config.left), font));
-	right = ParameterButton::create("Droite", Button::createPaneButton(SDL_GetKeyName(config.right), font));
-	jump = ParameterButton::create("Sauter/Monter", Button::createPaneButton(SDL_GetKeyName(config.jump), font));
-	sneak = ParameterButton::create("S'accroupir/Descendre", Button::createPaneButton(SDL_GetKeyName(config.sneak), font));
-	sprint = ParameterButton::create("Courir", Button::createPaneButton(SDL_GetKeyName(config.sprint), font));
-	changeView = ParameterButton::create("Changer de vue", Button::createPaneButton(SDL_GetKeyName(config.view), font));
-	debug = ParameterButton::create("Debug", Button::createPaneButton(SDL_GetKeyName(config.view), font));//TODO
+	forward = KeySelector::create(config.forward);
+	backward = KeySelector::create(config.backward);
+	left = KeySelector::create(config.left);
+	right = KeySelector::create(config.right);
+	jump = KeySelector::create(config.jump);
+	sneak = KeySelector::create(config.sneak);
+	sprint = KeySelector::create(config.sprint);
+	// changeView = KeySelector::create(config.view);
+	// debug = KeySelector::create(config.debug); // TODO
 
-	setGap(20);
-	pack_start(forward.get());
-	pack_start(backward.get());
-	pack_start(left.get());
-	pack_start(right.get());
-	pack_start(jump.get());
-	pack_start(sneak.get());
-	pack_start(sprint.get());
-	pack_start(changeView.get());
-	pack_start(debug.get());
-
+	addLine("Avancer", forward.get());
+	addLine("Reculer", backward.get());
+	addLine("Gauche", left.get());
+	addLine("Droite", right.get());
+	addLine("Sauter/Monter", jump.get());
+	addLine("S'accroupir/Descendre", sneak.get());
+	addLine("Courir", sprint.get());
+	// addLine("Changer de vue", changeView.get());
+	// addLine("Menu débogage", debug.get());
 }
 
-void KeyMenu::draw() {
-	Box::draw();
+KeyMenu::~KeyMenu() {
+	auto& config = Config::getClientConfig();
+	config.forward = forward->getKey().asKeycode();
+	config.backward = backward->getKey().asKeycode();
+	config.left = left->getKey().asKeycode();
+	config.right = right->getKey().asKeycode();
+	config.jump = jump->getKey().asKeycode();
+	config.sneak = sneak->getKey().asKeycode();
+	config.sprint = sprint->getKey().asKeycode();
+	// config.changeView = changeView->getKey().asKeycode();
+	// config.debug = debug->getKey().asKeycode();
 }
 
-std::unique_ptr<Box> KeyMenu::create() {
-	auto font = ResourceManager::getFont("roboto");
-	auto btn = new KeyMenu();
+std::unique_ptr<KeyMenu> KeyMenu::create() {
+	auto btn = std::unique_ptr<KeyMenu>(new KeyMenu());
 	btn->initialize();
-	return std::unique_ptr<Box>(btn);
+	return btn;
 }

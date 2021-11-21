@@ -2,32 +2,24 @@
 
 #include <glm/glm.hpp>
 
-#include "interface/parametersMenu/ParameterSlider.hpp"
-#include "gl/ResourceManager.hpp"
 #include "ui/Slider.hpp"
 #include "ui/style/Type.hpp"
+#include "interface/widgets/RangeSlider.hpp"
 
 using namespace ui;
 using namespace glm;
 
 AudioMenu::AudioMenu()
-	: Box()
 {
-	mainVolume = ParameterSlider::create("Volume principal", Slider::create());;
-	musicVolume = ParameterSlider::create("Volume de la musique", Slider::create());;
+	mainVolume = RangeSlider::create(0, 100);
+	musicVolume = RangeSlider::create(0, 100);
 
-	setGap(20);
-	pack_start(mainVolume.get());
-	pack_start(musicVolume.get());
+	addLine("Volume principal", mainVolume.get());
+	addLine("Volume de la musique", musicVolume.get());
 }
 
-void AudioMenu::draw() {
-	Box::draw();
-}
-
-std::unique_ptr<Box> AudioMenu::create() {
-	auto font = ResourceManager::getFont("roboto");
-	auto btn = new AudioMenu();
+std::unique_ptr<AudioMenu> AudioMenu::create() {
+	auto btn = std::unique_ptr<AudioMenu>(new AudioMenu());
 	btn->initialize();
-	return std::unique_ptr<Box>(btn);
+	return btn;
 }

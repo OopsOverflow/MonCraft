@@ -2,14 +2,16 @@
 
 #include <memory>
 
-#include "ui/Box.hpp"
 #include "ui/Button.hpp"
 #include "ui/Image.hpp"
 
-class MainMenu : public ui::Image
+class MainMenu : public ui::Component
 {
-public:
+protected:
 	MainMenu();
+
+public:
+	static std::unique_ptr<MainMenu> create();
 	void draw() override;
 
 	std::unique_ptr<ui::Button> singleplayerButton;
@@ -17,9 +19,6 @@ public:
 	std::unique_ptr<ui::Button> parameterButton;
 	std::unique_ptr<ui::Button> quitButton;
 
-
 private:
-	std::unique_ptr<ui::Image> moncraftTitle;
-	std::unique_ptr<ui::Box> buttonPannel;
-
+	std::unique_ptr<ui::Image> background;
 };

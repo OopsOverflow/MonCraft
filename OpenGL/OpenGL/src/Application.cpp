@@ -86,39 +86,53 @@ void loop(float dt) {
     }
 #endif
 
+void showView(Viewport& vp, std::unique_ptr<ui::Component> view) {
+    auto children = vp.getRoot()->getChildren();
+    if(children.size() > 0) vp.getRoot()->remove(children.at(0));
+    vp.getRoot()->add(move(view));
+}
+
+void showSinglePlayer(Viewport& vp);
+void showMultiPlayer(Viewport& vp);
+void showParameters(Viewport& vp);
+void showMainMenu(Viewport& vp);
+
+void showSinglePlayer(Viewport& vp) {
+    Config::getClientConfig().multiplayer = false;
+    showView(vp, std::make_unique<MonCraftScene>(&vp));
+}
+
+void showMultiPlayer(Viewport& vp) {
+    Config::getClientConfig().multiplayer = true;
+    showView(vp, std::make_unique<MonCraftScene>(&vp));
+}
+
+void showParameters(Viewport& vp) {
+    auto params = std::make_unique<ParametersMenu>();
+    params->quitButton->onclick([&] { showMainMenu(vp); });
+    showView(vp, move(params));
+}
+
+
+void showMainMenu(Viewport& vp) {
+    auto mainMenu = MainMenu::create();
+    mainMenu->singleplayerButton->onclick([&]{ showSinglePlayer(vp); });
+    mainMenu->multiplayerButton->onclick([&]{ showMultiPlayer(vp); });
+    mainMenu->parameterButton->onclick([&]{ showParameters(vp); });
+    mainMenu->quitButton->onclick([&] { vp.quit(); });
+    showView(vp, move(mainMenu));
+}
+
+
 int main(int argc, char* argv[]) {
     std::cout << "---- Main ----" << std::endl;
 
-    Viewport window({ 800, 800 });
+    Viewport window({ 1200, 800 });
+    std::unique_ptr<ui::Component> view;
+
     loadResources();
     window.createRoot();
-    MainMenu mainMenu;
-
-    window.getRoot()->add(&mainMenu);
-
-    mainMenu.singleplayerButton->onclick([&] {
-        Config::getClientConfig().multiplayer = false;
-        auto scene = std::make_unique<MonCraftScene>(&window);
-        window.getRoot()->remove(&mainMenu);
-        window.getRoot()->add(move(scene));
-    });
-
-    mainMenu.multiplayerButton->onclick([&] {
-        Config::getClientConfig().multiplayer = true;
-        auto scene = std::make_unique<MonCraftScene>(&window);
-        window.getRoot()->remove(&mainMenu);
-        window.getRoot()->add(move(scene));
-    });
-
-    mainMenu.parameterButton->onclick([&] {
-        auto params = std::make_unique<ParametersMenu>();
-        window.getRoot()->remove(&mainMenu);
-        window.getRoot()->add(move(params));
-    });
-
-    mainMenu.quitButton->onclick([&] {
-        window.quit();
-    });
+    showMainMenu(window);
 
     #ifdef EMSCRIPTEN
         pwindow = &window;

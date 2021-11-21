@@ -151,6 +151,7 @@ style_const_t Component::getDefaultStyle() const {
 }
 
 void Component::draw() {
+  queueRecompute(false); // TODO wow this is a hack
   if(!drawQueued) return;
   for(Component* child : children) child->draw();
   drawQueued = false;
@@ -192,6 +193,10 @@ void Component::remove(Component* child) {
   }
   children.erase(std::remove(children.begin(), children.end(), child));
   child->parent = nullptr;
+}
+
+std::vector<Component*> Component::getChildren() const {
+  return children;
 }
 
 ivec2 Component::getOrigin() const {
@@ -441,7 +446,7 @@ void Component::onMouseOut(ivec2 pos) { }
 bool Component::onMouseMove(ivec2 pos) { return false; }
 bool Component::onMousePressed(ivec2 pos) { return false; }
 bool Component::onMouseReleased(ivec2 pos) { return false; }
-bool Component::onActivate() { return false; }
+bool Component::onActivate() { return true; }
 void Component::onDeactivated() { }
 void Component::onKeyPressed(Key k) { }
 void Component::onKeyReleased(Key k) { }

@@ -37,19 +37,21 @@ ParametersMenu::ParametersMenu()
 	miscMenu = MiscMenu::create();
 
 	mainDisplay->setAnchorX(Anchor::CENTER);
-	mainDisplay->setAnchorY(Anchor::CENTER);
+	mainDisplay->setAnchorY(Anchor::END);
 	add(mainDisplay.get());
 
 	topDiv->setAnchorX(Anchor::CENTER);
 	topDiv->setAnchorY(Anchor::CENTER);
 	topDiv->setPadding({ 0, 20 });
+	topDiv->setGap(40);
 	topDiv->setOrientation(Box::Orientation::HORIZONTAL);
-	topDiv->pack_start(Text::create("Parametres", font));
-	quitButton->setAnchorX(Anchor::CENTER);
-	quitButton->setAnchorY(Anchor::CENTER);
-	quitButton->setSize(glm::vec2(50, 50));
-	quitButton->add(Image::create(glm::vec2(1923, 1), glm::vec2(659, 657)));
-	topDiv->pack_start(quitButton.get());
+	topDiv->pack_end(Text::create("Parametres", font));
+
+	auto quitButtonImg = Image::create({96, 1179}, {20, 20});
+	quitButtonImg->setSize({30, 30});
+	quitButton->add(move(quitButtonImg));
+
+	topDiv->pack_end(quitButton.get());
 	mainDisplay->pack_start(topDiv.get());
 
 	menuDiv->setAnchorX(Anchor::CENTER);

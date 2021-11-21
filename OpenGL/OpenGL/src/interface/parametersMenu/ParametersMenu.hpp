@@ -26,8 +26,8 @@ private:
 	std::unique_ptr<ui::Box> folderDiv;
 	std::unique_ptr<ui::Box> menuDiv;
 
-	std::unique_ptr<ui::Box> keyMenu;
-	std::unique_ptr<ui::Box> graphicsMenu;
-	std::unique_ptr<ui::Box> audioMenu;
-	std::unique_ptr<ui::Box> miscMenu;
+	std::unique_ptr<ui::Component> keyMenu;
+	std::unique_ptr<ui::Component> graphicsMenu;
+	std::unique_ptr<ui::Component> audioMenu;
+	std::unique_ptr<ui::Component> miscMenu;
 };

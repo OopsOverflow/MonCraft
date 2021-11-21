@@ -48,7 +48,6 @@ protected:
   virtual bool onMouseMove(glm::ivec2 pos) override;
   virtual void onKeyPressed(Key k) override;
   virtual void onKeyReleased(Key k) override;
-  virtual bool onActivate() override;
 
 private:
   World& world;
