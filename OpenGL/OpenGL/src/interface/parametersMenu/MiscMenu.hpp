@@ -3,6 +3,7 @@
 #include <memory>
 
 #include "interface/widgets/ParamList.hpp"
+#include "interface/widgets/Checkbox.hpp"
 
 class MiscMenu : public ParamList {
 
@@ -13,5 +14,5 @@ protected:
 	MiscMenu();
 
 private:
-	// std::unique_ptr<ui::Box> mobileVersion;
+	std::unique_ptr<Checkbox> mobileVersion;
 };

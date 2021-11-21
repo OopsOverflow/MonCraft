@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 #include <utility>
 
+#include "interface/widgets/Checkbox.hpp"
 #include "gl/ResourceManager.hpp"
 #include "ui/Button.hpp"
 #include "ui/Component.hpp"
@@ -14,8 +15,8 @@ using namespace glm;
 
 MiscMenu::MiscMenu()
 {
-	// mobileVersion = ParameterButton::create("Version Mobile", std::move(button));
-	// pack_start(enableMobileVersionButton.get());
+	mobileVersion = Checkbox::create();
+	addLine("Version mobile", mobileVersion.get());
 }
 
 std::unique_ptr<MiscMenu> MiscMenu::create() {

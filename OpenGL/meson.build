@@ -77,6 +77,7 @@ client_srcs = files(
   'OpenGL/src/interface/widgets/ParamList.cpp',
   'OpenGL/src/interface/widgets/RangeSlider.cpp',
   'OpenGL/src/interface/widgets/KeySelector.cpp',
+  'OpenGL/src/interface/widgets/Checkbox.cpp',
   'OpenGL/src/interface/parametersMenu/AudioMenu.cpp',
   'OpenGL/src/interface/parametersMenu/GraphicsMenu.cpp',
   'OpenGL/src/interface/parametersMenu/KeyMenu.cpp',
