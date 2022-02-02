@@ -1,68 +1,56 @@
 #pragma once
 
 #include <glm/glm.hpp>
-#include "terrain/Chunk.hpp"
-#include "util/Identifier.hpp"
-#include <SDL2/SDL_keycode.h>
+#include <iosfwd>
+#include <memory>
+#include <string>
 
-class Entity;
+#include "blocks/Block.hpp"
+#include "entity/Entity.hpp"
+
+class AbstractChunk;
+class Node;
 
 enum class EntityClass{Character};
-
-
-struct Config {
-    std::string seed = "Moncraft";
-
-    std::string serverAddr = "pi.thissma.fr";
-    #ifdef EMSCRIPTEN
-      bool multiplayer = true;
-      unsigned short serverPort = 55001;
-    #else
-      bool multiplayer = false;
-      unsigned short serverPort = 55000;
-    #endif
-
-    unsigned int renderDistH = 10;
-    unsigned int renderDistV = 5;
-    unsigned int threadCount = 8;
-
-    float fov = 70.0;
-    SDL_Keycode forward = SDLK_z;
-    SDL_Keycode backward = SDLK_s;
-    SDL_Keycode left = SDLK_q;
-    SDL_Keycode right = SDLK_d;
-    SDL_Keycode jump = SDLK_SPACE;
-    SDL_Keycode sneak = SDLK_LSHIFT;
-    SDL_Keycode view = SDLK_F5;
-    SDL_Keycode sprint = SDLK_LCTRL;
-    SDL_Keycode menu = SDLK_ESCAPE;
-};
-
 
 class SaveManager
 {
 public:
-    static SaveManager& getInst();
-    Config& getConfig();
-    bool saveConfig();
+    static std::unique_ptr<AbstractChunk> loadChunk(glm::ivec3 chunkPos);
+    static bool saveChunk(AbstractChunk const& chunk);
 
-    static std::unique_ptr<Chunk> getChunk(glm::ivec3 chunkPos);
-    static bool saveChunk(Chunk const& chunk);
-
-    static std::unique_ptr<Entity> getEntity(Identifier uid);
-    static bool saveEntity(const Entity& entity);
+    // TODO
+    // static std::unique_ptr<Entity> loadEntity(Identifier uid);
+    // static bool saveEntity(const Entity& entity);
 
     static std::string chunkSaveDir, entitySaveDir, configSaveDir;
-    static std::string configFilename;
 
 private:
-    Config config;
-    static Config loadConfig();
-    SaveManager();
-    ~SaveManager();
-    SaveManager(SaveManager const&) = delete;
-    SaveManager& operator=(SaveManager const&) = delete;
+    SaveManager() = delete;
 };
 
-sf::Packet& operator<<(sf::Packet& packet, Chunk const& chunk);
-sf::Packet& operator>>(sf::Packet& packet, Chunk& chunk);
+namespace serde {
+    std::ostream &operator<<(std::ostream &stream, const glm::vec3 &vec);
+    std::istream &operator>>(std::istream &stream, glm::vec3 &vec);
+
+    std::ostream &operator<<(std::ostream &stream, State state);
+    std::istream &operator>>(std::istream &stream, State &state);
+
+    std::ostream &operator<<(std::ostream &stream, Facing facing);
+    std::istream &operator>>(std::istream &stream, Facing &facing);
+
+    std::ostream &operator<<(std::ostream &stream, EntityClass entityClass);
+    std::istream &operator>>(std::istream &stream, EntityClass &entityClass);
+
+    std::ostream &operator<<(std::ostream &stream, const Node &node);
+    std::istream &operator>>(std::istream &stream, Node &node);
+
+    std::ostream &operator<<(std::ostream &stream, const Entity &entity);
+    std::istream &operator>>(std::istream &stream, Entity &entity);
+
+    std::ostream &operator<<(std::ostream &stream, BlockType type);
+    std::istream &operator>>(std::istream &stream, BlockType &type);
+
+    std::istream &operator>>(std::istream &stream, AbstractChunk &chunk);
+    std::ostream &operator<<(std::ostream &stream, AbstractChunk const &chunk);
+}

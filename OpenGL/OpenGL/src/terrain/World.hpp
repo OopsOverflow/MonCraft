@@ -1,13 +1,10 @@
 #pragma once
 
-#include <unordered_map>
 #include <glm/glm.hpp>
 
-#include "ChunkMap.hpp"
-#include "gl/Camera.hpp"
+#include "terrain/ChunkMap.hpp"
 #include "entity/Entities.hpp"
-
-class Entity;
+#include "blocks/Block.hpp"
 
 /**
 * Manages the chunks, load/unload, render and manipulation of blocks.
@@ -17,11 +14,6 @@ class World
 {
 public:
   static World& getInst();
-
-  /**
-  * Renders the visible chunks.
-  */
-  void render(Camera const& camera);
 
   /**
   * Gets a block in the world.
@@ -39,6 +31,8 @@ public:
 
   ChunkMap chunks;
   Entities entities;
+  float t;
+  float dt;
 
 private:
   World();

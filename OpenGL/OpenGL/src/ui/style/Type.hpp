@@ -1,9 +1,8 @@
 #pragma once
 
-#include <stdexcept>
+#include <stddef.h>
+#include <string>
 #include <vector>
-#include <unordered_map>
-#include "debug/Debug.hpp"
 
 namespace ui {
 

@@ -1,15 +1,23 @@
 #include "ShadowMap.hpp"
-#include "ResourceManager.hpp"
+
+#include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <stddef.h>
+#include <limits>
+#include <vector>
+
+#include "gl/Camera.hpp"
+#include "gl/ResourceManager.hpp"
+#include "gl/Shader.hpp"
 
 using namespace glm;
 
 ShadowMap::ShadowMap(int size)
-  : camera(ivec2(size), {10, 10, 10}, {0, 0, 0}, Projection::PROJECTION_ORTHOGRAPHIC),
-    shader(ResourceManager::getShader("shadow")),
-    distance(100.f),
-    size(size)
+  : camera(ivec2(size)),
+    shadowMatrices(),
+    shader(ResourceManager::getShader("shadow"))
 {
+  camera.setProjectionType(Projection::PROJECTION_ORTHOGRAPHIC);
   glGenFramebuffers(1, &fbo);
   glGenTextures(3, depthTex);
 
@@ -40,22 +48,22 @@ void ShadowMap::update(vec3 sunDir) {
 }
 
 float linearizeDepth(float depth) { // https://learnopengl.com/Advanced-OpenGL/Depth-testing
-    float near = 0.1;
-    float far = 200.0;
-    float z = depth * 2.0 - 1.0; // back to NDC
-    return (2.0 * near * far) / (far + near - z * (far - near)) / far;
+    float near = 0.1f;
+    float far = 200.0f;
+    float z = depth * 2.0f - 1.0f; // back to NDC
+    return (2.0f * near * far) / (far + near - z * (far - near)) / far;
 }
 
 void ShadowMap::attach(Camera const& cam, Frustum frustum) {
 
     std::vector<vec3> corners = cam.getBoxCorners(frustum);
 
-    float minX = FLT_MAX;
-    float maxX = -FLT_MAX;
-    float minY = FLT_MAX;
-    float maxY = -FLT_MAX;
-    float minZ = FLT_MAX;
-    float maxZ = -FLT_MAX;
+    float minX = std::numeric_limits<float>::max();
+    float maxX = std::numeric_limits<float>::lowest();
+    float minY = std::numeric_limits<float>::max();
+    float maxY = std::numeric_limits<float>::lowest();
+    float minZ = std::numeric_limits<float>::max();
+    float maxZ = std::numeric_limits<float>::lowest();
 
     for (auto vec : corners) {
       vec = vec3(camera.view * vec4(vec, 1.0f));
@@ -68,7 +76,7 @@ void ShadowMap::attach(Camera const& cam, Frustum frustum) {
     }
 
     //render out of the view in case we have to cast shadows from a moutain
-    float box[6] = { minX, maxX, minY, maxY, 5 * minZ - 4 * maxZ, maxZ };
+    float box[6] = { minX, maxX, minY, maxY, minZ - 10.f * (maxZ - minZ), maxZ };
     camera.setProjectionType(Projection::CUSTOM_PROJECTION, box);
     if(frustum != Frustum::ALL)shadowMatrices[(size_t)frustum] = camera.projection * camera.view;
 }

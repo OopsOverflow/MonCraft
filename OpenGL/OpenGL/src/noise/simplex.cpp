@@ -18,6 +18,9 @@
  */
 
 #include "simplex.hpp"
+
+#include <glm/glm.hpp>
+#include <stddef.h>
 #include <cmath>
 
 using glm::vec2;

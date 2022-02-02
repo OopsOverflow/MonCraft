@@ -1,8 +1,8 @@
 #include "Music.hpp"
 
-#include <iostream>
 #include <vector>
 #include <string>
+
 #include "util/Random.hpp"
 
 
@@ -35,7 +35,7 @@ void Music::update()
         uint32_t song;
         do
         {
-            song = Random::intInRange(0, playlist.size() - 1);
+            song = (uint32_t)Random::intInRange(0, playlist.size() - 1);
 
         } while (currentSong == song);
 

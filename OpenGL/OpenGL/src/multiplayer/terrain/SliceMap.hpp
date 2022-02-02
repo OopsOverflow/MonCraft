@@ -1,8 +1,12 @@
 #pragma once
 
+#include <glm/glm.hpp>
+#include <stddef.h>
+#include <mutex>
 #include <unordered_map>
+#include <vector>
 
-#include "Structure.hpp"
+#include "multiplayer/terrain/Structure.hpp"
 
 /**
  * Stores all the slices to be later applied to chunks.

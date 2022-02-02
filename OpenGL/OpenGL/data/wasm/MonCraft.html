@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <link rel="stylesheet" href="style.css">
+    <title>Emscripten-Generated Code</title>
+  </head>
+  <body>
+    <div class="emscripten" id="status">Downloading...</div>
+
+    <div class="emscripten">
+      <progress value="0" max="100" id="progress" hidden=1></progress>
+    </div>
+
+    <div class="emscripten_border">
+      <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
+    </div>
+
+    <div id="moncraft-info" class="hidden">
+      <div class="content">
+        <h1>MONCRAFT</h1>
+        <p>MonCraft est un jeu vidéo inspiré par Minecraft et développé en C++ et OpenGL.</p>
+        <p>⚠ Ceci est une version de démo web <i>expérimentale</i>, elle ne contient pas toutes les fonctionnalités du jeu et les performances sont moindres.</p>
+        <p>Obtenez le jeu pour Windows et Linux <a href="https://github.com/OopsOverflow/MonCraft/releases/latest">ici</a>.</p>
+        <div id="more-info-cont"><hr><a href="#" id="more-info-btn">▾ Plus d'informations ▾</a><hr></div>
+        <div id="more-info" class="hidden">
+          <p>
+            MonCraft est issu d'un projet de 3D OpenGL dans le cadre d'un cours dispensé à l'école d'ingénieurs de Polytech Paris-Saclay.
+            <a href="https://youtu.be/wnD5lXbpB_E">Voir la vidéo de présentation de MonCraft</a>.
+          </p>
+          <p>
+            Le jeu est développé entièrement "from scratch", tous les éléments ont étés codés à la main en C++ : les meshes, la génération procédurale, l'interface graphique...
+            <br/>Les dépendances du projet sont <a href="https://www.libsdl.org/">SDL2</a> pour la création de fenêtres, <a href="http://glm.g-truc.net/">GLM</a> pour le calcul matriciel, <a href="https://www.sfml-dev.org/">SFML</a> pour la musique et le réseau, <a href="https://www.freetype.org/">FreeType</a> pour le chargement du texte.
+          </p>
+          <p>
+            Les fonctionnalités comprennent :
+            <ul>
+              <li>Un monde infini dans les 3 dimensions, généré procéduralement</li>
+              <li>Un mode multijoueur</li>
+              <li>Un système de sauvegarde</li>
+              <li>Des ombres projetées par le soleil et le cycle jour / nuit</li>
+            </ul>
+          </p>
+          <p>
+            La présente version web résulte de la compilation du projet C++ vers <a href="https://webassembly.org/">WebAssembly</a> / <a href="https://www.khronos.org/webgl/">WebGL</a> grâce à <a href="https://emscripten.org/">Emscripten</a>.
+            <br/>Le projet n'a pas été conçu pour le web est n'est donc pas entièrement compatible. Certaines fonctionnalités ont été désactivées, comme les sauvegardes et les ombres.
+            <br/>La version web multijoueur est à un stade fonctionnel, mais reste en cours de développement. Elle utilise <a href="https://datatracker.ietf.org/doc/html/rfc6455">WebSocket</a> ou <a href="https://webrtc.org/">WebRTC</a>.
+          </p>
+        </div>
+        <button type="button" name="close" id="info-close">×</button>
+      </div>
+    </div>
+
+    <script src="script.js" charset="utf-8"></script>
+    <script async type="text/javascript" src="MonCraft.js"></script>
+  </body>
+</html>

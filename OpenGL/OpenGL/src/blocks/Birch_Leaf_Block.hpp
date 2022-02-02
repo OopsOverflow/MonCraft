@@ -13,7 +13,7 @@ public:
       return {6, 7};
     }
 
-    bool isTransparent() const override { return true; }
+    bool isOpaque() const override { return false; }
 
 private:
     Birch_Leaf_Block() : Block(BlockType::Birch_Leaf) {}

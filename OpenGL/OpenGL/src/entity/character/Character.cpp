@@ -1,32 +1,49 @@
 #include "Character.hpp"
-#include "CharacterHitbox.hpp"
-#include "blocks/Debug_Block.hpp"
+
+#include <glm/glm.hpp>
+#include <glm/gtc/constants.hpp>
+#include <stdlib.h>
+#include <cmath>
+#include <memory>
+#include <utility>
+
 #include "blocks/Air_Block.hpp"
-#include "blocks/Dirt_Block.hpp"
-#include "blocks/Tallgrass_Block.hpp"
-#include "blocks/Water_Block.hpp"
 #include "blocks/AllBlocks.hpp"
-#include "gl/ResourceManager.hpp"
+#include "blocks/Birch_Planks_Block.hpp"
+#include "blocks/Birch_Stair_Block.hpp"
+#include "blocks/Oak_Planks_Block.hpp"
+#include "blocks/Oak_Stair_Block.hpp"
+#include "entity/Entity.hpp"
+#include "entity/Hitbox.hpp"
+#include "entity/character/CharacterHitbox.hpp"
+#include "entity/character/Chest.hpp"
+#include "entity/character/Head.hpp"
+#include "entity/character/LeftArm.hpp"
+#include "entity/character/LeftLeg.hpp"
+#include "entity/character/RightArm.hpp"
+#include "entity/character/RightLeg.hpp"
+#include "gl/Camera.hpp"
 #include "terrain/World.hpp"
 
 using namespace glm;
 
-const float defaultSpeed = 4.317;
+const float defaultSpeed = 4.317f;
 const float godMultiplier = 5;
 const float sprintMultiplier = 2;
 
 Character::Character(vec3 pos)
     : Entity(CharacterHitbox()),
+      view(CharacterView::FIRST_PERSON),
       caster(100), // distance the player can place blocks
-      currentBlock(BlockType::Dirt),
+      currentBlock(BlockType::Oak_Stair),
       god(true), sprint(false)
 {
-  node.loc = pos;
+  bodyNode.loc = pos;
   rootNode.sca = vec3(1.85f / 32.f); // steve is 1.85 blocks high, 32 pixels high
   rootNode.rot.y = glm::pi<float>();
-  rootNode.loc.y = 9.5f / 32.f * 1.85f;
+  rootNode.loc.y = 9.5 / 32. * 1.85;
   headNode.loc = {0, 6, 0};
-  node.addChild(&rootNode);
+  bodyNode.addChild(&rootNode);
   rootNode.addChild(&headNode);
   rootNode.addChild(&chest.node);
   rootNode.addChild(&head.node);
@@ -43,8 +60,19 @@ Character::Character(vec3 pos)
 
 Character::~Character() {}
 
-#include "debug/Debug.hpp"
 
+void Character::cameraToHead(Camera& camera) {
+	if(view == CharacterView::FIRST_PERSON) {
+		vec3 eyePos = headNode.model * vec4(0, 4, 0, 1);
+		vec3 eyeTarget = headNode.model * vec4(0, 4, 50, 1);
+		camera.setLookAt(eyePos, eyeTarget);
+	}
+	else {
+		vec3 eyePos = headNode.model * vec4(0, 4, 4, 1);
+		vec3 eyeTarget = headNode.model * vec4(0, 4, -100, 1);
+		camera.setLookAt(eyeTarget, eyePos);
+	}
+}
 
 void Character::enableGodMode() {
   if(god) return;
@@ -89,15 +117,27 @@ void Character::setSprint(bool sprint) {
 
 
 void Character::breakBlock() {
+  auto& world = World::getInst();
   vec3 eyePos = headNode.model * vec4(0, 4, 0, 1);
   vec3 eyeTarget = headNode.model * vec4(0, 4, 5, 1);
   auto cast = caster.cast(eyePos + .5f, eyeTarget - eyePos);
   if (cast.success) {
       BlockType block = cast.block->type;
       if (block != BlockType::Air && block != BlockType::Water) {
-          World::getInst().setBlock(cast.position, Block::create_static<Air_Block>());
-          record.push_back({ cast.position, BlockType::Air });
+          auto airBlock = Block::create_static<Air_Block>();
+          record.push(cast.position, airBlock.get());
+          world.setBlock(cast.position, move(airBlock));
       }
+  }
+}
+
+Facing getFacing(vec3 dir) {
+  if(abs(dir.x) > abs(dir.z)) {
+    if(dir.x > 0) return Facing::EAST;
+    else return Facing::WEST;
+  } else {
+    if(dir.z > 0) return Facing::SOUTH;
+    else return Facing::NORTH;
   }
 }
 
@@ -108,13 +148,28 @@ void Character::placeBlock() {
   auto cast = caster.cast(eyePos + .5f, eyeTarget - eyePos);
 
   if(cast.success) {
-    if(hitbox.collides(node.loc, cast.position + cast.normal)) return;
+    if(hitbox.collides(bodyNode.loc, cast.position + cast.normal)) return;
     Block* block = world.getBlock(cast.position + cast.normal);
     if(!block) return;
     if(block->type != BlockType::Air && block->type != BlockType::Water) return;
     ivec3 pos = cast.position + cast.normal;
-    world.setBlock(pos, AllBlocks::create_static(currentBlock));
-    record.push_back({ pos, currentBlock });
+
+    Block::unique_ptr_t newBlock;
+    Facing facing = getFacing(eyeTarget - eyePos);
+
+    if(currentBlock == BlockType::Oak_Stair)
+      newBlock = Block::create_dynamic<Oak_Stair_Block>(facing);
+    else if(currentBlock == BlockType::Oak_Planks)
+      newBlock = Block::create_dynamic<Oak_Planks_Block>(facing);
+    else if(currentBlock == BlockType::Birch_Stair)
+      newBlock = Block::create_dynamic<Birch_Stair_Block>(facing);
+    else if(currentBlock == BlockType::Birch_Planks)
+      newBlock = Block::create_dynamic<Birch_Planks_Block>(facing);
+    else
+      newBlock = AllBlocks::create_static(currentBlock);
+
+    record.push(pos, newBlock.get());
+    world.setBlock(pos, std::move(newBlock));
   }
 }
 
@@ -189,8 +244,14 @@ void Character::render() {
   r_leg.draw();
 }
 
-BlockArray Character::getRecord() {
-  BlockArray res = record;
-  record.clear();
-  return res;
+BlockArray& Character::getRecord() {
+  return record;
+}
+
+BlockType Character::getCurrentBlock() const {
+  return currentBlock;
+}
+
+void Character::setCurrentBlock(BlockType type) {
+  currentBlock = type;
 }

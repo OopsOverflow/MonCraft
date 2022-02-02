@@ -1,17 +1,28 @@
 #include "ClientServer.hpp"
+
+#include <glm/glm.hpp>
+#include <stddef.h>
+#include <algorithm>
 #include <iostream>
-#include "multiplayer/common/Config.hpp"
-#include "terrain/World.hpp"
+#include <utility>
+#include <vector>
+
+#include "entity/Entities.hpp"
+#include "entity/Entity.hpp"
 #include "entity/character/Character.hpp"
 #include "save/SaveManager.hpp"
+#include "save/ServerConfig.hpp"
+#include "terrain/BlockArray.hpp"
+#include "terrain/ChunkMap.hpp"
+#include "terrain/World.hpp"
 
 using namespace glm;
 
 ClientServer::ClientServer()
   : world(World::getInst())
 {
-  auto newPlayer = std::make_unique<Character>(NetworkConfig::SPAWN_POINT);
-  auto entity = World::getInst().entities.add(0, std::move(newPlayer));
+  auto newPlayer = std::make_unique<Character>(Config::getServerConfig().spawnPoint);
+  auto entity = World::getInst().entities.add(getUid(), std::move(newPlayer));
   player = std::dynamic_pointer_cast<Character>(entity);
 }
 
@@ -23,7 +34,10 @@ void ClientServer::ping() {
 }
 
 void ClientServer::update() {
-  if(pendingChunks.changed(player->getPosition())) {
+  Server::update();
+
+  pendingChunks.update(player->getPosition());
+  if(pendingChunks.changed()) {
     auto waiting = pendingChunks.get();
     auto count = std::min(waiting.size(), generator.waitingChunks.capacity());
     generator.waitingChunks.clear();
@@ -31,17 +45,12 @@ void ClientServer::update() {
       generator.waitingChunks.push(waiting.at(i));
     }
   }
-  
-  pendingChunks.remOldChunks();
 
   // save changes since last update
   auto rec = player->getRecord();
-  for(auto const& blockData : rec) {
-    ivec3 cpos = floor(vec3(blockData.pos) / float(world.chunkSize));
+  for(auto cpos : rec.getChangedChunks()) {
     auto chunk = world.chunks.find(cpos);
     if(chunk) {
-      ivec3 dpos = blockData.pos - cpos * world.chunkSize;
-      chunk->setBlock(dpos, AllBlocks::create_static(blockData.type));
       SaveManager::saveChunk(*chunk);
     }
   }
@@ -53,4 +62,8 @@ bool ClientServer::login() {
 
 std::shared_ptr<Character> ClientServer::getPlayer() {
   return player;
+}
+
+Identifier ClientServer::getUid() {
+  return 0;
 }

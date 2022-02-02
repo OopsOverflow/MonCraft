@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Block.hpp"
+#include "model/CactusModel.hpp"
 
 class Cactus_Block : public Block {
 public:
@@ -14,6 +15,10 @@ public:
             return { 3, 0 };
         return { 4, 0 };
     }
+    
+    bool isOpaque() const override { return false; }
+
+    BlockModel * getModel() const override { return CactusModel::get(); }
 
 private:
     Cactus_Block() : Block(BlockType::Cactus) {}

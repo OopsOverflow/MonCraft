@@ -1,4 +1,4 @@
-#version 300 es
+#version 430 core
 
 in vec3 v_position;
 in vec3 v_normal;
@@ -12,15 +12,15 @@ uniform mat4 m_projection;
 uniform mat4 m_normal;
 uniform mat4 m_shadows[3];
 
-smooth out vec3 vertexPosition;
-smooth out vec4 vertexColor;
-smooth out vec3 vertexNormal;
-smooth out vec2 txrCoords;
-smooth out vec2 normalCoords;
-smooth out vec3 shadowCoords[3];
-smooth out mat3 TBN;
-smooth out float vertexOcclusion;
-smooth out float clipEndZ;
+out vec3 vertexPosition;
+out vec4 vertexColor;
+out vec3 vertexNormal;
+out vec2 texCoords;
+out vec2 normalCoords;
+out vec3 shadowCoords[3];
+out mat3 TBN;
+out float vertexOcclusion;
+out float clipEndZ;
 
 
 void main() {
@@ -36,7 +36,7 @@ void main() {
   // Normals
   vertexNormal = vec3(m_normal * vec4(v_normal, 0.0));
   // Textures
-  txrCoords = v_texture;
+  texCoords = v_texture;
   // Occlusion
   vertexOcclusion = v_occlusion;
   // NormalCoords

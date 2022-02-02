@@ -1,22 +1,41 @@
 #include "ChunkGenerator.hpp"
-#include "blocks/AllBlocks.hpp"
 
-#include <functional>
-#include <map>
+#include <glm/glm.hpp>
+#include <stdint.h>
+#include <stdlib.h>
+#include <cmath>
+#include <vector>
+
+#include "blocks/Air_Block.hpp"
+#include "blocks/AllBlocks.hpp"
+#include "blocks/Cobalt_Block.hpp"
+#include "blocks/Dirt_Block.hpp"
+#include "blocks/Ice_Block.hpp"
+#include "blocks/Sand_Block.hpp"
+#include "blocks/Sandstone_Block.hpp"
+#include "blocks/Snow_Block.hpp"
+#include "blocks/Stone_Block.hpp"
+#include "blocks/Tallgrass_Block.hpp"
+#include "blocks/Water_Block.hpp"
+#include "multiplayer/terrain/Biome.hpp"
+#include "multiplayer/terrain/BiomeMap.hpp"
+#include "multiplayer/terrain/Structure.hpp"
+#include "noise/prng.hpp"
+#include "terrain/AbstractChunk.hpp"
+#include "util/DataStore.hpp"
 
 using namespace glm;
 
 ChunkGenerator::ChunkGenerator(int chunkSize)
   : chunkSize(chunkSize),
-    valueNoise(rand())
+    valueNoise(prng::rand())
 {
-    noise.seed(rand());
-    biomeSampler.generate();
+    noise.seed(prng::rand());
 }
 
-std::unique_ptr<Chunk> ChunkGenerator::generate(ivec3 cpos) const {
+std::unique_ptr<AbstractChunk> ChunkGenerator::generate(ivec3 cpos) const {
 
-    std::unique_ptr<Chunk> chunk(new Chunk(cpos, chunkSize));
+    std::unique_ptr<AbstractChunk> chunk(AbstractChunk::create(cpos, chunkSize));
 
     ivec3 dpos(0);
     ivec3 orig = cpos * chunkSize;
@@ -56,7 +75,7 @@ Block::unique_ptr_t ChunkGenerator::createBlock(ivec3 pos, Biome const& biome) c
 
     //blockHeight = (int)floor(biome.elevation);
 
-    if (pos.y > 0 && pos.y < 27 && pos.y == blockHeight + 1 && noise.simplex3(pos) * 0.5 + 0.5 < biome.tallgrass && pos.y > valueNoise.sample<2, 1>(ivec2(pos.x, pos.z) + ivec2(3, -7)) % 4)
+    if (pos.y > 0 && pos.y < 27 && pos.y == blockHeight + 1 && noise.simplex3(pos) * 0.5 + 0.5 < biome.tallgrass && pos.y > (int)valueNoise.sample<2, 1>(ivec2(pos.x, pos.z) + ivec2(3, -7)) % 4)//TODO signed/unsigned comparison
         return Block::create_static<Tallgrass_Block>();
     if (pos.y > blockHeight) {
         if (pos.y <= 0) {
@@ -75,15 +94,15 @@ Block::unique_ptr_t ChunkGenerator::createBlock(ivec3 pos, Biome const& biome) c
 
     //if you want cave update :)
     //if(pos.y>= blockHeight - 5 - valueNoise.sample<2, 1>(ivec2(pos.x,pos.z) + ivec2(158,-804)) % 5) return Block::create_static<Stone_Block>();
-    float caveNoise = noise.perlin3((vec3)(pos + ivec3(55, 8, -95)) * 0.06f) * (0.2 + 0.0001 * pow((float)(blockHeight - pos.y), 1.5));
+    float caveNoise = noise.perlin3(vec3(pos + ivec3(55, 8, -95)) * 0.06f) * (0.2f + 0.0001f * (float)pow(blockHeight - pos.y, 1.5));
     caveNoise = min(1.0f, caveNoise*0.5f+0.5f);
-    if (pos.y < blockHeight - 5 && caveNoise > 0.6f - (1.0f / 15000.0f * pow((float)(blockHeight - pos.y),1.5f)))return Block::create_static<Air_Block>();
-    if (noise.perlin3((vec3)(pos + ivec3(-614, 120, 745)) * 0.08f) > 0.3)return Block::create_static<Sandstone_Block>();
+    if (pos.y < blockHeight - 5 && caveNoise > 0.6f - (1.0f / 15000.0f * (float)pow(blockHeight - pos.y,1.5f)))return Block::create_static<Air_Block>();
+    if (noise.perlin3(vec3(pos + ivec3(-614, 120, 745)) * 0.08f) > 0.3)return Block::create_static<Sandstone_Block>();
     if (pos.y < -250 && noise.perlin3((vec3)(pos + ivec3(7825, -41, 138)) * 0.2f) > 0.7)return Block::create_static<Cobalt_Block>();
     return Block::create_static<Stone_Block>();
 }
 
-std::vector<Structure::Slice> ChunkGenerator::generateStructures(Chunk& chunk) const {
+std::vector<Structure::Slice> ChunkGenerator::generateStructures(AbstractChunk& chunk) const {
   std::vector<Structure::Slice> slices;
   ivec3 dpos(0);
   ivec3 orig = chunk.chunkPos * chunkSize;

@@ -1,6 +1,9 @@
 #include "Shader.hpp"
 
-#include <glm/gtc/type_ptr.hpp>
+#include <stddef.h>
+#include <fstream>
+#include <iostream>
+#include <sstream>
 
 #define SHADER_ENABLE_DEBUG 0
 

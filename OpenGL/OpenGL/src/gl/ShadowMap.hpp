@@ -1,7 +1,11 @@
 #pragma once
 
-#include "../gl/Shader.hpp"
-#include "../gl/Camera.hpp"
+#include <GL/glew.h>
+#include <glm/glm.hpp>
+
+#include "gl/Camera.hpp"
+
+class Shader;
 
 /**
  * A cascading shadow map.
@@ -60,8 +64,5 @@ public:
 private:
   GLuint fbo;
   GLuint depthTex[3];
-  float resolution;
   Shader* shader;
-  float distance;
-  int size;
 };

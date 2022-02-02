@@ -144,6 +144,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\SDL2\lib\x64;$(SolutionDir)Dependencies\SFML\lib\x64;$(SolutionDir)Dependencies\GLEW\lib\Release\x64;$(SolutionDir)Dependencies\FreeType\lib\win64</AdditionalLibraryDirectories>
       <AdditionalDependencies>opengl32.lib;User32.lib;Gdi32.lib;Shell32.lib;glew32s.lib;SDL2.lib;SDL2main.lib;SDL2test.lib;SDL2_image.lib;freetype.lib;sfml-audio.lib;sfml-system.lib;sfml-network.lib</AdditionalDependencies>
+      <AdditionalOptions>/NODEFAULTLIB:library /ignore:4099
+ %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -159,7 +161,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -188,12 +190,28 @@
     <ClCompile Include="src\gl\Font.cpp" />
     <ClCompile Include="src\gl\Mesh.cpp" />
     <ClCompile Include="src\gl\ResourceManager.cpp" />
+    <ClCompile Include="src\gl\SafeMesh.cpp" />
     <ClCompile Include="src\gl\Shader.cpp" />
     <ClCompile Include="src\gl\ShadowMap.cpp" />
     <ClCompile Include="src\gl\Viewport.cpp" />
-    <ClCompile Include="src\MonCraftScene.cpp" />
+    <ClCompile Include="src\interface\mainMenu\MainMenuButton.cpp" />
+    <ClCompile Include="src\interface\parametersMenu\MiscMenu.cpp" />
+    <ClCompile Include="src\interface\parametersMenu\ParameterList.cpp" />
+    <ClCompile Include="src\interface\parametersMenu\ParameterSlider.cpp" />
+    <ClCompile Include="src\interface\MultiplayerMenu.cpp" />
+    <ClCompile Include="src\interface\Overlay.cpp" />
+    <ClCompile Include="src\interface\DebugOverlay.cpp" />
+    <ClCompile Include="src\interface\GameMenu.cpp" />
+    <ClCompile Include="src\interface\mainMenu\MainMenu.cpp" />
+    <ClCompile Include="src\interface\MonCraftScene.cpp" />
+    <ClCompile Include="src\interface\parametersMenu\AudioMenu.cpp" />
+    <ClCompile Include="src\interface\parametersMenu\GraphicsMenu.cpp" />
+    <ClCompile Include="src\interface\parametersMenu\KeyMenu.cpp" />
+    <ClCompile Include="src\interface\parametersMenu\ParameterButton.cpp" />
+    <ClCompile Include="src\interface\parametersMenu\ParametersMenu.cpp" />
     <ClCompile Include="src\multiplayer\client\ClientServer.cpp" />
     <ClCompile Include="src\multiplayer\client\RealServer.cpp" />
+    <ClCompile Include="src\multiplayer\client\Server.cpp" />
     <ClCompile Include="src\multiplayer\common\NetworkError.cpp" />
     <ClCompile Include="src\multiplayer\common\Packet.cpp" />
     <ClCompile Include="src\multiplayer\terrain\BiomeMap.cpp" />
@@ -207,7 +225,10 @@
     <ClCompile Include="src\noise\value.cpp" />
     <ClCompile Include="src\noise\voronoi.cpp" />
     <ClCompile Include="src\noise\XXHash.cpp" />
-    <ClCompile Include="src\save\SaveManager.cpp" />
+    <ClCompile Include="src\ui\Box.cpp" />
+    <ClCompile Include="src\ui\Image.cpp" />
+    <ClCompile Include="src\ui\Slider.cpp" />
+    <ClCompile Include="src\util\SaveManager.cpp" />
     <ClCompile Include="src\terrain\BlockArray.cpp" />
     <ClCompile Include="src\terrain\Chunk.cpp" />
     <ClCompile Include="src\terrain\ChunkMap.cpp" />
@@ -283,10 +304,25 @@
     <ClInclude Include="src\gl\Font.hpp" />
     <ClInclude Include="src\gl\Mesh.hpp" />
     <ClInclude Include="src\gl\ResourceManager.hpp" />
+    <ClInclude Include="src\gl\SafeMesh.hpp" />
     <ClInclude Include="src\gl\Shader.hpp" />
     <ClInclude Include="src\gl\ShadowMap.hpp" />
     <ClInclude Include="src\gl\Viewport.hpp" />
-    <ClInclude Include="src\MonCraftScene.hpp" />
+    <ClInclude Include="src\interface\mainMenu\MainMenuButton.hpp" />
+    <ClInclude Include="src\interface\parametersMenu\MiscMenu.hpp" />
+    <ClInclude Include="src\interface\parametersMenu\ParameterList.hpp" />
+    <ClInclude Include="src\interface\parametersMenu\ParameterSlider.hpp" />
+    <ClInclude Include="src\interface\MultiplayerMenu.hpp" />
+    <ClInclude Include="src\interface\Overlay.hpp" />
+    <ClInclude Include="src\interface\DebugOverlay.hpp" />
+    <ClInclude Include="src\interface\GameMenu.hpp" />
+    <ClInclude Include="src\interface\mainMenu\MainMenu.hpp" />
+    <ClInclude Include="src\interface\MonCraftScene.hpp" />
+    <ClInclude Include="src\interface\parametersMenu\AudioMenu.hpp" />
+    <ClInclude Include="src\interface\parametersMenu\GraphicsMenu.hpp" />
+    <ClInclude Include="src\interface\parametersMenu\KeyMenu.hpp" />
+    <ClInclude Include="src\interface\parametersMenu\ParameterButton.hpp" />
+    <ClInclude Include="src\interface\parametersMenu\ParametersMenu.hpp" />
     <ClInclude Include="src\multiplayer\client\ClientServer.hpp" />
     <ClInclude Include="src\multiplayer\client\RealServer.hpp" />
     <ClInclude Include="src\multiplayer\client\Server.hpp" />
@@ -311,7 +347,10 @@
     <ClInclude Include="src\noise\value.hpp" />
     <ClInclude Include="src\noise\voronoi.hpp" />
     <ClInclude Include="src\noise\XXHash.hpp" />
-    <ClInclude Include="src\save\SaveManager.hpp" />
+    <ClInclude Include="src\ui\Box.hpp" />
+    <ClInclude Include="src\ui\Image.hpp" />
+    <ClInclude Include="src\ui\Slider.hpp" />
+    <ClInclude Include="src\util\SaveManager.hpp" />
     <ClInclude Include="src\shadow\ShadowMap.hpp" />
     <ClInclude Include="src\Noise.hpp" />
     <ClInclude Include="src\terrain\biomes\Biome.hpp" />
@@ -399,6 +438,8 @@
   <ItemGroup>
     <None Include="src\shader\fog.frag" />
     <None Include="src\shader\fog.vert" />
+    <None Include="src\shader\image.frag" />
+    <None Include="src\shader\image.vert" />
     <None Include="src\shader\pane.frag" />
     <None Include="src\shader\pane.vert" />
     <None Include="src\shader\simple.frag" />

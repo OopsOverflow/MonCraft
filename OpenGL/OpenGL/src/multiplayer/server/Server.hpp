@@ -1,14 +1,16 @@
 #pragma once
 
-#include <string>
+#include <SFML/System/Clock.hpp>
+#include <SFML/System/Time.hpp>
 #include <map>
-#include <SFML/Network.hpp>
-#include "../common/Packet.hpp"
-#include "terrain/BlockArray.hpp"
-#include "terrain/World.hpp"
-#include "multiplayer/terrain/TerrainGenerator.hpp"
 
-#include "Client.hpp"
+#include "multiplayer/terrain/TerrainGenerator.hpp"
+#include "multiplayer/server/Client.hpp"
+#include "util/Identifier.hpp"
+
+class BlockArray;
+class World;
+namespace sf { class Packet; }
 
 class Server {
 
@@ -53,5 +55,7 @@ protected:
   int renderDistH, renderDistV;
   static const unsigned int maxChunks = 50;
 
-  static const time_t timeout = 10;
+  sf::Clock clock;
+  const sf::Time timeout = sf::seconds(10);
+  const sf::Time tickAckLimit = sf::milliseconds(1000);
 };

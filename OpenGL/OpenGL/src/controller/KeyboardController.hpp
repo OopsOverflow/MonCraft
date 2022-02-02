@@ -1,41 +1,31 @@
 #pragma once
 
-#include "entity/character/Character.hpp"
-#include "terrain/World.hpp"
-
 #include <glm/glm.hpp>
+
+#include "entity/character/Character.hpp"
+#include "ui/Key.hpp"
+
+namespace Config { struct ClientConfig; }
 
 class KeyboardController {
 public:
 	KeyboardController();
 
-  void pressedForward();
-  void releasedForward();
-  void pressedBackward();
-  void releasedBackward();
-  void pressedLeft();
-  void releasedLeft();
-  void pressedRight();
-  void releasedRight();
-  void pressedUp();
-  void releasedUp();
-  void pressedDown();
-  void releasedDown();
-  void pressedControl();
-  void releasedControl();
-  void pressedPause();
-
-  void pressedF5();
-  void changedMod();
-
+  bool handleKeyPressed(Key k);
+  bool handleKeyReleased(Key k);
   void apply(Character& character);
 
 private:
+  bool isDoubleSpace();
+
+  Config::ClientConfig& config;
+
   glm::vec3 direction;
-  State state;
-  View view;
+  CharacterView view;
 
   bool sprint;
-  bool change;
-  bool paused;
+  bool toggleGod;
+
+  bool spaceIsPressed;
+  float lastSpacePress;
 };

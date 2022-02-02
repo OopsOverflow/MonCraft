@@ -1,13 +1,38 @@
 #include "Server.hpp"
-#include "multiplayer/common/Config.hpp"
 
+#include <iostream>
+
+#include "terrain/World.hpp"
+#include "terrain/AbstractChunk.hpp"
+#include "entity/character/Character.hpp"
+#include "save/ServerConfig.hpp"
 
 Server::Server()
-{}
+{
+  auto& config = Config::getServerConfig();
+  renderDistH = config.renderDistH;
+  renderDistV = config.renderDistV;
+  maxChunks = renderDistH * renderDistH * renderDistV;
+}
 
 Server::~Server() {
   stop();
 }
+
+void Server::update() {
+  remOldChunks();
+}
+
+void Server::remOldChunks() {
+  World& world = World::getInst();
+  glm::ivec3 cpos = floor(getPlayer()->getPosition() / 16.f);
+  int delCount = std::max<int>((unsigned int)world.chunks.size() - maxChunks, 0);
+  world.chunks.eraseChunks(delCount, [=](AbstractChunk* chunk) {
+    glm::ivec3 dist = abs(cpos - chunk->chunkPos);
+    return dist.x > renderDistH + 1 || dist.z > renderDistH + 1 || dist.y > renderDistV + 1;
+  });
+}
+
 
 bool Server::sleepFor(std::chrono::milliseconds millis) {
   std::unique_lock<std::mutex> stopLck(stopMutex);
@@ -16,7 +41,7 @@ bool Server::sleepFor(std::chrono::milliseconds millis) {
 
 void Server::loop() {
   bool stop = false;
-  auto sleep = std::chrono::milliseconds(NetworkConfig::SERVER_TICK);
+  auto sleep = std::chrono::milliseconds(Config::getServerConfig().serverTick);
   bool logged = false;
 
   while(!stop && !logged) {

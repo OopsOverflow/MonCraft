@@ -2,8 +2,8 @@
 
 precision mediump float;
 
-smooth in vec3 vertexPosition;
-smooth in vec3 fogColor;
+in vec3 vertexPosition;
+in vec3 fogColor;
 
 out vec4 outputColor;
 

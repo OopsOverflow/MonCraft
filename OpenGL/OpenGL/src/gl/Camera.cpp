@@ -1,20 +1,21 @@
 #include "Camera.hpp"
-#include "../gl/Shader.hpp"
-#include "save/SaveManager.hpp"
 
+#include <GL/glew.h>
+#include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <cmath>
 #include <iostream>
+#include <stdexcept>
 
-Camera::Camera(glm::ivec2 size, const glm::vec3& position, const glm::vec3& center, Projection projType)
+#include "gl/Shader.hpp"
+
+Camera::Camera(glm::ivec2 size)
   : view(1.f), projection(1.f),
-    position(position), center(center),
-    near_(0.1f),
-    size(size), projType(projType)
+    position(0.f), center(position + glm::vec3(0, 0, -1)),
+    near_(0.1f), far_(1000.f), fovY(75.f),
+    size(size), projType(Projection::PROJECTION_PERSPECTIVE)
 {
-  auto const& config = SaveManager::getInst().getConfig();
-  far_ = 16.0f* sqrt(2 * pow(config.renderDistH, 2) + pow(config.renderDistV, 2));
-  fovY = config.fov;
   computeView();
   computeProjection();
 }
@@ -45,7 +46,6 @@ void Camera::setLookAt(const glm::vec3 &position, const glm::vec3 &center) {
   computeView();
   computeProjection();
 }
-
 
 void Camera::translate(const glm::vec3 &translation, bool localSpace) {
   glm::mat4 trans = glm::translate(glm::mat4(1.f), translation);
@@ -136,6 +136,17 @@ void Camera::rotatePixels(int x, int y, bool localSpace) {
 
 void Camera::setFovY(float fovY) {
   this->fovY = fovY;
+  computeProjection();
+}
+
+void Camera::setFar(float f) {
+  far_ = f;
+  computeProjection();
+}
+
+void Camera::setNear(float n) {
+  near_ = n;
+  computeProjection();
 }
 
 // ----------- getters -----------
@@ -146,7 +157,15 @@ float Camera::getFovY() const {
 
 // see https://en.wikipedia.org/wiki/Field_of_view_in_video_games#Field_of_view_calculations
 float Camera::getFovX() const {
-  return glm::degrees(2 * atan(tan(glm::radians(fovY) * 0.5) * size.x / size.y));
+  return glm::degrees(2 * atan(tan(glm::radians(fovY) * 0.5f) * size.x / size.y));
+}
+
+float Camera::getFar() const {
+  return far_;
+}
+
+float Camera::getNear() const {
+  return near_;
 }
 
 glm::ivec2 Camera::getSize() const {
@@ -171,8 +190,8 @@ void Camera::computeProjection(float box[6]) {
 
   if (projType == Projection::PROJECTION_ORTHOGRAPHIC) {
     // kind of perspective division... To switch between persp & ortho.
-    tanFovY = tan(glm::radians(getFovY()) * 0.5);
-    tanFovX = tan(glm::radians(getFovX()) * 0.5);
+    tanFovY = tan(glm::radians(getFovY()) * 0.5f);
+    tanFovX = tan(glm::radians(getFovX()) * 0.5f);
     float y = glm::length(center - position) * tanFovY;
     float x = y * aspect;
     projection = glm::ortho(-x, x, -y, y, 0.f, 1000.f);
@@ -180,8 +199,8 @@ void Camera::computeProjection(float box[6]) {
 
   else if (projType == Projection::PROJECTION_PERSPECTIVE) {
     projection = glm::perspective(glm::radians(fovY), aspect, near_, far_);
-    tanFovY = tan(glm::radians(getFovY()) * 0.5);
-    tanFovX = tan(glm::radians(getFovX()) * 0.5);
+    tanFovY = tan(glm::radians(getFovY()) * 0.5f);
+    tanFovX = tan(glm::radians(getFovX()) * 0.5f);
 
   }
   else {
@@ -205,6 +224,9 @@ std::vector<glm::vec3> Camera::getBoxCorners(Frustum frustum) const {
     float z1 = -near_, z2 = -far_;
     float range = far_ - near_;
 
+    float b1 = -near_ - 5.f;
+    float b2 = -near_ - 30.f;
+
     switch (frustum)
     {
     case Frustum::ALL:
@@ -213,14 +235,14 @@ std::vector<glm::vec3> Camera::getBoxCorners(Frustum frustum) const {
         break;
     case Frustum::NEAR:
         z1 = -near_;
-        z2 = -near_ - range / 8.0f;
+        z2 = b1;
         break;
     case Frustum::MEDIUM:
-        z1 = -near_ - range / 8.0f;
-        z2 = -near_ - 3.0f * range / 8.0f;
+        z1 = b1;
+        z2 = b2;
         break;
     case Frustum::FAR:
-        z1 = -near_ - 3.0f * range / 8.0f;
+        z1 = b2;
         z2 = -far_;
         break;
     default:

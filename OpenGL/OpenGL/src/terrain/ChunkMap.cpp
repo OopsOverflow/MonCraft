@@ -1,19 +1,22 @@
 #include "ChunkMap.hpp"
 
+#include <iostream>
+#include <utility>
+
+#include "debug/Debug.hpp"
+#include "terrain/AbstractChunk.hpp"
 
 ChunkMap::ChunkMap()
 {}
 
-std::shared_ptr<Chunk> ChunkMap::find(glm::ivec3 cpos) {
+std::shared_ptr<AbstractChunk> ChunkMap::find(glm::ivec3 cpos) {
   std::lock_guard<std::mutex> lck(chunksMutex);
   auto it = chunks.find(cpos);
   if(it == chunks.end()) return nullptr;
   return it->second;
 }
 
-#include "debug/Debug.hpp"
-
-std::shared_ptr<Chunk> ChunkMap::insert(glm::ivec3 cpos, std::unique_ptr<Chunk> chunk) {
+std::shared_ptr<AbstractChunk> ChunkMap::insert(glm::ivec3 cpos, std::unique_ptr<AbstractChunk> chunk) {
   std::lock_guard<std::mutex> lck(chunksMutex);
   auto res = chunks.emplace(cpos, std::move(chunk));
   if(!res.second) {
@@ -26,12 +29,10 @@ size_t ChunkMap::size() {
   return chunks.size();
 }
 
-#include "debug/Debug.hpp"
-
-void ChunkMap::eraseChunks(int count, std::function<bool(glm::ivec3)> predicate) {
+void ChunkMap::eraseChunks(int count, std::function<bool(AbstractChunk*)> predicate) {
   std::lock_guard<std::mutex> lck(chunksMutex);
   for(auto it = chunks.begin(); it != chunks.end() && count; ) {
-    if(predicate(it->first)) {
+    if(predicate(it->second.get())) {
       count --;
       auto useCount = it->second.use_count();
       if(useCount > 1) {
@@ -44,7 +45,7 @@ void ChunkMap::eraseChunks(int count, std::function<bool(glm::ivec3)> predicate)
   }
 }
 
-void ChunkMap::for_each(std::function<void(std::shared_ptr<Chunk>)> callback) {
+void ChunkMap::for_each(std::function<void(std::shared_ptr<AbstractChunk>)> callback) {
   std::lock_guard<std::mutex> lck(chunksMutex);
   for(auto const& pair : chunks) {
     if(pair.second)

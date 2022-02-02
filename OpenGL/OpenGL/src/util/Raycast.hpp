@@ -1,7 +1,8 @@
 #pragma once
 
-#include "../terrain/World.hpp"
+#include <glm/glm.hpp>
 
+class Block;
 /**
  * Raycast checks for solid blocks along a ray.
  */

@@ -2,10 +2,12 @@
 .PHONY: run debug opti configure
 
 configure:
-	meson Debug
+	rm -rf Debug
+	CXX=clang++ meson Debug
 
 configure_opti:
-	meson DebugOptimized --buildtype debugoptimized
+	rm -rf DebugOptimized
+	CXX=clang++ meson DebugOptimized --buildtype debugoptimized
 
 run:
 	ninja -C Debug
@@ -30,8 +32,9 @@ server:
 release:
 	rm -rf Release
 	rm -rf dist
-	meson Release --buildtype release
-	ninja -C Release
+	meson Release --buildtype release -Db_lto=true -Dcpp_args="-Ofast"
+	meson configure Release
+	ninja --verbose -C Release
 	mkdir dist
 	cp Release/MonCraft dist
 	mkdir dist/src
@@ -39,12 +42,20 @@ release:
 	cp -r OpenGL/data dist
 	rm -r Release
 
-# -O3 \
+# --source-map-base http://localhost:6931/sources/__SOURCE_MAP_BASE__/ -gsource-map -O0 -s NO_DISABLE_EXCEPTION_CATCHING \
+-fexceptions \
+-fno-exceptions \
+--closure 1 \
+-flto \
 
-CFLAGS = -fexceptions \
---source-map-base http://localhost:6931/sources/__SOURCE_MAP_BASE__/ -gsource-map -O0 -s NO_DISABLE_EXCEPTION_CATCHING \
+
+CFLAGS = \
+-g0 -O3 \
+-fno-rtti \
+-Wno-error \
+-Wno-pthreads-mem-growth \
 -s WASM=1 \
--pthread -s PTHREAD_POOL_SIZE=4 \
+-pthread -s PTHREAD_POOL_SIZE=5 \
 -s USE_SDL=2 \
 -s USE_SDL_IMAGE=2 \
 -s SDL2_IMAGE_FORMATS='["png"]' \
@@ -68,19 +79,24 @@ configure_wasm:
 wasm:
 	rm -rf WASM/data
 	rm -rf WASM/src
+
+	# copy resources
 	mkdir WASM/src
-	cp -r OpenGL/data WASM
+	mkdir -p WASM/data/fonts WASM/data/img
+	cp -r OpenGL/data/fonts WASM/data
+	cp -r OpenGL/data/wasm/img WASM/data
 	cp -r OpenGL/src/shader WASM/src
 
 	EMMAKEN_CFLAGS="${CFLAGS}" ninja -C WASM --verbose
 
 	rm -rf WASM/sources
 	mkdir WASM/sources
-	mkdir WASM/sources/__SOURCE_MAP_BASE__
+	mkdir -p WASM/sources/__SOURCE_MAP_BASE__/
+	mkdir -p WASM/sources/OpenGL/src
 	-cp WASM/MonCraft.wasm.map WASM/sources/__SOURCE_MAP_BASE__
-	cp -r OpenGL WASM/sources/OpenGL
+	cp -r OpenGL/src WASM/sources/OpenGL
 	rm -f WASM/MonCraft.html
-	cp MonCraft.html WASM
+	cp -r OpenGL/data/wasm/. WASM
 
 run_wasm: wasm
 	emrun --no_browser --serve_after_close --serve_root WASM WASM/MonCraft.html

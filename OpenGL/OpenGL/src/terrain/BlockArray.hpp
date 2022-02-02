@@ -1,16 +1,19 @@
 #pragma once
 
 #include <vector>
+#include <string>
 #include <glm/glm.hpp>
-#include "blocks/Block.hpp"
-#include "multiplayer/common/Packet.hpp"
+
+class Block;
 
 struct BlockArrayElement {
   glm::ivec3 pos;
-  BlockType type;
-
-  friend sf::Packet& operator<<(sf::Packet& packet, BlockArrayElement const& blockData);
-  friend sf::Packet& operator>>(sf::Packet& packet, BlockArrayElement& blockData);
+  std::string ser;
 };
 
-using BlockArray = std::vector<BlockArrayElement>;
+class BlockArray : public std::vector<BlockArrayElement> {
+public:
+  void push(glm::ivec3 pos, Block* block);
+  void copyToWorld();
+  std::vector<glm::ivec3> getChangedChunks() const;
+};

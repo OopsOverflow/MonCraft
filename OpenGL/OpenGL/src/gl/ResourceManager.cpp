@@ -1,9 +1,18 @@
 #include "ResourceManager.hpp"
-#include <debug/Debug.hpp>
+
+#include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <stddef.h>
+#include <iostream>
+#include <stdexcept>
+#include <utility>
+
+#include "gl/Font.hpp"
+#include "gl/Shader.hpp"
 
 std::unordered_map<std::string, std::unique_ptr<Shader>> ResourceManager::shaders;
 std::unordered_map<std::string, GLuint> ResourceManager::textures;
+std::unordered_map<std::string, std::shared_ptr<const Font> > ResourceManager::fonts;
 
 ResourceManager::ResourceManager() {}
 
@@ -92,27 +101,23 @@ GLuint ResourceManager::loadTexture(std::string const& name, std::string const& 
     {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, rgbImg->w, rgbImg->h, 0,
             GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid *)rgbImg->pixels);
-        SDL_FreeSurface(rgbImg); //Delete the surface at the end of the program
+        SDL_FreeSurface(rgbImg);
 
         if(mipmaps.empty()) {
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
             glGenerateMipmap(GL_TEXTURE_2D);
         }
 
         else {
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, mipmaps.size());
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, (GLint)mipmaps.size());
             for(size_t i = 0; i < mipmaps.size(); i++) {
                 SDL_Surface* surf = mipmaps.at(i);
-                glTexImage2D(GL_TEXTURE_2D, i+1, GL_RGBA, surf->w, surf->h, 0,
+                glTexImage2D(GL_TEXTURE_2D, (GLint)(i+1), GL_RGBA, surf->w, surf->h, 0,
                     GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid *)surf->pixels);
                 SDL_FreeSurface(surf);
             }
@@ -160,4 +165,17 @@ GLuint ResourceManager::getTexture(std::string const& name) {
     throw std::runtime_error(err);
   }
   return it->second;
+}
+
+void ResourceManager::loadFont(std::string const& name, std::string const& filename) {
+    auto font = std::make_shared<const Font>(filename);
+    fonts.emplace(name, font);
+}
+std::shared_ptr<const Font> ResourceManager::getFont(std::string const& name) {
+    auto it = fonts.find(name);
+    if (it == fonts.end()) {
+        std::string err = "font not found: " + name;
+        throw std::runtime_error(err);
+    }
+    return it->second;
 }

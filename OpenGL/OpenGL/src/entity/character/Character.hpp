@@ -1,21 +1,27 @@
 #pragma once
 
-#include "../Entity.hpp"
+#include <glm/glm.hpp>
+
+#include "entity/Entity.hpp"
+#include "entity/Node.hpp"
 #include "terrain/BlockArray.hpp"
 #include "util/Raycast.hpp"
+#include "blocks/Block.hpp"
 
 #include "LeftArm.hpp"
 #include "RightArm.hpp"
 #include "LeftLeg.hpp"
 #include "RightLeg.hpp"
-#include "LeftLeg.hpp"
-#include "RightLeg.hpp"
 #include "Head.hpp"
 #include "Chest.hpp"
+
+class Camera;
 
 /**
  * The main character.
  */
+
+enum class CharacterView { FIRST_PERSON, THIRD_PERSON };
 
 class Character : public Entity {
 
@@ -32,6 +38,8 @@ public:
    * Draws the character entirely, including body parts.
    */
 	void render() override;
+
+  void cameraToHead(Camera& camera);
 
   /**
    * Update the character state.
@@ -57,7 +65,7 @@ public:
   /**
   * Gets the blocks placed since the last call to this method.
   */
-  BlockArray getRecord();
+  BlockArray& getRecord();
 
   void enableGodMode();
   void disableGodMode();
@@ -65,6 +73,18 @@ public:
   bool getGodMode();
 
   void setSprint(bool sprint);
+
+  /**
+   * Set the selected block type (in hand).
+   */
+  void setCurrentBlock(BlockType type);
+
+  /**
+   * Return the selected block type (in hand).
+   */
+  BlockType getCurrentBlock() const;
+
+  CharacterView view;
 
 private:
   Node rootNode;

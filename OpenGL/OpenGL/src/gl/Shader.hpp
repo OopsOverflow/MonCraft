@@ -1,12 +1,6 @@
 #pragma once
 
 #include <GL/glew.h>
-#include <GL/gl.h>
-
-#include <fstream>
-#include <glm/glm.hpp>
-#include <iostream>
-#include <sstream>
 #include <string>
 #include <array>
 

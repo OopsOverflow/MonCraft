@@ -1,0 +1,45 @@
+[
+  { "symbol": [ "serde::remainder", "private", "\"util/Serde.hpp\"", "public" ] },
+
+  { "include": ["@\"glm/.*\"", "private", "<glm/glm.hpp>", "public"] },
+  { "symbol": ["glm", "private", "<glm/glm.hpp>", "public"] },
+  { "ref": "iwyu_glm.json" },
+
+  { "symbol": ["mat", "private", "<glm/glm.hpp>", "public"] },
+  { "symbol": ["glm::mat", "private", "<glm/glm.hpp>", "public"] },
+  { "symbol": ["glm::mat2", "private", "<glm/glm.hpp>", "public"] },
+  { "symbol": ["glm::mat3", "private", "<glm/glm.hpp>", "public"] },
+  { "symbol": ["glm::mat4", "private", "<glm/glm.hpp>", "public"] },
+
+  { "symbol": ["vec", "private", "<glm/glm.hpp>", "public"] },
+  { "symbol": ["glm::vec", "private", "<glm/glm.hpp>", "public"] },
+  { "symbol": ["glm::vec2", "private", "<glm/glm.hpp>", "public"] },
+  { "symbol": ["glm::vec3", "private", "<glm/glm.hpp>", "public"] },
+  { "symbol": ["glm::vec4", "private", "<glm/glm.hpp>", "public"] },
+  { "symbol": ["glm::ivec2", "private", "<glm/glm.hpp>", "public"] },
+  { "symbol": ["glm::ivec3", "private", "<glm/glm.hpp>", "public"] },
+  { "symbol": ["glm::ivec4", "private", "<glm/glm.hpp>", "public"] },
+
+  { "include": ["@\"SDL_.*\"", "private", "<SDL2/SDL.h>", "public"] },
+  { "include": ["\"SDL_keycode.h\"", "private", "<SDL2/SDL_keycode.h>", "public"] },
+  { "symbol": ["IMG_Load", "private", "<SDL2/SDL_image.h>", "public"] },
+
+  { "symbol": [ "abs", "private", "<stdlib.h>", "public" ] },
+  { "symbol": [ "std::abs", "private", "<stdlib.h>", "public" ] },
+  { "symbol": [ "move", "private", "<utility>", "public" ] },
+  { "symbol": [ "std::move", "private", "<utility>", "public" ] },
+  { "symbol": [ "std::this_thread::sleep_for", "private", "<thread>", "public" ] },
+
+  { "symbol": [ "std::fstream", "private", "<fstream>", "public" ] },
+  { "symbol": [ "std::ifstream", "private", "<fstream>", "public" ] },
+  { "symbol": [ "std::ofstream", "private", "<fstream>", "public" ] },
+  { "symbol": [ "std::stringstream", "private", "<sstream>", "public" ] },
+  { "symbol": [ "std::istringstream", "private", "<sstream>", "public" ] },
+  { "symbol": [ "std::ostringstream", "private", "<sstream>", "public" ] },
+
+  { "include": [ "@\"websocketpp/.*", "private", "<websocketpp/server.hpp>", "public" ] },
+  { "include": [ "@<boost/.*", "private", "<websocketpp/config/asio.hpp>", "public" ] },
+
+  { "symbol": [ "FT_FREETYPE_H", "private", "<ft2build.h>", "public" ] },
+  { "include": [ "@\"freetype/.*", "private", "<ft2build.h>", "public" ] }
+]

@@ -2,13 +2,16 @@
 
 precision mediump float;
 
-smooth in vec3 vertexPosition;
-smooth in vec3 vertexNormal;
-smooth in float vertexOcclusion;
-smooth in vec2 txrCoords;
-smooth in vec2 normalCoords;
-smooth in vec3 shadowCoords[3];
-smooth in mat3 TBN;
+#define UNDERWATER_FLAG 1
+#define TRANSPARENT_FLAG 2
+
+in vec3 vertexPosition;
+in vec3 vertexNormal;
+in float vertexOcclusion;
+in vec2 texCoords;
+in vec2 normalCoords;
+in vec3 shadowCoords[3];
+in mat3 TBN;
 
 
 uniform vec3 lightDirection;
@@ -18,7 +21,7 @@ uniform float skyTime;
 uniform sampler2D t_color;
 uniform sampler2D t_normal;
 uniform sampler2D t_shadow[3];
-uniform int underWater; //glUniform1b :(
+uniform int flags;
 
 
 out vec4 outputColor;
@@ -48,7 +51,7 @@ void main() {
   float specular = pow(specAngle, 200.0);
 
   // Textures
-  outputColor = texture(t_color, txrCoords);
+  outputColor = texture(t_color, texCoords);
 
   // shadow
   float shadow = 1.0;
@@ -61,11 +64,11 @@ void main() {
   float occl = .7;
   outputColor.xyz *= 1.0 - (vertexOcclusion * vertexOcclusion / 9.0) * occl;
 
-  if(underWater == 1) {
-    outputColor.rgb *= vec3(127.0 / 255.0, 148.0 / 255.0, 1.0) ;
+  if((flags & TRANSPARENT_FLAG) == 0) { // not transparent
+    if(outputColor.a < 0.2) discard;
+    outputColor /= outputColor.a;
   }
-
-  if(outputColor.a < 0.1) {
-    discard;
+  if((flags & UNDERWATER_FLAG) == 1) { // is underwater
+    outputColor.rgb *= vec3(127.0 / 255.0, 148.0 / 255.0, 1.0) ;
   }
 }

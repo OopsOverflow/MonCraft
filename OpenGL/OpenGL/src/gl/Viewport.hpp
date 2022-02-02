@@ -1,13 +1,14 @@
 #pragma once
 
-#include <string>
+#include <SDL2/SDL.h>
+#include <glm/glm.hpp>
+#include <stdint.h>
+#include <memory>
 
 #include "controller/MouseController.hpp"
-#include "controller/KeyboardController.hpp"
-#include "ui/Root.hpp"
-#include "save/SaveManager.hpp"
+#include "save/ClientConfig.hpp"
 
-#include <SDL2/SDL.h>
+namespace ui { class Root; }
 
 /**
  * The viewport is an abstration layer for the whole opengl context.
@@ -44,11 +45,11 @@ public:
   void captureMouse();
   void toggleVSync();
   void toggleFullscreen();
+  void quit();
 
   glm::ivec2 size;
 
   MouseController mouseController;
-  KeyboardController keyboardController;
 
 private:
   void on_event(SDL_Event const& e);
@@ -58,13 +59,8 @@ private:
   void on_mousedown(SDL_MouseButtonEvent const& e);
   void on_mouseup(SDL_MouseButtonEvent const& e);
 
-  bool isDoubleSpace();
-
   SDL_Window* window;
   SDL_GLContext context;
-
-  uint32_t lastSpacePress;
-  bool spaceIsPressed;
 
   uint32_t timeBegin;
   uint32_t lastTime;
@@ -72,8 +68,9 @@ private:
   bool mouseCaptured;
   bool vsync;
   bool fullscreen;
+  bool mustQuit;
 
   std::unique_ptr<ui::Root> root;
 
-  Config config;
+  Config::ClientConfig config;
 };

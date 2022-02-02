@@ -1,9 +1,18 @@
 #pragma once
 
-#include "Server.hpp"
-
 #include <websocketpp/config/asio.hpp>
 #include <websocketpp/server.hpp>
+#include <chrono>
+#include <exception>
+#include <map>
+#include <memory>
+#include <string>
+#include <thread>
+
+#include "Server.hpp"
+#include "multiplayer/server/Client.hpp"
+
+namespace sf { class Packet; }
 
 
 /**

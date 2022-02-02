@@ -1,13 +1,14 @@
 #pragma once
 
-#include <map>
-#include <utility>
+#include <functional>
+#include <vector>
+#include <glm/glm.hpp>
 
-#include "noise/Noise.hpp"
 #include "Biome.hpp"
-// #include "Plains.hpp"
-// #include "Sea.hpp"
-// #include "Desert.hpp"
+#include "noise/XXHash.hpp"
+#include "noise/bitmap.hpp"
+#include "noise/simplex.hpp"
+#include "noise/voronoi.hpp"
 
 
 class BiomeMap {
@@ -15,28 +16,14 @@ class BiomeMap {
 public:
   BiomeMap();
 
-
-  /**
-   * Generates the whole biome map.
-   * This is to be called once. It is expensive.
-   */
-  void generate();
-
   /**
    * Samples a position in the biome map and returns a Biome description that
    * possibly blends multiple biomes if near an edge.
    */
-  Biome const& sampleWeighted(glm::ivec2 pos) const;
+  Biome sampleWeighted(glm::ivec2 pos) const;
+
 private:
-    // biome gen tuning
-    #ifdef EMSCRIPTEN
-    int size = 100;               // generated texture size
-    #else
-    int size = 1000;              // generated texture size
-    #endif
     float cellSize = 150.f;         // voronoi single cell size
-    float blendSmoothness = 0.4f;   // amount of smoothing to apply
-    float biomeBlend = 40.f; // distance to smooth biomes borders
     float globalFrequency = .5f;   // adjust the frequencies overall (high values gives)
     float globalAmplitude = 5.2f;  // adjust the amplitude overall (high values gives AMPLIFIED terrain)
 
@@ -55,17 +42,14 @@ private:
     };
     using weightedBiomes_t = std::vector<weightedBiome_t>;
 
-    // bitmaps
-    Grid<Biome> map; // final Biome Map
-
     // pipeline functions
     // note: the compiler should be able to optimize copies with RVO
     glm::ivec2 offsetSimplex(glm::ivec2 pos);
     weightedBiomes_t offsetVoronoi(glm::ivec2 pos);
     weightedBiomes_t sampleBiomes(weightedBiomes_t biomes);
     Biome blendBiomes(weightedBiomes_t biomes);
-
-    pixel_t teststep(BiomeMap::weightedBiomes_t biomes);
+    pixel_t bitmapStep(BiomeMap::weightedBiomes_t biomes);
+    std::function<Biome(glm::ivec2)> generator;
 
     Biome biomePlains;
     Biome biomeSea;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Block.hpp"
+#include "blocks/Block.hpp"
 
 class Air_Block : public Block {
 public:
@@ -14,6 +14,7 @@ public:
     }
 
     bool isSolid() const override { return false; }
+    bool isOpaque() const override { return false; }
     bool isVisible() const override { return false; }
 
 private:

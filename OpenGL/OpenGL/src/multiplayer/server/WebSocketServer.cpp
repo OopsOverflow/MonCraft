@@ -1,8 +1,19 @@
 // websockets stuff
 #include "WebSocketServer.hpp"
-#include "multiplayer/common/Config.hpp"
 
-#include <SFML/Network.hpp>
+#include <SFML/Network/IpAddress.hpp>
+#include <SFML/Network/Packet.hpp>
+#include <SFML/System/Clock.hpp>
+#include <SFML/System/Sleep.hpp>
+#include <SFML/System/Time.hpp>
+#include <openssl/ssl3.h>
+#include <csignal>
+#include <functional>
+#include <iostream>
+#include <utility>
+
+#include "multiplayer/server/Server.hpp"
+#include "save/ServerConfig.hpp"
 
 using websocketpp::lib::placeholders::_1;
 using websocketpp::lib::placeholders::_2;
@@ -31,8 +42,9 @@ void WebSocketServer::sigStop(int signal) {
 }
 
 void WebSocketServer::loop() {
+  auto& config = Config::getServerConfig();
   sf::Clock clock;
-  const sf::Time frameDuration = sf::milliseconds(NetworkConfig::WEBSOCKET_SERVER_TICK);
+  const sf::Time frameDuration = sf::milliseconds(config.webSocketServerTick);
 
   while(!stopSignal) {
     sf::Time start = clock.getElapsedTime();
@@ -81,11 +93,13 @@ websocketpp::connection_hdl WebSocketServer::client_to_hdl(ClientID client) {
 }
 
 void WebSocketServer::on_open(websocketpp::connection_hdl hdl) {
+  std::cout << "[INFO] client login" << std::endl;
   ClientID client = htdl_to_client(hdl);
   clientLookup.emplace(client, hdl);
 }
 
 void WebSocketServer::on_close(websocketpp::connection_hdl hdl) {
+  std::cout << "[INFO] client logout" << std::endl;
   if(auto handle = hdl.lock()) {
     for (auto it = clientLookup.begin(); it != clientLookup.end(); ) {
       if(auto other = it->second.lock()) {
@@ -114,7 +128,6 @@ std::string get_password() {
 }
 
 WebSocketServer::context_ptr WebSocketServer::on_tls_init() {
-  std::cout << "on_tls_init called" << std::endl;
   context_ptr ctx = std::make_shared<boost::asio::ssl::context>(boost::asio::ssl::context::sslv23);
 
   try {
@@ -145,7 +158,13 @@ WebSocketServer::context_ptr WebSocketServer::on_tls_init() {
 void WebSocketServer::send(sf::Packet &packet, ClientID client) {
   auto it = clientLookup.find(client);
   if(it != clientLookup.end()) {
-    server.send(it->second, packet.getData(), packet.getDataSize(), websocketpp::frame::opcode::binary);
+    try {
+      server.send(it->second, packet.getData(), packet.getDataSize(), websocketpp::frame::opcode::binary);
+    }
+    catch(websocketpp::exception const& e) {
+      std::cout << "[WARN] failed to send packet to client: port " << client.getPort()
+                << ", what: " << e.what() << std::endl;
+    }
   }
   else {
     std::cout << "[WARN] WebSocket client is missing: port " << client.getPort() << std::endl;

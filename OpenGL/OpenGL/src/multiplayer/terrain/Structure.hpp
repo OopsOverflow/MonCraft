@@ -1,8 +1,13 @@
 #pragma once
 
+#include <memory>
+#include <vector>
+#include <glm/glm.hpp>
+
 #include "util/DataStore.hpp"
 #include "blocks/Block.hpp"
-#include "terrain/Chunk.hpp"
+
+class AbstractChunk;
 
 /**
  * A structure allows the generation of complex block structures
@@ -29,12 +34,12 @@ public:
    * Spawns a structure in a given chunk at given block position.
    * The block position is in range vec3(0) to chunkSize.
    */
-  virtual slices_t spawn(Chunk& chunk, glm::ivec3 pos) const = 0;
+  virtual slices_t spawn(AbstractChunk& chunk, glm::ivec3 pos) const = 0;
 
   /**
    * Applies a slice to a given chunk.
    */
-  static void applySlice(Chunk& chunk, Slice const& slice);
+  static void applySlice(AbstractChunk& chunk, Slice const& slice);
 };
 
 
@@ -42,7 +47,7 @@ class Oak_Tree : public Structure {
 
 public:
     Oak_Tree();
-  slices_t spawn(Chunk& chunk, glm::ivec3 pos) const override;
+  slices_t spawn(AbstractChunk& chunk, glm::ivec3 pos) const override;
   std::shared_ptr<BlockStore> store;
 };
 
@@ -50,7 +55,7 @@ class Birch_Tree : public Structure {
 
 public:
     Birch_Tree();
-    slices_t spawn(Chunk& chunk, glm::ivec3 pos) const override;
+    slices_t spawn(AbstractChunk& chunk, glm::ivec3 pos) const override;
     std::shared_ptr<BlockStore> store;
 };
 
@@ -58,7 +63,7 @@ class Cactus : public Structure {
 
 public:
     Cactus();
-    slices_t spawn(Chunk& chunk, glm::ivec3 pos) const override;
+    slices_t spawn(AbstractChunk& chunk, glm::ivec3 pos) const override;
     std::shared_ptr<BlockStore> store;
 };
 
@@ -66,6 +71,6 @@ class EditPlateforme : public Structure {
 
 public:
     EditPlateforme();
-    slices_t spawn(Chunk& chunk, glm::ivec3 pos) const override;
+    slices_t spawn(AbstractChunk& chunk, glm::ivec3 pos) const override;
     std::shared_ptr<BlockStore> store;
 };

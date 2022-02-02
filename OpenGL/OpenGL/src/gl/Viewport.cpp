@@ -1,20 +1,19 @@
 #include "Viewport.hpp"
-#include "save/SaveManager.hpp"
-
-//SDL Libraries
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_syswm.h>
 
 #ifdef EMSCRIPTEN
-#include <emscripten.h>
-#include <emscripten/html5.h>
+  #include <emscripten.h>
+  #include <emscripten/html5.h>
 #endif
 
-// GLEW Libraries
 #include <GL/glew.h>
-#include <GL/gl.h>
-
+#include <SDL2/SDL.h>
 #include <iostream>
+#include <stdexcept>
+#include <string>
+#include <glm/glm.hpp>
+
+#include "ui/Event.hpp"
+#include "ui/Root.hpp"
 
 const int Viewport::framerate = 60;
 const int Viewport::timePerFrame = 1000 / framerate;
@@ -30,18 +29,23 @@ extern "C" {
 Viewport::Viewport(glm::ivec2 size)
   :   size(size),
       window(nullptr), context(nullptr),
-      lastSpacePress(0), spaceIsPressed(false),
       timeBegin(0), lastTime(0),
-      mouseCaptured(false), vsync(true),
-      root(nullptr), config(SaveManager::getInst().getConfig())
+      mouseCaptured(false), vsync(true), mustQuit(false),
+      root(nullptr), config(Config::getClientConfig())
 {
   // Initialize SDL2
   if (SDL_Init(SDL_INIT_VIDEO) < 0)
     throw std::runtime_error(std::string("SDL init failed: ") + SDL_GetError());
 
+  // MSAA
+  if(config.msaa) {
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, config.msaa);
+  }
+
   //Create a Window
   window = SDL_CreateWindow("MonCraft",
-      SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+      SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
       size.x, size.y,
       SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
 
@@ -59,7 +63,7 @@ Viewport::Viewport(glm::ivec2 size)
 
   //Initialize the OpenGL Context
   context = SDL_GL_CreateContext(window);
-  
+
   // Initialize GLEW
   if (glewInit() != GLEW_OK)
     throw std::runtime_error("GLEW init failed");
@@ -83,6 +87,10 @@ Viewport::~Viewport() {
     if (window)
         SDL_DestroyWindow(window);
     SDL_Quit();
+}
+
+void Viewport::quit() {
+  mustQuit = true;
 }
 
 ui::Root* Viewport::getRoot() {
@@ -138,6 +146,8 @@ void Viewport::on_event(SDL_Event const& e) {
 }
 
 bool Viewport::beginFrame(float& dt) {
+  if(mustQuit) return false;
+
   SDL_Event event;
   while (SDL_PollEvent(&event)) {
     if(event.type == SDL_WINDOWEVENT)
@@ -148,10 +158,12 @@ bool Viewport::beginFrame(float& dt) {
     on_event(event);
   }
 
+  glViewport(0, 0, size.x, size.y);
   glClearColor(54/255.f, 199/255.f, 242/255.f, 1.0);
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);
   glEnable(GL_BLEND);
+  glEnable(GL_MULTISAMPLE);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   timeBegin = SDL_GetTicks();
@@ -167,13 +179,8 @@ void Viewport::endFrame() {
   //Display on screen (swap the buffer on screen and the buffer you are drawing on)
   SDL_GL_SwapWindow(window);
 
-  //Time in ms telling us when this frame ended. Useful for keeping a fix framerate
-  uint32_t timeEnd = SDL_GetTicks();
+  //Time in ms telling us when this frame ended. Useful for keeping a fixed framerate
   lastTime = timeBegin;
-
-  if (vsync && timeEnd - timeBegin < timePerFrame) {
-    SDL_Delay(timePerFrame - (timeEnd - timeBegin));
-  }
 }
 
 void Viewport::on_window_event(SDL_WindowEvent const& e) {
@@ -186,89 +193,20 @@ void Viewport::on_window_event(SDL_WindowEvent const& e) {
   }
 }
 
-bool Viewport::isDoubleSpace() {
-  static const int thresold = 300;
-
-  bool res = false;
-
-  if(!spaceIsPressed) {
-    uint32_t time = SDL_GetTicks();
-    res = time - lastSpacePress < thresold;
-    lastSpacePress = time;
-    spaceIsPressed = true;
-  }
-
-  return res;
-}
-
 void Viewport::on_keydown(SDL_Keycode k) {
   root->keyPress(k); // controllers in ui (MonCraftScene)
 
-  if (k == config.forward) {
-      keyboardController.pressedForward();
-  }
-  else if(k == config.backward){
-      keyboardController.pressedBackward();
-  }
-  else if (k == config.right) {
-      keyboardController.pressedRight();
-  }
-  else if (k == config.left) {
-      keyboardController.pressedLeft();
-  }
-  else if (k == config.jump) {
-      if (isDoubleSpace()) keyboardController.changedMod();
-      else keyboardController.pressedUp();
-  }
-  else if (k == config.sneak) {
-      keyboardController.pressedDown();
-  }
-  else if (k == config.view) {
-      keyboardController.pressedF5();
-  }
-  else if (k == config.sprint) {
-      keyboardController.pressedControl();
-  }
-  else if (k == config.menu) {
+  if (k == config.menu) {
       SDL_SetRelativeMouseMode(SDL_FALSE);
       int x, y;
       SDL_GetMouseState(&x, &y);
       mouseController.rotateEnd(x, y);
       mouseCaptured = false;
   }
-  else if (k == SDLK_p) {
-      keyboardController.pressedPause();
-  }
-  else if (k == SDLK_f) {
-      toggleVSync();
-  }
 }
 
 void Viewport::on_keyup(SDL_Keycode k) {
   root->keyRelease(k); // controllers in ui (MonCraftScene)
-
-  if (k == config.forward) {
-      keyboardController.releasedForward();
-  }
-  else if (k == config.backward) {
-      keyboardController.releasedBackward();
-  }
-  else if (k == config.right) {
-      keyboardController.releasedRight();
-  }
-  else if (k == config.left) {
-      keyboardController.releasedLeft();
-  }
-  else if (k == config.jump) {
-      keyboardController.releasedUp();
-      spaceIsPressed = false;
-  }
-  else if (k == config.sneak) {
-      keyboardController.releasedDown();
-  }
-  else if (k == config.sprint) {
-      keyboardController.releasedControl();
-  }
 }
 
 void Viewport::on_mousedown(SDL_MouseButtonEvent const& e) {

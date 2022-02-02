@@ -1,31 +1,37 @@
 #pragma once
 
-#include "Component.hpp"
-#include "Pane.hpp"
-#include "Text.hpp"
-
 #include <functional>
+#include <memory>
+#include <string>
+#include <glm/glm.hpp>
+
+#include "ui/Component.hpp"
+#include "ui/style/Style.hpp"
+
+class Font;
+namespace ui { struct prop_t; }
 
 namespace ui {
 
-class Button : public Pane {
+class Button : public Component {
+
+protected:
+  Button();
 
 public:
-  Button(Component* parent, std::string text, std::shared_ptr<const Font> font);
+  static std::unique_ptr<Button> createPaneButton(std::string text, std::shared_ptr<const Font> font);
+  static std::unique_ptr<Button> createImageButton(glm::ivec2 offset, glm::ivec2 size, std::string text, std::shared_ptr<const Font> font);
+  static std::unique_ptr<Button> create();
 
-  static const spec_t TEXT;
-  static const spec_t TEXT_COLOR;
-  virtual void setStyle(prop_t const& prop) override;
-  virtual prop_t getStyle(spec_t spec) const override;
-  virtual style_const_t getDefaultStyle() const override;
+  void setHoverStyle(prop_t prop);
+  void setPressedStyle(prop_t prop);
+
+
+  // virtual void setProperty(prop_t prop) override;
+  // virtual prop_t getProperty(spec_t spec) const override;
+  // virtual style_const_t getDefaultStyle() const override;
 
   void onclick(std::function<void()> callback);
-
-  // forward methods from ui::Text
-  void setText(std::string text);
-  std::string getText() const;
-  void setTextColor(glm::vec4 color);
-  glm::vec4 getTextColor() const;
 
 protected:
   void onMouseIn(glm::ivec2 pos) override;
@@ -33,10 +39,10 @@ protected:
   bool onMouseReleased(glm::ivec2 pos) override;
   void onMouseOut(glm::ivec2 pos) override;
 
+  style_t hover;
+  style_t pressed;
+
 private:
-  std::unique_ptr<Text> textComp;
-  Style hover;
-  Style pressed;
   std::function<void()> clickCallback;
 };
 

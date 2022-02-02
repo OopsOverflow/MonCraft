@@ -1,15 +1,21 @@
 #include "Member.hpp"
-#include <glm/gtc/matrix_transform.hpp>
+
+#include <GL/glew.h>
+#include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include "../gl/Shader.hpp"
+#include <utility>
+
 #include "debug/Debug.hpp"
+#include "entity/Node.hpp"
+#include "gl/Mesh.hpp"
 #include "gl/SafeMesh.hpp"
+#include "gl/Shader.hpp"
 
 using glm::mat4;
 using glm::vec2;
 
 Member::Member()
-  : mesh(nullptr)
+  : geometryModel(1.f), mesh(nullptr)
 {}
 
 Member::~Member() {

@@ -1,14 +1,21 @@
 #pragma once
 
+#include <SFML/Network/IpAddress.hpp>
+#include <SFML/Network/UdpSocket.hpp>
+#include <SFML/System/Clock.hpp>
+#include <SFML/System/Time.hpp>
 #include <string>
-#include <SFML/Network.hpp>
+#include <memory>
+#include <vector>
 #include <glm/glm.hpp>
-#include <functional>
+
 #include "util/Identifier.hpp"
-#include "../common/Packet.hpp"
-#include "entity/character/Character.hpp"
-#include "Server.hpp"
+#include "multiplayer/client/Server.hpp"
 #include "multiplayer/terrain/PendingChunks.hpp"
+
+class Character;
+class World;
+namespace sf { class Packet; }
 
 class RealServer: public Server {
 
@@ -25,6 +32,11 @@ public:
    */
   std::shared_ptr<Character> getPlayer() override;
 
+  /**
+  * Returns 0 if the player was not created.
+  */
+  Identifier getUid() override;
+
 private:
   void packet_login();
   void packet_logout();
@@ -36,9 +48,9 @@ private:
   void handle_logout(sf::Packet& packet);
   void handle_blocks(sf::Packet& packet);
   void handle_chunks(sf::Packet& packet);
+  void handle_entity_tick(sf::Packet& packet);
   bool poll();
 
-  void applyEntityTransforms(sf::Packet& packet);
 
   sf::IpAddress addr;
   unsigned short port;
@@ -48,8 +60,10 @@ private:
   sf::Clock clock;
   World& world;
   std::shared_ptr<Character> player;
+  Identifier playerUid;
   PendingChunks pendingChunks;
 
-  std::time_t lastServerUpdate;
-  static const std::time_t timeout = 10;
+  bool serverAck;
+  sf::Time lastServerUpdate;
+  const sf::Time timeout = sf::seconds(10);
 };

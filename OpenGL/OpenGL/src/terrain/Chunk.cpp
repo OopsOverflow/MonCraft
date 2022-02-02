@@ -1,111 +1,37 @@
+#include "Chunk.hpp"
+
+#include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <stddef.h>
 #include <algorithm>
+#include <array>
+#include <utility>
+#include <vector>
 
-#include "Chunk.hpp"
+#include "blocks/model/BlockModel.hpp"
+#include "gl/SafeMesh.hpp"
 #include "gl/Shader.hpp"
-#include "save/SaveManager.hpp"
+#include "terrain/AbstractChunk.hpp"
+#include "util/DataStore.hpp"
 
 using namespace glm;
 using std::move;
 
-#include "debug/Debug.hpp"
-
-const std::array<ivec3, 26> Chunk::neighborOffsets = {
-  // ivec3{ 0, 0, 0 },
-  ivec3{ 0, 0, 1 }, // 0
-  ivec3{ 0, 0,-1 }, // 1
-  ivec3{ 0, 1, 0 }, // 2
-  ivec3{ 0, 1, 1 }, // 3
-  ivec3{ 0, 1,-1 }, // 4
-  ivec3{ 0,-1, 0 }, // 5
-  ivec3{ 0,-1, 1 }, // 6
-  ivec3{ 0,-1,-1 }, // 7
-
-  ivec3{ 1, 0, 0 }, // 8
-  ivec3{ 1, 0, 1 }, // 9
-  ivec3{ 1, 0,-1 }, // 10
-  ivec3{ 1, 1, 0 }, // 11
-  ivec3{ 1, 1, 1 }, // 12
-  ivec3{ 1, 1,-1 }, // 13
-  ivec3{ 1,-1, 0 }, // 14
-  ivec3{ 1,-1, 1 }, // 15
-  ivec3{ 1,-1,-1 }, // 16
-
-  ivec3{-1, 0, 0 }, // 17
-  ivec3{-1, 0, 1 }, // 18
-  ivec3{-1, 0,-1 }, // 19
-  ivec3{-1, 1, 0 }, // 20
-  ivec3{-1, 1, 1 }, // 21
-  ivec3{-1, 1,-1 }, // 22
-  ivec3{-1,-1, 0 }, // 23
-  ivec3{-1,-1, 1 }, // 24
-  ivec3{-1,-1,-1 }, // 25
-};
-
-const std::array<int, 26> Chunk::neighborOffsetsInverse = { // https://oeis.org/A059249
-  1, 0, 5, 7, 6, 2, 4, 3,
-  17, 19, 18, 23, 25, 24, 20, 22, 21,
-  8, 10, 9, 14, 16, 15, 11, 13, 12
-};
+#ifdef MONCRAFT_CLIENT
+AbstractChunk* AbstractChunk::create(ivec3 chunkPos, int chunkSize) {
+  return new Chunk(chunkPos, chunkSize);
+}
+#endif
 
 Chunk::Chunk(ivec3 chunkPos, int chunkSize)
-  : DataStore<Block::unique_ptr_t, 3>(glm::ivec3(chunkSize)),
-    chunkPos(chunkPos),
+  : AbstractChunk(chunkPos, chunkSize),
     mesh(nullptr),
-    loaded(false), computed(false), mustRecompute(false)
-{
-  // std::cout << "created Chunk " << chunkPos << std::endl;
-}
+    loaded(false), computed(false), mustRecompute(false), model(1.f)
+{}
 
 Chunk::~Chunk() {
   SafeMesh(std::move(mesh));
-  // std::cout << "deleted Chunk " << chunkPos << std::endl;
-}
-
-std::weak_ptr<Chunk> Chunk::getNeighbor(glm::ivec3 off) {
-  static const ivec3 mask(9, 3, 1);
-  auto greater = equal(off, ivec3(1));
-  auto lesser = equal(off, ivec3(-1));
-
-  auto tmp = ivec3(greater) * mask + ivec3(lesser) * 2 * mask;
-  int index = tmp.x + tmp.y + tmp.z - 1;
-  return neighbors[index];
-}
-
-Block* Chunk::getBlockAccrossChunks(ivec3 pos) {
-  static const ivec3 mask(9, 3, 1);
-  auto greater = greaterThanEqual(pos, size);
-  auto lesser = lessThan(pos, ivec3(0));
-
-  if(any(greater) || any(lesser)) {
-    auto tmp = ivec3(greater) * mask + ivec3(lesser) * 2 * mask;
-    int index = tmp.x + tmp.y + tmp.z - 1;
-
-    if(auto neigh = neighbors[index].lock()) {
-      ivec3 otherChunkPos = pos - size * (ivec3(greater) - ivec3(lesser));
-      return neigh->at(otherChunkPos).get();
-    }
-    else return nullptr;
-  }
-  return (*this)[pos].get();
-}
-
-void Chunk::setBlockAccrossChunks(ivec3 pos, Block::unique_ptr_t block) {
-  static const ivec3 mask(9, 3, 1);
-  auto greater = greaterThanEqual(pos, size);
-  auto lesser = lessThan(pos, ivec3(0));
-
-  if(any(greater) || any(lesser)) {
-    auto tmp = ivec3(greater) * mask + ivec3(lesser) * 2 * mask;
-    int index = tmp.x + tmp.y + tmp.z - 1;
-
-    if(auto neigh = neighbors[index].lock()) {
-      ivec3 otherChunkPos = pos - size * (ivec3(greater) - ivec3(lesser));
-      return neigh->setBlock(otherChunkPos, std::move(block));
-    }
-  }
-  else setBlock(pos, std::move(block));
 }
 
 void Chunk::compute() {
@@ -113,12 +39,12 @@ void Chunk::compute() {
   // indices scheme // TODO: remove from MeshData ?
   meshData.scheme = { 0, 1, 2, 0, 2, 3 };
 
-  DataStore<Block*, 3> blocksCache(size + 2); // a cache to limit calls to getBlockAccrossChunks
+  DataStore<Block*, 3> blocksCache(size() + 2); // a cache to limit calls to getBlockAccrossChunks
 
   ivec3 pos{};
-  for(pos.x = 0; pos.x < size.x + 2; pos.x++) {
-    for(pos.y = 0; pos.y < size.y + 2; pos.y++) {
-      for(pos.z = 0; pos.z < size.z + 2; pos.z++) {
+  for(pos.x = 0; pos.x < size().x + 2; pos.x++) {
+    for(pos.y = 0; pos.y < size().y + 2; pos.y++) {
+      for(pos.z = 0; pos.z < size().z + 2; pos.z++) {
         blocksCache[pos] = getBlockAccrossChunks(pos - 1);
       }
     }
@@ -127,9 +53,9 @@ void Chunk::compute() {
   std::array<Block*, 26> neighbors;
 
   // now generate all the blocks
-  for(pos.x = 0; pos.x < size.x; pos.x++) {
-    for(pos.y = 0; pos.y < size.y; pos.y++) {
-      for(pos.z = 0; pos.z < size.z; pos.z++) {
+  for(pos.x = 0; pos.x < size().x; pos.x++) {
+    for(pos.y = 0; pos.y < size().y; pos.y++) {
+      for(pos.z = 0; pos.z < size().z; pos.z++) {
 
         Block* block = blocksCache[pos + 1];
         if(!block->isVisible()) continue;
@@ -145,8 +71,8 @@ void Chunk::compute() {
 
         if(!neighborsValid) continue;
 
-        // generate this block's geometry
-        block->getGeometry()->generateMesh(pos, block, neighbors, meshData);
+        // generate this block's model
+        block->getModel()->generateMesh(pos, block, neighbors, meshData);
       }
     }
   }
@@ -155,12 +81,12 @@ void Chunk::compute() {
   loaded = true;
   mustRecompute = false;
 
-  solidOffset = meshData.indicesSolid.size();
-  transpOffset.x = solidOffset + meshData.indicesTranspX.size();
-  transpOffset.y = transpOffset.x + meshData.indicesTranspY.size();
-  transpOffset.z  = transpOffset.y + meshData.indicesTranspZ.size();
+  solidOffset = (unsigned int)meshData.indicesSolid.size();
+  transpOffset.x = solidOffset + (unsigned int)meshData.indicesTranspX.size();
+  transpOffset.y = transpOffset.x + (unsigned int)meshData.indicesTranspY.size();
+  transpOffset.z  = transpOffset.y + (unsigned int)meshData.indicesTranspZ.size();
 
-  model = translate(mat4(1.0), vec3(size * chunkPos));
+  model = translate(mat4(1.0), vec3(size() * chunkPos));
 }
 
 void Chunk::markToRecompute() {
@@ -204,12 +130,6 @@ bool Chunk::hasData() const {
   return transpOffset.z != 0;
 }
 
-bool Chunk::hasAllNeighbors() const {
-  return std::all_of(neighbors.begin(), neighbors.end(), [](auto neigh) {
-    return neigh.lock() != nullptr;
-  });
-}
-
 void Chunk::drawSolid() {
   if(mesh && hasSolidData()) {
     glBindVertexArray(mesh->getVAO());
@@ -246,31 +166,35 @@ void Chunk::drawTransparent(vec3 dir) {
     // order = 2 - order;
 
     const auto modelloc = Shader::getActive()->getUniform(MATRIX_MODEL);
+    glBindVertexArray(mesh->getVAO());
+    glUniformMatrix4fv(modelloc, 1, GL_FALSE, glm::value_ptr(mesh->model));
 
     for(int i = 0; i < 3; i++) {
 
       if(order[i] == 0 && transpOffset.x != solidOffset) {
-        glBindVertexArray(mesh->getVAO());
-        glUniformMatrix4fv(modelloc, 1, GL_FALSE, glm::value_ptr(mesh->model));
         auto offset = solidOffset;
         if(dir.x > 0) offset += signOffset;
         glDrawElements(GL_TRIANGLES, transpOffset.x - solidOffset, GL_UNSIGNED_INT, reinterpret_cast<void*>(offset * sizeof(GLuint)));
       }
       if(order[i] == 1 && transpOffset.y != transpOffset.x) {
-        glBindVertexArray(mesh->getVAO());
-        glUniformMatrix4fv(modelloc, 1, GL_FALSE, glm::value_ptr(mesh->model));
         auto offset = transpOffset.x;
         if(dir.y > 0) offset += signOffset;
         glDrawElements(GL_TRIANGLES, transpOffset.y - transpOffset.x, GL_UNSIGNED_INT, reinterpret_cast<void*>(offset * sizeof(GLuint)));
       }
       if(order[i] == 2 && transpOffset.z != transpOffset.y) {
-        glBindVertexArray(mesh->getVAO());
-        glUniformMatrix4fv(modelloc, 1, GL_FALSE, glm::value_ptr(mesh->model));
         auto offset = transpOffset.y;
         if(dir.z > 0) offset += signOffset;
         glDrawElements(GL_TRIANGLES, transpOffset.z - transpOffset.y, GL_UNSIGNED_INT, reinterpret_cast<void*>(offset * sizeof(GLuint)));
       }
     }
+  }
+}
+
+void Chunk::drawAllAsSolid() {
+  if(mesh && hasData()) {
+    glBindVertexArray(mesh->getVAO());
+    glUniformMatrix4fv(Shader::getActive()->getUniform(MATRIX_MODEL), 1, GL_FALSE, glm::value_ptr(mesh->model));
+    glDrawElements(GL_TRIANGLES, transpOffset.z, GL_UNSIGNED_INT, nullptr);
   }
 }
 
@@ -285,7 +209,7 @@ void Chunk::setBlock(ivec3 pos, Block::unique_ptr_t block) {
 
   static const ivec3 mask(9, 3, 1);
 
-  auto greater = equal(pos, size - 1);
+  auto greater = equal(pos, size() - 1);
   auto lesser = equal(pos, ivec3(0));
 
   if(any(greater) || any(lesser)) {
@@ -297,8 +221,10 @@ void Chunk::setBlock(ivec3 pos, Block::unique_ptr_t block) {
       if(index == 0) continue;
       if(std::find(updates.begin(), updates.end(), index) != updates.end()) continue;
       updates.push_back(index);
-      if(auto neigh = neighbors[index - 1].lock()) {
-        neigh->markToRecompute();
+      if(auto absNeigh = neighbors[(size_t)index - 1].lock()) {
+        if(auto neigh = std::dynamic_pointer_cast<Chunk>(absNeigh)) {
+          neigh->markToRecompute();
+        }
       }
     }
   }

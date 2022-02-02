@@ -1,24 +1,30 @@
 #include "Entity.hpp"
-#include "save/SaveManager.hpp"
+
+#include <glm/glm.hpp>
+#include <glm/gtc/constants.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <stdlib.h>
+#include <cmath>
+#include <utility>
+
+#include "entity/Hitbox.hpp"
+#include "entity/Node.hpp"
 
 using namespace glm;
 static const highp_dmat4 I(1.0);
 
-Entity::Entity(Hitbox hitbox)
-: view(View::FIRST_PERSON),
+float Entity::gravity = 32.f;
+
+Entity::Entity(Hitbox hitbox) :
 	state(State::Idle),
-	uid(0),
 	maxSpeed(4.3f), maxAccel(10.f), verticalFriction(0.f), horizontalFriction(5.f),
-	gravity(32.f), jumpSpeed(10.5f), maxFallSpeed(78.4f),
-	playerFovY(SaveManager::getInst().getConfig().fov),
-	defaultFovY(playerFovY),
+	jumpSpeed(10.5f), maxFallSpeed(78.4f),
 	speed(0), accel(0), direction(0),
   onFloor(false),
 	hitbox(std::move(hitbox))
 {}
 
-Entity::~Entity() {
-}
+Entity::~Entity() {}
 
 void Entity::walk(vec3 dir) {
 	if(dir == vec3(0)) {
@@ -48,24 +54,8 @@ void Entity::turn(vec2 rot) {
 	auto headDelta = clamp(headNode.rot.y + rot.y, -thresold, thresold) - headNode.rot.y;
 
 	headNode.rot.y += headDelta;
-	node.rot.y += rot.y - headDelta;
+	bodyNode.rot.y += rot.y - headDelta;
 }
-
-void Entity::cameraToHead(Camera& camera) {
-	if(view == View::FIRST_PERSON) {
-		vec3 eyePos = headNode.model * vec4(0, 4, 0, 1);
-		vec3 eyeTarget = headNode.model * vec4(0, 4, 50, 1);
-		camera.setLookAt(eyePos, eyeTarget);
-	}
-	else {
-		vec3 eyePos = headNode.model * vec4(0, 4, 4, 1);
-		vec3 eyeTarget = headNode.model * vec4(0, 4, -100, 1);
-		camera.setLookAt(eyeTarget, eyePos);
-	}
-	camera.setFovY(playerFovY);
-}
-
-#include "../debug/Debug.hpp"
 
 void Entity::update(float dt) {
 
@@ -92,15 +82,15 @@ void Entity::update(float dt) {
 		speed.y = max(speed.y, -maxFallSpeed);
 
 		// apply motion
-		auto rotMatrix = rotate(I, node.rot.y + headNode.rot.y, {0, 1, 0});
+		auto rotMatrix = rotate(I, bodyNode.rot.y + headNode.rot.y, {0, 1, 0});
 		posOffset = vec3(rotMatrix * vec4(speed * dt, 1.f));
 	}
 
 	// check collisions
 	{
 		// check collisions one block at a time (usually posOffset is < 1 so only 1 check)
-		auto newPos = node.loc;
-		float totalOffset = length(posOffset);
+		auto newPos = bodyNode.loc;
+		float totalOffset = (float)length(posOffset);
 		size_t steps = (size_t)ceil(totalOffset);
 		for (size_t i = 0; i < steps; i++) {
 			vec3 thisOffset = posOffset * 1.0 / (double)steps;
@@ -108,8 +98,8 @@ void Entity::update(float dt) {
 		}
 
 		// the final entity displacement for this frame.
-		highp_dvec3 finalOffset = newPos - (node.loc + posOffset);
-		node.loc = newPos;
+		highp_dvec3 finalOffset = newPos - (bodyNode.loc + posOffset);
+		bodyNode.loc = newPos;
 
 		// on ground
 		if(finalOffset.y > 0.001) {
@@ -118,7 +108,7 @@ void Entity::update(float dt) {
 
 		// cancel speed in collision direction
 		if(length(finalOffset) > 0.001) {
-			auto rotMatrix = rotate(I, -node.rot.y - headNode.rot.y, {0, 1, 0});
+			auto rotMatrix = rotate(I, -bodyNode.rot.y - headNode.rot.y, {0, 1, 0});
 			vec3 worldOffDir = normalize(vec3(rotMatrix * highp_dvec4(finalOffset, 1.0)));
 			speed -= worldOffDir * dot(speed, worldOffDir); // substract component in collision direction from speed
 		}
@@ -135,77 +125,25 @@ void Entity::update(float dt) {
 		if(dir.y > 0) targetRot *= -1;
 		targetRot = clamp(targetRot, -thresold, thresold);
 
-		float currentRot = -headNode.rot.y;
+		float currentRot = (float)-headNode.rot.y;
 		float dist = targetRot - currentRot;
 
 		float speed = 4.f;
 	  float delta = min(speed * dt, abs(dist)) * sign(dist);
 
-	  node.rot.y += delta;
+	  bodyNode.rot.y += delta;
 	  headNode.rot.y -= delta;
 	}
 
-	// fov function of speed
-	const auto maxFov = 180.0;
-	const auto smoothing = 0.005f;
-	const auto transition = 10.f;
-	const auto targetFov = playerFovY - (maxFov + (defaultFovY - maxFov) * exp(-smoothing * length(speed)));
-	playerFovY = playerFovY - targetFov * transition * dt;
-
-	node.update();
+	bodyNode.update();
 }
 
-void Entity::render() {
-
-}
+void Entity::render() {}
 
 vec3 Entity::getPosition() const {
-	return node.loc;
+	return bodyNode.loc;
 }
 
 void Entity::setPosition(glm::vec3 pos) {
-	node.loc = pos;
-}
-
-
-sf::Packet& operator<<(sf::Packet& packet, Entity const& entity) {
-	packet << entity.node.loc;
-	packet << entity.node.rot;
-	packet << entity.headNode.rot;
-	packet << entity.speed;
-	packet << entity.accel;
-	packet << entity.direction;
-	packet << (sf::Uint8)entity.state;
-	return packet;
-}
-
-sf::Packet& operator>>(sf::Packet& packet, Entity& entity) {
-	sf::Uint8 state;
-	packet >> entity.node.loc;
-	packet >> entity.node.rot;
-	packet >> entity.headNode.rot;
-	packet >> entity.speed;
-	packet >> entity.accel;
-	packet >> entity.direction;
-	packet >> state;
-	entity.state = (State)state;
-	return packet;
-}
-
-sf::Packet& Entity::consume(sf::Packet& packet) {
-	decltype(node.loc) loc;
-	decltype(node.rot) rot;
-	decltype(headNode.rot) headRot;
-	decltype(speed) speed;
-	decltype(accel) accel;
-	decltype(direction) direction;
-	sf::Uint8 state;
-	packet >> loc;
-	packet >> rot;
-	packet >> headRot;
-	packet >> speed;
-	packet >> accel;
-	packet >> direction;
-	packet >> state;
-	return packet;
+	bodyNode.loc = pos;
 }

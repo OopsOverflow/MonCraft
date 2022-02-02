@@ -1,13 +1,20 @@
 #include "Pane.hpp"
-#include "debug/Debug.hpp"
-#include "gl/ResourceManager.hpp"
+
+#include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
+#include "debug/Debug.hpp"
+#include "gl/ResourceManager.hpp"
+#include "gl/Shader.hpp"
+#include "ui/Component.hpp"
+#include "ui/style/Type.hpp"
+#include "ui/style/Value.hpp"
 
 using namespace ui;
 using namespace glm;
 
-const spec_t Pane::COLOR = MAKE_SPEC("Pane::color", vec4);
+const spec_t Pane::COLOR = MAKE_SPEC_INHERIT("Pane::color", vec4);
 
 static const GLfloat quad[6][2] = {
     { 1.0f, 1.0f },
@@ -19,9 +26,7 @@ static const GLfloat quad[6][2] = {
     { 1.0f, 0.0f },
 };
 
-Pane::Pane(Component* parent)
-  : Component(parent),
-    color(1.f)
+Pane::Pane()
 {
   glGenVertexArrays(1, &vao);
   glGenBuffers(1, &vbo);
@@ -33,8 +38,12 @@ Pane::Pane(Component* parent)
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindVertexArray(0);
   shader = ResourceManager::getShader("pane");
+}
 
-  Pane::getDefaultStyle()->apply(this);
+std::unique_ptr<Pane> Pane::create() {
+  auto comp = std::unique_ptr<Pane>(new Pane());
+  comp->initialize();
+  return comp;
 }
 
 Pane::~Pane() {
@@ -43,28 +52,28 @@ Pane::~Pane() {
   glDeleteBuffers(1, &vbo);
 }
 
-void Pane::setStyle(prop_t const& prop) {
+void Pane::setProperty(prop_t prop) {
   if(prop.spec == Pane::COLOR) {
     setColor(prop.value->get<vec4>());
   }
   else {
-    Component::setStyle(prop);
+    Component::setProperty(prop);
   }
 }
 
-prop_t Pane::getStyle(spec_t spec) const {
+prop_t Pane::getProperty(spec_t spec) const {
   if(spec == Pane::COLOR) {
-    return make_property(spec, getColor());
+    return make_prop(spec, getColor());
   }
   else {
-    return Component::getStyle(spec);
+    return Component::getProperty(spec);
   }
 }
 
 style_const_t Pane::getDefaultStyle() const {
   static style_const_t style = Style::make_style(
     Component::getDefaultStyle(),
-    make_property(Pane::COLOR, vec4(1.f))
+    Pane::COLOR, vec4(1.f)
   );
 
   return style;
@@ -74,8 +83,8 @@ void Pane::draw() {
   computeModel();
   glBindVertexArray(vao);
   shader->activate();
-  glUniform4fv(shader->getUniform("color"), 1, glm::value_ptr(color));
-  glUniformMatrix4fv(shader->getUniform(MATRIX_MODEL), 1, GL_FALSE, glm::value_ptr(model));
+  glUniform4fv(shader->getUniform("color"), 1, value_ptr(getColor()));
+  glUniformMatrix4fv(shader->getUniform(MATRIX_MODEL), 1, GL_FALSE, value_ptr(model));
   glDrawArrays(GL_TRIANGLES, 0, 6);
   glBindVertexArray(0);
   Component::draw();
@@ -88,12 +97,10 @@ void Pane::computeModel() {
   model = scale(model, vec3(getAbsoluteSize(), 1.f));
 }
 
-void Pane::setColor(glm::vec4 color) {
-  if(color == this->color) return;
-  this->color = color;
-  queueDraw();
+void Pane::setColor(vec4 color) {
+  setStyle(COLOR, color);
 }
 
-glm::vec4 Pane::getColor() const {
-  return color;
+vec4 Pane::getColor() const {
+  return getStyle<vec4>(COLOR);
 }

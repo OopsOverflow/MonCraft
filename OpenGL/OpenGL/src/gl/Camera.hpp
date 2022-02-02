@@ -21,8 +21,7 @@ public:
    * Constructs a camera with a given size, lookat (position/center) and
    * projection type.
    */
-  Camera(glm::ivec2 size, const glm::vec3& position,
-      const glm::vec3& center, Projection proj = Projection::PROJECTION_PERSPECTIVE);
+  Camera(glm::ivec2 size);
 
   /**
    * Activates the camera.
@@ -92,6 +91,26 @@ public:
   float getFovX() const;
 
   /**
+   * Sets the far plane.
+   */
+  void setFar(float f);
+
+  /**
+   * Sets the far plane.
+   */
+  float getFar() const;
+
+  /**
+   * Sets the near plane.
+   */
+  void setNear(float n);
+
+  /**
+   * Sets the near plane.
+   */
+  float getNear() const;
+
+  /**
    * Gets the camera dimensions.
    * Copies the camera dimensions in width and height.
    */
@@ -116,18 +135,17 @@ public:
   glm::mat4 projection;
   glm::vec3 position;
   glm::vec3 center;
-  float near_;
-  float far_;
 
 protected:
+  float near_;
+  float far_;
   float fovY;
   glm::ivec2 size;
   Projection projType;
 
-private:
-    float tanFovY;
-    float tanFovX;
-    float custumProjBox[6];
+  float tanFovY;
+  float tanFovX;
+  float custumProjBox[6];
 
 
   void computeProjection(float box[6]);

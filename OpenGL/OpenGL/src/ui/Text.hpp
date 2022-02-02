@@ -1,25 +1,36 @@
 #pragma once
 
-#include <glm/glm.hpp>
 #include <memory>
+#include <string>
+#include <glm/glm.hpp>
 
-#include "Component.hpp"
-#include "gl/Font.hpp"
+#include "ui/Component.hpp"
+#include "ui/style/Property.hpp"
+#include "ui/style/Specification.hpp"
+#include "ui/style/Style.hpp"
+
+class Font;
+class Shader;
 
 namespace ui {
 
 class Text : public Component {
 
+protected:
+  Text(std::string text, std::shared_ptr<const Font> font);
+
 public:
-  Text(Component* parent, std::string text, std::shared_ptr<const Font> font);
+  static std::unique_ptr<Text> create(std::string text, std::shared_ptr<const Font> font);
 
   void draw() override;
 
   static const spec_t COLOR;
   static const spec_t FONT_SIZE;
   static const spec_t FONT;
-  virtual void setStyle(prop_t const& prop) override;
-  virtual prop_t getStyle(spec_t spec) const override;
+  static const spec_t USE_BASELINE;
+
+  virtual void setProperty(prop_t prop) override;
+  virtual prop_t getProperty(spec_t spec) const override;
   virtual style_const_t getDefaultStyle() const override;
 
   void setText(std::string text);
@@ -34,13 +45,14 @@ public:
   void setFont(std::shared_ptr<const Font> font);
   std::shared_ptr<const Font> getFont() const;
 
+  void setUseBaseline(bool useBaseline);
+  bool getUseBaseline() const;
+
 private:
   void computeSize();
   std::string text;
-  glm::vec4 color;
-  float fontSize;
-  std::shared_ptr<const Font> font;
   Shader* shader;
+  float baselineOffset;
 };
 
 }; // namespace ui

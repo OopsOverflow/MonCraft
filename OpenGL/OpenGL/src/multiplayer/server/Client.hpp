@@ -1,7 +1,8 @@
 #pragma once
 
-#include <SFML/Network.hpp>
 #include <glm/glm.hpp>
+#include <SFML/Network/IpAddress.hpp>
+#include <SFML/System/Time.hpp>
 #include <deque>
 
 #include "util/Identifier.hpp"
@@ -17,6 +18,7 @@ public:
   sf::IpAddress getAddr() const;
   unsigned short getPort() const;
 
+
 private:
   sf::IpAddress addr;
   unsigned short port;
@@ -24,9 +26,11 @@ private:
 
 class Client {
 public:
-  Client(Identifier uid);
+  Client(Identifier uid, sf::Time creation);
 
+  Identifier uid;
   Entity player;
   std::deque<glm::ivec3> waitingChunks;
-  std::time_t lastUpdate;
+  bool ack;
+  sf::Time lastUpdate;
 };

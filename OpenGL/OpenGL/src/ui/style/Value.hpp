@@ -3,9 +3,9 @@
 #include <stdexcept>
 #include <vector>
 #include <unordered_map>
-#include "debug/Debug.hpp"
-#include "Type.hpp"
-#include "StyleError.hpp"
+
+#include "ui/style/Type.hpp"
+#include "ui/style/StyleError.hpp"
 
 namespace ui
 {

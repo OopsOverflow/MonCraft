@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Block.hpp"
-#include "geometry/TallgrassGeometry.hpp"
+#include "model/TallgrassModel.hpp"
 
 class Tallgrass_Block : public Block {
 public:
@@ -15,8 +15,9 @@ public:
     }
 
     bool isSolid() const override { return false; }
+    bool isOpaque() const override { return false; }
     bool isTransparent() const override { return true; }
-    BlockGeometry* getGeometry() const override { return TallgrassGeometry::get(); }
+    BlockModel* getModel() const override { return TallgrassModel::get(); }
 
 private:
     Tallgrass_Block() : Block(BlockType::Tallgrass) {}

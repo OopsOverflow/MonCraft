@@ -1,6 +1,8 @@
 #pragma once
 
-#include "entity/character/Character.hpp"
+#include <vector>
+
+class Character;
 
 class MouseController {
 public:

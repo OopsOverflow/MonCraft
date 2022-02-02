@@ -1,7 +1,10 @@
 #include "MouseController.hpp"
 
-#include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
+#include <algorithm>
+#include <glm/glm.hpp>
+
+#include "entity/character/Character.hpp"
 
 MouseController::MouseController() {
   lastX = lastY = deltaX = deltaY = 0;
