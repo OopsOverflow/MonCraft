@@ -1,12 +1,11 @@
-OpenGL/Debug
 OpenGL/DebugOptimized
-OpenGL/Release
 OpenGL/dist
 
 OpenGL/Dependencies/boost
 OpenGL/Dependencies/glm/out
 
-.*
+OpenGL/Server
+OpenGL/Client
 
 OpenGL/OpenGL/save
 OpenGL/OpenGL/cert
