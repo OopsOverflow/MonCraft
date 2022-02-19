@@ -4,11 +4,10 @@ OpenGL/dist
 OpenGL/Dependencies/boost
 OpenGL/Dependencies/glm/out
 
-OpenGL/Server
-OpenGL/Client
-
 OpenGL/OpenGL/save
 OpenGL/OpenGL/cert
+
+build
 
 compile_commands.json
 Documentation
