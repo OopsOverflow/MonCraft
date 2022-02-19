@@ -18,9 +18,6 @@
     <ClCompile Include="src\audio\Music.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\blocks\Block.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\controller\KeyboardController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -57,9 +54,6 @@
     <ClCompile Include="src\gl\Viewport.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\noise\bitmapTex.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\noise\simplex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -70,9 +64,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\terrain\Chunk.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\terrain\SkyBox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\util\Random.cpp">
@@ -88,18 +79,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\terrain\ChunkMap.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\blocks\geometry\BlockGeometry.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\blocks\geometry\DefaultGeometry.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\blocks\geometry\TallgrassGeometry.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\blocks\geometry\WaterGeometry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\ui\Component.cpp">
@@ -135,16 +114,7 @@
     <ClCompile Include="src\ui\Event.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\multiplayer\common\NetworkError.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\multiplayer\common\Packet.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\noise\XXHash.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\util\SaveManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\multiplayer\client\RealServer.cpp">
@@ -195,9 +165,6 @@
     <ClCompile Include="src\ui\Key.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\interface\mainMenu\MainMenu.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\interface\Overlay.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -225,13 +192,7 @@
     <ClCompile Include="src\interface\parametersMenu\ParametersMenu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\interface\MultiplayerMenu.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\ui\Slider.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\interface\mainMenu\MainMenuButton.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\interface\parametersMenu\AudioMenu.cpp">
@@ -243,15 +204,6 @@
     <ClCompile Include="src\interface\parametersMenu\KeyMenu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\interface\parametersMenu\ParameterButton.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\interface\parametersMenu\ParameterSlider.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\interface\parametersMenu\ParameterList.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\interface\parametersMenu\MiscMenu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -261,7 +213,85 @@
     <ClCompile Include="src\ui\Slider.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\interface\MainMenuButton.cpp">
+    <ClCompile Include="src\blocks\AllBlocks.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\blocks\model\BlockModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\blocks\model\CactusModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\blocks\model\DefaultModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\blocks\model\OrientableModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\blocks\model\StairModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\blocks\model\TallgrassModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\blocks\model\WaterModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gl\SkyBox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\multiplayer\NetworkError.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\multiplayer\Packet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\multiplayer\Serialize.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\noise\prng.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\save\ClientConfig.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\save\SaveManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\terrain\AbstractChunk.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\terrain\Renderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\Grid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\Serde.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\interface\MainMenu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\interface\widgets\Checkbox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\interface\widgets\ComboBox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\interface\widgets\KeySelector.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\interface\widgets\MonCraftButton.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\interface\widgets\ParamList.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\interface\widgets\RangeSlider.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\save\ServerConfig.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -375,9 +405,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\noise\bitmap.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\noise\bitmapTex.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\noise\DisplayNoise.hpp">
@@ -662,9 +689,6 @@
     <ClInclude Include="src\interface\parametersMenu\ParametersMenu.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\interface\MultiplayerMenu.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\ui\Slider.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -698,7 +722,106 @@
     <ClInclude Include="src\ui\Slider.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\interface\MainMenuButton.hpp">
+    <ClInclude Include="src\blocks\Birch_Planks_Block.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\blocks\Birch_Stair_Block.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\blocks\Glass_Block.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\blocks\Oak_Planks_Block.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\blocks\Oak_Stair_Block.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\blocks\Orientable_Block.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\blocks\model\BlockModel.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\blocks\model\CactusModel.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\blocks\model\DefaultModel.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\blocks\model\OrientableModel.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\blocks\model\StairModel.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\blocks\model\TallgrassModel.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\blocks\model\WaterModel.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gl\UTF8Iter.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gl\SkyBox.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\multiplayer\NetworkError.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\multiplayer\Packet.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\multiplayer\Serialize.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\noise\prng.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\save\ClientConfig.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\save\SaveManager.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\terrain\AbstractChunk.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\terrain\Renderer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\Grid.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\util\Serde.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\util\zstr.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\interface\MainMenu.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\interface\widgets\Checkbox.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\interface\widgets\ComboBox.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\interface\widgets\KeySelector.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\interface\widgets\MonCraftButton.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\interface\widgets\ParamList.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\interface\widgets\RangeSlider.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\save\ServerConfig.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

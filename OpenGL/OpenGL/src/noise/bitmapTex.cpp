@@ -36,7 +36,7 @@ void BitmapTex::generate(Bitmap const& map) {
     glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(verts), verts, GL_STATIC_DRAW);
 
     glBindTexture(GL_TEXTURE_2D, tex);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, map.size.x, map.size.y, 0, GL_RGB, GL_UNSIGNED_BYTE, map.c_ptr());
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, map.size().x, map.size().y, 0, GL_RGB, GL_UNSIGNED_BYTE, map.c_ptr());
     glActiveTexture(GL_TEXTURE0);
     glGenerateMipmap(GL_TEXTURE_2D);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
