@@ -136,7 +136,7 @@ public:
    * Gets the raw pointer data
    */
   const T* c_ptr() const {
-    return map;
+    return map.data();
   }
 
   /**
@@ -144,7 +144,7 @@ public:
    * /!\ proceed with care when manipulating the internal memory.
    */
   T* mut_c_ptr() {
-    return map;
+    return map.data();
   }
 
   /**

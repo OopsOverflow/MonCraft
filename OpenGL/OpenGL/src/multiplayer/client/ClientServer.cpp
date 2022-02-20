@@ -23,7 +23,7 @@ ClientServer::ClientServer()
 {
   auto newPlayer = std::make_unique<Character>(Config::getServerConfig().spawnPoint);
   auto entity = World::getInst().entities.add(getUid(), std::move(newPlayer));
-  player = std::dynamic_pointer_cast<Character>(entity);
+  player = std::static_pointer_cast<Character>(entity);
 }
 
 ClientServer::~ClientServer()

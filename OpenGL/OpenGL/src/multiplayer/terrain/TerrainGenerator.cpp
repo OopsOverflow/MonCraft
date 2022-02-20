@@ -13,7 +13,7 @@
 #include "multiplayer/terrain/Structure.hpp"
 #include "save/SaveManager.hpp"
 #include "save/ServerConfig.hpp"
-#include "terrain/AbstractChunk.hpp"
+#include "terrain/ChunkImpl.hpp"
 #include "terrain/ChunkMap.hpp"
 #include "terrain/World.hpp"
 
@@ -66,15 +66,15 @@ void TerrainGenerator::remFromBusyList(ivec3 cpos) {
   else throw std::runtime_error("remFromBusyList failed");
 }
 
-std::shared_ptr<AbstractChunk> TerrainGenerator::getOrGen(ivec3 cpos) {
+std::shared_ptr<ChunkImpl> TerrainGenerator::getOrGen(ivec3 cpos) {
   static const auto sleep = 10ms;
 
   if(auto neigh = world.chunks.find(cpos)) {
     return neigh;
   }
   else if(addToBusyList(cpos)) {
-      std::shared_ptr<AbstractChunk> chunk;
-      std::unique_ptr<AbstractChunk> savedChunk = SaveManager::loadChunk(cpos);
+      std::shared_ptr<ChunkImpl> chunk;
+      std::unique_ptr<ChunkImpl> savedChunk = SaveManager::loadChunk(cpos);
       if (!savedChunk) {
         chunk = world.chunks.insert(cpos, generator.generate(cpos));
         sliceMap.insert(generator.generateStructures(*chunk));
@@ -92,13 +92,13 @@ std::shared_ptr<AbstractChunk> TerrainGenerator::getOrGen(ivec3 cpos) {
   }
 }
 
-void TerrainGenerator::setupNeighbors(std::shared_ptr<AbstractChunk> chunk) {
+void TerrainGenerator::setupNeighbors(std::shared_ptr<Chunk> chunk) {
   for(size_t j = 0; j < 26; j++) {
     if(!chunk->neighbors[j].lock()) {
-      ivec3 thisPos = chunk->chunkPos + AbstractChunk::neighborOffsets[j];
+      ivec3 thisPos = chunk->chunkPos + Chunk::neighborOffsets[j];
       if(auto neigh = world.chunks.find(thisPos)) {
         chunk->neighbors[j] = neigh;
-        neigh->neighbors[AbstractChunk::neighborOffsetsInverse[j]] = chunk;
+        neigh->neighbors[Chunk::neighborOffsetsInverse[j]] = chunk;
         if(neigh->hasAllNeighbors()) {
           computeChunk(neigh);
         }
@@ -111,7 +111,7 @@ void TerrainGenerator::setupNeighbors(std::shared_ptr<AbstractChunk> chunk) {
   }
 }
 
-void TerrainGenerator::computeChunk(std::shared_ptr<AbstractChunk> chunk) {
+void TerrainGenerator::computeChunk(std::shared_ptr<Chunk> chunk) {
   auto slices = sliceMap.pop(chunk->chunkPos);
   for(auto const& slice : slices) {
     Structure::applySlice(*chunk, slice);

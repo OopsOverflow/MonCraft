@@ -12,7 +12,6 @@
 #include "multiplayer/terrain/ChunkGenerator.hpp"
 #include "util/AtomicCyclicList.hpp"
 
-class AbstractChunk;
 class World;
 
 
@@ -47,9 +46,9 @@ private:
   std::mutex workerMutex;
   void genWorker();
 
-  std::shared_ptr<AbstractChunk> getOrGen(glm::ivec3 cpos);
-  void setupNeighbors(std::shared_ptr<AbstractChunk> chunk);
-  void computeChunk(std::shared_ptr<AbstractChunk> chunk);
+  std::shared_ptr<ChunkImpl> getOrGen(glm::ivec3 cpos);
+  void setupNeighbors(std::shared_ptr<Chunk> chunk);
+  void computeChunk(std::shared_ptr<Chunk> chunk);
 
   // utilities for workers
   bool sleepFor(std::chrono::milliseconds);

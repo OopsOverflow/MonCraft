@@ -9,7 +9,7 @@
 #include "save/ServerConfig.hpp"
 #include "terrain/ChunkMap.hpp"
 #include "terrain/World.hpp"
-#include "terrain/AbstractChunk.hpp"
+#include "terrain/ChunkImpl.hpp"
 
 using namespace glm;
 using namespace std::chrono_literals;

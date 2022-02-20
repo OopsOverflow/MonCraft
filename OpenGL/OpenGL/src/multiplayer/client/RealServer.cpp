@@ -18,7 +18,7 @@
 #include "multiplayer/Packet.hpp"
 #include "multiplayer/Serialize.hpp"
 #include "save/ServerConfig.hpp"
-#include "terrain/AbstractChunk.hpp"
+#include "terrain/ChunkImpl.hpp"
 #include "terrain/BlockArray.hpp"
 #include "terrain/ChunkMap.hpp"
 #include "terrain/World.hpp"
@@ -45,7 +45,7 @@ RealServer::RealServer(std::string url, unsigned short port)
 
   auto newPlayer = std::make_unique<Character>(Config::getServerConfig().spawnPoint);
   auto entity = world.entities.add(playerUid, std::move(newPlayer));
-  player = std::dynamic_pointer_cast<Character>(entity);
+  player = std::static_pointer_cast<Character>(entity);
 }
 
 RealServer::~RealServer() {
@@ -273,18 +273,18 @@ void RealServer::handle_chunks(sf::Packet& packet) {
     sf::Uint8 chunkSize;
     glm::ivec3 chunkPos;
     packet >> chunkSize >> chunkPos;
-    auto newChunk = AbstractChunk::create(chunkPos, chunkSize);
+    auto newChunk = new ChunkImpl(chunkPos, chunkSize);
     packet >> *newChunk;
 
     if(!world.chunks.find(chunkPos)) {
-      auto chunk = world.chunks.insert(chunkPos, std::unique_ptr<AbstractChunk>(newChunk));
+      auto chunk = world.chunks.insert(chunkPos, std::unique_ptr<ChunkImpl>(newChunk));
 
       for(size_t j = 0; j < 26; j++) {
         if(!chunk->neighbors[j].lock()) {
-          ivec3 thisPos = chunkPos + AbstractChunk::neighborOffsets[j];
+          ivec3 thisPos = chunkPos + Chunk::neighborOffsets[j];
           if(auto neigh = world.chunks.find(thisPos)) {
             chunk->neighbors[j] = neigh;
-            neigh->neighbors[AbstractChunk::neighborOffsetsInverse[j]] = chunk;
+            neigh->neighbors[Chunk::neighborOffsetsInverse[j]] = chunk;
             if(neigh->hasAllNeighbors()) {
               neigh->compute();
             }

@@ -18,7 +18,7 @@
 #include "multiplayer/server/Client.hpp"
 #include "save/SaveManager.hpp"
 #include "save/ServerConfig.hpp"
-#include "terrain/AbstractChunk.hpp"
+#include "terrain/ChunkImpl.hpp"
 #include "terrain/BlockArray.hpp"
 #include "terrain/ChunkMap.hpp"
 #include "terrain/World.hpp"
@@ -142,7 +142,7 @@ void Server::packet_chunks() {
     auto& client = pair.second;
     int count = std::min(client.waitingChunks.size(), maxChunks);
 
-    std::vector<std::shared_ptr<AbstractChunk>> chunks;
+    std::vector<std::shared_ptr<Chunk>> chunks;
     for(int i = 0, j = 0; i < count; i++) {
       ivec3 cpos = client.waitingChunks.at(j);
       auto chunk = world.chunks.find(cpos);
@@ -281,7 +281,7 @@ void Server::remOldChunks() {
   }
 
   int delCount = std::max<int>(world.chunks.size() - maxChunks, 0);
-  world.chunks.eraseChunks(delCount, [&](AbstractChunk* chunk) {
+  world.chunks.eraseChunks(delCount, [&](Chunk* chunk) {
     for(auto const& cpos : playersCpos) {
       ivec3 dist = abs(cpos - chunk->chunkPos);
       bool cond = true;

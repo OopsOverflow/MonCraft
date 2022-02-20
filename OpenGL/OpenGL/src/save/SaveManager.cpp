@@ -8,7 +8,7 @@
 
 #include "blocks/AllBlocks.hpp"
 #include "entity/Node.hpp"
-#include "terrain/AbstractChunk.hpp"
+#include "terrain/ChunkImpl.hpp"
 #include "util/Serde.hpp"
 #include "util/zstr.hpp"
 
@@ -104,7 +104,7 @@ std::istream& serde::operator>>(std::istream &stream, BlockType &type) {
   return stream;
 }
 
-std::istream& serde::operator>>(std::istream &stream, AbstractChunk &chunk) {
+std::istream& serde::operator>>(std::istream &stream, ChunkImpl &chunk) {
   glm::vec3 pos(0);
   for (pos.y = 0; pos.y < chunk.size().y; pos.y++) {
     for (pos.z = 0; pos.z < chunk.size().z; pos.z++) {
@@ -116,7 +116,7 @@ std::istream& serde::operator>>(std::istream &stream, AbstractChunk &chunk) {
 
   return stream;
 }
-std::ostream& serde::operator<<(std::ostream &stream, AbstractChunk const &chunk) {
+std::ostream& serde::operator<<(std::ostream &stream, ChunkImpl const &chunk) {
   glm::vec3 pos(0);
   for (pos.y = 0; pos.y < chunk.size().y; pos.y++) {
     for (pos.z = 0; pos.z < chunk.size().z; pos.z++) {
@@ -129,7 +129,7 @@ std::ostream& serde::operator<<(std::ostream &stream, AbstractChunk const &chunk
   return stream;
 }
 
-std::unique_ptr<AbstractChunk> SaveManager::loadChunk(glm::ivec3 chunkPos) {
+std::unique_ptr<ChunkImpl> SaveManager::loadChunk(glm::ivec3 chunkPos) {
   using namespace serde;
   std::string filePath = chunkSaveDir + "/chunk_" +
                          std::to_string(chunkPos.x) + "_" +
@@ -143,14 +143,14 @@ std::unique_ptr<AbstractChunk> SaveManager::loadChunk(glm::ivec3 chunkPos) {
   Binary<uint8_t> chunkSize;
   openedFile >> chunkSize;
 
-  AbstractChunk *newChunk = AbstractChunk::create(chunkPos, chunkSize.val);
+  auto newChunk = new ChunkImpl(chunkPos, chunkSize.val);
   openedFile >> *newChunk;
   openedFile.close();
 
-  return std::unique_ptr<AbstractChunk>(newChunk);
+  return std::unique_ptr<ChunkImpl>(newChunk);
 }
 
-bool SaveManager::saveChunk(AbstractChunk const &chunk) {
+bool SaveManager::saveChunk(ChunkImpl const &chunk) {
   using namespace serde;
   std::filesystem::create_directories(chunkSaveDir);
   std::string filePath = chunkSaveDir + "/chunk_" +

@@ -30,7 +30,7 @@ srcs = files(
   'OpenGL/src/entity/Entities.cpp',
 
   'OpenGL/src/terrain/World.cpp',
-  'OpenGL/src/terrain/AbstractChunk.cpp',
+  'OpenGL/src/terrain/Chunk.cpp',
   'OpenGL/src/terrain/ChunkMap.cpp',
   'OpenGL/src/terrain/BlockArray.cpp',
 
@@ -64,7 +64,7 @@ client_srcs = files(
   'OpenGL/src/save/ClientConfig.cpp',
 
   'OpenGL/src/terrain/Renderer.cpp',
-  'OpenGL/src/terrain/Chunk.cpp',
+  'OpenGL/src/terrain/ChunkMesh.cpp',
 
   'OpenGL/src/entity/Member.cpp',
   'OpenGL/src/entity/character/Character.cpp',
@@ -177,6 +177,7 @@ else
 
   server_deps = [
     dependency('openssl'),
+    dependency('OpenMP'),
     dependency('boost', modules : ['system']),
   ]
 
@@ -193,10 +194,10 @@ else
     include_directories: incs
   )
 
-  # exe_server = executable(
-  #   'MonCraftServer', [server_srcs, srcs],
-  #   cpp_args: ['-DMONCRAFT_SERVER'],
-  #   dependencies: [deps, server_deps],
-  #   include_directories: incs
-  # )
+  exe_server = executable(
+    'MonCraftServer', [server_srcs, srcs],
+    cpp_args: ['-DMONCRAFT_SERVER'],
+    dependencies: [deps, server_deps],
+    include_directories: incs
+  )
 endif

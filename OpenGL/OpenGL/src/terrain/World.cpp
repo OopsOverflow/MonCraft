@@ -5,7 +5,7 @@
 #include <memory>
 #include <utility>
 
-#include "terrain/AbstractChunk.hpp"
+#include "terrain/ChunkImpl.hpp"
 #include "terrain/ChunkMap.hpp"
 
 using namespace glm;

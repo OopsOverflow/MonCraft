@@ -7,8 +7,8 @@
 
 #include "blocks/Block.hpp"
 #include "entity/Entity.hpp"
+#include "terrain/ChunkImpl.hpp"
 
-class AbstractChunk;
 class Node;
 
 enum class EntityClass{Character};
@@ -16,8 +16,8 @@ enum class EntityClass{Character};
 class SaveManager
 {
 public:
-    static std::unique_ptr<AbstractChunk> loadChunk(glm::ivec3 chunkPos);
-    static bool saveChunk(AbstractChunk const& chunk);
+    static std::unique_ptr<ChunkImpl> loadChunk(glm::ivec3 chunkPos);
+    static bool saveChunk(ChunkImpl const& chunk);
 
     // TODO
     // static std::unique_ptr<Entity> loadEntity(Identifier uid);
@@ -51,6 +51,6 @@ namespace serde {
     std::ostream &operator<<(std::ostream &stream, BlockType type);
     std::istream &operator>>(std::istream &stream, BlockType &type);
 
-    std::istream &operator>>(std::istream &stream, AbstractChunk &chunk);
-    std::ostream &operator<<(std::ostream &stream, AbstractChunk const &chunk);
+    std::istream &operator>>(std::istream &stream, ChunkImpl &chunk);
+    std::ostream &operator<<(std::ostream &stream, ChunkImpl const &chunk);
 }
