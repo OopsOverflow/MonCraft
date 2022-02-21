@@ -45,6 +45,7 @@ private:
   ClientID htdl_to_client(websocketpp::connection_hdl);
   websocketpp::connection_hdl client_to_hdl(ClientID);
   context_ptr on_tls_init();
+  bool on_validate(websocketpp::connection_hdl);
   void on_message(websocketpp::connection_hdl, WebServer::message_ptr msg);
   void on_open(websocketpp::connection_hdl);
   void on_close(websocketpp::connection_hdl);
