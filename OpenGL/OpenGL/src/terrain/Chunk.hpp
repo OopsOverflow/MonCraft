@@ -14,10 +14,6 @@
 class Chunk : public DataStore<Block::unique_ptr_t, 3> {
 public:
   Chunk(glm::ivec3 chunkPos, int chunkSize);
-  virtual ~Chunk();
-
-  Chunk(Chunk const&) = delete;
-  Chunk& operator=(Chunk const&) = delete;
 
   /**
   * Sets the block at the given position.
@@ -26,20 +22,18 @@ public:
   */
   void setBlock(glm::ivec3 pos, Block::unique_ptr_t block);
 
-  /**
-  * (re)calculates the mesh data from the blocks.
-  * Thread safe.
-  */
-  void compute();
-
-  /**
-  * New's the Chunk if computed. Must be called before draws,
-  * only in the main thread.
-  */
-  void update();
-
   bool hasAllNeighbors() const;
   bool hasNoNeighbors() const;
+  
+  /**
+  * Compute the chunk.
+  */
+  void compute() { computed = true; }
+
+  /**
+  * If the chunk has been computed at least once.
+  */
+  bool isComputed() { return computed; } 
 
   /// Some lookups for efficient code execution ///
 
@@ -71,4 +65,6 @@ public:
 protected:
   void setBlockAccrossChunks(glm::ivec3 pos, Block::unique_ptr_t block);
   Block* getBlockAccrossChunks(glm::ivec3 pos) const;
+  
+  bool computed;
 };

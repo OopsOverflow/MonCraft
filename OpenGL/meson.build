@@ -187,17 +187,19 @@ else
 
   # install_subdir('OpenGL/src/shader', install_dir : 'shader')
 
-  exe = executable(
-    'MonCraft', [client_srcs, srcs],
-    cpp_args: ['-DMONCRAFT_CLIENT'],
-    dependencies: [deps, client_deps],
-    include_directories: incs
-  )
-
-  exe_server = executable(
-    'MonCraftServer', [server_srcs, srcs],
-    cpp_args: ['-DMONCRAFT_SERVER'],
-    dependencies: [deps, server_deps],
-    include_directories: incs
-  )
+  if get_option('server').enabled()
+    exe_server = executable(
+      'MonCraftServer', [server_srcs, srcs],
+      cpp_args: ['-DMONCRAFT_SERVER'],
+      dependencies: [deps, server_deps],
+      include_directories: incs
+    )
+  else
+    exe = executable(
+      'MonCraft', [client_srcs, srcs],
+      cpp_args: ['-DMONCRAFT_CLIENT'],
+      dependencies: [deps, client_deps],
+      include_directories: incs
+    )
+  endif
 endif

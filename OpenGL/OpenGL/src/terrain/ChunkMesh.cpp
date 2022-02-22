@@ -20,7 +20,7 @@ using std::move;
 
 ChunkMesh::ChunkMesh(glm::ivec3 chunkPos, int chunkSize)
   : Chunk(chunkPos, chunkSize),
-    loaded(false), computed(false), mustRecompute(false), model(1.f)
+    loaded(false), mustRecompute(false), model(1.f)
 {}
 
 ChunkMesh::~ChunkMesh() {

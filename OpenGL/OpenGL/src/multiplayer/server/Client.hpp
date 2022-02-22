@@ -3,7 +3,7 @@
 #include <glm/glm.hpp>
 #include <SFML/Network/IpAddress.hpp>
 #include <SFML/System/Time.hpp>
-#include <deque>
+#include <vector>
 
 #include "util/Identifier.hpp"
 #include "entity/Entity.hpp"
@@ -30,7 +30,7 @@ public:
 
   Identifier uid;
   Entity player;
-  std::deque<glm::ivec3> waitingChunks;
+  std::vector<glm::ivec3> waitingChunks;
   bool ack;
   sf::Time lastUpdate;
 };

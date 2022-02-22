@@ -140,19 +140,20 @@ void Server::packet_chunks() {
 
   for(auto& pair : clients) {
     auto& client = pair.second;
-    int count = std::min(client.waitingChunks.size(), maxChunks);
 
     std::vector<std::shared_ptr<Chunk>> chunks;
-    for(int i = 0, j = 0; i < count; i++) {
-      ivec3 cpos = client.waitingChunks.at(j);
+    for(auto it = client.waitingChunks.begin(); it != client.waitingChunks.end() && chunks.size() < maxChunks; ) {
+      ivec3 cpos = *it;
       auto chunk = world.chunks.find(cpos);
 
-      if(chunk) {
+      if(chunk && chunk->isComputed()) {
         chunks.push_back(chunk);
-        client.waitingChunks.pop_front(); // move chunk to the back (low priority)
+        it = client.waitingChunks.erase(it);
+        // move chunk to the back (low priority)
+        // we don't remove it in case the client doesn't receive it.
         client.waitingChunks.push_back(cpos);
       }
-      else j++;
+      else ++it;
     }
 
     if(chunks.size() > 0) {

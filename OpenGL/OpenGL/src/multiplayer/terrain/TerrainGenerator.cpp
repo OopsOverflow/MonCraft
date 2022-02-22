@@ -92,7 +92,7 @@ std::shared_ptr<ChunkImpl> TerrainGenerator::getOrGen(ivec3 cpos) {
   }
 }
 
-void TerrainGenerator::setupNeighbors(std::shared_ptr<Chunk> chunk) {
+void TerrainGenerator::setupNeighbors(std::shared_ptr<ChunkImpl> chunk) {
   for(size_t j = 0; j < 26; j++) {
     if(!chunk->neighbors[j].lock()) {
       ivec3 thisPos = chunk->chunkPos + Chunk::neighborOffsets[j];
@@ -111,7 +111,7 @@ void TerrainGenerator::setupNeighbors(std::shared_ptr<Chunk> chunk) {
   }
 }
 
-void TerrainGenerator::computeChunk(std::shared_ptr<Chunk> chunk) {
+void TerrainGenerator::computeChunk(std::shared_ptr<ChunkImpl> chunk) {
   auto slices = sliceMap.pop(chunk->chunkPos);
   for(auto const& slice : slices) {
     Structure::applySlice(*chunk, slice);

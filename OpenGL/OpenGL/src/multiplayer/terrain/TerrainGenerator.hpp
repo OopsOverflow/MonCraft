@@ -47,8 +47,8 @@ private:
   void genWorker();
 
   std::shared_ptr<ChunkImpl> getOrGen(glm::ivec3 cpos);
-  void setupNeighbors(std::shared_ptr<Chunk> chunk);
-  void computeChunk(std::shared_ptr<Chunk> chunk);
+  void setupNeighbors(std::shared_ptr<ChunkImpl> chunk);
+  void computeChunk(std::shared_ptr<ChunkImpl> chunk);
 
   // utilities for workers
   bool sleepFor(std::chrono::milliseconds);

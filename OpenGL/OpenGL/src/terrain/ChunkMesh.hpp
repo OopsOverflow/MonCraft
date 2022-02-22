@@ -90,7 +90,6 @@ private:
   MeshData meshData;
 
   bool loaded;
-  bool computed;
   bool mustRecompute;
   std::mutex computeMutex;
   glm::mat4 model;

@@ -47,10 +47,8 @@ const std::array<int, 26> Chunk::neighborOffsetsInverse = { // https://oeis.org/
 
 Chunk::Chunk(ivec3 chunkPos, int chunkSize)
   : DataStore<Block::unique_ptr_t, 3>(glm::ivec3(chunkSize)),
-    chunkPos(chunkPos)
+    chunkPos(chunkPos), computed(false)
 {}
-
-Chunk::~Chunk() {}
 
 std::weak_ptr<Chunk> Chunk::getNeighbor(glm::ivec3 off) {
   static const ivec3 mask(9, 3, 1);
@@ -112,6 +110,3 @@ bool Chunk::hasNoNeighbors() const {
 void Chunk::setBlock(ivec3 pos, Block::unique_ptr_t block) {
   at(pos) = std::move(block);
 }
-
-void Chunk::compute() {}
-void Chunk::update() {}
