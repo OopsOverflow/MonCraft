@@ -6,7 +6,6 @@
 #include <glm/glm.hpp>
 #include <stddef.h>
 #include <algorithm>
-#include <deque>
 #include <iostream>
 #include <memory>
 #include <utility>
@@ -54,6 +53,7 @@ void Server::broadcast(sf::Packet& packet) {
 }
 
 void Server::on_packet_recv(sf::Packet& packet, ClientID client) {
+  std::lock_guard<std::mutex> lck(mutex);
   PacketHeader header;
   packet >> header;
   auto type = header.getType();
@@ -70,11 +70,11 @@ void Server::on_packet_recv(sf::Packet& packet, ClientID client) {
     }
     else {
       it->second.lastUpdate = clock.getElapsedTime();
-      if(type == PacketType::PING) handle_ping(it->second);
-      else if(type == PacketType::BLOCKS) handle_blocks(it->second, packet);
+      if(type == PacketType::PING)             handle_ping(it->second);
+      else if(type == PacketType::BLOCKS)      handle_blocks(it->second, packet);
       else if(type == PacketType::PLAYER_TICK) handle_player_tick(it->second, packet);
-      else if(type == PacketType::CHUNKS) handle_chunks(it->second, packet);
-      else if(type == PacketType::ACK_CHUNKS) handle_ack_chunks(it->second, packet);
+      else if(type == PacketType::CHUNKS)      handle_chunks(it->second, packet);
+      else if(type == PacketType::ACK_CHUNKS)  handle_ack_chunks(it->second, packet);
     }
   }
 
@@ -82,6 +82,7 @@ void Server::on_packet_recv(sf::Packet& packet, ClientID client) {
 }
 
 void Server::on_server_tick() {
+  std::lock_guard<std::mutex> lck(mutex);
   packet_entity_tick();
   packet_chunks();
   remOldChunks();
@@ -149,9 +150,6 @@ void Server::packet_chunks() {
       if(chunk && chunk->isComputed()) {
         chunks.push_back(chunk);
         it = client.waitingChunks.erase(it);
-        // move chunk to the back (low priority)
-        // we don't remove it in case the client doesn't receive it.
-        client.waitingChunks.push_back(cpos);
       }
       else ++it;
     }
@@ -224,6 +222,7 @@ void Server::handle_player_tick(Client& client, sf::Packet& packet) {
 
 void Server::handle_chunks(Client& client, sf::Packet& packet) {
   packet >> client.waitingChunks;
+    
   updateWaitingChunks();
 }
 
@@ -301,7 +300,6 @@ void Server::handleTimeouts() {
   auto curTime = clock.getElapsedTime();
 
   for(auto it = clients.cbegin(); it != clients.cend(); ) {
-    auto client = *it;
     if(curTime - it->second.lastUpdate > timeout) {
       Identifier uid = it->second.uid;
       std::cout << "Client timeout: uid " << uid << std::endl;

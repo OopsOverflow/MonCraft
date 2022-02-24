@@ -1,6 +1,8 @@
 OpenGL/Debug
 OpenGL/DebugOptimized
 OpenGL/Release
+OpenGL/Server
+OpenGL/Client
 OpenGL/dist
 OpenGL/OpenGL/Debug
 OpenGL/Dependencies/glm/out

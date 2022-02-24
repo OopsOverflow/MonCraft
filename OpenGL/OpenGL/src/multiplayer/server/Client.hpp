@@ -4,6 +4,7 @@
 #include <SFML/Network/IpAddress.hpp>
 #include <SFML/System/Time.hpp>
 #include <vector>
+#include <mutex>
 
 #include "util/Identifier.hpp"
 #include "entity/Entity.hpp"
