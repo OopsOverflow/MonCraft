@@ -10,7 +10,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 if ("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
   message(SEND_ERROR "In-source builds are not allowed.")
 endif ()
-
 set(CMAKE_BUILD_TYPE Release)
 set(BUILD_TARGET client CACHE STRING "Choose build target client/server" )
 set(BUILD_PLATFORM app CACHE STRING "Choose targer platform wasm/app" )
@@ -19,7 +18,7 @@ message(STATUS "Build Type : ${CMAKE_BUILD_TYPE}")
 message(STATUS "Build Target : ${BUILD_TARGET}")
 message(STATUS "Build Platform : ${BUILD_PLATFORM}")
 
-set(BUILDPATH)
+set(BUILDPATH ${CMAKE_BINARY_DIR})
 
 if(${BUILD_PLATFORM} STREQUAL wasm)
     set(BUILDPATH "${BUILDPATH}/Wasm")
@@ -52,6 +51,7 @@ endif()
 # Create build directories
 file(MAKE_DIRECTORY ${BUILDPATH})
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 include_directories(SYSTEM "${CMAKE_SOURCE_DIR}/Dependencies")
 include_directories(SYSTEM "${CMAKE_SOURCE_DIR}/OpenGL/src")
 

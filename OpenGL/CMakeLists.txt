@@ -174,7 +174,10 @@ else()
 
 	if(${BUILD_TARGET} STREQUAL client)
 
+		cmake_policy(SET CMP0072 NEW) # OpenGL GLVND
 		find_package(OpenGL REQUIRED)
+		include_directories(${OPENGL_INCLUDE_DIRS})
+		target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES})
 
 		if (UNIX)
 			find_package(GLEW REQUIRED)
@@ -233,8 +236,7 @@ else()
 
 		if (UNIX)
 			find_package(SFML REQUIRED COMPONENTS system network audio)
-			include_directories(${SFML_INCLUDE_DIR})
-			target_link_libraries(${PROJECT_NAME} ${SFML_LIBRARIES} ${SFML_DEPENDENCIES})
+			target_link_libraries(${PROJECT_NAME} sfml-system sfml-network sfml-audio)
 		else()
 			include_directories(
 				${PROJECT_NAME}
