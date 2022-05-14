@@ -7,6 +7,10 @@ project(${PROJECT_NAME} VERSION 1.1.1)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+if ("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
+  message(SEND_ERROR "In-source builds are not allowed.")
+endif ()
+
 set(CMAKE_BUILD_TYPE Release)
 set(BUILD_TARGET client CACHE STRING "Choose build target client/server" )
 set(BUILD_PLATFORM app CACHE STRING "Choose targer platform wasm/app" )
@@ -35,9 +39,12 @@ endif()
 
 if(${BUILD_TARGET} STREQUAL client)
     set(BUILDPATH "${BUILDPATH}/Client")
+    add_definitions(-DMONCRAFT_CLIENT)
+    add_definitions(-DGLEW_STATIC)
     
 else()
     set(BUILDPATH "${BUILDPATH}/Server")
+    add_definitions(-DMONCRAFT_SERVER)
 
 endif()
 
@@ -45,10 +52,7 @@ endif()
 # Create build directories
 file(MAKE_DIRECTORY ${BUILDPATH})
 
-include_directories(SYSTEM "${PROJECT_SOURCE_DIR}/Dependencies")
+include_directories(SYSTEM "${CMAKE_SOURCE_DIR}/Dependencies")
+include_directories(SYSTEM "${CMAKE_SOURCE_DIR}/OpenGL/src")
 
 add_subdirectory(OpenGL)
-
-include_directories(OpenGL)
-
-

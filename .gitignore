@@ -1,13 +1,13 @@
-OpenGL/DebugOptimized
-OpenGL/dist
+Dependencies/boost
+Dependencies/glm/out
 
-OpenGL/Dependencies/boost
-OpenGL/Dependencies/glm/out
-
-OpenGL/OpenGL/save
-OpenGL/OpenGL/cert
+OpenGL/save
+OpenGL/Debug
+OpenGL/Release
 
 build
+CMakeCache.txt
+CMakeSettings.json
 
-compile_commands.json
-Documentation
+.vs
+CMakeFiles
