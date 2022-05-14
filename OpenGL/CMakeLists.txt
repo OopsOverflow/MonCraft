@@ -131,31 +131,313 @@ endif()
 # Define the executable
 add_executable(${PROJECT_NAME} ${SOURCE})
 
+if(NOT UNIX)
+	cmake_policy(SET CMP0111 NEW)
+
+	#zlib
+	add_library(zlib SHARED IMPORTED GLOBAL)
+	set_property(TARGET zlib PROPERTY IMPORTED_IMPLIB_RELEASE
+		"${CMAKE_SOURCE_DIR}/Dependencies/zlib/lib/zlib/zlib.lib"
+	)
+	set_property(TARGET zlib PROPERTY IMPORTED_LOCATION_RELEASE
+		"${CMAKE_SOURCE_DIR}/Dependencies/zlib/lib/zlib/zlib.dll"
+	)
+	set_property(TARGET zlib PROPERTY IMPORTED_IMPLIB_DEBUG
+		"${CMAKE_SOURCE_DIR}/Dependencies/zlib/lib/zlib/zlib.lib"
+	)
+	set_property(TARGET zlib PROPERTY IMPORTED_LOCATION_DEBUG
+		"${CMAKE_SOURCE_DIR}/Dependencies/zlib/lib/zlib/zlib.dll"
+	)
+
+	#glew
+	add_library(glew SHARED IMPORTED GLOBAL)
+	if(CMAKE_SIZEOF_VOID_P EQUAL 8)# 64 bits
+		set_property(TARGET glew PROPERTY IMPORTED_IMPLIB_RELEASE
+			"${CMAKE_SOURCE_DIR}/Dependencies/GLEW/lib/Release/x64/glew32s.lib"
+		)
+		set_property(TARGET glew PROPERTY IMPORTED_LOCATION_RELEASE
+			"${CMAKE_SOURCE_DIR}/Dependencies/GLEW/bin/Release/x64/glew32.dll"
+		)
+		set_property(TARGET glew PROPERTY IMPORTED_IMPLIB_DEBUG
+			"${CMAKE_SOURCE_DIR}/Dependencies/GLEW/lib/Release/x64/glew32s.lib"
+		)
+		set_property(TARGET glew PROPERTY IMPORTED_LOCATION_DEBUG
+			"${CMAKE_SOURCE_DIR}/Dependencies/GLEW/bin/Release/x64/glew32.dll"
+		)
+	else()
+		set_property(TARGET glew PROPERTY IMPORTED_IMPLIB_RELEASE
+		"${CMAKE_SOURCE_DIR}/Dependencies/GLEW/lib/Release/Win32/glew32s.lib"
+		)
+		set_property(TARGET glew PROPERTY IMPORTED_LOCATION_RELEASE
+			"${CMAKE_SOURCE_DIR}/Dependencies/GLEW/bin/Release/Win32/glew32s.dll"
+		)
+		set_property(TARGET glew PROPERTY IMPORTED_IMPLIB_DEBUG
+			"${CMAKE_SOURCE_DIR}/Dependencies/GLEW/lib/Release/Win32/glew32s.lib"
+		)
+		set_property(TARGET glew PROPERTY IMPORTED_LOCATION_DEBUG
+			"${CMAKE_SOURCE_DIR}/Dependencies/GLEW/bin/Release/Win32/glew32s.dll"
+		)
+	endif()
+
+	#sdl2
+	add_library(libpng16-16 SHARED IMPORTED GLOBAL)
+	add_library(SDL2_image SHARED IMPORTED GLOBAL)
+	add_library(SDL2 SHARED IMPORTED GLOBAL)
+	add_library(SDL2main SHARED IMPORTED GLOBAL)
+	add_library(zlib1 SHARED IMPORTED GLOBAL)
+	if(CMAKE_SIZEOF_VOID_P EQUAL 8)# 64 bits
+		set_property(TARGET SDL2_image PROPERTY IMPORTED_IMPLIB_RELEASE 
+			"${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x64/SDL2_image.lib"
+		)
+		set_property(TARGET SDL2 PROPERTY IMPORTED_IMPLIB_RELEASE 
+			"${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x64/SDL2.lib"
+		)
+		set_property(TARGET SDL2main PROPERTY IMPORTED_IMPLIB_RELEASE 
+			"${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x64/SDL2main.lib"
+		)
+			
+		set_property(TARGET libpng16-16 PROPERTY IMPORTED_LOCATION_RELEASE
+			"${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x64/libpng16-16.dll"
+		)
+		set_property(TARGET SDL2_image PROPERTY IMPORTED_LOCATION_RELEASE
+			"${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x64/SDL2_image.dll"
+		)
+		set_property(TARGET SDL2 PROPERTY IMPORTED_LOCATION_RELEASE
+			"${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x64/SDL2.dll"
+		)
+		set_property(TARGET zlib1 PROPERTY IMPORTED_LOCATION_RELEASE
+			"${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x64/zlib1.dll"
+		)
+		
+		set_property(TARGET SDL2_image PROPERTY IMPORTED_IMPLIB_DEBUG 
+			"${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x64/SDL2_image.lib"
+		)
+		set_property(TARGET SDL2 PROPERTY IMPORTED_IMPLIB_DEBUG 
+			"${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x64/SDL2.lib"
+		)
+		set_property(TARGET SDL2main PROPERTY IMPORTED_IMPLIB_DEBUG 
+			"${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x64/SDL2main.lib"
+		)
+			
+		set_property(TARGET libpng16-16 PROPERTY IMPORTED_LOCATION_DEBUG
+			"${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x64/libpng16-16.dll"
+		)
+		set_property(TARGET SDL2_image PROPERTY IMPORTED_LOCATION_DEBUG
+			"${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x64/SDL2_image.dll"
+		)
+		set_property(TARGET SDL2 PROPERTY IMPORTED_LOCATION_DEBUG
+			"${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x64/SDL2.dll"
+		)
+		set_property(TARGET zlib1 PROPERTY IMPORTED_LOCATION_DEBUG
+			"${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x64/zlib1.dll"
+		)
+	else()
+		set_property(TARGET SDL2_image PROPERTY IMPORTED_IMPLIB_RELEASE 
+			"${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x86/SDL2_image.lib"
+		)
+		set_property(TARGET SDL2 PROPERTY IMPORTED_IMPLIB_RELEASE 
+			"${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x86/SDL2.lib"
+		)
+		set_property(TARGET SDL2main PROPERTY IMPORTED_IMPLIB_RELEASE 
+			"${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x86/SDL2main.lib"
+		)
+			
+		set_property(TARGET libpng16-16 PROPERTY IMPORTED_LOCATION_RELEASE
+			"${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x86/libpng16-16.dll"
+		)
+		set_property(TARGET SDL2_image PROPERTY IMPORTED_LOCATION_RELEASE
+			"${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x86/SDL2_image.dll"
+		)
+		set_property(TARGET SDL2 PROPERTY IMPORTED_LOCATION_RELEASE
+			"${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x86/SDL2.dll"
+		)
+		set_property(TARGET zlib1 PROPERTY IMPORTED_LOCATION_RELEASE
+			"${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x86/zlib1.dll"
+		)
+		
+		set_property(TARGET SDL2_image PROPERTY IMPORTED_IMPLIB_DEBUG 
+			"${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x86/SDL2_image.lib"
+		)
+		set_property(TARGET SDL2 PROPERTY IMPORTED_IMPLIB_DEBUG 
+			"${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x86/SDL2.lib"
+		)
+		set_property(TARGET SDL2main PROPERTY IMPORTED_IMPLIB_DEBUG 
+			"${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x86/SDL2main.lib"
+		)
+			
+		set_property(TARGET libpng16-16 PROPERTY IMPORTED_LOCATION_DEBUG
+			"${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x86/libpng16-16.dll"
+		)
+		set_property(TARGET SDL2_image PROPERTY IMPORTED_LOCATION_DEBUG
+			"${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x86/SDL2_image.dll"
+		)
+		set_property(TARGET SDL2 PROPERTY IMPORTED_LOCATION_DEBUG
+			"${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x86/SDL2.dll"
+		)
+		set_property(TARGET zlib1 PROPERTY IMPORTED_LOCATION_DEBUG
+			"${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x86/zlib1.dll"
+		)
+	endif()
+
+	#sfml
+	add_library(openal32 SHARED IMPORTED GLOBAL)
+	add_library(sfml-audio SHARED IMPORTED GLOBAL)
+	add_library(sfml-network SHARED IMPORTED GLOBAL)
+	add_library(sfml-system SHARED IMPORTED GLOBAL)
+	if(CMAKE_SIZEOF_VOID_P EQUAL 8)# 64 bits
+		set_property(TARGET openal32 PROPERTY IMPORTED_IMPLIB_RELEASE
+			"${CMAKE_SOURCE_DIR}/Dependencies/SFML/lib/x64/openal32.lib"
+		)
+		set_property(TARGET sfml-audio PROPERTY IMPORTED_IMPLIB_RELEASE
+			"${CMAKE_SOURCE_DIR}/Dependencies/SFML/lib/x64/sfml-audio.lib"
+		)
+		set_property(TARGET sfml-network PROPERTY IMPORTED_IMPLIB_RELEASE
+			"${CMAKE_SOURCE_DIR}/Dependencies/SFML/lib/x64/sfml-network.lib"
+		)
+		set_property(TARGET sfml-system PROPERTY IMPORTED_IMPLIB_RELEASE
+			"${CMAKE_SOURCE_DIR}/Dependencies/SFML/lib/x64/sfml-system.lib"
+		)
+
+		set_property(TARGET openal32 PROPERTY IMPORTED_LOCATION_RELEASE
+			"${CMAKE_SOURCE_DIR}/Dependencies/SFML/bin/x64/openal32.dll"
+		)
+		set_property(TARGET sfml-audio PROPERTY IMPORTED_LOCATION_RELEASE
+			"${CMAKE_SOURCE_DIR}/Dependencies/SFML/bin/x64/sfml-audio-2.dll"
+		)
+		set_property(TARGET sfml-network PROPERTY IMPORTED_LOCATION_RELEASE
+			"${CMAKE_SOURCE_DIR}/Dependencies/SFML/bin/x64/sfml-network-2.dll"
+		)
+		set_property(TARGET sfml-system PROPERTY IMPORTED_LOCATION_RELEASE
+			"${CMAKE_SOURCE_DIR}/Dependencies/SFML/bin/x64/sfml-system-2.dll"
+		)
+
+		set_property(TARGET openal32 PROPERTY IMPORTED_IMPLIB_DEBUG
+			"${CMAKE_SOURCE_DIR}/Dependencies/SFML/lib/x64/openal32.lib"
+		)
+		set_property(TARGET sfml-audio PROPERTY IMPORTED_IMPLIB_DEBUG
+			"${CMAKE_SOURCE_DIR}/Dependencies/SFML/lib/x64/sfml-audio-d.lib"
+		)
+		set_property(TARGET sfml-network PROPERTY IMPORTED_IMPLIB_DEBUG
+			"${CMAKE_SOURCE_DIR}/Dependencies/SFML/lib/x64/sfml-network-d.lib"
+		)
+		set_property(TARGET sfml-system PROPERTY IMPORTED_IMPLIB_DEBUG
+			"${CMAKE_SOURCE_DIR}/Dependencies/SFML/lib/x64/sfml-system-d.lib"
+		)
+
+		set_property(TARGET openal32 PROPERTY IMPORTED_LOCATION_DEBUG
+			"${CMAKE_SOURCE_DIR}/Dependencies/SFML/bin/x64/openal32.dll"
+		)
+		set_property(TARGET sfml-audio PROPERTY IMPORTED_LOCATION_DEBUG
+			"${CMAKE_SOURCE_DIR}/Dependencies/SFML/bin/x64/sfml-audio-d-2.dll"
+		)
+		set_property(TARGET sfml-network PROPERTY IMPORTED_LOCATION_DEBUG
+			"${CMAKE_SOURCE_DIR}/Dependencies/SFML/bin/x64/sfml-network-d-2.dll"
+		)
+		set_property(TARGET sfml-system PROPERTY IMPORTED_LOCATION_DEBUG
+			"${CMAKE_SOURCE_DIR}/Dependencies/SFML/bin/x64/sfml-system-d-2.dll"
+		)
+
+	else()
+		set_property(TARGET openal32 PROPERTY IMPORTED_IMPLIB_RELEASE
+		"${CMAKE_SOURCE_DIR}/Dependencies/SFML/lib/x86/openal32.lib"
+		)
+		set_property(TARGET sfml-audio PROPERTY IMPORTED_IMPLIB_RELEASE
+			"${CMAKE_SOURCE_DIR}/Dependencies/SFML/lib/x86/sfml-audio.lib"
+		)
+		set_property(TARGET sfml-network PROPERTY IMPORTED_IMPLIB_RELEASE
+			"${CMAKE_SOURCE_DIR}/Dependencies/SFML/lib/x86/sfml-network.lib"
+		)
+		set_property(TARGET sfml-system PROPERTY IMPORTED_IMPLIB_RELEASE
+			"${CMAKE_SOURCE_DIR}/Dependencies/SFML/lib/x86/sfml-system.lib"
+		)
+
+		set_property(TARGET openal32 PROPERTY IMPORTED_LOCATION_RELEASE
+			"${CMAKE_SOURCE_DIR}/Dependencies/SFML/bin/x86/openal32.dll"
+		)
+		set_property(TARGET sfml-audio PROPERTY IMPORTED_LOCATION_RELEASE
+			"${CMAKE_SOURCE_DIR}/Dependencies/SFML/bin/x86/sfml-audio-2.dll"
+		)
+		set_property(TARGET sfml-network PROPERTY IMPORTED_LOCATION_RELEASE
+			"${CMAKE_SOURCE_DIR}/Dependencies/SFML/bin/x86/sfml-network-2.dll"
+		)
+		set_property(TARGET sfml-system PROPERTY IMPORTED_LOCATION_RELEASE
+			"${CMAKE_SOURCE_DIR}/Dependencies/SFML/bin/x86/sfml-system-2.dll"
+		)
+
+		set_property(TARGET openal32 PROPERTY IMPORTED_IMPLIB_DEBUG
+			"${CMAKE_SOURCE_DIR}/Dependencies/SFML/lib/x86/openal32.lib"
+		)
+		set_property(TARGET sfml-audio PROPERTY IMPORTED_IMPLIB_DEBUG
+			"${CMAKE_SOURCE_DIR}/Dependencies/SFML/lib/x86/sfml-audio-d.lib"
+		)
+		set_property(TARGET sfml-network PROPERTY IMPORTED_IMPLIB_DEBUG
+			"${CMAKE_SOURCE_DIR}/Dependencies/SFML/lib/x86/sfml-network-d.lib"
+		)
+		set_property(TARGET sfml-system PROPERTY IMPORTED_IMPLIB_DEBUG
+			"${CMAKE_SOURCE_DIR}/Dependencies/SFML/lib/x86/sfml-system-d.lib"
+		)
+
+		set_property(TARGET openal32 PROPERTY IMPORTED_LOCATION_DEBUG
+			"${CMAKE_SOURCE_DIR}/Dependencies/SFML/bin/x86/openal32.dll"
+		)
+		set_property(TARGET sfml-audio PROPERTY IMPORTED_LOCATION_DEBUG
+			"${CMAKE_SOURCE_DIR}/Dependencies/SFML/bin/x86/sfml-audio-d-2.dll"
+		)
+		set_property(TARGET sfml-network PROPERTY IMPORTED_LOCATION_DEBUG
+			"${CMAKE_SOURCE_DIR}/Dependencies/SFML/bin/x86/sfml-network-d-2.dll"
+		)
+		set_property(TARGET sfml-system PROPERTY IMPORTED_LOCATION_DEBUG
+			"${CMAKE_SOURCE_DIR}/Dependencies/SFML/bin/x86/sfml-system-d-2.dll"
+		)
+	endif()
+
+	#freetype
+	add_library(freetype SHARED IMPORTED GLOBAL)
+	if(CMAKE_SIZEOF_VOID_P EQUAL 8)# 64 bits
+		set_property(TARGET freetype PROPERTY IMPORTED_IMPLIB_RELEASE
+			"${CMAKE_SOURCE_DIR}/Dependencies/FreeType/lib/win64/freetype.lib"
+		)
+		set_property(TARGET freetype PROPERTY IMPORTED_LOCATION_RELEASE
+		
+		)
+		set_property(TARGET freetype PROPERTY IMPORTED_IMPLIB_DEBUG
+			"${CMAKE_SOURCE_DIR}/Dependencies/FreeType/lib/win64/freetype.lib"
+		)
+		set_property(TARGET freetype PROPERTY IMPORTED_LOCATION_DEBUG
+
+		)
+	else()
+		set_property(TARGET freetype PROPERTY IMPORTED_IMPLIB_RELEASE
+			"${CMAKE_SOURCE_DIR}/Dependencies/FreeType/lib/win32/freetype.lib"
+		)
+		set_property(TARGET freetype PROPERTY IMPORTED_LOCATION_RELEASE
+
+		)
+		set_property(TARGET freetype PROPERTY IMPORTED_IMPLIB_DEBUG
+			"${CMAKE_SOURCE_DIR}/Dependencies/FreeType/lib/win32/freetype.lib"
+		)
+		set_property(TARGET freetype PROPERTY IMPORTED_LOCATION_DEBUG
+
+		)
+	endif()
+
+endif()
+
 # Define the include DIRs
 if(${BUILD_PLATFORM} STREQUAL wasm)
 	message(STATUS "Configuring wasm include directories")
 	include_directories(
-		${CMAKE_SOURCE_DIR}/Dependencies/EMSFML/src/SFML/Network/IpAddress.cpp
-		${CMAKE_SOURCE_DIR}/Dependencies/EMSFML/src/SFML/Network/Packet.cpp
-		${CMAKE_SOURCE_DIR}/Dependencies/EMSFML/src/SFML/Network/Socket.cpp
-		${CMAKE_SOURCE_DIR}/Dependencies/EMSFML/src/SFML/Network/TcpSocket.cpp
-		${CMAKE_SOURCE_DIR}/Dependencies/EMSFML/src/SFML/Network/UdpSocket.cpp
-		${CMAKE_SOURCE_DIR}/Dependencies/EMSFML/src/SFML/Network/Emscripten/SocketImpl.cpp
-
-		${CMAKE_SOURCE_DIR}/Dependencies/EMSFML/src/SFML/System/Err.cpp
-		${CMAKE_SOURCE_DIR}/Dependencies/EMSFML/src/SFML/System/Clock.cpp
-		${CMAKE_SOURCE_DIR}/Dependencies/EMSFML/src/SFML/System/Sleep.cpp
-		${CMAKE_SOURCE_DIR}/Dependencies/EMSFML/src/SFML/System/Time.cpp
-		${CMAKE_SOURCE_DIR}/Dependencies/EMSFML/src/SFML/System/Unix/ClockImpl.cpp
-		${CMAKE_SOURCE_DIR}/Dependencies/EMSFML/src/SFML/System/Unix/SleepImpl.cpp
+		${CMAKE_SOURCE_DIR}/Dependencies/EMSFML/src/SFML/Network
+		${CMAKE_SOURCE_DIR}/Dependencies/EMSFML/src/SFML/System
 	)
 else()
 	message(STATUS "Configuring app include directories")
+
 	include_directories(
 		${CMAKE_SOURCE_DIR}/Dependencies/glm
 	)
 
-	if (UNIX)
+	if (UNIX)#zlib
 		find_package(ZLIB REQUIRED)
 		include_directories(${ZLIB_INCLUDE_DIRS})
 		target_link_libraries(${PROJECT_NAME} ${ZLIB_LIBRARIES})
@@ -163,12 +445,12 @@ else()
 		include_directories(
 			${PROJECT_NAME}
 			${CMAKE_SOURCE_DIR}/Dependencies/zlib/include/zlib
-			
 		)
-		target_link_libraries(
-			${PROJECT_NAME}
-			${CMAKE_SOURCE_DIR}/Dependencies/zlib/lib/zlib/zlib.lib
-			${CMAKE_SOURCE_DIR}/Dependencies/zlib/lib/zlib/zlibstatic.lib
+		target_link_libraries(${PROJECT_NAME} zlib)
+		
+		add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
+    	COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    	$<TARGET_FILE:zlib> $<TARGET_FILE_DIR:${PROJECT_NAME}>
 		)
 	endif(UNIX)
 
@@ -179,7 +461,7 @@ else()
 		include_directories(${OPENGL_INCLUDE_DIRS})
 		target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES})
 
-		if (UNIX)
+		if (UNIX)#glew
 			find_package(GLEW REQUIRED)
 			include_directories(${GLEW_INCLUDE_DIRS})
 			target_link_libraries(${PROJECT_NAME} ${GLEW_LIBRARIES})
@@ -187,25 +469,16 @@ else()
 			include_directories(
 				${PROJECT_NAME}
 				${CMAKE_SOURCE_DIR}/Dependencies/GLEW/include
-				
 			)
-			target_link_libraries(${PROJECT_NAME} opengl32)
-			if(CMAKE_SIZEOF_VOID_P EQUAL 8)# 64 bits
-				target_link_libraries(
-					${PROJECT_NAME}
-					#${CMAKE_SOURCE_DIR}/Dependencies/GLEW/lib/Release/x64/glew32.lib
-					${CMAKE_SOURCE_DIR}/Dependencies/GLEW/lib/Release/x64/glew32s.lib
-				)
-			elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)# 32 bits
-				target_link_libraries(
-					${PROJECT_NAME}
-					#${CMAKE_SOURCE_DIR}/Dependencies/GLEW/lib/Release/Win32/glew32.lib
-					${CMAKE_SOURCE_DIR}/Dependencies/GLEW/lib/Release/Win32/glew32s.lib
-				)
-			endif()
+			target_link_libraries(${PROJECT_NAME} glew)
+
+			add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			$<TARGET_FILE:glew> $<TARGET_FILE_DIR:${PROJECT_NAME}>
+			)
 		endif(UNIX)
 
-		if (UNIX)
+		if (UNIX)#sdl2
 			find_package(SDL2 REQUIRED)
 			find_package(SDL2_image REQUIRED)
 			include_directories(${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS})
@@ -215,26 +488,31 @@ else()
 				${PROJECT_NAME}
 				${CMAKE_SOURCE_DIR}/Dependencies/SDL2/include
 			)
-			if(CMAKE_SIZEOF_VOID_P EQUAL 8)# 64 bits
-				target_link_libraries(
-					${PROJECT_NAME}
-					${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x64/SDL2_image.lib
-					${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x64/SDL2.lib
-					${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x64/SDL2main.lib
-					${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x64/SDL2test.lib
-				)
-			elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)# 32 bits
-				target_link_libraries(
-					${PROJECT_NAME}
-					${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x86/SDL2_image.lib
-					${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x86/SDL2.lib
-					${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x86/SDL2main.lib
-					${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x86/SDL2test.lib
-				)
-			endif()
+			target_link_libraries(${PROJECT_NAME} SDL2_image SDL2 SDL2main)
+
+			add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			$<TARGET_FILE:SDL2_image> $<TARGET_FILE_DIR:${PROJECT_NAME}>
+			)
+
+			add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			$<TARGET_FILE:SDL2> $<TARGET_FILE_DIR:${PROJECT_NAME}>
+			)
+
+			add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			$<TARGET_FILE:libpng16-16> $<TARGET_FILE_DIR:${PROJECT_NAME}>
+			)
+
+			add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			$<TARGET_FILE:zlib1> $<TARGET_FILE_DIR:${PROJECT_NAME}>
+			)
+			
 		endif(UNIX)
 
-		if (UNIX)
+		if (UNIX)#sfml
 			find_package(SFML REQUIRED COMPONENTS system network audio)
 			target_link_libraries(${PROJECT_NAME} sfml-system sfml-network sfml-audio)
 		else()
@@ -242,71 +520,31 @@ else()
 				${PROJECT_NAME}
 				${CMAKE_SOURCE_DIR}/Dependencies/SFML/include
 			)
-			if(CMAKE_SIZEOF_VOID_P EQUAL 8)# 64 bits
-				if(${CMAKE_BUILD_TYPE} STREQUAL Release)
-					target_link_libraries(
-						${PROJECT_NAME}
-						${CMAKE_SOURCE_DIR}/Dependencies/SFML/lib/x64/openal32.lib
+			target_link_libraries(${PROJECT_NAME} openal32 sfml-audio sfml-network sfml-system)
 
-						#${CMAKE_SOURCE_DIR}/Dependencies/SFML/lib/x64/sfml-audio-s.lib
-						${CMAKE_SOURCE_DIR}/Dependencies/SFML/lib/x64/sfml-audio.lib
+			add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			$<TARGET_FILE:openal32> $<TARGET_FILE_DIR:${PROJECT_NAME}>
+			)
 
-						#${CMAKE_SOURCE_DIR}/Dependencies/SFML/lib/x64/sfml-network-s.lib
-						${CMAKE_SOURCE_DIR}/Dependencies/SFML/lib/x64/sfml-network.lib
+			add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			$<TARGET_FILE:sfml-audio> $<TARGET_FILE_DIR:${PROJECT_NAME}>
+			)
 
-						#${CMAKE_SOURCE_DIR}/Dependencies/SFML/lib/x64/sfml-system-s.lib
-						${CMAKE_SOURCE_DIR}/Dependencies/SFML/lib/x64/sfml-system.lib
-					)
-				else()
-					target_link_libraries(
-						${PROJECT_NAME}
-						${CMAKE_SOURCE_DIR}/Dependencies/SFML/lib/x64/openal32.lib
+			add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			$<TARGET_FILE:sfml-network> $<TARGET_FILE_DIR:${PROJECT_NAME}>
+			)
 
-						${CMAKE_SOURCE_DIR}/Dependencies/SFML/lib/x64/sfml-audio-d.lib
-						#${CMAKE_SOURCE_DIR}/Dependencies/SFML/lib/x64/sfml-audio-s-d.lib
+			add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			$<TARGET_FILE:sfml-system> $<TARGET_FILE_DIR:${PROJECT_NAME}>
+			)
 
-						${CMAKE_SOURCE_DIR}/Dependencies/SFML/lib/x64/sfml-network-d.lib
-						#${CMAKE_SOURCE_DIR}/Dependencies/SFML/lib/x64/sfml-network-s-d.lib
-
-						${CMAKE_SOURCE_DIR}/Dependencies/SFML/lib/x64/sfml-system-d.lib
-						#${CMAKE_SOURCE_DIR}/Dependencies/SFML/lib/x64/sfml-system-s-d.lib
-					)
-				endif()
-				
-			elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)# 32 bits
-				if(${CMAKE_BUILD_TYPE} STREQUAL Release)
-					target_link_libraries(
-						${PROJECT_NAME}
-						${CMAKE_SOURCE_DIR}/Dependencies/SFML/lib/x86/openal32.lib
-
-						#${CMAKE_SOURCE_DIR}/Dependencies/SFML/lib/x86/sfml-audio-s.lib
-						${CMAKE_SOURCE_DIR}/Dependencies/SFML/lib/x86/sfml-audio.lib
-
-						#${CMAKE_SOURCE_DIR}/Dependencies/SFML/lib/x86/sfml-network-s.lib
-						${CMAKE_SOURCE_DIR}/Dependencies/SFML/lib/x86/sfml-network.lib
-
-						#${CMAKE_SOURCE_DIR}/Dependencies/SFML/lib/x86/sfml-system-s.lib
-						${CMAKE_SOURCE_DIR}/Dependencies/SFML/lib/x86/sfml-system.lib
-					)
-				else()
-					target_link_libraries(
-						${PROJECT_NAME}
-						${CMAKE_SOURCE_DIR}/Dependencies/SFML/lib/x86/openal32.lib
-
-						${CMAKE_SOURCE_DIR}/Dependencies/SFML/lib/x86/sfml-audio-d.lib
-						#${CMAKE_SOURCE_DIR}/Dependencies/SFML/lib/x86/sfml-audio-s-d.lib
-
-						${CMAKE_SOURCE_DIR}/Dependencies/SFML/lib/x86/sfml-network-d.lib
-						#${CMAKE_SOURCE_DIR}/Dependencies/SFML/lib/x86/sfml-network-s-d.lib
-
-						${CMAKE_SOURCE_DIR}/Dependencies/SFML/lib/x86/sfml-system-d.lib
-						#${CMAKE_SOURCE_DIR}/Dependencies/SFML/lib/x86/sfml-system-s-d.lib
-					)
-				endif()
-			endif()
 		endif(UNIX)
 
-		if (UNIX)
+		if (UNIX)#freetype
 			find_package(Freetype REQUIRED)
 			include_directories(${FREETYPE_INCLUDE_DIRS})
 			target_link_libraries(${PROJECT_NAME} ${FREETYPE_LIBRARIES})
@@ -314,22 +552,28 @@ else()
 			include_directories(
 				${PROJECT_NAME}
 				${CMAKE_SOURCE_DIR}/Dependencies/Freetype/include
-				
 			)
-			if(CMAKE_SIZEOF_VOID_P EQUAL 8)# 64 bits
-				target_link_libraries(
-					${PROJECT_NAME}
-					${CMAKE_SOURCE_DIR}/Dependencies/FreeType/lib/win64/freetype.lib
-				)
-			elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)# 32 bits
-				target_link_libraries(
-					${PROJECT_NAME}
-					${CMAKE_SOURCE_DIR}/Dependencies/FreeType/lib/win32/freetype.lib
-				)
-			endif()
+			target_link_libraries(${PROJECT_NAME} freetype)
+
 		endif(UNIX)
 
+		#add missing folders
+		add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E copy_directory
+				${CMAKE_CURRENT_SOURCE_DIR}/data/img $<TARGET_FILE_DIR:${PROJECT_NAME}>/data
+		)
+
+		add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E copy_directory
+				${CMAKE_CURRENT_SOURCE_DIR}/data/music $<TARGET_FILE_DIR:${PROJECT_NAME}>/data
+		)
+
+		add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E copy_directory
+				${CMAKE_CURRENT_SOURCE_DIR}/src/shader $<TARGET_FILE_DIR:${PROJECT_NAME}>/src/shader
+		)
 	else() #server
 
 	endif()
 endif()
+

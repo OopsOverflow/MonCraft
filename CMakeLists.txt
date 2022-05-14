@@ -1,16 +1,19 @@
-cmake_minimum_required(VERSION 3.9 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
+set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "" FORCE) #remove RelWithDebInfo and MinSizeRel
 
 # set the project name
 set(PROJECT_NAME "MonCraft")
 project(${PROJECT_NAME} VERSION 1.1.1)
 
 set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_STANDARD_REQUIRED OFF)
+
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20")
 
 if ("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
   message(SEND_ERROR "In-source builds are not allowed.")
 endif ()
-set(CMAKE_BUILD_TYPE Release)
+
 set(BUILD_TARGET client CACHE STRING "Choose build target client/server" )
 set(BUILD_PLATFORM app CACHE STRING "Choose targer platform wasm/app" )
 
@@ -47,9 +50,10 @@ else()
 
 endif()
 
-
 # Create build directories
 file(MAKE_DIRECTORY ${BUILDPATH})
+
+set(${PROJECT_BINARY_DIR} ${BUILDPATH})
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 include_directories(SYSTEM "${CMAKE_SOURCE_DIR}/Dependencies")
