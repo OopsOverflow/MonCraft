@@ -14,10 +14,10 @@ if ("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
   message(SEND_ERROR "In-source builds are not allowed.")
 endif ()
 
+
 set(BUILD_TARGET client CACHE STRING "Choose build target client/server" )
 set(BUILD_PLATFORM app CACHE STRING "Choose targer platform wasm/app" )
 
-message(STATUS "Build Type : ${CMAKE_BUILD_TYPE}")
 message(STATUS "Build Target : ${BUILD_TARGET}")
 message(STATUS "Build Platform : ${BUILD_PLATFORM}")
 
@@ -25,17 +25,10 @@ set(BUILDPATH ${CMAKE_BINARY_DIR})
 
 if(${BUILD_PLATFORM} STREQUAL wasm)
     set(BUILDPATH "${BUILDPATH}/Wasm")
+    set(${BUILD_TARGET} client) #server not allowed
 
 else()
     set(BUILDPATH "${BUILDPATH}/App")
-
-endif()
-
-if(${CMAKE_BUILD_TYPE} STREQUAL Release)
-    set(BUILDPATH "${BUILDPATH}/Release")
-    
-else()
-    set(BUILDPATH "${BUILDPATH}/Debug")
 
 endif()
 
@@ -52,10 +45,11 @@ endif()
 
 # Create build directories
 file(MAKE_DIRECTORY ${BUILDPATH})
+SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG "${BUILDPATH}/Debug")
+SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE "${BUILDPATH}/Release")
+message(STATUS "Written in ${BUILDPATH}")
 
-set(${PROJECT_BINARY_DIR} ${BUILDPATH})
-
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
+set(${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 include_directories(SYSTEM "${CMAKE_SOURCE_DIR}/Dependencies")
 include_directories(SYSTEM "${CMAKE_SOURCE_DIR}/OpenGL/src")
 
