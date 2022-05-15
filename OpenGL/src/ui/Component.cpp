@@ -292,8 +292,8 @@ bool Component::bubbleEvent(Event const& evt) { // goes to the bottom
 
   else {
     bool bubbled = false;
-    for(auto it = children.rbegin(); it != children.rend(); it++) {
-      Component* child = *it;
+    for(int it = children.size()-1; it >= 0; it--) {
+      Component* child = children.at(it);
       bubbled |= child->bubbleEvent(evt);
     }
     if(!bubbled) {
