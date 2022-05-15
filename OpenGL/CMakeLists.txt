@@ -120,11 +120,14 @@ else() # server
 	list(APPEND SOURCE
 		${CMAKE_CURRENT_SOURCE_DIR}/src/Server.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/multiplayer/server/Server.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/src/multiplayer/server/UdpServer.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/src/multiplayer/server/WebSocketServer.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/src/multiplayer/server/Server.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/multiplayer/server/Client.cpp
 	)
+
+	if(${BUILD_PLATFORM} STREQUAL wasm)
+		list(APPEND SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/src/multiplayer/server/WebSocketServer.cpp)
+	else()
+		list(APPEND SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/src/multiplayer/server/UdpServer.cpp)
+	endif()
 
 endif()
 
@@ -454,29 +457,56 @@ else()
 		)
 	endif(UNIX)
 
+	if (UNIX)#glew
+		find_package(GLEW REQUIRED)
+		include_directories(${GLEW_INCLUDE_DIRS})
+		target_link_libraries(${PROJECT_NAME} ${GLEW_LIBRARIES})
+	else()
+		include_directories(
+			${PROJECT_NAME}
+			${CMAKE_SOURCE_DIR}/Dependencies/GLEW/include
+		)
+		target_link_libraries(${PROJECT_NAME} glew)
+
+		add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different
+		$<TARGET_FILE:glew> $<TARGET_FILE_DIR:${PROJECT_NAME}>
+		)
+	endif(UNIX)
+
+	if (UNIX)#sfml
+		find_package(SFML REQUIRED COMPONENTS system network)
+		target_link_libraries(${PROJECT_NAME} sfml-system sfml-network)
+	else()
+		include_directories(
+			${PROJECT_NAME}
+			${CMAKE_SOURCE_DIR}/Dependencies/SFML/include
+		)
+		target_link_libraries(${PROJECT_NAME} openal32 sfml-network sfml-system)
+
+		add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different
+		$<TARGET_FILE:openal32> $<TARGET_FILE_DIR:${PROJECT_NAME}>
+		)
+
+		add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different
+		$<TARGET_FILE:sfml-network> $<TARGET_FILE_DIR:${PROJECT_NAME}>
+		)
+
+		add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different
+		$<TARGET_FILE:sfml-system> $<TARGET_FILE_DIR:${PROJECT_NAME}>
+		)
+
+	endif(UNIX)
+
 	if(${BUILD_TARGET} STREQUAL client)
 
 		cmake_policy(SET CMP0072 NEW) # OpenGL GLVND
 		find_package(OpenGL REQUIRED)
 		include_directories(${OPENGL_INCLUDE_DIRS})
 		target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES})
-
-		if (UNIX)#glew
-			find_package(GLEW REQUIRED)
-			include_directories(${GLEW_INCLUDE_DIRS})
-			target_link_libraries(${PROJECT_NAME} ${GLEW_LIBRARIES})
-		else()
-			include_directories(
-				${PROJECT_NAME}
-				${CMAKE_SOURCE_DIR}/Dependencies/GLEW/include
-			)
-			target_link_libraries(${PROJECT_NAME} glew)
-
-			add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
-			COMMAND ${CMAKE_COMMAND} -E copy_if_different
-			$<TARGET_FILE:glew> $<TARGET_FILE_DIR:${PROJECT_NAME}>
-			)
-		endif(UNIX)
 
 		if (UNIX)#sdl2
 			find_package(SDL2 REQUIRED)
@@ -513,33 +543,18 @@ else()
 		endif(UNIX)
 
 		if (UNIX)#sfml
-			find_package(SFML REQUIRED COMPONENTS system network audio)
-			target_link_libraries(${PROJECT_NAME} sfml-system sfml-network sfml-audio)
+			find_package(SFML REQUIRED COMPONENTS audio)
+			target_link_libraries(${PROJECT_NAME} sfml-audio)
 		else()
 			include_directories(
 				${PROJECT_NAME}
 				${CMAKE_SOURCE_DIR}/Dependencies/SFML/include
 			)
-			target_link_libraries(${PROJECT_NAME} openal32 sfml-audio sfml-network sfml-system)
-
-			add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
-			COMMAND ${CMAKE_COMMAND} -E copy_if_different
-			$<TARGET_FILE:openal32> $<TARGET_FILE_DIR:${PROJECT_NAME}>
-			)
+			target_link_libraries(${PROJECT_NAME} sfml-audio)
 
 			add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
 			COMMAND ${CMAKE_COMMAND} -E copy_if_different
 			$<TARGET_FILE:sfml-audio> $<TARGET_FILE_DIR:${PROJECT_NAME}>
-			)
-
-			add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
-			COMMAND ${CMAKE_COMMAND} -E copy_if_different
-			$<TARGET_FILE:sfml-network> $<TARGET_FILE_DIR:${PROJECT_NAME}>
-			)
-
-			add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
-			COMMAND ${CMAKE_COMMAND} -E copy_if_different
-			$<TARGET_FILE:sfml-system> $<TARGET_FILE_DIR:${PROJECT_NAME}>
 			)
 
 		endif(UNIX)
@@ -578,7 +593,7 @@ else()
 				${CMAKE_CURRENT_SOURCE_DIR}/src/shader $<TARGET_FILE_DIR:${PROJECT_NAME}>/src/shader
 		)
 	else() #server
-
+		
 	endif()
 endif()
 
