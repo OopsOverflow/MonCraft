@@ -132,20 +132,20 @@ public:
     return map[index];
   }
 
-  /**
-   * Gets the raw pointer data
-   */
-  const T* c_ptr() const {
-    return map;
-  }
+  ///**
+  // * Gets the raw pointer data
+  // */
+  //const T* c_ptr() const {
+  //  return map;
+  //}
 
-  /**
-   * Gets the raw pointer data (mutable)
-   * /!\ proceed with care when manipulating the internal memory.
-   */
-  T* mut_c_ptr() {
-    return map;
-  }
+  ///**
+  // * Gets the raw pointer data (mutable)
+  // * /!\ proceed with care when manipulating the internal memory.
+  // */
+  //T* mut_c_ptr() {
+  //  return map;
+  //}
 
   /**
    * Gets the DataStore size
