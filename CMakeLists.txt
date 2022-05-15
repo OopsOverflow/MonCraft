@@ -23,20 +23,19 @@ message(STATUS "Build Platform : ${BUILD_PLATFORM}")
 
 set(BUILDPATH ${CMAKE_BINARY_DIR})
 
-if(${BUILD_PLATFORM} STREQUAL wasm)
-    set(BUILDPATH "${BUILDPATH}/Wasm")
-    set(${BUILD_TARGET} client) #server not allowed
-
-else()
-    set(BUILDPATH "${BUILDPATH}/App")
-
-endif()
-
 if(${BUILD_TARGET} STREQUAL client)
     set(BUILDPATH "${BUILDPATH}/Client")
     add_definitions(-DMONCRAFT_CLIENT)
     add_definitions(-DGLEW_STATIC)
     
+    if(${BUILD_PLATFORM} STREQUAL wasm)
+        set(BUILDPATH "${BUILDPATH}/Wasm")
+
+    else()
+        set(BUILDPATH "${BUILDPATH}/App")
+
+    endif()
+
 else()
     set(BUILDPATH "${BUILDPATH}/Server")
     add_definitions(-DMONCRAFT_SERVER)
