@@ -7,11 +7,11 @@
 
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/OopsOverflow/MonCraft/main/screeshots/monjang-logo.png?token=ARYPWFCI53SSJADIC4J6IBTAVFSMW" alt="3d"/>
+  <img src="screenshots/monjang-logo.png" alt="3d"/>
 </p>
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/OopsOverflow/MonCraft/main/screeshots/Moncraft.png?token=ARYPWFGCLONOBK3FGOCJEGDAVKEJI" alt="3d"/>
+  <img src="screenshots/Moncraft.png" alt="3d"/>
 </p>
 
 
@@ -77,7 +77,7 @@ MonCraft has a fully fledged shadow engine that makes the terrain look more beau
 Shadows also give the terrain some realism and highlight its features. 
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/OopsOverflow/MonCraft/main/screeshots/shadows.png?token=ARYPWFB65TAS54BXX3AXBTDAVFAKK" alt="shadows"/>
+  <img src="screenshots/shadows.png" alt="shadows"/>
 </p>
 
 
@@ -95,7 +95,7 @@ The areas with less lighting have a more dense fog.
 
 ***Same place, different direction :***
 <p align="center">
-  <img src="https://raw.githubusercontent.com/OopsOverflow/MonCraft/main/screeshots/fog.png?token=ARYPWFFCNL3AWIZRAZC7A5TAVFCBE" alt="fog"/>
+  <img src="screenshots/fog.png" alt="fog"/>
 </p>
 
 
@@ -110,14 +110,14 @@ How does it work❓
 
 ***Fog moving :*** 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/OopsOverflow/MonCraft/main/screeshots/fogmoving.gif?token=ARYPWFBSOC6AN7BMOOJFLILAVFCEE" alt="shadows"/>
+  <img src="screenshots/fogmoving.gif" alt="shadows"/>
 </p>
 
 #### But Wait There's More 💣
 *`Fractal Brownian Motion`* was also implemented to give fog some procedurally generated animation.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/OopsOverflow/MonCraft/main/screeshots/fbm.gif?token=ARYPWFADLFC6NW7ZYAHMLDTAVFACK" alt="fbm"/>
+  <img src="screenshots/fbm.gif" alt="fbm"/>
 </p>
 
 ```math
@@ -133,7 +133,7 @@ This is a global method, i.e., the brightness value of every point of the object
 Shadows do not remain black, they dissipate, creating halftones and obscuring those places in space that get less light.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/OopsOverflow/MonCraft/main/screeshots/aoc.png?token=ARYPWFHQPZ7RW2Q7XBTA5ETAVFQDY" alt="aoc"/>
+  <img src="screenshots/aoc.png" alt="aoc"/>
 </p>
 
 *****
@@ -144,7 +144,7 @@ Unique artistic textures with vivid colors. Made-In-House by the one & only @Pin
 Mojang don't DMCA us. 
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/OopsOverflow/MonCraft/main/screeshots/beautiful.png?token=ARYPWFCHH36PJURBJ4MMZLLAVFQNS" alt="world"/>
+  <img src="screenshots/beautiful.png" alt="world"/>
 </p>
 
 #### Procedurally Generated World 🌐
@@ -152,14 +152,14 @@ Mojang don't DMCA us.
 It's finely tuned to give different terrain heights and features, such as hills, mountains and oceans.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/OopsOverflow/MonCraft/main/screeshots/collage.png?token=ARYPWFEMU3IK7YJ4UOXHA3TAVFQGW" alt="noise"/>
+  <img src="screenshots/collage.png" alt="noise"/>
 </p>
 
 #### Superb Terrain Blending 🌲
 `src/noise/voronoi.cpp` is used for a seamless biome blending ⚡
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/OopsOverflow/MonCraft/main/screeshots/voronoi.png?token=ARYPWFBCTVMAG63IGZ42AZLAVFQIU" alt="vor"/>
+  <img src="screenshots/voronoi.png" alt="vor"/>
 </p>
 
 #### Biomes 🌍
@@ -196,7 +196,7 @@ That way, we render first solid blocks, then transparent blocks in the direction
 It might look like a bug but it's ***definetly a feature***.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/OopsOverflow/MonCraft/main/screeshots/chunk3d.png?token=ARYPWFGFYCVNEZMXHKKIH5LAVFQTA" alt="3d"/>
+  <img src="screenshots/chunk3d.png" alt="3d"/>
 </p>
 
 ***
@@ -237,13 +237,13 @@ We are proud to say that our game is well optimized so far, on medium budget car
 #### Block Breaking ⛏
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/OopsOverflow/MonCraft/main/screeshots/wood.gif?token=ARYPWFFMXHXCPIFVXHD4D3DAVFTEW" alt="3d"/>
+  <img src="screenshots/wood.gif" alt="3d"/>
 </p>
 
 ### Player Movement Animations
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/OopsOverflow/MonCraft/main/screeshots/animat.png?token=ARYPWFB7IIPDB2L2MY4VEO3AVFTCY" alt="wood"/>
+  <img src="screenshots/animat.png" alt="wood"/>
 </p>
 
 ### Water Surface Animation
@@ -254,7 +254,7 @@ We only calculate specular light on water blocks, so in order to differentiate i
 
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/OopsOverflow/MonCraft/main/screeshots/water_normal.gif?token=ARYPWFEUZS4IN2LH5XUKGKDAVFRNG" alt="water"/>
+  <img src="screenshots/water_normal.gif" alt="water"/>
 </p>
 
 ****
