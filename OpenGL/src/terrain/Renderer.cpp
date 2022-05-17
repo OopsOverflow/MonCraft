@@ -9,11 +9,11 @@
 #include <vector>
 
 #include "gl/Shader.hpp"
-#include "terrain/Chunk.hpp"
+#include "terrain/ChunkMesh.hpp"
 #include "terrain/ChunkMap.hpp"
 #include "terrain/World.hpp"
 
-class AbstractChunk;
+class Chunk;
 
 using namespace glm;
 
@@ -23,10 +23,9 @@ Renderer::Renderer()
 
 
 void Renderer::render(Camera const& camera) {
-  std::vector<std::pair<float, std::shared_ptr<Chunk>>> toRender;
+  std::vector<std::pair<float, std::shared_ptr<ChunkMesh>>> toRender;
 
-  world.chunks.for_each([&](std::shared_ptr<AbstractChunk> absChunk) {
-    auto chunk = std::static_pointer_cast<Chunk>(absChunk);
+  world.chunks.for_each([&](std::shared_ptr<ChunkMesh> chunk) {
     if(!chunk->hasData()) {
       return;
       chunk->update();
@@ -70,10 +69,9 @@ void Renderer::render(Camera const& camera) {
 }
 
 void Renderer::renderSolid(Camera const& camera) {
-  std::vector<std::pair<float, std::shared_ptr<Chunk>>> toRender;
+  std::vector<std::pair<float, std::shared_ptr<ChunkMesh>>> toRender;
 
-  world.chunks.for_each([&](std::shared_ptr<AbstractChunk> absChunk) {
-    auto chunk = std::static_pointer_cast<Chunk>(absChunk);
+  world.chunks.for_each([&](std::shared_ptr<ChunkMesh> chunk) {
     if(!chunk->hasData()) {
       chunk->update();
       return;

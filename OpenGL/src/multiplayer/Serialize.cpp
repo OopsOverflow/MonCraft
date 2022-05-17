@@ -8,7 +8,7 @@
 #include "save/SaveManager.hpp"
 #include "terrain/BlockArray.hpp"
 
-class AbstractChunk;
+class Chunk;
 
 sf::Packet& serde::operator<<(sf::Packet& packet, Entity const& entity) {
 	packet << entity.bodyNode.loc;
@@ -113,14 +113,14 @@ sf::Packet& serde::operator>>(sf::Packet& packet, BlockArray& record) {
   return packet;
 }
 
-sf::Packet& serde::operator<<(sf::Packet &packet, AbstractChunk const& chunk) {
+sf::Packet& serde::operator<<(sf::Packet &packet, ChunkImpl const& chunk) {
   std::ostringstream stream;
   stream << chunk;
   packet << stream.str();
   return packet;
 }
 
-sf::Packet& serde::operator>>(sf::Packet &packet, AbstractChunk &chunk) {
+sf::Packet& serde::operator>>(sf::Packet &packet, ChunkImpl &chunk) {
   std::string str;
   packet >> str;
   std::stringstream stream(str);

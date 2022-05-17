@@ -105,7 +105,7 @@ void OrientableModel::genFace(glm::ivec3 pos, BlockFace face, Orientable_Block* 
 }
 
 void OrientableModel::generateMesh(ivec3 pos, Block* block, std::array<Block*, 26> const& neighbors, MeshData& data) const {
-  auto orient = dynamic_cast<Orientable_Block*>(block);
+  auto orient = static_cast<Orientable_Block*>(block);
 
   for(auto const& off : blockFaceOffsets) {
     auto neigh = neighbors[off.first];

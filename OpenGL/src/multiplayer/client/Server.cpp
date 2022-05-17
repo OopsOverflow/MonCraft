@@ -3,7 +3,7 @@
 #include <iostream>
 
 #include "terrain/World.hpp"
-#include "terrain/AbstractChunk.hpp"
+#include "terrain/ChunkImpl.hpp"
 #include "entity/character/Character.hpp"
 #include "save/ServerConfig.hpp"
 
@@ -27,7 +27,7 @@ void Server::remOldChunks() {
   World& world = World::getInst();
   glm::ivec3 cpos = floor(getPlayer()->getPosition() / 16.f);
   int delCount = std::max<int>((unsigned int)world.chunks.size() - maxChunks, 0);
-  world.chunks.eraseChunks(delCount, [=](AbstractChunk* chunk) {
+  world.chunks.eraseChunks(delCount, [=](Chunk* chunk) {
     glm::ivec3 dist = abs(cpos - chunk->chunkPos);
     return dist.x > renderDistH + 1 || dist.z > renderDistH + 1 || dist.y > renderDistV + 1;
   });

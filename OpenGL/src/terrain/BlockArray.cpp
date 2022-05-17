@@ -32,7 +32,5 @@ void BlockArray::copyToWorld() {
   for(auto const& elt : *this) {
     std::istringstream ss(elt.ser);
     world.setBlock(elt.pos, AllBlocks::deserialize(ss));
-    Block* block = world.getBlock(elt.pos);
-    std::cout << (int)block->type << std::endl;
   }
 }
