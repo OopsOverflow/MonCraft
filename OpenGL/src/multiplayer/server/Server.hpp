@@ -3,6 +3,7 @@
 #include <SFML/System/Clock.hpp>
 #include <SFML/System/Time.hpp>
 #include <map>
+#include <mutex>
 
 #include "multiplayer/terrain/TerrainGenerator.hpp"
 #include "multiplayer/server/Client.hpp"
@@ -58,4 +59,5 @@ protected:
   sf::Clock clock;
   const sf::Time timeout = sf::seconds(10);
   const sf::Time tickAckLimit = sf::milliseconds(1000);
+  std::mutex mutex;
 };

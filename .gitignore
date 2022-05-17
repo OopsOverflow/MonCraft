@@ -6,8 +6,10 @@ OpenGL/Debug
 OpenGL/Release
 
 build
+cert
 CMakeCache.txt
 CMakeSettings.json
 
+.clang-format
 .vs
 CMakeFiles

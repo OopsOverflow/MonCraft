@@ -21,7 +21,7 @@ set(SOURCE
 	${CMAKE_CURRENT_SOURCE_DIR}/src/entity/Entities.cpp
 
 	${CMAKE_CURRENT_SOURCE_DIR}/src/terrain/World.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/src/terrain/AbstractChunk.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/terrain/Chunk.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/terrain/ChunkMap.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/terrain/BlockArray.cpp
 
@@ -59,14 +59,14 @@ if(${BUILD_TARGET} STREQUAL client)
 		${CMAKE_CURRENT_SOURCE_DIR}/src/save/ClientConfig.cpp
 
 		${CMAKE_CURRENT_SOURCE_DIR}/src/terrain/Renderer.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/src/terrain/Chunk.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/src/terrain/ChunkMesh.cpp
 
 		${CMAKE_CURRENT_SOURCE_DIR}/src/entity/Member.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/entity/character/Character.cpp
-		
+
 		${CMAKE_CURRENT_SOURCE_DIR}/src/controller/KeyboardController.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/controller/MouseController.cpp
-		
+
 		${CMAKE_CURRENT_SOURCE_DIR}/src/interface/widgets/MonCraftButton.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/interface/widgets/ComboBox.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/interface/widgets/ParamList.cpp
@@ -83,7 +83,7 @@ if(${BUILD_TARGET} STREQUAL client)
 		${CMAKE_CURRENT_SOURCE_DIR}/src/interface/GameMenu.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/interface/Overlay.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/interface/DebugOverlay.cpp
-		
+
 		${CMAKE_CURRENT_SOURCE_DIR}/src/ui/Component.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/ui/Root.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/ui/Pane.cpp
@@ -99,11 +99,11 @@ if(${BUILD_TARGET} STREQUAL client)
 		${CMAKE_CURRENT_SOURCE_DIR}/src/ui/style/Style.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/ui/style/Type.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/ui/style/Specification.cpp
-		
+
 		${CMAKE_CURRENT_SOURCE_DIR}/src/multiplayer/client/Server.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/multiplayer/client/ClientServer.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/multiplayer/client/RealServer.cpp
-		
+
 		${CMAKE_CURRENT_SOURCE_DIR}/src/gl/ShadowMap.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/gl/Shader.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/gl/Camera.cpp
@@ -189,16 +189,16 @@ if(NOT UNIX)
 	add_library(SDL2main SHARED IMPORTED GLOBAL)
 	add_library(zlib1 SHARED IMPORTED GLOBAL)
 	if(CMAKE_SIZEOF_VOID_P EQUAL 8)# 64 bits
-		set_property(TARGET SDL2_image PROPERTY IMPORTED_IMPLIB_RELEASE 
+		set_property(TARGET SDL2_image PROPERTY IMPORTED_IMPLIB_RELEASE
 			"${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x64/SDL2_image.lib"
 		)
-		set_property(TARGET SDL2 PROPERTY IMPORTED_IMPLIB_RELEASE 
+		set_property(TARGET SDL2 PROPERTY IMPORTED_IMPLIB_RELEASE
 			"${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x64/SDL2.lib"
 		)
-		set_property(TARGET SDL2main PROPERTY IMPORTED_IMPLIB_RELEASE 
+		set_property(TARGET SDL2main PROPERTY IMPORTED_IMPLIB_RELEASE
 			"${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x64/SDL2main.lib"
 		)
-			
+
 		set_property(TARGET libpng16-16 PROPERTY IMPORTED_LOCATION_RELEASE
 			"${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x64/libpng16-16.dll"
 		)
@@ -211,17 +211,17 @@ if(NOT UNIX)
 		set_property(TARGET zlib1 PROPERTY IMPORTED_LOCATION_RELEASE
 			"${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x64/zlib1.dll"
 		)
-		
-		set_property(TARGET SDL2_image PROPERTY IMPORTED_IMPLIB_DEBUG 
+
+		set_property(TARGET SDL2_image PROPERTY IMPORTED_IMPLIB_DEBUG
 			"${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x64/SDL2_image.lib"
 		)
-		set_property(TARGET SDL2 PROPERTY IMPORTED_IMPLIB_DEBUG 
+		set_property(TARGET SDL2 PROPERTY IMPORTED_IMPLIB_DEBUG
 			"${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x64/SDL2.lib"
 		)
-		set_property(TARGET SDL2main PROPERTY IMPORTED_IMPLIB_DEBUG 
+		set_property(TARGET SDL2main PROPERTY IMPORTED_IMPLIB_DEBUG
 			"${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x64/SDL2main.lib"
 		)
-			
+
 		set_property(TARGET libpng16-16 PROPERTY IMPORTED_LOCATION_DEBUG
 			"${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x64/libpng16-16.dll"
 		)
@@ -235,16 +235,16 @@ if(NOT UNIX)
 			"${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x64/zlib1.dll"
 		)
 	else()
-		set_property(TARGET SDL2_image PROPERTY IMPORTED_IMPLIB_RELEASE 
+		set_property(TARGET SDL2_image PROPERTY IMPORTED_IMPLIB_RELEASE
 			"${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x86/SDL2_image.lib"
 		)
-		set_property(TARGET SDL2 PROPERTY IMPORTED_IMPLIB_RELEASE 
+		set_property(TARGET SDL2 PROPERTY IMPORTED_IMPLIB_RELEASE
 			"${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x86/SDL2.lib"
 		)
-		set_property(TARGET SDL2main PROPERTY IMPORTED_IMPLIB_RELEASE 
+		set_property(TARGET SDL2main PROPERTY IMPORTED_IMPLIB_RELEASE
 			"${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x86/SDL2main.lib"
 		)
-			
+
 		set_property(TARGET libpng16-16 PROPERTY IMPORTED_LOCATION_RELEASE
 			"${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x86/libpng16-16.dll"
 		)
@@ -257,17 +257,17 @@ if(NOT UNIX)
 		set_property(TARGET zlib1 PROPERTY IMPORTED_LOCATION_RELEASE
 			"${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x86/zlib1.dll"
 		)
-		
-		set_property(TARGET SDL2_image PROPERTY IMPORTED_IMPLIB_DEBUG 
+
+		set_property(TARGET SDL2_image PROPERTY IMPORTED_IMPLIB_DEBUG
 			"${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x86/SDL2_image.lib"
 		)
-		set_property(TARGET SDL2 PROPERTY IMPORTED_IMPLIB_DEBUG 
+		set_property(TARGET SDL2 PROPERTY IMPORTED_IMPLIB_DEBUG
 			"${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x86/SDL2.lib"
 		)
-		set_property(TARGET SDL2main PROPERTY IMPORTED_IMPLIB_DEBUG 
+		set_property(TARGET SDL2main PROPERTY IMPORTED_IMPLIB_DEBUG
 			"${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x86/SDL2main.lib"
 		)
-			
+
 		set_property(TARGET libpng16-16 PROPERTY IMPORTED_LOCATION_DEBUG
 			"${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x86/libpng16-16.dll"
 		)
@@ -401,7 +401,7 @@ if(NOT UNIX)
 			"${CMAKE_SOURCE_DIR}/Dependencies/FreeType/lib/win64/freetype.lib"
 		)
 		set_property(TARGET freetype PROPERTY IMPORTED_LOCATION_RELEASE
-		
+
 		)
 		set_property(TARGET freetype PROPERTY IMPORTED_IMPLIB_DEBUG
 			"${CMAKE_SOURCE_DIR}/Dependencies/FreeType/lib/win64/freetype.lib"
@@ -450,7 +450,7 @@ else()
 			${CMAKE_SOURCE_DIR}/Dependencies/zlib/include/zlib
 		)
 		target_link_libraries(${PROJECT_NAME} zlib)
-		
+
 		add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
     	COMMAND ${CMAKE_COMMAND} -E copy_if_different
     	$<TARGET_FILE:zlib> $<TARGET_FILE_DIR:${PROJECT_NAME}>
@@ -539,7 +539,7 @@ else()
 			COMMAND ${CMAKE_COMMAND} -E copy_if_different
 			$<TARGET_FILE:zlib1> $<TARGET_FILE_DIR:${PROJECT_NAME}>
 			)
-			
+
 		endif(UNIX)
 
 		if (UNIX)#sfml
@@ -593,7 +593,6 @@ else()
 				${CMAKE_CURRENT_SOURCE_DIR}/src/shader $<TARGET_FILE_DIR:${PROJECT_NAME}>/src/shader
 		)
 	else() #server
-		
+
 	endif()
 endif()
-

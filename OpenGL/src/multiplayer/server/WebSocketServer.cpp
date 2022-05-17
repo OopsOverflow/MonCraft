@@ -25,8 +25,7 @@ bool WebSocketServer::stopSignal = false;
 
 WebSocketServer::WebSocketServer(unsigned short port)
   : Server(port)
-{
-}
+{}
 
 WebSocketServer::~WebSocketServer()
 {}
@@ -60,6 +59,7 @@ void WebSocketServer::loop() {
 void WebSocketServer::run() {
   inst = this;
   std::signal(SIGINT, &WebSocketServer::sigStop);
+  server.set_validate_handler(bind(&WebSocketServer::on_validate, this, _1));
   server.set_message_handler(bind(&WebSocketServer::on_message, this, _1, _2));
   server.set_tls_init_handler(bind(&WebSocketServer::on_tls_init, this));
   server.set_open_handler(bind(&WebSocketServer::on_open, this, _1));
@@ -90,6 +90,13 @@ ClientID WebSocketServer::htdl_to_client(websocketpp::connection_hdl hdl) {
 
 websocketpp::connection_hdl WebSocketServer::client_to_hdl(ClientID client) {
   return clientLookup.find(client)->second;
+}
+
+bool WebSocketServer::on_validate(websocketpp::connection_hdl hdl) {
+  auto con = server.get_con_from_hdl(hdl);
+  auto ps = con->get_requested_subprotocols();
+  con->select_subprotocol("binary");
+  return true;
 }
 
 void WebSocketServer::on_open(websocketpp::connection_hdl hdl) {

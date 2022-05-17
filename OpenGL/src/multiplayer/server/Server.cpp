@@ -6,7 +6,6 @@
 #include <glm/glm.hpp>
 #include <stddef.h>
 #include <algorithm>
-#include <deque>
 #include <iostream>
 #include <memory>
 #include <utility>
@@ -18,7 +17,7 @@
 #include "multiplayer/server/Client.hpp"
 #include "save/SaveManager.hpp"
 #include "save/ServerConfig.hpp"
-#include "terrain/AbstractChunk.hpp"
+#include "terrain/ChunkImpl.hpp"
 #include "terrain/BlockArray.hpp"
 #include "terrain/ChunkMap.hpp"
 #include "terrain/World.hpp"
@@ -54,6 +53,7 @@ void Server::broadcast(sf::Packet& packet) {
 }
 
 void Server::on_packet_recv(sf::Packet& packet, ClientID client) {
+  std::lock_guard<std::mutex> lck(mutex);
   PacketHeader header;
   packet >> header;
   auto type = header.getType();
@@ -70,11 +70,11 @@ void Server::on_packet_recv(sf::Packet& packet, ClientID client) {
     }
     else {
       it->second.lastUpdate = clock.getElapsedTime();
-      if(type == PacketType::PING) handle_ping(it->second);
-      else if(type == PacketType::BLOCKS) handle_blocks(it->second, packet);
+      if(type == PacketType::PING)             handle_ping(it->second);
+      else if(type == PacketType::BLOCKS)      handle_blocks(it->second, packet);
       else if(type == PacketType::PLAYER_TICK) handle_player_tick(it->second, packet);
-      else if(type == PacketType::CHUNKS) handle_chunks(it->second, packet);
-      else if(type == PacketType::ACK_CHUNKS) handle_ack_chunks(it->second, packet);
+      else if(type == PacketType::CHUNKS)      handle_chunks(it->second, packet);
+      else if(type == PacketType::ACK_CHUNKS)  handle_ack_chunks(it->second, packet);
     }
   }
 
@@ -82,6 +82,7 @@ void Server::on_packet_recv(sf::Packet& packet, ClientID client) {
 }
 
 void Server::on_server_tick() {
+  std::lock_guard<std::mutex> lck(mutex);
   packet_entity_tick();
   packet_chunks();
   remOldChunks();
@@ -140,19 +141,17 @@ void Server::packet_chunks() {
 
   for(auto& pair : clients) {
     auto& client = pair.second;
-    int count = std::min(client.waitingChunks.size(), maxChunks);
 
-    std::vector<std::shared_ptr<AbstractChunk>> chunks;
-    for(int i = 0, j = 0; i < count; i++) {
-      ivec3 cpos = client.waitingChunks.at(j);
+    std::vector<std::shared_ptr<Chunk>> chunks;
+    for(auto it = client.waitingChunks.begin(); it != client.waitingChunks.end() && chunks.size() < maxChunks; ) {
+      ivec3 cpos = *it;
       auto chunk = world.chunks.find(cpos);
 
-      if(chunk) {
+      if(chunk && chunk->isComputed()) {
         chunks.push_back(chunk);
-        client.waitingChunks.pop_front(); // move chunk to the back (low priority)
-        client.waitingChunks.push_back(cpos);
+        it = client.waitingChunks.erase(it);
       }
-      else j++;
+      else ++it;
     }
 
     if(chunks.size() > 0) {
@@ -223,6 +222,7 @@ void Server::handle_player_tick(Client& client, sf::Packet& packet) {
 
 void Server::handle_chunks(Client& client, sf::Packet& packet) {
   packet >> client.waitingChunks;
+    
   updateWaitingChunks();
 }
 
@@ -281,7 +281,7 @@ void Server::remOldChunks() {
   }
 
   int delCount = std::max<int>(world.chunks.size() - maxChunks, 0);
-  world.chunks.eraseChunks(delCount, [&](AbstractChunk* chunk) {
+  world.chunks.eraseChunks(delCount, [&](Chunk* chunk) {
     for(auto const& cpos : playersCpos) {
       ivec3 dist = abs(cpos - chunk->chunkPos);
       bool cond = true;
@@ -300,7 +300,6 @@ void Server::handleTimeouts() {
   auto curTime = clock.getElapsedTime();
 
   for(auto it = clients.cbegin(); it != clients.cend(); ) {
-    auto client = *it;
     if(curTime - it->second.lastUpdate > timeout) {
       Identifier uid = it->second.uid;
       std::cout << "Client timeout: uid " << uid << std::endl;

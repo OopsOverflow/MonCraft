@@ -5,6 +5,7 @@
 #include "terrain/ChunkMap.hpp"
 #include "entity/Entities.hpp"
 #include "blocks/Block.hpp"
+#include "terrain/ChunkImpl.hpp"
 
 /**
 * Manages the chunks, load/unload, render and manipulation of blocks.

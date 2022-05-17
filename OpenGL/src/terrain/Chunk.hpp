@@ -1,97 +1,70 @@
 #pragma once
 
-#include <GL/glew.h>
 #include <memory>
-#include <mutex>
+#include <array>
 #include <glm/glm.hpp>
 
-#include "terrain/AbstractChunk.hpp"
+#include "util/DataStore.hpp"
 #include "blocks/Block.hpp"
-#include "gl/Mesh.hpp"
 
 /**
 * Describes a subdivision of the terrain.
 */
 
-class Chunk : public AbstractChunk {
+class Chunk : public DataStore<Block::unique_ptr_t, 3> {
 public:
   Chunk(glm::ivec3 chunkPos, int chunkSize);
-  ~Chunk();
-
-  Chunk(Chunk const&) = delete;
-  Chunk& operator=(Chunk const&) = delete;
 
   /**
   * Sets the block at the given position.
   * The coordinate origin is in chunk space i.e. (0,0,0) is the chunk corner.
   * This will update the mesh and, if possible, neighboring meshes as well.
   */
-  void setBlock(glm::ivec3 pos, Block::unique_ptr_t block) override;
+  void setBlock(glm::ivec3 pos, Block::unique_ptr_t block);
 
+  bool hasAllNeighbors() const;
+  bool hasNoNeighbors() const;
+  
   /**
-  * Signals the chunk that it must be recomputed on next update.
-  * The chunk will be recomputed only if it was loaded (see isComputed).
+  * Compute the chunk.
   */
-  void markToRecompute();
+  void compute() { computed = true; }
 
   /**
   * If the chunk has been computed at least once.
   */
-  bool isComputed();
+  bool isComputed() { return computed; } 
+
+  /// Some lookups for efficient code execution ///
 
   /**
-  * (re)calculates the mesh data from the blocks.
-  * Thread safe.
+  * Gets the neighbor at a given offset chunk position.
+  * off must be between (-1,-1,-1) and (1, 1, 1) and different from (0, 0, 0).
   */
-  void compute() override;
+  std::weak_ptr<Chunk> getNeighbor(glm::ivec3 off);
 
   /**
-  * New's the Chunk if computed. Must be called before draws,
-  * only in the main thread.
+  * The chunk's neighbors are the 26 chunks adjacent.
+  * Order: see neighborOffsets
   */
-  void update() override;
+  std::array<std::weak_ptr<Chunk>, 26> neighbors;
 
   /**
-  * Gl draw the solid block mesh.
-  * It will avoid draw calls for empty chunks.
+  * Specifies the offset position of a neighbor relative to the current chunk.
+  * The nth neighbor occupies the position chunkPos + neighborOffsets[n]
   */
-  void drawSolid();
+  static const std::array<glm::ivec3, 26> neighborOffsets;
 
   /**
-  * Gl draw the transparent block mesh.
-  * Avoids draw calls for empty chunks.
-  * it will draw back to front in the order given by dir, i.e. if dir.x > 0,
-  * draws the left-most quad first and the right-most quad last.
+  * Gets n such that neighborOffsets[n] = -neighborOffsets[neighborOffsetsInverse[n]]
   */
-  void drawTransparent(glm::vec3 dir);
+  static const std::array<int, 26> neighborOffsetsInverse;
 
-  void drawAllAsSolid();
+  const glm::ivec3 chunkPos; // chunk index, not world position (position is size * chunkPos)
 
-  /**
-  * Tells whether the chunks contains solid faces.
-  */
-  bool hasSolidData() const;
-
-  /**
-  * Tells whether the chunks contains transparent faces.
-  */
-  bool hasTransparentData() const;
-
-  /**
-  * Tells whether the chunks contains transparent or solid faces.
-  */
-  bool hasData() const;
-
-private:
-  // the gl mesh and corresponding data.
-  std::unique_ptr<Mesh> mesh;
-  GLuint solidOffset = 0;
-  glm::uvec3 transpOffset = glm::uvec3(0);
-
-  MeshData meshData;
-  bool loaded;
+protected:
+  void setBlockAccrossChunks(glm::ivec3 pos, Block::unique_ptr_t block);
+  Block* getBlockAccrossChunks(glm::ivec3 pos) const;
+  
   bool computed;
-  bool mustRecompute;
-  std::mutex computeMutex;
-  glm::mat4 model;
 };

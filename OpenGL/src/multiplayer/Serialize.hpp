@@ -7,8 +7,8 @@
 
 #include "entity/Entity.hpp"
 #include "multiplayer/Packet.hpp"
+#include "terrain/ChunkImpl.hpp"
 
-class AbstractChunk;
 class BlockArray;
 
 
@@ -24,8 +24,8 @@ namespace serde {
   sf::Packet& operator<<(sf::Packet& packet, BlockArray const& record);
   sf::Packet& operator>>(sf::Packet& packet, BlockArray& record);
 
-  sf::Packet& operator<<(sf::Packet &packet, AbstractChunk const& chunk);
-  sf::Packet& operator>>(sf::Packet &packet, AbstractChunk& chunk);
+  sf::Packet& operator<<(sf::Packet &packet, ChunkImpl const& chunk);
+  sf::Packet& operator>>(sf::Packet &packet, ChunkImpl& chunk);
 
   template <typename T, typename = void>
   struct is_valid_cont : std::false_type {};
