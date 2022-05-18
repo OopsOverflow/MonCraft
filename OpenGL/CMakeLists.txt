@@ -427,53 +427,46 @@ if(NOT UNIX)
 endif()
 
 # Define the include DIRs
-if(${BUILD_PLATFORM} STREQUAL wasm)
-	message(STATUS "Configuring wasm include directories")
-	include_directories(
-		${CMAKE_SOURCE_DIR}/Dependencies/EMSFML/src/SFML/Network
-		${CMAKE_SOURCE_DIR}/Dependencies/EMSFML/src/SFML/System
-	)
+message(STATUS "Configuring include directories")
+
+include_directories(
+	${CMAKE_SOURCE_DIR}/Dependencies/glm
+)
+
+if (UNIX)#zlib
+	find_package(ZLIB REQUIRED)
+	include_directories(${ZLIB_INCLUDE_DIRS})
+	target_link_libraries(${PROJECT_NAME} ${ZLIB_LIBRARIES})
 else()
-	message(STATUS "Configuring app include directories")
-
 	include_directories(
-		${CMAKE_SOURCE_DIR}/Dependencies/glm
+		${PROJECT_NAME}
+		${CMAKE_SOURCE_DIR}/Dependencies/zlib/include/zlib
 	)
+	target_link_libraries(${PROJECT_NAME} zlib)
 
-	if (UNIX)#zlib
-		find_package(ZLIB REQUIRED)
-		include_directories(${ZLIB_INCLUDE_DIRS})
-		target_link_libraries(${PROJECT_NAME} ${ZLIB_LIBRARIES})
-	else()
-		include_directories(
-			${PROJECT_NAME}
-			${CMAKE_SOURCE_DIR}/Dependencies/zlib/include/zlib
-		)
-		target_link_libraries(${PROJECT_NAME} zlib)
+	add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E copy_if_different
+	$<TARGET_FILE:zlib> $<TARGET_FILE_DIR:${PROJECT_NAME}>
+	)
+endif(UNIX)
 
-		add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
-    	COMMAND ${CMAKE_COMMAND} -E copy_if_different
-    	$<TARGET_FILE:zlib> $<TARGET_FILE_DIR:${PROJECT_NAME}>
-		)
-	endif(UNIX)
+if (UNIX)#glew
+	find_package(GLEW REQUIRED)
+	include_directories(${GLEW_INCLUDE_DIRS})
+	target_link_libraries(${PROJECT_NAME} ${GLEW_LIBRARIES})
+else()
+	include_directories(
+		${PROJECT_NAME}
+		${CMAKE_SOURCE_DIR}/Dependencies/GLEW/include
+	)
+	target_link_libraries(${PROJECT_NAME} glew)
 
-	if (UNIX)#glew
-		find_package(GLEW REQUIRED)
-		include_directories(${GLEW_INCLUDE_DIRS})
-		target_link_libraries(${PROJECT_NAME} ${GLEW_LIBRARIES})
-	else()
-		include_directories(
-			${PROJECT_NAME}
-			${CMAKE_SOURCE_DIR}/Dependencies/GLEW/include
-		)
-		target_link_libraries(${PROJECT_NAME} glew)
-
-		add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E copy_if_different
-		$<TARGET_FILE:glew> $<TARGET_FILE_DIR:${PROJECT_NAME}>
-		)
-	endif(UNIX)
-
+	add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E copy_if_different
+	$<TARGET_FILE:glew> $<TARGET_FILE_DIR:${PROJECT_NAME}>
+	)
+endif(UNIX)
+if(NOT ${BUILD_PLATFORM} STREQUAL wasm)
 	if (UNIX)#sfml
 		find_package(SFML REQUIRED COMPONENTS system network)
 		target_link_libraries(${PROJECT_NAME} sfml-system sfml-network)
@@ -500,48 +493,50 @@ else()
 		)
 
 	endif(UNIX)
+endif()
 
-	if(${BUILD_TARGET} STREQUAL client)
+if(${BUILD_TARGET} STREQUAL client)
+	message(STATUS "Configuring client include directories")
+	cmake_policy(SET CMP0072 NEW) # OpenGL GLVND
+	find_package(OpenGL REQUIRED)
+	include_directories(${OPENGL_INCLUDE_DIRS})
+	target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES})
 
-		cmake_policy(SET CMP0072 NEW) # OpenGL GLVND
-		find_package(OpenGL REQUIRED)
-		include_directories(${OPENGL_INCLUDE_DIRS})
-		target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES})
+	if (UNIX)#sdl2
+		find_package(SDL2 REQUIRED)
+		find_package(SDL2_image REQUIRED)
+		include_directories(${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS})
+		target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES})
+	else()
+		include_directories(
+			${PROJECT_NAME}
+			${CMAKE_SOURCE_DIR}/Dependencies/SDL2/include
+		)
+		target_link_libraries(${PROJECT_NAME} SDL2_image SDL2 SDL2main)
 
-		if (UNIX)#sdl2
-			find_package(SDL2 REQUIRED)
-			find_package(SDL2_image REQUIRED)
-			include_directories(${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS})
-			target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES})
-		else()
-			include_directories(
-				${PROJECT_NAME}
-				${CMAKE_SOURCE_DIR}/Dependencies/SDL2/include
-			)
-			target_link_libraries(${PROJECT_NAME} SDL2_image SDL2 SDL2main)
+		add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different
+		$<TARGET_FILE:SDL2_image> $<TARGET_FILE_DIR:${PROJECT_NAME}>
+		)
 
-			add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
-			COMMAND ${CMAKE_COMMAND} -E copy_if_different
-			$<TARGET_FILE:SDL2_image> $<TARGET_FILE_DIR:${PROJECT_NAME}>
-			)
+		add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different
+		$<TARGET_FILE:SDL2> $<TARGET_FILE_DIR:${PROJECT_NAME}>
+		)
 
-			add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
-			COMMAND ${CMAKE_COMMAND} -E copy_if_different
-			$<TARGET_FILE:SDL2> $<TARGET_FILE_DIR:${PROJECT_NAME}>
-			)
+		add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different
+		$<TARGET_FILE:libpng16-16> $<TARGET_FILE_DIR:${PROJECT_NAME}>
+		)
 
-			add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
-			COMMAND ${CMAKE_COMMAND} -E copy_if_different
-			$<TARGET_FILE:libpng16-16> $<TARGET_FILE_DIR:${PROJECT_NAME}>
-			)
+		add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different
+		$<TARGET_FILE:zlib1> $<TARGET_FILE_DIR:${PROJECT_NAME}>
+		)
 
-			add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
-			COMMAND ${CMAKE_COMMAND} -E copy_if_different
-			$<TARGET_FILE:zlib1> $<TARGET_FILE_DIR:${PROJECT_NAME}>
-			)
+	endif(UNIX)
 
-		endif(UNIX)
-
+	if(NOT ${BUILD_PLATFORM} STREQUAL wasm)
 		if (UNIX)#sfml
 			find_package(SFML REQUIRED COMPONENTS audio)
 			target_link_libraries(${PROJECT_NAME} sfml-audio)
@@ -558,41 +553,53 @@ else()
 			)
 
 		endif(UNIX)
-
-		if (UNIX)#freetype
-			find_package(Freetype REQUIRED)
-			include_directories(${FREETYPE_INCLUDE_DIRS})
-			target_link_libraries(${PROJECT_NAME} ${FREETYPE_LIBRARIES})
-		else()
-			include_directories(
-				${PROJECT_NAME}
-				${CMAKE_SOURCE_DIR}/Dependencies/Freetype/include
-			)
-			target_link_libraries(${PROJECT_NAME} freetype)
-
-		endif(UNIX)
-
-		#add missing folders
-		add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
-			COMMAND ${CMAKE_COMMAND} -E copy_directory
-				${CMAKE_CURRENT_SOURCE_DIR}/data/img $<TARGET_FILE_DIR:${PROJECT_NAME}>/data/img
-		)
-
-		add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
-			COMMAND ${CMAKE_COMMAND} -E copy_directory
-				${CMAKE_CURRENT_SOURCE_DIR}/data/music $<TARGET_FILE_DIR:${PROJECT_NAME}>/data/music
-		)
-
-		add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
-			COMMAND ${CMAKE_COMMAND} -E copy_directory
-				${CMAKE_CURRENT_SOURCE_DIR}/data/fonts $<TARGET_FILE_DIR:${PROJECT_NAME}>/data/fonts
-		)
-
-		add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
-			COMMAND ${CMAKE_COMMAND} -E copy_directory
-				${CMAKE_CURRENT_SOURCE_DIR}/src/shader $<TARGET_FILE_DIR:${PROJECT_NAME}>/src/shader
-		)
-	else() #server
-
 	endif()
+
+	if (UNIX)#freetype
+		find_package(Freetype REQUIRED)
+		include_directories(${FREETYPE_INCLUDE_DIRS})
+		target_link_libraries(${PROJECT_NAME} ${FREETYPE_LIBRARIES})
+	else()
+		include_directories(
+			${PROJECT_NAME}
+			${CMAKE_SOURCE_DIR}/Dependencies/Freetype/include
+		)
+		target_link_libraries(${PROJECT_NAME} freetype)
+
+	endif(UNIX)
+
+	#add missing folders
+	add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_directory
+			${CMAKE_CURRENT_SOURCE_DIR}/data/img $<TARGET_FILE_DIR:${PROJECT_NAME}>/data/img
+	)
+
+	add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_directory
+			${CMAKE_CURRENT_SOURCE_DIR}/data/music $<TARGET_FILE_DIR:${PROJECT_NAME}>/data/music
+	)
+
+	add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_directory
+			${CMAKE_CURRENT_SOURCE_DIR}/data/fonts $<TARGET_FILE_DIR:${PROJECT_NAME}>/data/fonts
+	)
+
+	add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_directory
+			${CMAKE_CURRENT_SOURCE_DIR}/src/shader $<TARGET_FILE_DIR:${PROJECT_NAME}>/src/shader
+	)
+
+
+	if(${BUILD_PLATFORM} STREQUAL wasm)
+		message(STATUS "Configuring wasm include directories")
+		include_directories(
+			${CMAKE_SOURCE_DIR}/Dependencies/EMSFML/src/SFML/Network
+			${CMAKE_SOURCE_DIR}/Dependencies/EMSFML/src/SFML/System
+		)
+		
+	endif()
+
+else() #server
+message(STATUS "Configuring server include directories")
 endif()
+

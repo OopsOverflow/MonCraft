@@ -30,6 +30,27 @@ if(${BUILD_TARGET} STREQUAL client)
     
     if(${BUILD_PLATFORM} STREQUAL wasm)
         set(BUILDPATH "${BUILDPATH}/Wasm")
+        set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS
+            "-g0 -O3
+            -fno-rtti
+            -Wno-error
+            -Wno-pthreads-mem-growth
+            -s WASM=1
+            -pthread -s PTHREAD_POOL_SIZE=5
+            -s USE_SDL=2
+            -s USE_SDL_IMAGE=2
+            -s SDL2_IMAGE_FORMATS='[\"png\"]'
+            -s USE_SDL_GFX=2
+            -s USE_FREETYPE=2
+            -s ALLOW_MEMORY_GROWTH=1
+            -s MAX_WEBGL_VERSION=2
+            -s MIN_WEBGL_VERSION=2
+            -s FULL_ES2=1
+            -s FULL_ES3=1
+            -s WEBSOCKET_URL='wss://pi.thissma.fr:55001'
+            -s WEBSOCKET_SUBPROTOCOL='binary'
+            --preload-file data --preload-file src -Wno-unused-command-line-argument")
+            # MESON_ARGS = --prefix=${PWD}/WASM --cross-file=emscripten-crossfile.txt --default-library=static --buildtype=debug --wrap-mode=nofallback
 
     else()
         set(BUILDPATH "${BUILDPATH}/App")
