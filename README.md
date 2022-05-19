@@ -31,6 +31,24 @@ Why Buy Minecraft When You Can Code it Yourself? 💹
  2. SFML
  3. GLEW
  4. GLM
+ 5. Freetype
+
+### App
+
+Use cmake with the flags `BUILD_TARGET=<client|server>` and `CMAKE_BUILD_TYPE=<Debug|Release>`.
+Default is client / Release.
+
+Run in build directory: `cd <Client|Server>/App/<Debug|Release> && ./MonCraft`
+
+### WASM
+
+ - Install and activate emscripten.
+ - Use the following commands, but replace stuff in `<>` with appropriate:
+ - `mkdir build && cd build`
+ - `emcmake cmake -DBUILD_TARGET=client -DCMAKE_BUILD_TYPE=<Debug|Release> -DBUILD_PLATFORM=wasm ..`
+ - `make -j<N>`
+ - `emrun --no_browser --serve_after_close --serve_root Client/Wasm/<Debug|Release>/ Client/Wasm/<Debug|Release>/MonCraft.html`
+
 
 ****
 
