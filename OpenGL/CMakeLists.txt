@@ -161,7 +161,12 @@ if (NOT ${BUILD_PLATFORM} STREQUAL wasm)
 	target_link_libraries(${PROJECT_NAME} ${ZLIB_LIBRARIES})
 
 	find_package(SFML REQUIRED COMPONENTS system network audio)
-	target_link_libraries(${PROJECT_NAME} sfml-system sfml-network sfml-audio)
+	if(UNIX)
+		target_link_libraries(${PROJECT_NAME} sfml-system sfml-network sfml-audio)
+	else()
+		include_directories(${SFML_INCLUDE_DIRS})
+		target_link_libraries(${PROJECT_NAME} ${SFML_LIBRARIES})
+	endif()
 
 	find_package(GLEW REQUIRED)
 	include_directories(${GLEW_INCLUDE_DIRS})
