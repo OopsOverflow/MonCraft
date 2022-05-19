@@ -161,8 +161,7 @@ if (NOT ${BUILD_PLATFORM} STREQUAL wasm)
 	target_link_libraries(${PROJECT_NAME} ${ZLIB_LIBRARIES})
 
 	find_package(SFML REQUIRED COMPONENTS system network audio)
-	include_directories(${SFML_INCLUDE_DIRS})
-	target_link_libraries(${PROJECT_NAME} ${SFML_LIBRARIES})
+	target_link_libraries(${PROJECT_NAME} sfml-system sfml-network sfml-audio)
 
 	find_package(GLEW REQUIRED)
 	include_directories(${GLEW_INCLUDE_DIRS})
@@ -269,7 +268,7 @@ else ()
 			"-fno-rtti \
 			-Wno-pthreads-mem-growth \
 			-pthread \
-			-s PTHREAD_POOL_SIZE=5 \*
+			-s PTHREAD_POOL_SIZE=5 \
 			-s WASM=1 \
 			-s USE_SDL=2 \
 			-s USE_SDL_IMAGE=2 \

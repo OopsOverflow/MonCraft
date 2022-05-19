@@ -1,0 +1,19 @@
+set(SDL2_IMAGE_FOUND TRUE)
+add_library(SDL2_image SHARED IMPORTED GLOBAL)
+
+set(SDL2_IMAGE_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/Dependencies/SDL2/include")
+
+if(CMAKE_SIZEOF_VOID_P EQUAL 8) # 64 bits
+set(SDL2_IMAGE_LIBRARIES "${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x64/SDL2_image.lib")
+set_property(TARGET SDL2_image PROPERTY IMPORTED_LOCATION "${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x64/SDL2_image.dll")
+else()
+set(SDL2_IMAGE_LIBRARIES "${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x86/SDL2_image.lib")
+set_property(TARGET SDL2_image PROPERTY IMPORTED_LOCATION "${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x86/SDL2_image.dll")
+endif()
+
+mark_as_advanced(SDL2_IMAGE_LIBRARIES SDL2_IMAGE_INCLUDE_DIRS)
+
+add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
+COMMAND ${CMAKE_COMMAND} -E copy_if_different
+$<TARGET_FILE:SDL2_image> $<TARGET_FILE_DIR:${PROJECT_NAME}>
+)

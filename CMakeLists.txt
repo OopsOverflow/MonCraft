@@ -50,7 +50,12 @@ SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG "${BUILDPATH}/Debug")
 SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE "${BUILDPATH}/Release")
 message(STATUS "Written in ${BUILDPATH}")
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
+if (UNIX)
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/linux/")
+else ()
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/windows/")
+endif ()
+
 include_directories(SYSTEM "${CMAKE_SOURCE_DIR}/Dependencies")
 include_directories(SYSTEM "${CMAKE_SOURCE_DIR}/OpenGL/src")
 
