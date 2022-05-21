@@ -37,6 +37,12 @@ bool KeyboardController::handleKeyReleased(Key k) {
     else if (code == config.sprint) {
         sprint = false;
     }
+    else if (code == config.view) {
+        if(view == CharacterView::FIRST_PERSON)
+            view = CharacterView::THIRD_PERSON;
+        else
+            view = CharacterView::FIRST_PERSON;
+    }
 
     return true;
 }
