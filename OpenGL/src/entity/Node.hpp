@@ -3,6 +3,8 @@
 #include <glm/glm.hpp>
 #include <vector>
 
+#include "util/Bezier.hpp"
+
 /**
  * A node is a geometry point in space. It holds a position, location and scale
  * and can be hierarchical, i.e. can have children, which will apply their
@@ -40,7 +42,10 @@ public:
    */
   void addChild(Node* child);
 
+  void lookAt(glm::highp_dvec3 point);
+
 private:
   void computeTransforms(glm::highp_dmat4 parentModel);
   std::vector<Node*> children;
+
 };

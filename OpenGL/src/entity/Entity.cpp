@@ -15,12 +15,11 @@ static const highp_dmat4 I(1.0);
 
 float Entity::gravity = 32.f;
 
-Entity::Entity(Hitbox hitbox) :
+Entity::Entity(Hitbox hitbox, EntityProperties properties) :
 	state(State::Idle),
-	maxSpeed(4.3f), maxAccel(10.f), verticalFriction(0.f), horizontalFriction(5.f),
-	jumpSpeed(10.5f), maxFallSpeed(78.4f),
+	properties(properties),
 	speed(0), accel(0), direction(0),
-  onFloor(false),
+  	onFloor(false),
 	hitbox(std::move(hitbox))
 {}
 
@@ -34,14 +33,14 @@ void Entity::walk(vec3 dir) {
 	else {
 		state = State::Walking;
 		direction = normalize(dir);
-		accel = direction * maxAccel;
+		accel = direction * properties.maxAccel;
 	}
 }
 
 void Entity::jump() {
 	if(onFloor) {
 		onFloor = false;
-		speed.y = jumpSpeed;
+		speed.y = properties.jumpSpeed;
 	}
 }
 
@@ -66,8 +65,8 @@ void Entity::update(float dt) {
 		acc += vec3(0, -1, 0) * gravity; // gravity
 
 		// disable friction in accel direction
-		vec2 dragXZ = vec2(speed.x, speed.z) * horizontalFriction;
-		float dragY = speed.y * verticalFriction;
+		vec2 dragXZ = vec2(speed.x, speed.z) * properties.horizontalFriction;
+		float dragY = speed.y * properties.verticalFriction;
 		vec2 accXZ = vec2(acc.x, acc.z);
 		if(accXZ != vec2(0))
 			dragXZ -= normalize(accXZ) * max(dot(dragXZ, normalize(accXZ)), 0.f); // substract component in accel direction from drag
@@ -75,11 +74,11 @@ void Entity::update(float dt) {
 		// update speed
 		speed = speed + acc * dt - vec3(dragXZ.x, dragY, dragXZ.y) * dt;
 		vec2 speedXZ = vec2(speed.x, speed.z);
-		if(length(speedXZ) >= maxSpeed) {
-			speedXZ = normalize(speedXZ) * maxSpeed;
+		if(length(speedXZ) >= properties.maxSpeed) {
+			speedXZ = normalize(speedXZ) * properties.maxSpeed;
 			speed = vec3(speedXZ.x, speed.y, speedXZ.y);
 		}
-		speed.y = max(speed.y, -maxFallSpeed);
+		speed.y = max(speed.y, -properties.maxFallSpeed);
 
 		// apply motion
 		auto rotMatrix = rotate(I, bodyNode.rot.y + headNode.rot.y, {0, 1, 0});

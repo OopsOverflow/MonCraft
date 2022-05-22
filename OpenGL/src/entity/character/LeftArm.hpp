@@ -41,17 +41,38 @@ static const std::vector<GLfloat> leftArmUVs= {
   11 / 16.f, 8 / 16.f,
 };
 
+static const std::vector<std::pair<float, glm::vec3> > leftArmKeyframes = {
+    
+    {0.f, {0.f, -1.f, 0.f}},
+    {2.f/ 3.f, {0.05f, -1.f, -0.005f}},
+    {4.f/ 3.f, {-0.05f, -1.f, -0.005f}},
+    {2.f, {0.f, -1.f, 0.f}},
+    {8.f/ 3.f, {0.05f, -1.f, 0.005f}},
+    {10.f/ 3.f, {-0.05f, -1.f, 0.005f}},
+    {4.f, {0.f, -1.f, 0.f}},
+
+
+};
+
 class LeftArm : public Member {
 
 public:
   LeftArm() {
-    glm::mat4 I(1.f);
-
+    const glm::mat4 I(1.f);
+    
     geometryModel = glm::scale(I, {4, 12, 4});
     geometryModel = glm::translate(I, {0, -4, 0}) * geometryModel;
+    //rotate arm by 90 degrees
+    glm::quat rot = glm::quat({-glm::pi<float>()/2.f, 0.f, 0.f});
+    geometryModel = (glm::mat4)glm::mat4_cast(rot) * geometryModel;
 
     node.loc = {6, 4, 0};
+
+    glm::vec3 line = (leftArmKeyframes[5].second - leftArmKeyframes[1].second) * smoothing;
+    Spline idleAnim(leftArmKeyframes, -line, line);
+    anim = std::make_unique<Animation>(idleAnim);
   }
+
 
 protected:
   std::unique_ptr<Mesh> createMesh() override {

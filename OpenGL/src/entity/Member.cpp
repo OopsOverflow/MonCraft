@@ -32,3 +32,8 @@ void Member::draw() {
   glUniformMatrix4fv(Shader::getActive()->getUniform(MATRIX_MODEL), 1, GL_FALSE, glm::value_ptr(modelMatrix));
   glDrawElements(GL_TRIANGLES, mesh->getVertexCount(), GL_UNSIGNED_INT, nullptr);
 }
+
+
+void Member::animate(float dt) {
+  node.lookAt(anim->computeAnim(dt));
+}

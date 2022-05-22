@@ -2,8 +2,10 @@
 
 #include <memory>
 #include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 #include "Node.hpp"
+#include "util/Animation.hpp"
 
 class Mesh;
 
@@ -22,10 +24,14 @@ public:
    */
   void draw();
 
+  void animate(float dt);
+
   /**
    * The node holds the loc/rot/scale of this member.
    */
   Node node;
+
+  std::unique_ptr<Animation> anim;
 
 protected:
   glm::mat4 geometryModel;

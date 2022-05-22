@@ -45,7 +45,7 @@ class Head : public Member {
 
 public:
   Head() {
-    glm::mat4 I(1.f);
+    const glm::mat4 I(1.f);
 
     geometryModel = glm::scale(I, {8, 8, 8});
     geometryModel = glm::translate(I, {0, 4, 0}) * geometryModel;
