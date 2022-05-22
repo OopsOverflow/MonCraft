@@ -7,6 +7,16 @@
 
 enum class State { Walking, Idle };
 
+struct EntityProperties {
+	float maxSpeed = 4.3f;
+	float maxAccel = 10.f;
+	float verticalFriction = 0.f;
+	float horizontalFriction = 5.f;
+	float jumpSpeed = 10.5f;
+	float maxFallSpeed = 78.4f;
+
+};
+
 /**
  * An entity is a living thing able to move around and subject to physics
  * (speed / acceleration, gravity, collisions...)
@@ -22,7 +32,7 @@ public:
 	/**
 	 * Make an entity with the given hitbox.
 	 */
-	Entity(Hitbox hitbox);
+	Entity(Hitbox hitbox, EntityProperties properties = EntityProperties());
 
 	virtual ~Entity();
 
@@ -56,12 +66,7 @@ public:
 	Node bodyNode;
 	Node headNode;
 
-	float maxSpeed;
-	float maxAccel;
-	float verticalFriction;
-	float horizontalFriction;
-	float jumpSpeed;
-	float maxFallSpeed;
+	EntityProperties properties;
 
 	glm::vec3 speed;
 	glm::vec3 accel;

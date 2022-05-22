@@ -74,7 +74,7 @@ GLuint ResourceManager::loadTexture(std::string const& name, std::string const& 
     std::string path = "data/img/" + filename + ".png";
     SDL_Surface* img = IMG_Load(path.c_str());
     if(!img) {
-      path = "data/img/entities" + filename + ".png";
+      path = "data/img/entities/" + filename + ".png";
       img = IMG_Load(path.c_str());
     }
 

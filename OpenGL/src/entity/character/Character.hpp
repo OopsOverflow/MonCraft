@@ -101,6 +101,16 @@ private:
   BlockType currentBlock;
   BlockArray record;
 
+  Spline breakAnim;
+
   bool god;
   bool sprint;
+};
+
+
+static const std::vector<std::pair<float, glm::vec3> > breakKeyframes = {
+  {0.f, {-0.65f, 0.05f, 1.f}},
+  {1.f/ 6.f, {0.05f, 0.05f, 1.f}},
+  {3.f/ 12.f, {0.05f, -0.05f, 1.f}},
+
 };

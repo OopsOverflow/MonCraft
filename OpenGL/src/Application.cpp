@@ -60,7 +60,7 @@ void loadResources() {
     ResourceManager::loadShader("image", "image.vert", "image.frag");
 
     ResourceManager::loadTexture("atlas", "Texture_atlas");
-    ResourceManager::loadTexture("character", "Character");
+    ResourceManager::loadTexture("character", "CharacterDebug");
     for (size_t i = 0; i < 30; i += 1) {
         std::string filename = "water/water_normal_" + std::to_string(i+1)+"_frame";
         ResourceManager::loadTexture("waterNormal" + std::to_string(i), filename);

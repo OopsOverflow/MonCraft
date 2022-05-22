@@ -36,7 +36,8 @@ Character::Character(vec3 pos)
       view(CharacterView::FIRST_PERSON),
       caster(100), // distance the player can place blocks
       currentBlock(BlockType::Oak_Stair),
-      god(true), sprint(false)
+      god(true), sprint(false),
+      breakAnim(breakKeyframes, {-smoothing, 0.f, 0.f}, {sqrt(smoothing / 2.f), -sqrt(smoothing / 2.f), 0.f})
 {
   bodyNode.loc = pos;
   rootNode.sca = vec3(1.85f / 32.f); // steve is 1.85 blocks high, 32 pixels high
@@ -76,21 +77,21 @@ void Character::cameraToHead(Camera& camera) {
 
 void Character::enableGodMode() {
   if(god) return;
-  verticalFriction = 5.5f;
+  properties.verticalFriction = 5.5f;
   gravity = 0;
-  maxSpeed = defaultSpeed * godMultiplier;
-  if(sprint) maxSpeed *= sprintMultiplier;
-  maxAccel = 40.f;
+  properties.maxSpeed = defaultSpeed * godMultiplier;
+  if(sprint) properties.maxSpeed *= sprintMultiplier;
+  properties.maxAccel = 40.f;
   god = true;
 }
 
 void Character::disableGodMode() {
   if(!god) return;
-  verticalFriction = 0.f;
+  properties.verticalFriction = 0.f;
   gravity = 32.f;
-  maxSpeed = defaultSpeed;
-  if(sprint) maxSpeed *= sprintMultiplier;
-  maxAccel = 10.f;
+  properties.maxSpeed = defaultSpeed;
+  if(sprint) properties.maxSpeed *= sprintMultiplier;
+  properties.maxAccel = 10.f;
   god = false;
 }
 
@@ -108,15 +109,17 @@ void Character::setSprint(bool sprint) {
   this->sprint = sprint;
 
   if(sprint) {
-    maxSpeed *= sprintMultiplier;
+    properties.maxSpeed *= sprintMultiplier;
   }
   else {
-    maxSpeed /= sprintMultiplier;
+    properties.maxSpeed /= sprintMultiplier;
   }
 }
 
 
 void Character::breakBlock() {
+  r_arm.anim->eventAnim(&breakAnim, .25f);
+
   auto& world = World::getInst();
   vec3 eyePos = headNode.model * vec4(0, 4, 0, 1);
   vec3 eyeTarget = headNode.model * vec4(0, 4, 5, 1);
@@ -198,40 +201,43 @@ void Character::update(float dt) {
     }
   }
 
-  // walk animation
-  if(state == State::Walking) {
-    float speed = 10;
-    float dx = cos(speed * animState);
+  r_arm.animate(dt);
+  l_arm.animate(dt);
 
-    l_leg.node.rot.x = dx;
-    r_leg.node.rot.x = -dx;
-    l_arm.node.rot.x = -dx;
-    r_arm.node.rot.x = dx;
+  // // walk animation
+  // if(state == State::Walking) {
+  //   float speed = 10;
+  //   float dx = cos(speed * animState);
 
-    animState += dt;
-  }
+  //   l_leg.node.rot.x = dx;
+  //   r_leg.node.rot.x = -dx;
+  //   l_arm.node.rot.x = -dx;
+  //   r_arm.node.rot.x = dx;
 
-  // transition to stand-by
-  else {
-    float speed = 10;
-    auto dist = l_leg.node.rot.x;
-    if(dist != 0) {
-      auto delta = dist * speed * dt;
-      if(abs(delta) > abs(dist)) {
-        l_leg.node.rot.x = 0;
-        r_leg.node.rot.x = 0;
-        l_arm.node.rot.x = 0;
-        r_arm.node.rot.x = 0;
-        animState = 0;
-      }
-      else {
-        l_leg.node.rot.x -= delta;
-        r_leg.node.rot.x += delta;
-        l_arm.node.rot.x += delta;
-        r_arm.node.rot.x -= delta;
-      }
-    }
-  }
+  //   animState += dt;
+  // }    
+
+  // // transition to stand-by
+  // else {
+  //   float speed = 10;
+  //   auto dist = l_leg.node.rot.x;
+  //   if(dist != 0) {
+  //     auto delta = dist * speed * dt;
+  //     if(abs(delta) > abs(dist)) {
+  //       l_leg.node.rot.x = 0;
+  //       r_leg.node.rot.x = 0;
+  //       l_arm.node.rot.x = 0;
+  //       r_arm.node.rot.x = 0;
+  //       animState = 0;
+  //     }
+  //     else {
+  //       l_leg.node.rot.x -= delta;
+  //       r_leg.node.rot.x += delta;
+  //       l_arm.node.rot.x += delta;
+  //       r_arm.node.rot.x -= delta;
+  //     }
+  //   }
+  // }
 
 }
 
