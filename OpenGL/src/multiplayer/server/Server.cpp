@@ -187,7 +187,7 @@ void Server::handle_login(ClientID client, sf::Packet& packet) {
       std::cout << "client connected: " << std::endl;
       std::cout << "uid: " << res.first->second.uid << std::endl;
       std::cout << "addr: " << res.first->first.getAddr() << std::endl;
-      std::cout << "port: " << res.first->first.getPort() << std::endl;
+      // std::cout << "port: " << res.first->first.getPort() << std::endl;
     }
     else {
       std::cout << "[WARN] client insertion failed" << std::endl;
@@ -222,7 +222,7 @@ void Server::handle_player_tick(Client& client, sf::Packet& packet) {
 
 void Server::handle_chunks(Client& client, sf::Packet& packet) {
   packet >> client.waitingChunks;
-    
+
   updateWaitingChunks();
 }
 

@@ -126,7 +126,7 @@ else()
 		${CMAKE_CURRENT_SOURCE_DIR}/src/Server.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/multiplayer/server/Server.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/multiplayer/server/Client.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/src/multiplayer/server/UdpServer.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/src/multiplayer/server/WebSocketServer.cpp
 	)
 endif()
 
@@ -157,6 +157,16 @@ message(STATUS "Configuring include directories")
 
 # glm
 include_directories("${CMAKE_SOURCE_DIR}/Dependencies/glm")
+
+# libdatachannel
+if(${BUILD_PLATFORM} STREQUAL wasm)
+	add_subdirectory("${CMAKE_SOURCE_DIR}/Dependencies/datachannel-wasm" "datachannel-wasm" EXCLUDE_FROM_ALL)
+	target_link_libraries(${PROJECT_NAME} datachannel-wasm)
+else()
+	find_package(DATACHANNEL REQUIRED)
+	include_directories(${DATACHANNEL_INCLUDE_DIRS})
+	target_link_libraries(${PROJECT_NAME} datachannel)
+endif()
 
 if (NOT ${BUILD_PLATFORM} STREQUAL wasm)
 	find_package(ZLIB REQUIRED)
@@ -190,7 +200,7 @@ if (NOT ${BUILD_PLATFORM} STREQUAL wasm)
 		include_directories(${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS})
 		target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES})
 	endif()
-	
+
 else ()
 	include_directories("${CMAKE_SOURCE_DIR}/Dependencies/SFML/include")
 	include_directories("${CMAKE_SOURCE_DIR}/Dependencies/EMSFML/src")

@@ -62,5 +62,5 @@ void Music::getNextSong()
 
     duration = music.getDuration() + sf::seconds(1);
     timer.restart();
-    music.play();
+    // music.play();
 }

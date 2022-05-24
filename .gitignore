@@ -1,11 +1,16 @@
 Dependencies/boost
 Dependencies/glm/out
+Dependencies/libdatachannel
+Dependencies/libdatachannel-wasm
 
 OpenGL/save
 OpenGL/Debug
 OpenGL/Release
 
 build
+build-client
+build-server
+
 cert
 CMakeCache.txt
 CMakeSettings.json

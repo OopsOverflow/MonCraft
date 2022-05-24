@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 #include <glm/glm.hpp>
+#include <rtc/rtc.hpp>
 
 #include "util/Identifier.hpp"
 #include "multiplayer/client/Server.hpp"
@@ -54,7 +55,7 @@ private:
 
   sf::IpAddress addr;
   unsigned short port;
-  sf::UdpSocket socket;
+  rtc::WebSocket socket;
   sf::Time lastUpdate;
   const sf::Time frameDuration;
   sf::Clock clock;

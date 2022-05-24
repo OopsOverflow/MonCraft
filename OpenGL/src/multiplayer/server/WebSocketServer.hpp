@@ -1,13 +1,14 @@
 #pragma once
 
-#include <websocketpp/config/asio.hpp>
-#include <websocketpp/server.hpp>
+// #include <websocketpp/config/asio.hpp>
+// #include <websocketpp/server.hpp>
 #include <chrono>
 #include <exception>
 #include <map>
 #include <memory>
 #include <string>
 #include <thread>
+#include <rtc/rtc.hpp>
 
 #include "Server.hpp"
 #include "multiplayer/server/Client.hpp"
@@ -33,23 +34,24 @@ protected:
   void send(sf::Packet &packet, ClientID client) override;
 
 private:
-  typedef websocketpp::server<websocketpp::config::asio_tls> WebServer;
-  typedef websocketpp::lib::shared_ptr<websocketpp::lib::asio::ssl::context> context_ptr;
-  WebServer server;
+  // typedef websocketpp::server<websocketpp::config::asio_tls> WebServer;
+  // typedef websocketpp::lib::shared_ptr<websocketpp::lib::asio::ssl::context> context_ptr;
+  // WebServer server;
+  rtc::WebSocketServer server;
 
   enum tls_mode {
     MOZILLA_INTERMEDIATE = 1,
     MOZILLA_MODERN = 2
   };
 
-  ClientID htdl_to_client(websocketpp::connection_hdl);
-  websocketpp::connection_hdl client_to_hdl(ClientID);
-  context_ptr on_tls_init();
-  bool on_validate(websocketpp::connection_hdl);
-  void on_message(websocketpp::connection_hdl, WebServer::message_ptr msg);
-  void on_open(websocketpp::connection_hdl);
-  void on_close(websocketpp::connection_hdl);
-  std::map<ClientID, websocketpp::connection_hdl> clientLookup;
+  ClientID sock_to_client(std::shared_ptr<rtc::WebSocket>);
+  std::shared_ptr<rtc::WebSocket> client_to_sock(ClientID);
+  // context_ptr on_tls_init();
+  bool on_validate(std::shared_ptr<rtc::WebSocket>);
+  void on_message(std::shared_ptr<rtc::WebSocket>, rtc::message_variant msg);
+  void on_open(std::shared_ptr<rtc::WebSocket>);
+  void on_close(std::shared_ptr<rtc::WebSocket>);
+  std::map<ClientID, std::shared_ptr<rtc::WebSocket>> clientLookup;
 
   std::thread mainThread;
   void loop();

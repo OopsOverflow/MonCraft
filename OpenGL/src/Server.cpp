@@ -4,8 +4,8 @@
 #include <memory>
 #include <string>
 
-#include "multiplayer/server/UdpServer.hpp"
-// #include "multiplayer/server/WebSocketServer.hpp"
+// #include "multiplayer/server/UdpServer.hpp"
+#include "multiplayer/server/WebSocketServer.hpp"
 #include "noise/prng.hpp"
 #include "save/SaveManager.hpp"
 #include "save/ServerConfig.hpp"
@@ -13,8 +13,8 @@
 
 std::unique_ptr<Server> make_server() {
   auto port = Config::getServerConfig().serverPort;
-  // return std::make_unique<WebSocketServer>(port);
-  return std::make_unique<UdpServer>(port);
+  return std::make_unique<WebSocketServer>(port);
+  // return std::make_unique<UdpServer>(port);
 }
 
 int main() {

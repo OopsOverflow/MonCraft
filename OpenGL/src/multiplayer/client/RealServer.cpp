@@ -34,18 +34,29 @@ RealServer::RealServer(std::string url, unsigned short port)
     serverAck(true)
 {
   lastUpdate = clock.getElapsedTime() - frameDuration - frameDuration; // needs update
-
-  socket.setBlocking(false);
-
-  if(socket.bind(sf::Socket::AnyPort) != sf::Socket::Done) {
-    throw NetworkError("Failed to bind to any port");
-  }
-
   lastServerUpdate = clock.getElapsedTime();
 
   auto newPlayer = std::make_unique<Character>(Config::getServerConfig().spawnPoint);
   auto entity = world.entities.add(playerUid, std::move(newPlayer));
   player = std::static_pointer_cast<Character>(entity);
+
+  socket.onOpen([] () {
+    std::cout << "onOpen " << std::endl;
+  });
+
+  socket.onError([] (std::string e) {
+    std::cout << "onError " << e << std::endl;
+  });
+
+  socket.onClosed([] () {
+    std::cout << "onClosed" << std::endl;
+  });
+
+  // socket.onMessage([] (auto data) {
+  //   // std::cout << "onMessage" << std::endl;
+  // });
+
+  socket.open("ws://localhost:16500");
 }
 
 RealServer::~RealServer() {
@@ -53,13 +64,16 @@ RealServer::~RealServer() {
 }
 
 bool RealServer::login() {
-  sf::Packet packet;
   sf::IpAddress serverAddr;
   unsigned short serverPort;
+  sf::Packet packet;
 
-  auto recv_res = socket.receive(packet, serverAddr, serverPort);
+  if(!socket.isOpen()) return false;
+  auto recv_res = socket.receive();
 
-  if(recv_res == sf::Socket::Done) {
+  if(recv_res) {
+    auto data = std::get<std::vector<std::byte>>(recv_res.value());
+    packet.append(data.data(), data.size());
     PacketHeader header;
     packet >> header;
     auto type = header.getType();
@@ -75,7 +89,7 @@ bool RealServer::login() {
 
 void RealServer::update() {
   Server::update();
-  
+
   if(clock.getElapsedTime() - lastServerUpdate > timeout) {
     throw std::runtime_error("server timeout");
   }
@@ -102,9 +116,13 @@ bool RealServer::poll() {
   sf::IpAddress serverAddr;
   unsigned short serverPort;
 
-  auto recv_res = socket.receive(packet, serverAddr, serverPort);
+  if(!socket.isOpen()) return false;
+  auto recv_res = socket.receive();
 
-  if(recv_res != sf::Socket::Done) return false;
+  if(!recv_res) return false;
+
+  auto data = std::get<std::vector<std::byte>>(recv_res.value());
+  packet.append(data.data(), data.size());
 
   PacketHeader header;
   packet >> header;
@@ -157,9 +175,9 @@ void RealServer::packet_blocks() {
     packet << header << blocks;
     blocks.clear();
 
-    auto send_res = socket.send(packet, addr, port);
+    auto send_res = socket.send((std::byte*)packet.getData(), packet.getDataSize());
 
-    if(send_res != sf::Socket::Done) {
+    if(!send_res) {
       throw NetworkError("failed to send blocks to server");
     }
   }
@@ -171,9 +189,9 @@ void RealServer::packet_ping() {
 
   packet << header;
 
-  auto send_res = socket.send(packet, addr, port);
+  auto send_res = socket.send((std::byte*)packet.getData(), packet.getDataSize());
 
-  if(send_res != sf::Socket::Done) {
+  if(!send_res) {
     throw NetworkError("failed to ping server");
   }
 }
@@ -184,9 +202,9 @@ void RealServer::packet_login() {
 
   packet << header << playerUid;
 
-  auto send_res = socket.send(packet, addr, port);
+  auto send_res = socket.send((std::byte*)packet.getData(), packet.getDataSize());
 
-  if(send_res != sf::Socket::Done) {
+  if(!send_res) {
     throw NetworkError("login failed");
   }
 }
@@ -197,9 +215,9 @@ void RealServer::packet_logout() {
 
   packet << header;
 
-  auto send_res = socket.send(packet, addr, port);
+  auto send_res = socket.send((std::byte*)packet.getData(), packet.getDataSize());
 
-  if(send_res != sf::Socket::Done) {
+  if(!send_res) {
     std::cout << "[WARN] logout failed" << std::endl;
   }
 }
@@ -209,9 +227,9 @@ void RealServer::packet_player_tick() {
   PacketHeader header(PacketType::PLAYER_TICK);
   packet << header << *player;
 
-  auto send_res = socket.send(packet, addr, port);
+  auto send_res = socket.send((std::byte*)packet.getData(), packet.getDataSize());
 
-  if(send_res != sf::Socket::Done) {
+  if(!send_res) {
     std::cout << "[WARN] player_tick failed" << std::endl;
   }
 }
@@ -223,9 +241,9 @@ void RealServer::packet_chunks() {
   PacketHeader header(PacketType::CHUNKS);
   packet << header << pendingChunks.get();
 
-  auto send_res = socket.send(packet, addr, port);
+  auto send_res = socket.send((std::byte*)packet.getData(), packet.getDataSize());
 
-  if(send_res != sf::Socket::Done) {
+  if(!send_res) {
     std::cout << "[WARN] chunks failed" << std::endl;
   }
 }
@@ -237,9 +255,9 @@ void RealServer::packet_ack_chunks(std::vector<glm::ivec3> ack) {
   PacketHeader header(PacketType::ACK_CHUNKS);
   packet << header << ack;
 
-  auto send_res = socket.send(packet, addr, port);
+  auto send_res = socket.send((std::byte*)packet.getData(), packet.getDataSize());
 
-  if(send_res != sf::Socket::Done) {
+  if(!send_res) {
     std::cout << "[WARN] ack_chunks failed" << std::endl;
   }
 }

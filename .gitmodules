@@ -1,0 +1,6 @@
+[submodule "Dependencies/datachannel-wasm"]
+	path = Dependencies/datachannel-wasm
+	url = https://github.com/paullouisageneau/datachannel-wasm.git
+[submodule "Dependencies/datachannel"]
+	path = Dependencies/datachannel
+	url = https://github.com/paullouisageneau/libdatachannel.git
