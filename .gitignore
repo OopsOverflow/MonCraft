@@ -12,6 +12,7 @@ CMakeSettings.json
 
 .clang-format
 .vs
+.vscode
 .cache
 CMakeFiles
 compile_commands.json
