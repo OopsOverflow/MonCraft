@@ -23,7 +23,7 @@ else()
     set_property(TARGET zlib1 PROPERTY IMPORTED_LOCATION "${CMAKE_SOURCE_DIR}/Dependencies/SDL2/lib/x86/zlib1.dll")
 endif()
 
-mark_as_advanced(SDL2_LIBRARIES SDL2_INCLUDE_DIR)
+mark_as_advanced(SDL2_LIBRARIES SDL2_INCLUDE_DIRS)
 
 add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
 COMMAND ${CMAKE_COMMAND} -E copy_if_different

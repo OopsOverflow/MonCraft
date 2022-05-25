@@ -12,6 +12,12 @@ Spline::Spline(std::vector<std::pair<float, Bezier> > beziers) : beziers(beziers
     }
 }
 
+Spline::Spline(std::vector<std::pair<float, glm::vec3> > keyframes) :  Spline(keyframes,
+                                                                              -(keyframes[keyframes.size() - 2].second - keyframes[1].second) * smoothing,
+                                                                               (keyframes[keyframes.size() - 2].second - keyframes[1].second) * smoothing) {
+
+}
+
 Spline::Spline(std::pair<float, Bezier> bezier) : Spline(std::vector<std::pair<float, Bezier> >({bezier})) {
     
 }
@@ -66,7 +72,7 @@ glm::vec3 Spline::compute(float &dt) {
         float currentBezierTimeRemain = -remainingTime;
 
         while(dt > 0.f) { 
-            if(dt > currentBezierTimeRemain) {
+            if(dt >= currentBezierTimeRemain) {
                 splineTime += currentBezierTimeRemain;
                 dt -= currentBezierTimeRemain;
                 currentBezier += 1;
@@ -83,6 +89,10 @@ glm::vec3 Spline::compute(float &dt) {
                 dt = 0.f;
             }
         }
+        if(splineTime >= totalTime) {
+            splineTime = totalTime;
+            finished = true;
+        } 
         float bezierTime = beziers.at(currentBezier).first - currentBezierTimeRemain;
         return beziers.at(currentBezier).second.calculatePoint(bezierTime / beziers.at(currentBezier).first);
     }

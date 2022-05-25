@@ -167,6 +167,17 @@ if (NOT ${BUILD_PLATFORM} STREQUAL wasm)
 	find_package(SFML REQUIRED COMPONENTS system network audio)
 	include_directories(${SFML_INCLUDE_DIR})
 	target_link_libraries(${PROJECT_NAME} ${SFML_LIBRARIES} ${SFML_DEPENDENCIES})
+	if(WIN32)
+		target_link_libraries(${PROJECT_NAME} "${CMAKE_SOURCE_DIR}/Dependencies/SFML-2.5.1/lib/openal32.lib")
+		add_library(openal SHARED IMPORTED GLOBAL)
+		set_property(TARGET openal PROPERTY IMPORTED_LOCATION "${CMAKE_SOURCE_DIR}/Dependencies/SFML-2.5.1/bin/openal32.dll")
+		add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different
+		$<TARGET_FILE:openal> $<TARGET_FILE_DIR:${PROJECT_NAME}>
+	)	
+
+	endif()
+
 
 	find_package(GLEW REQUIRED)
 	include_directories(${GLEW_INCLUDE_DIRS})

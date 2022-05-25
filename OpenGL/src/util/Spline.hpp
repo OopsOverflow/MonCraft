@@ -11,6 +11,7 @@ class Spline {
 public:
     Spline(std::pair<float, Bezier> bezier);
     Spline(std::vector<std::pair<float, Bezier> > beziers);
+    Spline(std::vector<std::pair<float, glm::vec3> > keyframes);
     Spline(std::vector<std::pair<float, glm::vec3> > keyframes, glm::vec3 initialVector, glm::vec3 finalVector);
 
     glm::vec3 compute(float &dt);

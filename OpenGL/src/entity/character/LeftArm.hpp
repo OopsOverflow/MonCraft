@@ -41,16 +41,14 @@ static const std::vector<GLfloat> leftArmUVs= {
   11 / 16.f, 8 / 16.f,
 };
 
-static const std::vector<std::pair<float, glm::vec3> > leftArmKeyframes = {
-    
-    {0.f, {0.f, -1.f, 0.f}},
-    {2.f/ 3.f, {0.05f, -1.f, -0.005f}},
-    {4.f/ 3.f, {-0.05f, -1.f, -0.005f}},
-    {2.f, {0.f, -1.f, 0.f}},
-    {8.f/ 3.f, {0.05f, -1.f, 0.005f}},
+static const std::vector<std::pair<float, glm::vec3> > leftArmIdleKeyframes = {
+    {0.f,       {0.f, -1.f, 0.f}},
+    {2.f/ 3.f,  {0.05f, -1.f, -0.005f}},
+    {4.f/ 3.f,  {-0.05f, -1.f, -0.005f}},
+    {2.f,       {0.f, -1.f, 0.f}},
+    {8.f/ 3.f,  {0.05f, -1.f, 0.005f}},
     {10.f/ 3.f, {-0.05f, -1.f, 0.005f}},
-    {4.f, {0.f, -1.f, 0.f}},
-
+    {4.f,       {0.f, -1.f, 0.f}},
 
 };
 
@@ -68,8 +66,7 @@ public:
 
     node.loc = {6, 4, 0};
 
-    glm::vec3 line = (leftArmKeyframes[5].second - leftArmKeyframes[1].second) * smoothing;
-    Spline idleAnim(leftArmKeyframes, -line, line);
+    Spline idleAnim(leftArmIdleKeyframes);
     anim = std::make_unique<Animation>(idleAnim);
   }
 

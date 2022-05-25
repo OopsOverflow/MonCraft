@@ -5,7 +5,7 @@ if(CMAKE_SIZEOF_VOID_P EQUAL 8) # 64 bits
 else()
     set(FREETYPE_LIBRARIES "${CMAKE_SOURCE_DIR}/Dependencies/FreeType/lib/win32/freetype.lib")
 endif()
-mark_as_advanced(FREETYPE_LIBRARIES FREETYPE_INCLUDE_DIR)
+mark_as_advanced(FREETYPE_LIBRARIES FREETYPE_INCLUDE_DIRS)
 
 
 

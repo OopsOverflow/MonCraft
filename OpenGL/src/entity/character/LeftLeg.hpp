@@ -41,6 +41,15 @@ static const std::vector<GLfloat> leftLegUVs = {
   1 / 16.f, 8 / 16.f,
 };
 
+static const std::vector<std::pair<float, glm::vec3> > leftLegIdleKeyframes = {
+    {0.f,   {0.f, -1.f, 0.f}},
+    {0.75f, {0.f, -1.f, 0.005f}},
+    {1.5f,  {0.005f, -1.f, 0.005f}},
+    {2.25f, {0.f, -1.f, -0.005f}},
+    {3.f,   {0.f, -1.f, 0.f}},
+
+};
+
 class LeftLeg : public Member {
 
 public:
@@ -57,6 +66,9 @@ public:
     geometryModel = (glm::mat4)glm::mat4_cast(rot) * geometryModel;
 
     node.loc = {2, -6, 0};
+
+    Spline idleAnim(leftLegIdleKeyframes);
+    anim = std::make_unique<Animation>(idleAnim);
   }
 
 protected:
