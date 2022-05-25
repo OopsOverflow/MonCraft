@@ -39,6 +39,9 @@ public:
   Identifier getUid() override;
 
 private:
+  void on_message(rtc::message_variant msg);
+  bool send(sf::Packet& packet);
+
   void packet_login();
   void packet_logout();
   void packet_ping();
@@ -46,16 +49,20 @@ private:
   void packet_blocks();
   void packet_chunks();
   void packet_ack_chunks(std::vector<glm::ivec3> chunks);
+  bool on_packet_recv(sf::Packet& packet);
   void handle_logout(sf::Packet& packet);
   void handle_blocks(sf::Packet& packet);
   void handle_chunks(sf::Packet& packet);
   void handle_entity_tick(sf::Packet& packet);
-  bool poll();
 
 
   sf::IpAddress addr;
   unsigned short port;
+
   rtc::WebSocket socket;
+  std::shared_ptr<rtc::PeerConnection> peer;
+  std::shared_ptr<rtc::DataChannel> channel;
+
   sf::Time lastUpdate;
   const sf::Time frameDuration;
   sf::Clock clock;

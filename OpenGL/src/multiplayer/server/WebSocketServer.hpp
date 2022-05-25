@@ -31,27 +31,27 @@ public:
   void run() override;
 
 protected:
-  void send(sf::Packet &packet, ClientID client) override;
+  bool send(sf::Packet &packet, ClientID client) override;
 
 private:
-  // typedef websocketpp::server<websocketpp::config::asio_tls> WebServer;
-  // typedef websocketpp::lib::shared_ptr<websocketpp::lib::asio::ssl::context> context_ptr;
-  // WebServer server;
   rtc::WebSocketServer server;
 
-  enum tls_mode {
-    MOZILLA_INTERMEDIATE = 1,
-    MOZILLA_MODERN = 2
+  struct Peer {
+    std::mutex mutex;
+    ClientID id;
+    rtc::PeerConnection conn;
+    std::shared_ptr<rtc::WebSocket> socket;
+    std::shared_ptr<rtc::DataChannel> channel;
   };
 
-  ClientID sock_to_client(std::shared_ptr<rtc::WebSocket>);
-  std::shared_ptr<rtc::WebSocket> client_to_sock(ClientID);
-  // context_ptr on_tls_init();
-  bool on_validate(std::shared_ptr<rtc::WebSocket>);
-  void on_message(std::shared_ptr<rtc::WebSocket>, rtc::message_variant msg);
-  void on_open(std::shared_ptr<rtc::WebSocket>);
-  void on_close(std::shared_ptr<rtc::WebSocket>);
-  std::map<ClientID, std::shared_ptr<rtc::WebSocket>> clientLookup;
+  ClientID sock_to_client(std::shared_ptr<rtc::WebSocket> socket);
+  std::shared_ptr<rtc::WebSocket> client_to_sock(ClientID client);
+
+  void on_message(Peer* peer, rtc::message_variant msg);
+  void on_open(std::shared_ptr<rtc::WebSocket> socket);
+  void on_close(Peer* peer);
+  std::mutex clientLck;
+  std::map<ClientID, std::unique_ptr<Peer>> clientLookup;
 
   std::thread mainThread;
   void loop();

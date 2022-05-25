@@ -10,14 +10,13 @@ namespace Config {
         ~ClientConfig();
 
         std::string serverAddr = "pi.thissma.fr";
+        unsigned short serverPort = 55000;
 
         #ifdef EMSCRIPTEN
         bool multiplayer = true;
-        unsigned short serverPort = 55001;
         unsigned int msaa = 0;
         #else
         bool multiplayer = false;
-        unsigned short serverPort = 55000;
         unsigned int msaa = 4;
         #endif
 
