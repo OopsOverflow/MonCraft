@@ -57,8 +57,9 @@ if(${BUILD_TARGET} STREQUAL client)
 		${CMAKE_CURRENT_SOURCE_DIR}/src/util/Raycast.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/util/Random.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/util/Bezier.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/src/util/Animation.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/util/Spline.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/src/util/AnimationMixer.cpp
+		
 
 		${CMAKE_CURRENT_SOURCE_DIR}/src/save/ClientConfig.cpp
 

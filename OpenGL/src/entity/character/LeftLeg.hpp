@@ -41,14 +41,23 @@ static const std::vector<GLfloat> leftLegUVs = {
   1 / 16.f, 8 / 16.f,
 };
 
-static const std::vector<std::pair<float, glm::vec3> > leftLegIdleKeyframes = {
-    {0.f,   {0.f, -1.f, 0.f}},
-    {0.75f, {0.f, -1.f, 0.005f}},
-    {1.5f,  {0.005f, -1.f, 0.005f}},
-    {2.25f, {0.f, -1.f, -0.005f}},
-    {3.f,   {0.f, -1.f, 0.f}},
+static const Spline leftLegIdleAnim ({
+  {0.f,   {0.f, -1.f, 0.f}},
+  {0.75f, {0.f, -1.f, 0.005f}},
+  {1.5f,  {0.005f, -1.f, 0.005f}},
+  {2.25f, {0.f, -1.f, -0.005f}},
+  {3.f,   {0.f, -1.f, 0.f}},
 
-};
+});
+
+static const Spline leftLegWalkAnim ({
+  {0.f,       {0.f, -1.f, 1.0f}},
+  {1.f / 4.f, {0.01f, -1.f, 0.f}},
+  {2.f / 4.f, {0.f, -1.f, -1.0f}},
+  {3.f / 4.f, {-0.01f, -1.f, 0.f}},
+  {1.f,       {0.f, -1.f, 1.0f}},
+  
+});
 
 class LeftLeg : public Member {
 
@@ -67,8 +76,8 @@ public:
 
     node.loc = {2, -6, 0};
 
-    Spline idleAnim(leftLegIdleKeyframes);
-    anim = std::make_unique<Animation>(idleAnim);
+    anim = std::make_unique<AnimationMixer>(leftLegIdleAnim);
+    anim->addAnim(Animation::Walk, leftLegWalkAnim);
   }
 
 protected:

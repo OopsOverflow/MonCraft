@@ -19,12 +19,17 @@ glm::vec3 Bezier::calculatePoint(float t) {
 glm::vec3 Bezier::derivative(float t) {
     float TMinusOne = t - 1;
 
-    const float third = 1.f/3.f;
+    // false but works anyway
+    // return p0 * (- TMinusOne * TMinusOne) + 
+    // p1 * (3.f * (- 1.f/ 3.f + t) * TMinusOne) + 
+    // p2 * ((2.f - 3.f * t) * t) + 
+    // p3 * (t * t);  
 
-    return p0 * (- TMinusOne * TMinusOne) + 
-    p1 * (3.f * (- third + t) * TMinusOne) + 
-    p2 * ((2.f - 3.f * t) * t) + 
-    p3 * (t * t);  
+    // real derivative
+    return p0 * (- 3.f * TMinusOne * TMinusOne) + 
+    p1 * ( (- 3.f + 9.f * t) * TMinusOne) + 
+    p2 * ((6.f - 9.f * t) * t) + 
+    p3 * ( 3.f * t * t);  
 
 }
 

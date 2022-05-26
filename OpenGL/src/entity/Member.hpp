@@ -5,7 +5,7 @@
 #include <glm/gtc/quaternion.hpp>
 
 #include "Node.hpp"
-#include "util/Animation.hpp"
+#include "util/AnimationMixer.hpp"
 
 class Mesh;
 
@@ -31,7 +31,7 @@ public:
    */
   Node node;
 
-  std::unique_ptr<Animation> anim;
+  std::unique_ptr<AnimationMixer> anim;
 
 protected:
   glm::mat4 geometryModel;

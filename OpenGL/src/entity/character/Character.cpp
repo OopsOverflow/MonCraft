@@ -36,12 +36,7 @@ Character::Character(vec3 pos)
       view(CharacterView::FIRST_PERSON),
       caster(100), // distance the player can place blocks
       currentBlock(BlockType::Oak_Stair),
-      god(true), sprint(false),
-      breakAnim(breakKeyframes, {0.f, smoothing, 0.f}, {0.f, -smoothing, 0.f}),
-      rightArmWalkAnim(rightArmWalkKeyframes),
-      leftArmWalkAnim(leftArmWalkKeyframes), 
-      rightLegWalkAnim(rightLegWalkKeyframes),
-      leftLegWalkAnim(leftLegWalkKeyframes)
+      god(true), sprint(false)
 {
   bodyNode.loc = pos;
   rootNode.sca = vec3(1.85f / 32.f); // steve is 1.85 blocks high, 32 pixels high
@@ -122,8 +117,7 @@ void Character::setSprint(bool sprint) {
 
 
 void Character::breakBlock() {
-  breakAnim.reset();
-  r_arm.anim->overrideEventAnims(breakAnim, 2.f/24.f);
+  r_arm.anim->setAnimation(Animation::Break);
   
   auto& world = World::getInst();
   vec3 eyePos = headNode.model * vec4(0, 4, 0, 1);
@@ -213,20 +207,16 @@ void Character::update(float dt) {
 
   // // walk animation
     if(state == State::Walking) {
-      if(r_arm.anim->eventAnimsSize() < 2)
-        r_arm.anim->addEventAnim(rightArmWalkKeyframes, 0.f);
-      if(l_arm.anim->eventAnimsSize() < 2)
-        l_arm.anim->addEventAnim(leftArmWalkKeyframes, 0.f);
-      if(r_leg.anim->eventAnimsSize() < 2)
-        r_leg.anim->addEventAnim(rightLegWalkKeyframes, 0.f);
-      if(l_leg.anim->eventAnimsSize() < 2)
-        l_leg.anim->addEventAnim(leftLegWalkKeyframes, 0.f);
+        r_arm.anim->setAnimation(Animation::Walk);
+        l_arm.anim->setAnimation(Animation::Walk);
+        r_leg.anim->setAnimation(Animation::Walk);
+        l_leg.anim->setAnimation(Animation::Walk);
     }
     else {
-      r_arm.anim->stopAnim();
-      l_arm.anim->stopAnim();
-      r_leg.anim->stopAnim();
-      l_leg.anim->stopAnim();
+      r_arm.anim->setAnimation(Animation::Idle);
+      l_arm.anim->setAnimation(Animation::Idle);
+      r_leg.anim->setAnimation(Animation::Idle);
+      l_leg.anim->setAnimation(Animation::Idle);
 
     }
 

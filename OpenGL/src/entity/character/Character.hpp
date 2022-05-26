@@ -101,56 +101,6 @@ private:
   BlockType currentBlock;
   BlockArray record;
 
-  Spline breakAnim;
-  Spline rightArmWalkAnim;
-  Spline leftArmWalkAnim;
-  Spline rightLegWalkAnim;
-  Spline leftLegWalkAnim;
-
   bool god;
   bool sprint;
-};
-
-static const std::vector<std::pair<float, glm::vec3> > breakKeyframes = {
-  {0.f,       {-0.50f, -0.25f, 0.80f}},
-  {1.f/ 12.f, {-0.65f, 0.05f, 0.80f}},
-  {2.f/ 12.f, {0.15f, 0.25f, 1.f}},
-  {3.f/ 12.f, {0.15f, -0.25f, 1.f}},
-  
-};
-
-static const std::vector<std::pair<float, glm::vec3> > rightArmWalkKeyframes = {
-  {0.f,       {0.f, -1.f, 1.0f}},
-  {1.f / 4.f, {0.05f, -1.f, 0.f}},
-  {2.f / 4.f, {0.f, -1.f, -1.0f}},
-  {3.f / 4.f, {-0.05f, -1.f, 0.f}},
-  {1.f,       {0.f, -1.f, 1.0f}},
-  
-};
-
-static const std::vector<std::pair<float, glm::vec3> > leftArmWalkKeyframes = {
-  {0.f,       {0.f, -1.f, -1.0f}},
-  {1.f / 4.f, {-0.05f, -1.f, 0.f}},
-  {2.f / 4.f, {0.f, -1.f, 1.0f}},
-  {3.f / 4.f, {0.05f, -1.f, 0.f}},
-  {1.f,       {0.f, -1.f, -1.0f}},
-  
-};
-
-static const std::vector<std::pair<float, glm::vec3> > leftLegWalkKeyframes = {
-  {0.f,       {0.f, -1.f, 1.0f}},
-  {1.f / 4.f, {0.01f, -1.f, 0.f}},
-  {2.f / 4.f, {0.f, -1.f, -1.0f}},
-  {3.f / 4.f, {-0.01f, -1.f, 0.f}},
-  {1.f,       {0.f, -1.f, 1.0f}},
-  
-};
-
-static const std::vector<std::pair<float, glm::vec3> > rightLegWalkKeyframes = {
-  {0.f,       {0.f, -1.f, -1.0f}},
-  {1.f / 4.f, {-0.01f, -1.f, 0.f}},
-  {2.f / 4.f, {0.f, -1.f, 1.0f}},
-  {3.f / 4.f, {0.01f, -1.f, 0.f}},
-  {1.f,       {0.f, -1.f, -1.0f}},
-  
 };

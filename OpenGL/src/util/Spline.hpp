@@ -16,22 +16,32 @@ public:
 
     glm::vec3 compute(float &dt);
 
-    void add(std::vector<std::pair<float, Bezier>> beziers);
-    void add(std::pair<float, Bezier> bezier);
+    //Deprecated
+    // void add(std::vector<std::pair<float, Bezier>> beziers);
+    // void add(std::pair<float, Bezier> bezier);
 
     void reset();
 
     float getTotalTime(){return totalTime;}
     float getSplineTime(){return splineTime;}
-
-    glm::vec3 getDerivative(float t);
+    
+    glm::vec3 getCurrentPoint();
+    glm::vec3 getCurrentDerivative();
+    float getCurrentSpeed();
+    
     glm::vec3 getPoint(float t);
+    glm::vec3 getDerivative(float t);
+    float getSpeed(float t);
 
     float getLength(int bezierPrecision);
 
 private:
     //Duration, Bezier
     std::vector<std::pair<float, Bezier> > beziers;
+    
+    size_t currentBezier;
+    float currentBezierTime;
+    
     float splineTime;
     float totalTime;
 
