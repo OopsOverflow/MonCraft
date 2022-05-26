@@ -25,18 +25,20 @@ KeyMenu::KeyMenu()
 	jump = KeySelector::create(config.jump);
 	sneak = KeySelector::create(config.sneak);
 	sprint = KeySelector::create(config.sprint);
-	// changeView = KeySelector::create(config.view);
+	dab = KeySelector::create(config.dab);
+	changeView = KeySelector::create(config.view);
 	// debug = KeySelector::create(config.debug); // TODO
-
-	addLine("Avancer", forward.get());
-	addLine("Reculer", backward.get());
-	addLine("Gauche", left.get());
-	addLine("Droite", right.get());
-	addLine("Sauter/Monter", jump.get());
-	addLine("S'accroupir/Descendre", sneak.get());
-	addLine("Courir", sprint.get());
-	// addLine("Changer de vue", changeView.get());
+	
 	// addLine("Menu débogage", debug.get());
+	addLine("Changer de vue", changeView.get());
+	addLine("Dabber", dab.get());
+	addLine("Courir", sprint.get());
+	addLine("S'accroupir/Descendre", sneak.get());
+	addLine("Sauter/Monter", jump.get());
+	addLine("Droite", right.get());
+	addLine("Gauche", left.get());
+	addLine("Reculer", backward.get());
+	addLine("Avancer", forward.get());
 }
 
 KeyMenu::~KeyMenu() {
@@ -48,7 +50,8 @@ KeyMenu::~KeyMenu() {
 	config.jump = jump->getKey().asKeycode();
 	config.sneak = sneak->getKey().asKeycode();
 	config.sprint = sprint->getKey().asKeycode();
-	// config.changeView = changeView->getKey().asKeycode();
+	config.dab = dab->getKey().asKeycode();
+	config.view = changeView->getKey().asKeycode();
 	// config.debug = debug->getKey().asKeycode();
 }
 

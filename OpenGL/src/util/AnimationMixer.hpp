@@ -8,7 +8,8 @@
 enum class Animation {
     Idle,
     Walk,
-    Break
+    Break,
+    Dab
 };
 
 class AnimationMixer {

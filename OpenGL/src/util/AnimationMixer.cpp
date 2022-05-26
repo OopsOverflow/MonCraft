@@ -41,7 +41,7 @@ glm::vec3 AnimationMixer::computeAnim(float dt) {
 }
 
 void AnimationMixer::setAnimation(Animation anim) {
-	if(currentAnimation != anim && (currentAnimation != Animation::Break || anim == Animation::Break)) {
+	if(currentAnimation != anim && currentAnimation != Animation::Dab && (currentAnimation != Animation::Break || anim == Animation::Break)) {
 		std::vector<std::pair<float, glm::vec3> > keyframes;
 		Spline* current;
 		if(transition != nullptr)

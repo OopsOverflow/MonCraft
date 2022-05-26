@@ -9,7 +9,7 @@ KeyboardController::KeyboardController()
   : config(Config::getClientConfig()),
     direction(0.f),
     view(CharacterView::FIRST_PERSON),
-    sprint(false), toggleGod(false),
+    sprint(false), toggleGod(false), dab(false),
     spaceIsPressed(false), lastSpacePress(0.f)
 {}
 
@@ -38,10 +38,10 @@ bool KeyboardController::handleKeyReleased(Key k) {
         sprint = false;
     }
     else if (code == config.view) {
-        if(view == CharacterView::FIRST_PERSON)
-            view = CharacterView::THIRD_PERSON;
-        else
-            view = CharacterView::FIRST_PERSON;
+            view = CharacterView(((int)view + 1) % 3);
+    }
+    else if (code == config.dab) {
+        dab = false;
     }
 
     return true;
@@ -86,12 +86,16 @@ bool KeyboardController::handleKeyPressed(Key k) {
     else if (code == config.sprint) {
         sprint = true;
     }
+    else if (code == config.dab) {
+        dab = true;
+    }
 
     return true;
 }
 
 void KeyboardController::apply(Character& character) {
   character.view = view;
+  character.setDab(dab);
   character.setSprint(sprint);
   if (toggleGod) {
       character.toggleGodMode();

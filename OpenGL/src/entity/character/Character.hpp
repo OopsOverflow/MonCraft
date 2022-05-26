@@ -21,7 +21,7 @@ class Camera;
  * The main character.
  */
 
-enum class CharacterView { FIRST_PERSON, THIRD_PERSON };
+enum class CharacterView { FIRST_PERSON, THIRD_PERSON, FRONT };
 
 class Character : public Entity {
 
@@ -73,6 +73,7 @@ public:
   bool getGodMode();
 
   void setSprint(bool sprint);
+  void setDab(bool dab);
 
   /**
    * Set the selected block type (in hand).
@@ -103,4 +104,5 @@ private:
 
   bool god;
   bool sprint;
+  bool dab;
 };

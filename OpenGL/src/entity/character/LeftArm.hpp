@@ -61,6 +61,12 @@ static const Spline leftArmWalkAnim ({
   
 });
 
+static const Spline leftArmDabAnim ({
+    {0.f,       {1.f, 0.5f, 0.3f}},
+    {1.f / 24.f, {1.f, 0.5f, 0.3f}},
+  
+}, {0.f, 0.f, 0.f}, {0.f, 0.f, 0.f});
+
 class LeftArm : public Member {
 
 public:
@@ -77,6 +83,7 @@ public:
 
     anim = std::make_unique<AnimationMixer>(leftArmIdleAnim);
     anim->addAnim(Animation::Walk, leftArmWalkAnim);
+    anim->addAnim(Animation::Dab, leftArmDabAnim);
   }
 
 

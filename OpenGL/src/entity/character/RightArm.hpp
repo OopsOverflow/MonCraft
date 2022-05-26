@@ -68,6 +68,13 @@ static const Spline rightArmBreakAnim ({
   {3.f/ 24.f, {0.15f, -0.25f, 1.f}},
   
 }, {0.f, smoothing, 0.f}, {0.f, -smoothing, 0.f});
+
+static const Spline rightArmDabAnim ({
+    {0.f,       {.4f, 0.3f, 0.7f}},
+    {1.f / 24.f, {.4f, 0.3f, 0.7f}},
+  
+}, {0.f, 0.f, 0.f}, {0.f, 0.f, 0.f});
+
 class RightArm : public Member {
 
 public:
@@ -85,6 +92,7 @@ public:
     anim = std::make_unique<AnimationMixer>(rightArmIdleAnim);
     anim->addAnim(Animation::Walk, rightArmWalkAnim);
     anim->addAnim(Animation::Break, rightArmBreakAnim);
+    anim->addAnim(Animation::Dab, rightArmDabAnim);
   }
 
 protected:

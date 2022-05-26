@@ -22,10 +22,11 @@ private :
 	std::unique_ptr<KeySelector> jump;
 	std::unique_ptr<KeySelector> sneak;
 	std::unique_ptr<KeySelector> sprint;
+	std::unique_ptr<KeySelector> dab;
+	std::unique_ptr<KeySelector> changeView;
 	//std::unique_ptr<KeySelector> break_;
 	//std::unique_ptr<KeySelector> place; mathis is tired
 	//std::unique_ptr<KeySelector> select;
-	// std::unique_ptr<KeySelector> changeView;
 	// std::unique_ptr<KeySelector> debug;
 
 };

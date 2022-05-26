@@ -36,7 +36,7 @@ Character::Character(vec3 pos)
       view(CharacterView::FIRST_PERSON),
       caster(100), // distance the player can place blocks
       currentBlock(BlockType::Oak_Stair),
-      god(true), sprint(false)
+      god(true), sprint(false), dab(false)
 {
   bodyNode.loc = pos;
   rootNode.sca = vec3(1.85f / 32.f); // steve is 1.85 blocks high, 32 pixels high
@@ -67,11 +67,16 @@ void Character::cameraToHead(Camera& camera) {
 		vec3 eyeTarget = headNode.model * vec4(0, 4, 50, 1);
 		camera.setLookAt(eyePos, eyeTarget);
 	}
-	else {
+	else if(view == CharacterView::THIRD_PERSON){
 		vec3 eyePos = headNode.model * vec4(0, 4, 4, 1);
 		vec3 eyeTarget = headNode.model * vec4(0, 4, -100, 1);
 		camera.setLookAt(eyeTarget, eyePos);
 	}
+  else if(view == CharacterView::FRONT) {
+    vec3 eyePos = headNode.model * vec4(0, 4, -4, 1);
+		vec3 eyeTarget = headNode.model * vec4(0, 4, 100, 1);
+		camera.setLookAt(eyeTarget, eyePos);
+  }
 }
 
 void Character::enableGodMode() {
@@ -115,21 +120,26 @@ void Character::setSprint(bool sprint) {
   }
 }
 
+void Character::setDab(bool dab) {
+  this->dab = dab;
+}
 
 void Character::breakBlock() {
-  r_arm.anim->setAnimation(Animation::Break);
-  
-  auto& world = World::getInst();
-  vec3 eyePos = headNode.model * vec4(0, 4, 0, 1);
-  vec3 eyeTarget = headNode.model * vec4(0, 4, 5, 1);
-  auto cast = caster.cast(eyePos + .5f, eyeTarget - eyePos);
-  if (cast.success) {
-      BlockType block = cast.block->type;
-      if (block != BlockType::Air && block != BlockType::Water) {
-          auto airBlock = Block::create_static<Air_Block>();
-          record.push(cast.position, airBlock.get());
-          world.setBlock(cast.position, move(airBlock));
-      }
+  if(!dab) { //we can't break when we are dabbing wtf???
+    r_arm.anim->setAnimation(Animation::Break);
+    
+    auto& world = World::getInst();
+    vec3 eyePos = headNode.model * vec4(0, 4, 0, 1);
+    vec3 eyeTarget = headNode.model * vec4(0, 4, 5, 1);
+    auto cast = caster.cast(eyePos + .5f, eyeTarget - eyePos);
+    if (cast.success) {
+        BlockType block = cast.block->type;
+        if (block != BlockType::Air && block != BlockType::Water) {
+            auto airBlock = Block::create_static<Air_Block>();
+            record.push(cast.position, airBlock.get());
+            world.setBlock(cast.position, move(airBlock));
+        }
+    }
   }
 }
 
@@ -188,11 +198,18 @@ void Character::update(float dt) {
   // smooth head rot with constant speed
   {
     float speed = 5;
-    auto dist = vec3(headNode.rot - head.node.rot);
+    glm::vec3 dist;
+    glm::highp_dvec3 target;
+    if(!dab) 
+      target = headNode.rot;
+    else 
+      target = radians(highp_dvec3(35., -40., 0.));
+    
+    dist = vec3(target - head.node.rot);
     if(dist != vec3(0)) {
       auto delta = normalize(dist) * speed * dt;
       if(any(greaterThan(abs(delta), abs(dist)))) {
-        head.node.rot = headNode.rot;
+        head.node.rot = target;
       }
       else {
         head.node.rot += delta;
@@ -218,6 +235,11 @@ void Character::update(float dt) {
       r_leg.anim->setAnimation(Animation::Idle);
       l_leg.anim->setAnimation(Animation::Idle);
 
+    }
+
+    if(dab) {
+      r_arm.anim->setAnimation(Animation::Dab);
+      l_arm.anim->setAnimation(Animation::Dab);
     }
 
 }
