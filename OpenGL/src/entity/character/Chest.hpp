@@ -45,7 +45,7 @@ class Chest : public Member {
 
 public:
   Chest() {
-    glm::mat4 I(1.f);
+    const glm::mat4 I(1.f);
 
     geometryModel = glm::scale(I, {8, 12, 4});
   }

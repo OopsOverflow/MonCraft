@@ -189,8 +189,13 @@ void MonCraftScene::drawEntities() {
     shader->bindTexture(TEXTURE_COLOR, texCharacter);
     for(auto pair : world.entities) {
         if(pair.first == playerUid) {
-            if(player->view == CharacterView::THIRD_PERSON)
+            if(player->view != CharacterView::FIRST_PERSON) 
+            {
                 player->render();
+                middleDot->setHidden(true);
+            }
+            else
+                middleDot->setHidden(false);
         }
         else {
             pair.second->render();

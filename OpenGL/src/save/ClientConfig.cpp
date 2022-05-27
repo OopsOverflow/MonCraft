@@ -47,6 +47,7 @@ Config::ClientConfig::ClientConfig() {
     KEY_PARAM(sneak)
     KEY_PARAM(view)
     KEY_PARAM(menu)
+    KEY_PARAM(dab)
   }
 
   #undef KEY_PARAM
@@ -82,6 +83,7 @@ Config::ClientConfig::~ClientConfig() {
   KEY_PARAM(sneak)
   KEY_PARAM(view)
   KEY_PARAM(menu)
+  KEY_PARAM(dab)
 
   #undef KEY_PARAM
   #undef PARAM

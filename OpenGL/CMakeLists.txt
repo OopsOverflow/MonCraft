@@ -56,6 +56,10 @@ if(${BUILD_TARGET} STREQUAL client)
 
 		${CMAKE_CURRENT_SOURCE_DIR}/src/util/Raycast.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/util/Random.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/src/util/Bezier.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/src/util/Spline.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/src/util/AnimationMixer.cpp
+		
 
 		${CMAKE_CURRENT_SOURCE_DIR}/src/save/ClientConfig.cpp
 
@@ -161,12 +165,24 @@ if (NOT ${BUILD_PLATFORM} STREQUAL wasm)
 	target_link_libraries(${PROJECT_NAME} ${ZLIB_LIBRARIES})
 
 	find_package(SFML REQUIRED COMPONENTS system network audio)
+	include_directories(${SFML_INCLUDE_DIR})
 	if(UNIX)
 		target_link_libraries(${PROJECT_NAME} sfml-system sfml-network sfml-audio)
-	else()
-		include_directories(${SFML_INCLUDE_DIRS})
-		target_link_libraries(${PROJECT_NAME} ${SFML_LIBRARIES})
+	else(WIN32)
+		set(SFML_STATIC_LIBRARIES TRUE)
+		find_package(SFML REQUIRED COMPONENTS system network audio)
+		include_directories(${SFML_INCLUDE_DIR})
+		target_link_libraries(${PROJECT_NAME} ${SFML_LIBRARIES} ${SFML_DEPENDENCIES})
+		target_link_libraries(${PROJECT_NAME} "${CMAKE_SOURCE_DIR}/Dependencies/SFML-2.5.1/lib/openal32.lib")
+		add_library(openal SHARED IMPORTED GLOBAL)
+		set_property(TARGET openal PROPERTY IMPORTED_LOCATION "${CMAKE_SOURCE_DIR}/Dependencies/SFML-2.5.1/bin/openal32.dll")
+		add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different
+		$<TARGET_FILE:openal> $<TARGET_FILE_DIR:${PROJECT_NAME}>
+	)	
+
 	endif()
+
 
 	find_package(GLEW REQUIRED)
 	include_directories(${GLEW_INCLUDE_DIRS})

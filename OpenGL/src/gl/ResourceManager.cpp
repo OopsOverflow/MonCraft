@@ -73,6 +73,10 @@ GLuint ResourceManager::addTexture(std::string const& name, GLuint texture) {
 GLuint ResourceManager::loadTexture(std::string const& name, std::string const& filename) {
     std::string path = "data/img/" + filename + ".png";
     SDL_Surface* img = IMG_Load(path.c_str());
+    if(!img) {
+      path = "data/img/entities/" + filename + ".png";
+      img = IMG_Load(path.c_str());
+    }
 
     if(!img) {
       throw std::runtime_error("image file not found: " + path);

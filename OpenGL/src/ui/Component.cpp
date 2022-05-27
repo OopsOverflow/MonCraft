@@ -24,6 +24,7 @@ const spec_t Component::POSITION = MAKE_SPEC("Component::position", ivec2);
 const spec_t Component::PADDING  = MAKE_SPEC("Component::padding", ivec2);
 const spec_t Component::ANCHOR_X = MAKE_SPEC("Component::anchorX", Anchor);
 const spec_t Component::ANCHOR_Y = MAKE_SPEC("Component::anchorY", Anchor);
+const spec_t Component::HIDDEN = MAKE_SPEC_INHERIT("Component::hidden", bool);
 
 Component::Component()
   : ownStyle(std::make_shared<Style>()), style(ownStyle), parent(nullptr),
@@ -103,6 +104,9 @@ void Component::setProperty(prop_t prop) {
   else if(prop.spec == Component::ANCHOR_Y) {
     setAnchorY(prop.value->get<Anchor>());
   }
+  else if(prop.spec == Component::HIDDEN) {
+    setHidden(prop.value->get<bool>());
+  }
   else {
     setStyle(prop);
     // std::cout << "[WARN] unsupported style property: '"
@@ -128,6 +132,9 @@ prop_t Component::getProperty(spec_t spec) const {
   else if(spec == Component::ANCHOR_Y) {
     return make_prop(spec, getAnchorY());
   }
+  else if(spec == Component::HIDDEN) {
+    return make_prop(spec, getHidden());
+  }
   else {
     throw StyleError(
       "unsupported style property: " +
@@ -144,7 +151,8 @@ style_const_t Component::getDefaultStyle() const {
     Component::POSITION, ivec2(0),
     Component::PADDING, ivec2(0),
     Component::ANCHOR_X, Anchor::BEGIN,
-    Component::ANCHOR_Y, Anchor::BEGIN
+    Component::ANCHOR_Y, Anchor::BEGIN,
+    Component::HIDDEN, false
   );
 
   return style;
@@ -153,7 +161,10 @@ style_const_t Component::getDefaultStyle() const {
 void Component::draw() {
   queueRecompute(false); // TODO wow this is a hack
   if(!drawQueued) return;
-  for(Component* child : children) child->draw();
+  for(Component* child : children) {
+    if(!child->getHidden())
+      child->draw();
+  }
   drawQueued = false;
 }
 
@@ -429,6 +440,16 @@ void Component::setAnchorY(Anchor anchor) {
 
 Anchor Component::getAnchorY() const {
   return getStyle<Anchor>(ANCHOR_Y);
+}
+
+void Component::setHidden(bool hidden) {
+  if(hidden == getHidden()) return;
+  setStyle(HIDDEN, hidden);
+  queueRecompute(false); // no need to recompute children
+}
+
+bool Component::getHidden() const {
+  return getStyle<bool>(HIDDEN);
 }
 
 void Component::keyPress(Key k) {

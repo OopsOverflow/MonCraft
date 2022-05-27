@@ -31,6 +31,7 @@ namespace Config {
         SDL_Keycode view = SDLK_F5;
         SDL_Keycode sprint = SDLK_LCTRL;
         SDL_Keycode menu = SDLK_ESCAPE;
+        SDL_Keycode dab = SDLK_EXCLAIM;
     };
 
     ClientConfig& getClientConfig();

@@ -41,19 +41,43 @@ static const std::vector<GLfloat> rightLegUVs = {
   5 / 16.f, 16 / 16.f,
 };
 
+static const Spline rightLegIdleAnim ({
+  {0.f,   {0.f, -1.f, 0.f}},
+  {0.75f, {0.f, -1.f, -0.005f}},
+  {1.5f,  {-0.005f, -1.f, 0.005f}},
+  {2.25f, {0.f, -1.f, 0.005f}},
+  {3.f,   {0.f, -1.f, 0.f}},
+
+});
+
+static const Spline rightLegWalkAnim ({
+  {0.f,       {0.f, -1.f, -1.0f}},
+  {1.f / 4.f, {-0.01f, -1.f, 0.f}},
+  {2.f / 4.f, {0.f, -1.f, 1.0f}},
+  {3.f / 4.f, {0.01f, -1.f, 0.f}},
+  {1.f,       {0.f, -1.f, -1.0f}},
+  
+});
+
 class RightLeg : public Member {
 
 public:
   RightLeg() {
-    glm::mat4 I(1.f);
+    const glm::mat4 I(1.f);
 
     geometryModel = glm::scale(I, {4, 12, 4});
     geometryModel = glm::translate(I, {0, -6, 0}) * geometryModel;
 
-    float zFightingOffset = 0.2f; // offset the legs slightly inwards and backwards
+    const float zFightingOffset = 0.2f; // offset the legs slightly inwards and backwards
     geometryModel = glm::translate(I, {zFightingOffset, 0, -zFightingOffset}) * geometryModel;
+    //rotate leg by 90 degrees
+    glm::quat rot = glm::quat({-glm::pi<float>()/2.f, 0.f, 0.f});
+    geometryModel = (glm::mat4)glm::mat4_cast(rot) * geometryModel;
 
     node.loc = {-2, -6, 0};
+
+    anim = std::make_unique<AnimationMixer>(rightLegIdleAnim);
+    anim->addAnim(Animation::Walk, rightLegWalkAnim);
   }
 
 protected:
@@ -61,3 +85,4 @@ protected:
     return std::make_unique<Mesh>(Cube::vertices, Cube::normals, rightLegUVs, Cube::occlusions, Cube::indices, Cube::normalMap);
   }
 };
+

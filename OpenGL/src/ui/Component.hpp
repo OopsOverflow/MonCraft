@@ -35,6 +35,7 @@ public:
   static const spec_t PADDING;
   static const spec_t ANCHOR_X;
   static const spec_t ANCHOR_Y;
+  static const spec_t HIDDEN;
 
 
   //// STYLING ////
@@ -107,6 +108,9 @@ public:
 
   void setAnchorY(Anchor anchor);
   Anchor getAnchorY() const;
+
+  void setHidden(bool hidden);
+  bool getHidden() const;
 
   void keyPress(Key k);
   void keyRelease(Key k);

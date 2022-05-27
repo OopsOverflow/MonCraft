@@ -90,6 +90,7 @@ namespace Cube {
       20, 21, 22, 20, 22, 23,
     };
 
+//TODO
     static const std::vector<GLfloat> normalMap = {
   //TOP
   -1.0f, -1.0f,
