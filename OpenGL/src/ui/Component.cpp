@@ -24,7 +24,7 @@ const spec_t Component::POSITION = MAKE_SPEC("Component::position", ivec2);
 const spec_t Component::PADDING  = MAKE_SPEC("Component::padding", ivec2);
 const spec_t Component::ANCHOR_X = MAKE_SPEC("Component::anchorX", Anchor);
 const spec_t Component::ANCHOR_Y = MAKE_SPEC("Component::anchorY", Anchor);
-const spec_t Component::HIDDEN = MAKE_SPEC("Component::hidden", bool, true);
+const spec_t Component::HIDDEN = MAKE_SPEC_INHERIT("Component::hidden", bool);
 
 Component::Component()
   : ownStyle(std::make_shared<Style>()), style(ownStyle), parent(nullptr),
