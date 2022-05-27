@@ -10,6 +10,7 @@ OpenGL/Release
 build
 build-client
 build-server
+build-wasm
 
 cert
 CMakeCache.txt

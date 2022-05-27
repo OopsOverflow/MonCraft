@@ -123,11 +123,11 @@ void WebSocketServer::on_message(Peer* peer, rtc::message_variant msg) {
     std::string data = std::get<std::string>(msg);
     if(data.starts_with("a=candidate")) {
       std::lock_guard<std::mutex> lck(peer->mutex);
-      peer->conn.addRemoteCandidate(rtc::Candidate(data));
+      peer->conn.addRemoteCandidate(rtc::Candidate(data, "MonCraft"));
     }
     else {
       std::lock_guard<std::mutex> lck(peer->mutex);
-      peer->conn.setRemoteDescription(rtc::Description(data));
+      peer->conn.setRemoteDescription(rtc::Description(data, rtc::Description::Type::Answer));
     }
   }
 

@@ -224,6 +224,7 @@ else ()
 			-s FULL_ES3=1 \
 			-s WEBSOCKET_URL='wss://pi.thissma.fr:55001' \
 			-s WEBSOCKET_SUBPROTOCOL='binary' \
+			-s DEFAULT_LIBRARY_FUNCS_TO_INCLUDE=wsSendMessage \
 			--preload-file ${CMAKE_SOURCE_DIR}/OpenGL/data@data \
 			--preload-file ${CMAKE_SOURCE_DIR}/OpenGL/src@src \
 			-Wno-unused-command-line-argument \
@@ -276,6 +277,7 @@ else ()
 			-s DEMANGLE_SUPPORT=1 \
 			-s ABORT_ON_WASM_EXCEPTIONS=1 \
 			-s EXIT_RUNTIME=1 \
+			-s DEFAULT_LIBRARY_FUNCS_TO_INCLUDE=wsSendMessage \
 			--preload-file ${CMAKE_SOURCE_DIR}/OpenGL/data@data \
 			--preload-file ${CMAKE_SOURCE_DIR}/OpenGL/src@src \
 			-Wno-unused-command-line-argument \
@@ -346,6 +348,10 @@ else ()
 		add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
 			COMMAND ${CMAKE_COMMAND} -E copy_directory
 				${CMAKE_CURRENT_SOURCE_DIR}/src $<TARGET_FILE_DIR:${PROJECT_NAME}>/sources/OpenGL/src
+		)
+		add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E copy_directory
+				${CMAKE_SOURCE_DIR}/Dependencies/datachannel-wasm $<TARGET_FILE_DIR:${PROJECT_NAME}>/sources/Dependencies/datachannel-wasm
 		)
 	endif ()
 endif ()

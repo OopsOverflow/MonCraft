@@ -31,6 +31,14 @@ static const rtc::Configuration config {
 
 };
 
+static const rtc::DataChannelInit init {
+  .reliability = {
+    .type = rtc::Reliability::Type::Rexmit,
+    .unordered = true,
+    .rexmit = 0
+  }
+};
+
 RealServer::RealServer(std::string addr, unsigned short port)
   : addr(addr), port(port),
     peer(nullptr), channel(nullptr),
@@ -92,10 +100,10 @@ void RealServer::on_message(rtc::message_variant msg) {
   if (std::holds_alternative<std::string>(msg)) {
     auto data = std::get<std::string>(msg);
     if(data.starts_with("a=candidate")) {
-      peer->addRemoteCandidate(rtc::Candidate(data));
+      peer->addRemoteCandidate(rtc::Candidate(data, "MonCraft"));
     }
     else {
-      peer->setRemoteDescription(rtc::Description(data));
+      peer->setRemoteDescription(rtc::Description(data, rtc::Description::Type::Offer));
     }
   }
   else {
@@ -158,7 +166,7 @@ bool RealServer::on_packet_recv(sf::Packet& packet) {
   serverAck = true;
 
   if(type == PacketType::ACK_LOGIN) std::cout << "login" << std::endl;
-  if(type == PacketType::ENTITY_TICK) handle_entity_tick(packet);
+  else if(type == PacketType::ENTITY_TICK) handle_entity_tick(packet);
   else if(type == PacketType::LOGOUT) handle_logout(packet);
   else if(type == PacketType::BLOCKS) handle_blocks(packet);
   else if(type == PacketType::CHUNKS) handle_chunks(packet);
