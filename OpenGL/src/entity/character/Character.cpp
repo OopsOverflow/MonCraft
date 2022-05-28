@@ -124,6 +124,10 @@ void Character::setDab(bool dab) {
   this->dab = dab;
 }
 
+bool Character::getDab() const {
+  return dab;
+}
+
 void Character::breakBlock() {
   if(!dab) { //we can't break when we are dabbing wtf???
     r_arm.anim->setAnimation(Animation::Break);
@@ -197,13 +201,18 @@ void Character::update(float dt) {
 
   // smooth head rot with constant speed
   {
-    float speed = 5;
+    float speed;
     glm::vec3 dist;
     glm::highp_dvec3 target;
-    if(!dab) 
+    if(!dab) {
       target = headNode.rot;
-    else 
+      speed = 5;
+    }
+    else {
       target = radians(highp_dvec3(35., -40., 0.));
+      speed = 15;
+    }
+      
     
     dist = vec3(target - head.node.rot);
     if(dist != vec3(0)) {

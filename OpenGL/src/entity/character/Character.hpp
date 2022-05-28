@@ -74,6 +74,7 @@ public:
 
   void setSprint(bool sprint);
   void setDab(bool dab);
+  bool getDab() const;
 
   /**
    * Set the selected block type (in hand).

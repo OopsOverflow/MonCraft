@@ -164,9 +164,10 @@ if (NOT ${BUILD_PLATFORM} STREQUAL wasm)
 	include_directories(${ZLIB_INCLUDE_DIRS})
 	target_link_libraries(${PROJECT_NAME} ${ZLIB_LIBRARIES})
 
-	find_package(SFML REQUIRED COMPONENTS system network audio)
-	include_directories(${SFML_INCLUDE_DIR})
+	
 	if(UNIX)
+		find_package(SFML REQUIRED COMPONENTS system network audio)
+		include_directories(${SFML_INCLUDE_DIR})
 		target_link_libraries(${PROJECT_NAME} sfml-system sfml-network sfml-audio)
 	else(WIN32)
 		set(SFML_STATIC_LIBRARIES TRUE)
