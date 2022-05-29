@@ -22,6 +22,8 @@ namespace Config {
         #endif
 
         float fov = 70.0;
+        float mainVolume = 50.0;
+        float musicVolume = 50.0;
         SDL_Keycode forward = SDLK_z;
         SDL_Keycode backward = SDLK_s;
         SDL_Keycode left = SDLK_q;

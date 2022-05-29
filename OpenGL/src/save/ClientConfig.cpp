@@ -48,6 +48,8 @@ Config::ClientConfig::ClientConfig() {
     KEY_PARAM(view)
     KEY_PARAM(menu)
     KEY_PARAM(dab)
+    PARAM(mainVolume)
+    PARAM(musicVolume)
   }
 
   #undef KEY_PARAM
@@ -84,6 +86,8 @@ Config::ClientConfig::~ClientConfig() {
   KEY_PARAM(view)
   KEY_PARAM(menu)
   KEY_PARAM(dab)
+  PARAM(mainVolume)
+  PARAM(musicVolume)
 
   #undef KEY_PARAM
   #undef PARAM

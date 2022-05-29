@@ -10,6 +10,7 @@ class AudioMenu : public ParamList {
 
 public:
 	static std::unique_ptr<AudioMenu> create();
+	~AudioMenu();
 
 protected:
 	AudioMenu();
