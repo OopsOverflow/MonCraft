@@ -76,7 +76,7 @@ GLuint SkyBox::initSky() {
 
 SkyBox::SkyBox() :
     skyBoxShader(ResourceManager::getShader("skyBox")),
-    buffer(initSky())
+    buffer(initSky()), blendFactor(0.0f)
 {
   skyDayTxr = ResourceManager::getTexture("skyboxDay");
   skyNightTxr = ResourceManager::getTexture("skyboxNight");
@@ -85,6 +85,12 @@ SkyBox::SkyBox() :
   // Set Texture Locations for CubeSamplers.
   glUniform1i(skyBoxShader->getUniform("skyboxD"), 0);
   glUniform1i(skyBoxShader->getUniform("skyboxN"), 1);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, skyDayTxr);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, skyNightTxr);
+
 }
 
 void SkyBox::calcBlendFactor(float skytime) {
@@ -92,35 +98,17 @@ void SkyBox::calcBlendFactor(float skytime) {
     int time = (int)(skytime * 10000);
     // 24 Hour system
     time %= 24000;
-    int texture1, texture2;
 
-    float blendFactor;
-    if (time >= 0 && time < 5000) {
-        texture1 = skyNightTxr;
-        texture2 = skyNightTxr;
-        blendFactor = (float)(time - 0) / (float)(5000 - 0);
-    }
-    else if (time >= 5000 && time < 8000) {
-        texture1 = skyNightTxr;
-        texture2 = skyDayTxr;
-        blendFactor = (float)(time - 5000) / (float)(8000 - 5000);
-    }
-    else if (time >= 8000 && time < 21000) {
-        texture1 = skyDayTxr;
-        texture2 = skyDayTxr;
-        blendFactor = (float)(time - 8000) / (float)(21000 - 8000);
-    }
-    else {
-        texture1 = skyDayTxr;
-        texture2 = skyNightTxr;
+    if (time >= 0 && time < 5000)
+        blendFactor = 1.f;
+    else if (time >= 5000 && time < 8000)
+        blendFactor = (float)(8000 - time) / (float)(8000 - 5000);
+    else if (time >= 8000 && time < 21000)
+        blendFactor = 0.f;
+    else 
         blendFactor = (float)(time - 21000) / (float)(24000 - 21000);
-    }
 
     glUniform1f(skyBoxShader->getUniform("blendFactor"), blendFactor);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, texture1);
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, texture2);
 
 }
 
