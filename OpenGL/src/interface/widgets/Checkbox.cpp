@@ -1,7 +1,7 @@
 #include "Checkbox.hpp"
 
 #include <memory>
-#include <glm/glm.hpp>
+
 
 #include "ui/Component.hpp"
 #include "ui/Button.hpp"
@@ -10,12 +10,12 @@
 using namespace ui;
 
 Checkbox::Checkbox()
-  : checked(false)
+  : checked(false), pos(119, 1179)
 {
-  img = Image::create({119, 1179}, {43, 20});
+  img = Image::create(pos, {43, 20});
   img->setSize({43, 20});
   auto btn = Button::create();
-  btn->onclick([&] { setChecked(!getChecked()); });
+  btn->onClick([&] { setChecked(!getChecked()); });
   btn->add(img.get());
   add(move(btn));
 }
@@ -27,8 +27,8 @@ bool Checkbox::getChecked() const {
 void Checkbox::setChecked(bool checked) {
   this->checked = checked;
   glm::ivec2 off = img->getTextureOffset();
-  if(checked) off += glm::vec2(46, 0);
-  else off -= glm::vec2(46, 0);
+  if(checked) off = pos + glm::vec2(46, 0);
+  else off = pos;
 
   img->setTextureOffset(off);
 }

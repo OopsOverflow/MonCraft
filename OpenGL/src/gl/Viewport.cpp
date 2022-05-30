@@ -31,17 +31,17 @@ Viewport::Viewport(glm::ivec2 size)
   :   size(size),
       window(nullptr), context(nullptr),
       timeBegin(0), lastTime(0),
-      mouseCaptured(false), vsync(true), mustQuit(false),
-      root(nullptr), config(Config::getClientConfig())
+      mouseCaptured(false), mustQuit(false),
+      root(nullptr)
 {
   // Initialize SDL2
   if (SDL_Init(SDL_INIT_VIDEO) < 0)
     throw std::runtime_error(std::string("SDL init failed: ") + SDL_GetError());
 
   // MSAA
-  if(config.msaa) {
+  if(Config::getClientConfig().msaa) {
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, config.msaa);
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, Config::getClientConfig().msaa);
   }
 
   //Create a Window
@@ -107,14 +107,13 @@ void Viewport::captureMouse() {
 }
 
 void Viewport::toggleVSync() {
-  vsync = !vsync;
-  if(vsync) SDL_GL_SetSwapInterval(1);
+  if(Config::getClientConfig().vsync) SDL_GL_SetSwapInterval(1);
   else SDL_GL_SetSwapInterval(0);
 }
 
 void Viewport::toggleFullscreen() {
-  fullscreen = !fullscreen;
-  if(fullscreen) SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+  std::cout<<Config::getClientConfig().fullscreen<<std::endl;
+  if(Config::getClientConfig().fullscreen) SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
   else SDL_SetWindowFullscreen(window, 0);
 }
 
@@ -197,7 +196,7 @@ void Viewport::on_window_event(SDL_WindowEvent const& e) {
 void Viewport::on_keydown(SDL_Keycode k) {
   root->keyPress(k); // controllers in ui (MonCraftScene)
 
-  if (k == config.menu) {
+  if (k == Config::getClientConfig().menu) {
       SDL_SetRelativeMouseMode(SDL_FALSE);
       int x, y;
       SDL_GetMouseState(&x, &y);

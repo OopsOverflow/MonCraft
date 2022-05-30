@@ -16,18 +16,21 @@ AudioMenu::AudioMenu()
 
 	mainVolume = RangeSlider::create(0, 100);
 	musicVolume = RangeSlider::create(0, 100);
-	mainVolume->setValue(config.mainVolume);
-	musicVolume->setValue(config.musicVolume);
+	mainVolume->setValue((int)config.mainVolume);
+	musicVolume->setValue((int)config.musicVolume);
 
-	addLine("Volume principal", mainVolume.get());
 	addLine("Volume de la musique", musicVolume.get());
+	addLine("Volume principal", mainVolume.get());
+
+	mainVolume->onRelease([&]{ config.mainVolume = (float)this->mainVolume->getValue(); });
+	musicVolume->onRelease([&]{ config.musicVolume = (float)this->musicVolume->getValue(); });
 }
 
 AudioMenu::~AudioMenu() {
 	auto& config = Config::getClientConfig();
 
-	config.mainVolume = mainVolume->getValue();
-	config.musicVolume = musicVolume->getValue();
+	config.mainVolume = (float)mainVolume->getValue();
+	config.musicVolume = (float)musicVolume->getValue();
 
 }
 

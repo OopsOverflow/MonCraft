@@ -109,17 +109,30 @@ void showMultiPlayer(Viewport& vp) {
 
 void showParameters(Viewport& vp) {
     auto params = std::make_unique<ParametersMenu>();
-    params->quitButton->onclick([&] { showMainMenu(vp); });
+    auto& config = Config::getClientConfig();
+    params->quitButton->onClick([&] { showMainMenu(vp); });
+    auto fullscreen = params->graphicsMenu->fullscreen.get();
+    auto vsync = params->graphicsMenu->vsync.get();
+    fullscreen->onRelease([&]{ 
+        //config.fullscreen = fullscreen->getChecked(); TODO dirty but moved so no answers for the moment 
+        config.fullscreen = !config.fullscreen;
+        vp.toggleFullscreen();
+    });
+	vsync->onRelease([&]{ 
+        //config.vsync = vsync->getChecked(); TODO dirty but moved so no answers for the moment
+        config.vsync = !config.vsync; 
+        vp.toggleVSync();
+    });
     showView(vp, move(params));
 }
 
 
 void showMainMenu(Viewport& vp) {
     auto mainMenu = MainMenu::create();
-    mainMenu->singleplayerButton->onclick([&]{ showSinglePlayer(vp); });
-    mainMenu->multiplayerButton->onclick([&]{ showMultiPlayer(vp); });
-    mainMenu->parameterButton->onclick([&]{ showParameters(vp); });
-    mainMenu->quitButton->onclick([&] { vp.quit(); });
+    mainMenu->singleplayerButton->onClick([&]{ showSinglePlayer(vp); });
+    mainMenu->multiplayerButton->onClick([&]{ showMultiPlayer(vp); });
+    mainMenu->parameterButton->onClick([&]{ showParameters(vp); });
+    mainMenu->quitButton->onClick([&] { vp.quit(); });
     showView(vp, move(mainMenu));
 }
 

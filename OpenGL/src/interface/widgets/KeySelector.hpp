@@ -4,11 +4,11 @@
 #include <glm/glm.hpp>
 
 #include "ui/Key.hpp"
-#include "ui/Component.hpp"
+#include "ui/Button.hpp"
 #include "ui/Text.hpp"
 
 
-class KeySelector : public ui::Component {
+class KeySelector : public ui::Button {
 
 protected:
   KeySelector(Key key);

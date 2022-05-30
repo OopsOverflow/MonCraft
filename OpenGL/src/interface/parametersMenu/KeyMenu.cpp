@@ -39,6 +39,16 @@ KeyMenu::KeyMenu()
 	addLine("Gauche", left.get());
 	addLine("Reculer", backward.get());
 	addLine("Avancer", forward.get());
+
+	forward->onRelease([&]{ config.forward = forward->getKey().asKeycode(); });
+	backward->onRelease([&]{ config.backward = backward->getKey().asKeycode(); });
+	left->onRelease([&]{ config.left = left->getKey().asKeycode(); });
+	right->onRelease([&]{ config.right = right->getKey().asKeycode(); });
+	jump->onRelease([&]{ config.jump = jump->getKey().asKeycode(); });
+	sneak->onRelease([&]{ config.sneak = sneak->getKey().asKeycode(); });
+	sprint->onRelease([&]{ config.sprint = sprint->getKey().asKeycode(); });
+	dab->onRelease([&]{ config.dab = dab->getKey().asKeycode(); });
+	changeView->onRelease([&]{ config.view = changeView->getKey().asKeycode(); });
 }
 
 KeyMenu::~KeyMenu() {

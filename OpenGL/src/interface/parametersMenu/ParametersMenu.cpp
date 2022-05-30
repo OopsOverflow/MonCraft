@@ -2,10 +2,7 @@
 
 #include <glm/glm.hpp>
 
-#include "interface/parametersMenu/AudioMenu.hpp"
-#include "interface/parametersMenu/KeyMenu.hpp"
-#include "interface/parametersMenu/MiscMenu.hpp"
-#include "interface/parametersMenu/GraphicsMenu.hpp"
+
 #include "interface/widgets/MonCraftButton.hpp"
 #include "gl/ResourceManager.hpp"
 #include "ui/Component.hpp"
@@ -65,22 +62,22 @@ ParametersMenu::ParametersMenu()
 	folderDiv->pack_start(graphicsMenu.get());
 	mainDisplay->pack_start(folderDiv.get());
 
-	keyButton->onclick([&] {
+	keyButton->onClick([&] {
 		folderDiv->unpackAt(0);
 		folderDiv->pack_start(keyMenu.get());
 	});
 
-	graphicsButton->onclick([&] {
+	graphicsButton->onClick([&] {
 		folderDiv->unpackAt(0);
 		folderDiv->pack_start(graphicsMenu.get());
 	});
 
-	audioButton->onclick([&] {
+	audioButton->onClick([&] {
 		folderDiv->unpackAt(0);
 		folderDiv->pack_start(audioMenu.get());
 	});
 
-	miscButton->onclick([&] {
+	miscButton->onClick([&] {
 		folderDiv->unpackAt(0);
 		folderDiv->pack_start(miscMenu.get());
 	});

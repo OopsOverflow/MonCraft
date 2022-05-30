@@ -66,11 +66,7 @@ private:
   uint32_t lastTime;
 
   bool mouseCaptured;
-  bool vsync;
-  bool fullscreen;
   bool mustQuit;
 
   std::unique_ptr<ui::Root> root;
-
-  Config::ClientConfig config;
 };

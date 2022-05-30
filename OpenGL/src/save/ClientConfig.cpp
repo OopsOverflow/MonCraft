@@ -50,6 +50,10 @@ Config::ClientConfig::ClientConfig() {
     KEY_PARAM(dab)
     PARAM(mainVolume)
     PARAM(musicVolume)
+    PARAM(fullscreen)
+    PARAM(vsync)
+    PARAM(shadows)
+
   }
 
   #undef KEY_PARAM
@@ -88,6 +92,9 @@ Config::ClientConfig::~ClientConfig() {
   KEY_PARAM(dab)
   PARAM(mainVolume)
   PARAM(musicVolume)
+  PARAM(fullscreen)
+  PARAM(vsync)
+  PARAM(shadows)
 
   #undef KEY_PARAM
   #undef PARAM

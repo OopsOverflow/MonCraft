@@ -14,12 +14,15 @@ public:
 	static std::unique_ptr<GraphicsMenu> create();
 	~GraphicsMenu();
 
+	std::unique_ptr<Checkbox> fullscreen;
+	std::unique_ptr<Checkbox> vsync;
+
 private:
 	GraphicsMenu();
 
-	std::unique_ptr<Checkbox> fullscreen;
+	
 	std::unique_ptr<RangeSlider> fov;
-	std::unique_ptr<Checkbox> vsync;
+	
 	std::unique_ptr<ComboBox> shadows;
 	std::unique_ptr<RangeSlider> renderDistH, renderDistV;
 };

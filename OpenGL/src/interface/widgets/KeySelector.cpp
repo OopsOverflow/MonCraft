@@ -22,7 +22,7 @@ KeySelector::KeySelector(Key key)
   auto font = ResourceManager::getFont("roboto");
   text = Text::create(SDL_GetKeyName(key.asKeycode()), font);
 
-  button->onclick([&] { makeActive(); });
+  button->onClick([&] { makeActive(); });
 
   pane->add(text.get());
   button->add(move(pane));

@@ -93,7 +93,7 @@ MonCraftScene::MonCraftScene(Viewport* vp)
 
     middleDot->setSize({10, 10});
 
-    overlay->btn_block->onclick([&] {
+    overlay->btn_block->onClick([&] {
         auto prev = player->getCurrentBlock();
         player->setCurrentBlock(AllBlocks::nextBlock(prev));
     });

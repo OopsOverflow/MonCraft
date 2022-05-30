@@ -2,11 +2,11 @@
 
 #include <memory>
 
-#include "ui/Component.hpp"
+#include "ui/Button.hpp"
 #include "ui/Slider.hpp"
 #include "ui/Text.hpp"
 
-class RangeSlider : public ui::Component {
+class RangeSlider : public ui::Button {
 
 protected:
   RangeSlider(int min, int max, int increment);
