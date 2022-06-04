@@ -76,7 +76,13 @@ void DebugOverlay::draw() {
 	text_uid->setText(text.str());
 
 	text.str(""); // "clears" the string stream
-	text << "Game Time : " << std::fixed << std::setprecision(3) << world.t;
+	int hour = (int)(world.t * convertFactor * 0.001f);
+	int min = (int)(((world.t * convertFactor * 0.001f) - hour) * 60.f);
+	text << "Game Time : ";
+	if(hour < 10) text << 0;
+	text << hour << ":";
+	if(min < 10) text << 0;
+	text << min;
 	text_gameTime->setText(text.str());
 
 

@@ -4,6 +4,7 @@
 
 #include "save/ClientConfig.hpp"
 #include "terrain/World.hpp"
+#include <SDL2/SDL.h>
 
 KeyboardController::KeyboardController()
   : config(Config::getClientConfig()),
@@ -48,11 +49,11 @@ bool KeyboardController::handleKeyReleased(Key k) {
 }
 
 bool KeyboardController::isDoubleSpace() {
-  static const float threshold = 0.3f;
+  static const uint32_t threshold = 300;
   bool res = false;
 
   if(!spaceIsPressed) {
-    auto time = World::getInst().t;
+    auto time = SDL_GetTicks();
     res = time - lastSpacePress < threshold;
     lastSpacePress = time;
     spaceIsPressed = true;

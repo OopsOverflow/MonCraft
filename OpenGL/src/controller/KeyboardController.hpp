@@ -28,5 +28,5 @@ private:
   bool dab;
 
   bool spaceIsPressed;
-  float lastSpacePress;
+  uint32_t lastSpacePress;
 };

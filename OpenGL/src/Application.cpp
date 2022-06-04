@@ -71,8 +71,10 @@ void loadResources() {
     ResourceManager::loadFont("vt323", "VT323-Regular");
 }
 
-void loop(float dt) {
+void loop(uint32_t dt) {
     World::getInst().t += dt;
+    while(World::getInst().t >= dayDuration) 
+        World::getInst().t -= dayDuration;
     World::getInst().dt = dt;
 }
 
@@ -175,7 +177,7 @@ int main(int argc, char* argv[]) {
         pwindow = &window;
         emscripten_set_main_loop(em_loop, 0, 1);
     #else
-        for (float dt = 0; window.beginFrame(dt); window.endFrame()) loop(dt);
+        for (uint32_t dt = 0; window.beginFrame(dt); window.endFrame()) loop(dt);
     #endif
 
     ResourceManager::free();

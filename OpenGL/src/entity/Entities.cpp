@@ -32,7 +32,7 @@ bool Entities::remove(Identifier uid) {
 }
 
 
-void Entities::updateAll(float dt) {
+void Entities::updateAll(uint32_t dt) {
   for(auto& entity : *this)
     entity.second->update(dt);
 }

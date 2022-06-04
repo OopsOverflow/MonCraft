@@ -10,7 +10,8 @@
 /**
 * Manages the chunks, load/unload, render and manipulation of blocks.
 */
-
+static const uint32_t dayDuration = 360000; //ms
+static const float convertFactor = 24000.f / dayDuration; //convert dayduration on 24h factor
 class World
 {
 public:
@@ -32,8 +33,8 @@ public:
 
   ChunkMap chunks;
   Entities entities;
-  float t;
-  float dt;
+  uint32_t t;
+  uint32_t dt;
 
 private:
   World();

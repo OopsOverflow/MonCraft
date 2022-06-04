@@ -9,6 +9,7 @@
 #include "gl/Camera.hpp"
 #include "gl/ResourceManager.hpp"
 #include "gl/Shader.hpp"
+#include "terrain/World.hpp"
 
 GLuint SkyBox::initSky() {
     float skyboxVertices[] = {
@@ -76,7 +77,7 @@ GLuint SkyBox::initSky() {
 
 SkyBox::SkyBox() :
     skyBoxShader(ResourceManager::getShader("skyBox")),
-    buffer(initSky()), blendFactor(0.0f)
+    buffer(initSky()), blendFactor(0.f), rotation(0.f)
 {
   skyDayTxr = ResourceManager::getTexture("skyboxDay");
   skyNightTxr = ResourceManager::getTexture("skyboxNight");
@@ -93,11 +94,9 @@ SkyBox::SkyBox() :
 
 }
 
-void SkyBox::calcBlendFactor(float skytime) {
-
-    int time = (int)(skytime * 10000);
-    // 24 Hour system
-    time %= 24000;
+void SkyBox::calcBlendFactor(uint32_t skytime) {
+    
+    uint32_t time = (uint32_t)(skytime * convertFactor);
 
     if (time >= 0 && time < 5000)
         blendFactor = 1.f;
@@ -112,20 +111,20 @@ void SkyBox::calcBlendFactor(float skytime) {
 
 }
 
-void SkyBox::render(Camera& camera, float time)
+void SkyBox::render(Camera& camera)
 {
     glDisable(GL_CULL_FACE);
     glDepthFunc(GL_LEQUAL);
     skyBoxShader->activate();
     glBindVertexArray(buffer);
     glm::mat4 view = glm::mat4(glm::mat3(camera.view));
-    time += 0.8f; // 8:00 (morning)
-    view = glm::rotate(view, time, glm::vec3(0, 1, 0));
+    rotation = fmod(rotation + World::getInst().dt * skyRotSpeed, glm::pi<float>() * 2.f);
+    view = glm::rotate(view, rotation, glm::vec3(0, 1, 0));
     glUniformMatrix4fv(skyBoxShader->getUniform(MATRIX_VIEW), 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(skyBoxShader->getUniform(MATRIX_PROJECTION), 1, GL_FALSE, glm::value_ptr(camera.projection));
 
     // Sampling
-    calcBlendFactor(time);
+    calcBlendFactor(World::getInst().t);
 
     glDrawArrays(GL_TRIANGLES, 0, 36);
     glBindVertexArray(0);

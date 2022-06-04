@@ -44,7 +44,7 @@ public:
   /**
    * Update the character state.
    */
-	void update(float dt) override;
+	void update(uint32_t dt) override;
 
   /**
    * Breaks the block in line of sight if within reach of the character.

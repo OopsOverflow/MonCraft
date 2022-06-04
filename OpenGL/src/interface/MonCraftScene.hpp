@@ -36,10 +36,10 @@ public:
   MonCraftScene(Viewport* vp);
 
 private:
-  void updateFov(float dt);
+  void updateFov(uint32_t dt);
   void updateShadowMaps();
-  void updateUniforms(float t);
-  void drawSkybox(float t);
+  void updateUniforms(uint32_t t);
+  void drawSkybox();
   void drawEntities();
   void draw() override;
 
@@ -88,6 +88,5 @@ public:
   // other parameters
   bool fogEnabled;
   const float sunSpeed;
-  const float skyboxSpeed;
   glm::vec3 sunDir;
 };

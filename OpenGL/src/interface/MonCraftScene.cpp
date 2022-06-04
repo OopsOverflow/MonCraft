@@ -59,7 +59,7 @@ MonCraftScene::MonCraftScene(Viewport* vp)
       caster(100.f),
       shadows(4096),
       fogEnabled(false),
-      sunSpeed(0.0075f), skyboxSpeed(0.0075f)
+      sunSpeed(0.0075f)
 {
     auto const& serverConf = Config::getServerConfig();
     camera.setFar(16.0f * (float)sqrt(2 * pow(serverConf.renderDistH, 2) + pow(serverConf.renderDistV, 2)));
@@ -150,14 +150,14 @@ void MonCraftScene::updateShadowMaps() {
     shadows.endFrame();
 }
 
-void MonCraftScene::updateUniforms(float t) {
+void MonCraftScene::updateUniforms(uint32_t t) {
     auto sunDirViewSpace = camera.view * vec4(sunDir, 0.0);
 
     glUniform1f(shader->getUniform("lightIntensity"), 1);
     glUniform1f(shader->getUniform("sunAmount"), 1.0f - sky.getBlendFactor());
     glUniform3fv(shader->getUniform("lightDirection"), 1, value_ptr(sunDirViewSpace));
     glUniform1i(shader->getUniform("fog"), (int)fogEnabled); // TODO
-    size_t normalMapIndex = (size_t)(t * 15) % 30;
+    size_t normalMapIndex = (size_t)(t * 0.001f * 15) % 30; //TODO check day change
     shader->bindTexture(TEXTURE_NORMAL, normalMapID[normalMapIndex]);
 
     Block* block = world.getBlock(ivec3(camera.position + vec3(-0.5f, 0.6f, -0.5f)));
@@ -175,18 +175,18 @@ void MonCraftScene::updateUniforms(float t) {
     }
 }
 
-void MonCraftScene::updateFov(float dt) {
+void MonCraftScene::updateFov(uint32_t dt) {
   const float maxFov = 180.0f;
   const float smoothing = 0.005f;
   const float transition = 10.f;
   const float speed = glm::length(player->speed);
   const float fov = camera.getFovY();
   const auto targetFov = fov - (maxFov + (config.fov - maxFov) * exp(-smoothing * speed));
-  camera.setFovY(fov - targetFov * transition * dt);
+  camera.setFovY(fov - targetFov * transition * dt * 0.001f);
 }
 
-void MonCraftScene::drawSkybox(float t) {
-    sky.render(camera, t * skyboxSpeed);
+void MonCraftScene::drawSkybox() {
+    sky.render(camera);
     shader->activate();
     shadows.activate();
     camera.activate();
@@ -230,7 +230,7 @@ void MonCraftScene::draw() {
     updateFov(world.dt);
 
     // update sun
-    float sunTime = quarter_pi<float>() + world.t * sunSpeed; // sun is fixed
+    float sunTime = quarter_pi<float>() + world.t * sunSpeed * 0.001f; // sun is fixed
     float sunDist = 100.f;
     sunDir = -normalize(vec3(cos(sunTime), 1, sin(sunTime))) * sunDist;
 
@@ -248,7 +248,7 @@ void MonCraftScene::draw() {
     updateUniforms(world.t);
 
     // draw skybox
-    drawSkybox(world.t);
+    drawSkybox();
 
     // draw the terrain
     shader->bindTexture(TEXTURE_COLOR, texAtlas);

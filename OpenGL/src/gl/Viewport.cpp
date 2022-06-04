@@ -153,7 +153,7 @@ void Viewport::on_event(SDL_Event const& e) {
   }
 }
 
-bool Viewport::beginFrame(float& dt) {
+bool Viewport::beginFrame(uint32_t& dt) {
   if(mustQuit) return false;
 
   SDL_Event event;
@@ -175,7 +175,7 @@ bool Viewport::beginFrame(float& dt) {
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   timeBegin = SDL_GetTicks();
-  dt = (timeBegin - lastTime) * 0.001f;
+  dt = timeBegin - lastTime;
 
   return true;
 }

@@ -37,7 +37,7 @@ public:
    * a usual draw loop looks like the following:
    * for(vp.beginFrame(dt);;vp.endFrame()) { // update & draw // }
    */
-  bool beginFrame(float& dt);
+  bool beginFrame(uint32_t& dt);
   void endFrame();
 
   void createRoot();

@@ -196,7 +196,7 @@ void Character::pickBlock() {
   if(cast.success) currentBlock = cast.block->type;
 }
 
-void Character::update(float dt) {
+void Character::update(uint32_t dt) {
   Entity::update(dt);
 
   // smooth head rot with constant speed
@@ -216,7 +216,7 @@ void Character::update(float dt) {
     
     dist = vec3(target - head.node.rot);
     if(dist != vec3(0)) {
-      auto delta = normalize(dist) * speed * dt;
+      auto delta = normalize(dist) * (speed * dt * 0.001f);
       if(any(greaterThan(abs(delta), abs(dist)))) {
         head.node.rot = target;
       }
