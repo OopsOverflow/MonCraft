@@ -99,12 +99,36 @@ void showMainMenu(Viewport& vp);
 
 void showSinglePlayer(Viewport& vp) {
     Config::getClientConfig().multiplayer = false;
-    showView(vp, std::make_unique<MonCraftScene>(&vp));
+    auto game = std::make_unique<MonCraftScene>(&vp);
+    game->gameMenu->quitButton->onClick([&] { showMainMenu(vp); });
+    game->gameMenu->parameterButton->onClick([&] { showParameters(vp); });
+    game->gameMenu->continueButton->onClick([game = game.get(), menu = game->gameMenu.get(), &vp] { 
+        game->remove(menu);
+        vp.captureMouse();
+    });
+    vp.captureMouse();
+    game->makeActive();
+    showView(vp, move(game));
+    
 }
 
 void showMultiPlayer(Viewport& vp) {
     Config::getClientConfig().multiplayer = true;
     showView(vp, std::make_unique<MonCraftScene>(&vp));
+    auto game = std::make_unique<MonCraftScene>(&vp);
+
+    game->gameMenu->quitButton->onClick([&] { showMainMenu(vp); });
+    game->gameMenu->parameterButton->onClick([&] {
+        showParameters(vp);
+    });
+    game->gameMenu->continueButton->onClick([game = game.get(), menu = game->gameMenu.get(), &vp] { 
+        game->remove(menu);
+        vp.captureMouse();
+    });
+    vp.captureMouse();
+    game->makeActive();
+    showView(vp, move(game));
+    
 }
 
 void showParameters(Viewport& vp) {

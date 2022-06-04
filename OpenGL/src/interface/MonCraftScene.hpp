@@ -68,12 +68,13 @@ private:
   GLuint normalMapID[30];
 
   //interface
-  std::unique_ptr<GameMenu> gameMenu;
   std::unique_ptr<DebugOverlay> debugOverlay;
   std::unique_ptr<Overlay> overlay;
   std::unique_ptr<ui::Image> middleDot;
 
 public:
+  std::unique_ptr<GameMenu> gameMenu;
+
   // components
   SkyBox sky;
   Raycast caster;
@@ -89,5 +90,4 @@ public:
   const float sunSpeed;
   const float skyboxSpeed;
   glm::vec3 sunDir;
-  bool captured;
 };

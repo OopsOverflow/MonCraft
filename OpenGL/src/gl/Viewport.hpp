@@ -43,9 +43,11 @@ public:
   void createRoot();
   ui::Root* getRoot();
   void captureMouse();
+  void freeMouse();
   void toggleVSync();
   void toggleFullscreen();
   void quit();
+  bool isMouseCaptured() const { return mouseCaptured; }
 
   glm::ivec2 size;
 

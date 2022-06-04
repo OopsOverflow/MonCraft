@@ -106,6 +106,14 @@ void Viewport::captureMouse() {
   mouseController.rotateStart(x, y);
 }
 
+void Viewport::freeMouse() {
+  SDL_SetRelativeMouseMode(SDL_FALSE);
+  mouseCaptured = false;
+  int x, y;
+  SDL_GetMouseState(&x, &y);
+  mouseController.rotateEnd(x, y);
+}
+
 void Viewport::toggleVSync() {
   if(Config::getClientConfig().vsync) SDL_GL_SetSwapInterval(1);
   else SDL_GL_SetSwapInterval(0);
@@ -167,7 +175,7 @@ bool Viewport::beginFrame(float& dt) {
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   timeBegin = SDL_GetTicks();
-  dt = (timeBegin - lastTime) / 1000.f;
+  dt = (timeBegin - lastTime) * 0.001f;
 
   return true;
 }
@@ -195,14 +203,6 @@ void Viewport::on_window_event(SDL_WindowEvent const& e) {
 
 void Viewport::on_keydown(SDL_Keycode k) {
   root->keyPress(k); // controllers in ui (MonCraftScene)
-
-  if (k == Config::getClientConfig().menu) {
-      SDL_SetRelativeMouseMode(SDL_FALSE);
-      int x, y;
-      SDL_GetMouseState(&x, &y);
-      mouseController.rotateEnd(x, y);
-      mouseCaptured = false;
-  }
 }
 
 void Viewport::on_keyup(SDL_Keycode k) {

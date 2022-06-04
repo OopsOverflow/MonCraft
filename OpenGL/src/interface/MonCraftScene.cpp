@@ -59,8 +59,7 @@ MonCraftScene::MonCraftScene(Viewport* vp)
       caster(100.f),
       shadows(4096),
       fogEnabled(false),
-      sunSpeed(0.0075f), skyboxSpeed(0.0075f),
-      captured(false)
+      sunSpeed(0.0075f), skyboxSpeed(0.0075f)
 {
     auto const& serverConf = Config::getServerConfig();
     camera.setFar(16.0f * (float)sqrt(2 * pow(serverConf.renderDistH, 2) + pow(serverConf.renderDistV, 2)));
@@ -80,7 +79,7 @@ MonCraftScene::MonCraftScene(Viewport* vp)
     playerUid = server->getUid();
 
     // UI stuff
-    gameMenu = std::make_unique<GameMenu>();
+    gameMenu = GameMenu::create();
     debugOverlay = std::make_unique<DebugOverlay>(server);
     overlay = std::make_unique<Overlay>();
     middleDot = Image::create({1, 1230}, {10, 10});
@@ -91,6 +90,9 @@ MonCraftScene::MonCraftScene(Viewport* vp)
     middleDot->setAnchorY(Anchor::CENTER);
 
     middleDot->setSize({10, 10});
+
+    gameMenu->setAnchorX(Anchor::CENTER);
+    gameMenu->setAnchorY(Anchor::CENTER);
 
     overlay->btn_block->onClick([&] {
         auto prev = player->getCurrentBlock();
@@ -103,23 +105,32 @@ MonCraftScene::MonCraftScene(Viewport* vp)
 }
 
 bool MonCraftScene::onMousePressed(glm::ivec2 pos) {
-    vp->captureMouse();
-    captured = true;
     makeActive();
     return true;
 }
 
 bool MonCraftScene::onMouseMove(glm::ivec2 pos) {
-    if(captured) return true;
-    return false;
+    return vp->isMouseCaptured();
 }
 
 void MonCraftScene::onKeyPressed(Key k) {
-    keyboardController.handleKeyPressed(k);
+    if(vp->isMouseCaptured())
+        keyboardController.handleKeyPressed(k);
 }
 
 void MonCraftScene::onKeyReleased(Key k) {
-    keyboardController.handleKeyReleased(k);
+    if(vp->isMouseCaptured())
+        keyboardController.handleKeyReleased(k);
+    if(k.asKeycode() == Config::getClientConfig().menu) {
+        if(vp->isMouseCaptured()) {
+            add(gameMenu.get());
+            vp->freeMouse();
+        }
+        else {
+            remove(gameMenu.get());
+            vp->captureMouse();
+        }
+    }
 }
 
 void MonCraftScene::updateShadowMaps() {
