@@ -32,6 +32,7 @@ static const GLfloat quad[6][2] = {
     { 1.0f, 0.0f },
 };
 
+size_t Image::instances = 0;
 Shader* Image::shader = nullptr;
 GLuint Image::texAtlas = 0;
 GLuint Image::vao = 0;
@@ -40,33 +41,14 @@ GLuint Image::vbo = 0;
 
 Image::Image(glm::ivec2 offset, glm::ivec2 size)
     : minFilter(GL_NEAREST),
-    magFilter(GL_NEAREST)
+      magFilter(GL_NEAREST)
 {
     ASSERT_GL_MAIN_THREAD();
     setTextureOffset(offset);
     setTextureSize(size);
-
-    if (shader == nullptr) {
-        shader = ResourceManager::getShader("image");
-        texAtlas = ResourceManager::getTexture("imageAtlas");
-        shader->activate();
-        glGenVertexArrays(1, &vao);
-        glGenBuffers(1, &vbo);
-        glBindVertexArray(vao);
-        {
-            glBindBuffer(GL_ARRAY_BUFFER, vbo);
-            glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 6 * 2, quad, GL_STATIC_DRAW);
-            glVertexAttribPointer(VERTEX_POSITION, 2, GL_FLOAT, GL_FALSE, 0, 0);
-            glEnableVertexAttribArray(VERTEX_POSITION);
-            glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-            GLint texSampler = shader->getUniform("uTexture");
-            glUniform1i(texSampler, 0);
-            glActiveTexture(GL_TEXTURE0);
-        }
-        glBindVertexArray(0);
-
-    }
+    
+    if(!instances) initializeStatic();
+    ++instances;
 }
 
 std::unique_ptr<Image> Image::create(ivec2 offset, ivec2 size) {
@@ -76,9 +58,33 @@ std::unique_ptr<Image> Image::create(ivec2 offset, ivec2 size) {
 }
 
 Image::~Image() {
-    ASSERT_GL_MAIN_THREAD();
-    glDeleteVertexArrays(1, &vao);
-    glDeleteBuffers(1, &vbo);
+  ASSERT_GL_MAIN_THREAD();
+  --instances;
+  if(!instances) {
+      glDeleteVertexArrays(1, &vao);
+      glDeleteBuffers(1, &vbo);
+  }
+}
+
+void Image::initializeStatic() {
+  shader = ResourceManager::getShader("image");
+  texAtlas = ResourceManager::getTexture("imageAtlas");
+  shader->activate();
+  glGenVertexArrays(1, &vao);
+  glGenBuffers(1, &vbo);
+  glBindVertexArray(vao);
+  {
+      glBindBuffer(GL_ARRAY_BUFFER, vbo);
+      glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 6 * 2, quad, GL_STATIC_DRAW);
+      glVertexAttribPointer(VERTEX_POSITION, 2, GL_FLOAT, GL_FALSE, 0, 0);
+      glEnableVertexAttribArray(VERTEX_POSITION);
+      glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+      GLint texSampler = shader->getUniform("uTexture");
+      glUniform1i(texSampler, 0);
+      glActiveTexture(GL_TEXTURE0);
+  }
+  glBindVertexArray(0);
 }
 
 void Image::setProperty(prop_t prop) {
