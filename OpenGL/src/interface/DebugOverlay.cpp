@@ -60,7 +60,7 @@ void DebugOverlay::draw() {
 	setSize(glm::ivec2(parent->getSize().x, 0));
 
 	std::ostringstream text;
-	text << "FPS : " << (int)(1.f / world.dt);
+	text << "FPS : " << (int)(1000 / (float)world.dt);
 	text_fps->setText(text.str());
 
 	text.str(""); // "clears" the string stream

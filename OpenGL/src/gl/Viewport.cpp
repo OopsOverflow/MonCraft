@@ -167,7 +167,7 @@ bool Viewport::beginFrame(uint32_t& dt) {
   }
 
   glViewport(0, 0, size.x, size.y);
-  glClearColor(54/255.f, 199/255.f, 242/255.f, 1.0);
+  glClearColor(255/255.f, 0/255.f, 203/255.f, 1.0);
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);
   glEnable(GL_BLEND);

@@ -202,8 +202,12 @@ void Component::remove(Component* child) {
   if(!child->parent || child->parent != this) {
     throw std::runtime_error("element is not a child");
   }
-  children.erase(std::remove(children.begin(), children.end(), child));
   child->parent = nullptr;
+  children.erase(std::find(children.begin(), children.end(), child));
+  auto it = std::find_if(owned.begin(), owned.end(), [&](auto& owned) {
+    return owned.get() == child;
+  });
+  if(it != owned.end()) owned.erase(it);
 }
 
 std::vector<Component*> Component::getChildren() const {
@@ -288,6 +292,7 @@ bool Component::overlaps(ivec2 point) const {
     p1.y <= point.y && point.y <= p2.y;
 }
 
+#include <algorithm>
 // COMBAK: not sure if this works well.
 bool Component::bubbleEvent(Event const& evt) { // goes to the bottom
   if(!overlaps(evt.getPosition())) {
@@ -306,6 +311,7 @@ bool Component::bubbleEvent(Event const& evt) { // goes to the bottom
     for(int it = (int)children.size() - 1; it >= 0; it--) {
       Component* child = children.at(it);
       bubbled |= child->bubbleEvent(evt);
+      it = std::min(it, (int)children.size() - 1);
     }
     if(!bubbled) {
       if(evt.getType() == Event::Type::PRESS) makeActive();

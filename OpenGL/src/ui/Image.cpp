@@ -42,13 +42,14 @@ Image::Image(glm::ivec2 offset, glm::ivec2 size)
     : minFilter(GL_NEAREST),
     magFilter(GL_NEAREST)
 {
+    ASSERT_GL_MAIN_THREAD();
     setTextureOffset(offset);
     setTextureSize(size);
 
     if (shader == nullptr) {
         shader = ResourceManager::getShader("image");
         texAtlas = ResourceManager::getTexture("imageAtlas");
-
+        shader->activate();
         glGenVertexArrays(1, &vao);
         glGenBuffers(1, &vbo);
         glBindVertexArray(vao);

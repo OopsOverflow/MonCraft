@@ -23,6 +23,8 @@
 #include "interface/Overlay.hpp"
 #include "interface/DebugOverlay.hpp"
 
+#include <iostream>
+
 class Character;
 class Server;
 class Shader;
@@ -34,7 +36,7 @@ class MonCraftScene : public ui::Component {
 
 public:
   MonCraftScene(Viewport* vp);
-
+  ~MonCraftScene();
 private:
   void updateFov(uint32_t dt);
   void updateShadowMaps();
@@ -77,7 +79,6 @@ public:
 
   // components
   SkyBox sky;
-  Raycast caster;
   ShadowMap shadows;
   std::shared_ptr<Server> server;
 

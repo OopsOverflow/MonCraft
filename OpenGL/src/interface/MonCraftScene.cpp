@@ -56,7 +56,6 @@ MonCraftScene::MonCraftScene(Viewport* vp)
       config(Config::getClientConfig()),
       vp(vp),
       camera(ivec2(1)),
-      caster(100.f),
       shadows(4096),
       sunSpeed(0.0075f)
 {
@@ -101,6 +100,11 @@ MonCraftScene::MonCraftScene(Viewport* vp)
     add(middleDot.get());
     add(overlay.get());
     add(debugOverlay.get());
+}
+
+ MonCraftScene::~MonCraftScene(){ 
+    std::cout<<"cc"<<std::endl;
+    
 }
 
 bool MonCraftScene::onMousePressed(glm::ivec2 pos) {
