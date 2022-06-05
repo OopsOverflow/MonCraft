@@ -54,7 +54,6 @@ void loadResources() {
     ResourceManager::loadShader("skyBox", "skyBox.vert", "skyBox.frag");
     ResourceManager::loadShader("font",   "font.vert",   "font.frag");
     ResourceManager::loadShader("water",  "water.vert",  "water.frag");
-    ResourceManager::loadShader("fog", "fog.vert", "fog.frag");
     ResourceManager::loadShader("pane", "pane.vert", "pane.frag");
     ResourceManager::loadShader("shadow", "shadow.vert", "shadow.frag");
     ResourceManager::loadShader("image", "image.vert", "image.frag");
@@ -73,8 +72,7 @@ void loadResources() {
 
 void loop(uint32_t dt) {
     World::getInst().t += dt;
-    while(World::getInst().t >= dayDuration) 
-        World::getInst().t -= dayDuration;
+    World::getInst().t = World::getInst().t % dayDuration;
     World::getInst().dt = dt;
 }
 
@@ -137,16 +135,12 @@ void showParameters(Viewport& vp) {
     auto params = std::make_unique<ParametersMenu>();
     auto& config = Config::getClientConfig();
     params->quitButton->onClick([&] { showMainMenu(vp); });
-    auto fullscreen = params->graphicsMenu->fullscreen.get();
-    auto vsync = params->graphicsMenu->vsync.get();
-    fullscreen->onRelease([&]{ 
-        //config.fullscreen = fullscreen->getChecked(); TODO dirty but moved so no answers for the moment 
-        config.fullscreen = !config.fullscreen;
+    params->graphicsMenu->fullscreen->onRelease([&vp, &config, fullscreen = params->graphicsMenu->fullscreen.get()]{ 
+        config.fullscreen = fullscreen->getChecked();
         vp.toggleFullscreen();
     });
-	vsync->onRelease([&]{ 
-        //config.vsync = vsync->getChecked(); TODO dirty but moved so no answers for the moment
-        config.vsync = !config.vsync; 
+	params->graphicsMenu->vsync->onRelease([&vp, &config, vsync = params->graphicsMenu->vsync.get()]{ 
+        config.vsync = vsync->getChecked();
         vp.toggleVSync();
     });
     showView(vp, move(params));

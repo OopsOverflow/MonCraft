@@ -303,7 +303,7 @@ bool Component::bubbleEvent(Event const& evt) { // goes to the bottom
 
   else {
     bool bubbled = false;
-    for(int it = children.size()-1; it >= 0; it--) {
+    for(int it = (int)children.size() - 1; it >= 0; it--) {
       Component* child = children.at(it);
       bubbled |= child->bubbleEvent(evt);
     }

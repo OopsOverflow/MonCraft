@@ -86,7 +86,6 @@ public:
   #endif
 
   // other parameters
-  bool fogEnabled;
   const float sunSpeed;
   glm::vec3 sunDir;
 };

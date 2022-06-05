@@ -11,7 +11,7 @@ KeyboardController::KeyboardController()
     direction(0.f),
     view(CharacterView::FIRST_PERSON),
     sprint(false), toggleGod(false), dab(false),
-    spaceIsPressed(false), lastSpacePress(0.f)
+    spaceIsPressed(false), lastSpacePress(0)
 {}
 
 bool KeyboardController::handleKeyReleased(Key k) {

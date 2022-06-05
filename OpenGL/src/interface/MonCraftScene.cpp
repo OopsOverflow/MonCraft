@@ -58,7 +58,6 @@ MonCraftScene::MonCraftScene(Viewport* vp)
       camera(ivec2(1)),
       caster(100.f),
       shadows(4096),
-      fogEnabled(false),
       sunSpeed(0.0075f)
 {
     auto const& serverConf = Config::getServerConfig();
@@ -156,7 +155,6 @@ void MonCraftScene::updateUniforms(uint32_t t) {
     glUniform1f(shader->getUniform("lightIntensity"), 1);
     glUniform1f(shader->getUniform("sunAmount"), 1.0f - sky.getBlendFactor());
     glUniform3fv(shader->getUniform("lightDirection"), 1, value_ptr(sunDirViewSpace));
-    glUniform1i(shader->getUniform("fog"), (int)fogEnabled); // TODO
     size_t normalMapIndex = (size_t)(t * 0.001f * 15) % 30; //TODO check day change
     shader->bindTexture(TEXTURE_NORMAL, normalMapID[normalMapIndex]);
 

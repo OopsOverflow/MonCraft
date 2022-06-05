@@ -41,7 +41,7 @@ std::unique_ptr<RangeSlider> RangeSlider::create(int min, int max, int increment
 
 int RangeSlider::getValue() const {
   // TODO increment
-  return round(slider->getValue() * (max - min) + min);
+  return (int)round(slider->getValue() * (max - min) + min);
 }
 
 void RangeSlider::setValue(int val) {
