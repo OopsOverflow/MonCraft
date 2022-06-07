@@ -92,19 +92,11 @@ MonCraftScene::MonCraftScene(Viewport* vp)
     gameMenu->setAnchorX(Anchor::CENTER);
     gameMenu->setAnchorY(Anchor::CENTER);
 
-    overlay->btn_block->onClick([&] {
-        auto prev = player->getCurrentBlock();
-        player->setCurrentBlock(AllBlocks::nextBlock(prev));
-    });
-
     add(middleDot.get());
     add(overlay.get());
     add(debugOverlay.get());
-}
 
- MonCraftScene::~MonCraftScene(){ 
-    std::cout<<"cc"<<std::endl;
-    
+    player->setCurrentBlock(overlay->getCurrentBlock());
 }
 
 bool MonCraftScene::onMousePressed(glm::ivec2 pos) {
@@ -219,6 +211,9 @@ void MonCraftScene::draw() {
     #ifndef EMSCRIPTEN
       musicPlayer.update();
     #endif
+
+    if(overlay->select((int)(overlay->getSelected()) + vp->getMouseScrollDiff()))
+        player->setCurrentBlock(overlay->getCurrentBlock());
 
     keyboardController.apply(*player);
     vp->mouseController.apply(*player);

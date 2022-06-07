@@ -23,8 +23,6 @@
 #include "interface/Overlay.hpp"
 #include "interface/DebugOverlay.hpp"
 
-#include <iostream>
-
 class Character;
 class Server;
 class Shader;
@@ -36,7 +34,6 @@ class MonCraftScene : public ui::Component {
 
 public:
   MonCraftScene(Viewport* vp);
-  ~MonCraftScene();
 private:
   void updateFov(uint32_t dt);
   void updateShadowMaps();
@@ -70,12 +67,12 @@ private:
   GLuint normalMapID[30];
 
   //interface
-  std::unique_ptr<DebugOverlay> debugOverlay;
-  std::unique_ptr<Overlay> overlay;
+  std::unique_ptr<DebugOverlay> debugOverlay;  
   std::unique_ptr<ui::Image> middleDot;
 
 public:
   std::unique_ptr<GameMenu> gameMenu;
+  std::unique_ptr<Overlay> overlay;
 
   // components
   SkyBox sky;

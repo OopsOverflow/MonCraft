@@ -48,6 +48,7 @@ public:
   void toggleFullscreen();
   void quit();
   bool isMouseCaptured() const { return mouseCaptured; }
+  int getMouseScrollDiff();
 
   glm::ivec2 size;
 
@@ -60,6 +61,7 @@ private:
   void on_keyup(SDL_Keycode k);
   void on_mousedown(SDL_MouseButtonEvent const& e);
   void on_mouseup(SDL_MouseButtonEvent const& e);
+  void on_mouse_scroll(SDL_MouseWheelEvent const& e);
 
   SDL_Window* window;
   SDL_GLContext context;
@@ -69,6 +71,8 @@ private:
 
   bool mouseCaptured;
   bool mustQuit;
+
+  int mouseScroll;
 
   std::unique_ptr<ui::Root> root;
 };

@@ -72,6 +72,7 @@ if(${BUILD_TARGET} STREQUAL client)
 		${CMAKE_CURRENT_SOURCE_DIR}/src/controller/KeyboardController.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/controller/MouseController.cpp
 
+		${CMAKE_CURRENT_SOURCE_DIR}/src/interface/widgets/BlockSelector.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/interface/widgets/MonCraftButton.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/interface/widgets/ComboBox.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/interface/widgets/ParamList.cpp

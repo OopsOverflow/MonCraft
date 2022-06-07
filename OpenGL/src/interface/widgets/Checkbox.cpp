@@ -4,8 +4,6 @@
 
 
 #include "ui/Component.hpp"
-#include "ui/Button.hpp"
-#include "ui/Image.hpp"
 
 using namespace ui;
 
@@ -14,10 +12,8 @@ Checkbox::Checkbox()
 {
   img = Image::create(pos, {43, 20});
   img->setSize({43, 20});
-  auto btn = Button::create();
-  btn->onClick([&] { setChecked(!getChecked()); });
-  btn->add(img.get());
-  add(move(btn));
+  onClick([&] { setChecked(!getChecked()); });
+  add(img.get());
 }
 
 bool Checkbox::getChecked() const {

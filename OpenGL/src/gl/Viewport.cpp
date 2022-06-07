@@ -32,7 +32,7 @@ Viewport::Viewport(glm::ivec2 size)
       window(nullptr), context(nullptr),
       timeBegin(0), lastTime(0),
       mouseCaptured(false), mustQuit(false),
-      root(nullptr)
+      root(nullptr), mouseScroll(0)
 {
   // Initialize SDL2
   if (SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -120,7 +120,6 @@ void Viewport::toggleVSync() {
 }
 
 void Viewport::toggleFullscreen() {
-  std::cout<<Config::getClientConfig().fullscreen<<std::endl;
   if(Config::getClientConfig().fullscreen) SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
   else SDL_SetWindowFullscreen(window, 0);
 }
@@ -149,6 +148,9 @@ void Viewport::on_event(SDL_Event const& e) {
     break;
   case SDL_MOUSEBUTTONUP:
     on_mouseup(e.button);
+    break;
+  case SDL_MOUSEWHEEL:
+    on_mouse_scroll(e.wheel);
     break;
   }
 }
@@ -244,4 +246,18 @@ void Viewport::on_mouseup(SDL_MouseButtonEvent const& e) {
   default:
     break;
   }
+}
+
+void Viewport::on_mouse_scroll(SDL_MouseWheelEvent const& e) {
+  if(e.y > 0) {
+    mouseScroll += 1;
+  }else if(e.y < 0) {
+    mouseScroll -=1;
+  }
+}
+
+int Viewport::getMouseScrollDiff() {
+  auto tmp = mouseScroll;
+  mouseScroll = 0;
+  return tmp;
 }

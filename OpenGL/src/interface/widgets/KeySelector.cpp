@@ -14,7 +14,6 @@ using namespace ui;
 KeySelector::KeySelector(Key key)
   : key(key)
 {
-  auto button = Button::create();
   auto pane = Pane::create();
 
   pane->setPadding({ 10, 5 });
@@ -22,11 +21,11 @@ KeySelector::KeySelector(Key key)
   auto font = ResourceManager::getFont("roboto");
   text = Text::create(SDL_GetKeyName(key.asKeycode()), font);
 
-  button->onClick([&] { makeActive(); });
+  onClick([&] { makeActive(); });
 
   pane->add(text.get());
-  button->add(move(pane));
-  add(move(button));
+  add(move(pane));
+
 }
 
 void KeySelector::setKey(Key key) {
