@@ -1,7 +1,5 @@
 Dependencies/boost
 Dependencies/glm/out
-Dependencies/libdatachannel
-Dependencies/libdatachannel-wasm
 
 OpenGL/save
 OpenGL/Debug

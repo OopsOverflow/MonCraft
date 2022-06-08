@@ -69,7 +69,7 @@ ClientID WebSocketServer::sock_to_client(std::shared_ptr<rtc::WebSocket> socket)
 }
 
 std::shared_ptr<rtc::WebSocket> WebSocketServer::client_to_sock(ClientID client) {
-  std::lock_guard<std::mutex> lck(clientLck);
+  // std::lock_guard<std::mutex> lck(clientLck);
   return clientLookup.find(client)->second->socket;
 }
 
@@ -77,7 +77,7 @@ void WebSocketServer::on_open(std::shared_ptr<rtc::WebSocket> socket) {
   std::cout << "[INFO] client login" << std::endl;
   ClientID client = sock_to_client(socket);
 
-    std::lock_guard<std::mutex> lck(clientLck);
+    // std::lock_guard<std::mutex> lck(clientLck);
 
     Peer* peer = new Peer{
       .id = sock_to_client(socket),
@@ -94,7 +94,7 @@ void WebSocketServer::on_open(std::shared_ptr<rtc::WebSocket> socket) {
   	// peer.conn->onStateChange([](rtc::PeerConnection::State state) { std::cout << "[INFO] Peer State: " << state << std::endl; });
   	// peer.conn->onGatheringStateChange([](rtc::PeerConnection::GatheringState state) { std::cout << "[INFO] Peer Gathering State: " << state << std::endl; });
   	peer->conn.onDataChannel([this, peer](std::shared_ptr<rtc::DataChannel> channel) {
-      std::lock_guard<std::mutex> lck(peer->mutex);
+      // std::lock_guard<std::mutex> lck(peer->mutex);
       peer->channel = channel;
       channel->onMessage(std::bind(&WebSocketServer::on_message, this, peer, _1));
       channel->onClosed(std::bind(&WebSocketServer::on_close, this, peer));
@@ -106,7 +106,7 @@ void WebSocketServer::on_open(std::shared_ptr<rtc::WebSocket> socket) {
 void WebSocketServer::on_close(Peer* peer) {
   std::cout << "[INFO] client logout" << std::endl;
   {
-    std::lock_guard<std::mutex> lck(clientLck);
+    // std::lock_guard<std::mutex> lck(clientLck);
     auto it = clientLookup.find(peer->id);
     if(it != clientLookup.end()) {
       clientLookup.erase(it);
@@ -122,11 +122,11 @@ void WebSocketServer::on_message(Peer* peer, rtc::message_variant msg) {
   if(std::holds_alternative<std::string>(msg)) {
     std::string data = std::get<std::string>(msg);
     if(data.starts_with("a=candidate")) {
-      std::lock_guard<std::mutex> lck(peer->mutex);
+      // std::lock_guard<std::mutex> lck(peer->mutex);
       peer->conn.addRemoteCandidate(rtc::Candidate(data, "MonCraft"));
     }
     else {
-      std::lock_guard<std::mutex> lck(peer->mutex);
+      // std::lock_guard<std::mutex> lck(peer->mutex);
       peer->conn.setRemoteDescription(rtc::Description(data, rtc::Description::Type::Answer));
     }
   }
@@ -149,7 +149,7 @@ bool WebSocketServer::send(sf::Packet &packet, ClientID client) {
   auto it = clientLookup.find(client);
   if(it != clientLookup.end()) {
     auto& peer = it->second;
-    std::lock_guard<std::mutex> lck(peer->mutex);
+    // std::lock_guard<std::mutex> lck(peer->mutex);
     if(peer->channel && peer->channel->isOpen()) // prefer webrtc over websocket
       return peer->channel->send((std::byte*)packet.getData(), packet.getDataSize());
     else if(peer->socket->isOpen())
