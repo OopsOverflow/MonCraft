@@ -11,6 +11,7 @@
 #include <stdexcept>
 #include <string>
 #include <glm/glm.hpp>
+#include <algorithm>
 
 #include "ui/Event.hpp"
 #include "ui/Root.hpp"
@@ -28,8 +29,7 @@ extern "C" {
 #endif
 
 Viewport::Viewport(glm::ivec2 size)
-  :   size(size),
-      window(nullptr), context(nullptr),
+  :   window(nullptr), context(nullptr),
       timeBegin(0), lastTime(0),
       mouseCaptured(false), mustQuit(false),
       root(nullptr), mouseScroll(0)
@@ -38,11 +38,19 @@ Viewport::Viewport(glm::ivec2 size)
   if (SDL_Init(SDL_INIT_VIDEO) < 0)
     throw std::runtime_error(std::string("SDL init failed: ") + SDL_GetError());
 
+  SDL_DisplayMode dm;
+  if (SDL_GetDesktopDisplayMode(0, &dm) != 0)
+      throw std::runtime_error(std::string("SDL_GetDesktopDisplayMode failed: ") + SDL_GetError());
+
   // MSAA
   if(Config::getClientConfig().msaa) {
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, Config::getClientConfig().msaa);
   }
+
+  size.x = min((int)size.x, (int)(dm.w * 0.9));
+  size.y = min((int)size.y, (int)(dm.h * 0.9));
+  this->size = size;
 
   //Create a Window
   window = SDL_CreateWindow("MonCraft",
