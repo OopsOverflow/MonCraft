@@ -30,16 +30,11 @@ bool Overlay::select(int selection) {
 	if(selection == selected) return false;
 
 	cells[selected]->setSelected(false);
-	int nextScreen = 0;
-	while(selection >= (int)nbCells) {
-		selection -= nbCells;
-		nextScreen += 1;
-	}
-	while(selection < 0) {
-		selection += nbCells;
-		nextScreen -= 1;
-	}
+	int nextScreen = selection / nbCells;
+	selection = selection % nbCells;
+	selection = selection < 0 ? selection + nbCells : selection;
 	
+
 	if(nextScreen != 0) {
 		static const int nbBlocks = (int)BlockType::Birch_Stair + 1;//Last block of the array here
 		int blockID = (int)blockStart - 1 + nextScreen * (int)nbCells; // -1 easier for calculation bc air isn't taken in account

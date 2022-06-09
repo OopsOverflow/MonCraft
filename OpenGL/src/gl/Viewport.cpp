@@ -50,6 +50,9 @@ Viewport::Viewport(glm::ivec2 size)
       size.x, size.y,
       SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
 
+  toggleFullscreen();
+  toggleVSync();
+
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 

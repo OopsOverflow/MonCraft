@@ -80,7 +80,7 @@ MonCraftScene::MonCraftScene(Viewport* vp)
     gameMenu = GameMenu::create();
     debugOverlay = std::make_unique<DebugOverlay>(server);
     overlay = std::make_unique<Overlay>();
-    middleDot = Image::create({1, 1230}, {10, 10});
+    middleDot = Image::create({1, 1229}, {10, 10});
 
     debugOverlay->setAnchorY(Anchor::END);
 
