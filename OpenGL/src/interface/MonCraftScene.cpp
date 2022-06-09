@@ -212,7 +212,7 @@ void MonCraftScene::draw() {
       musicPlayer.update();
     #endif
 
-    if(overlay->select((int)(overlay->getSelected()) + vp->getMouseScrollDiff()))
+    if(overlay->select((int)(player->getCurrentBlock()) + vp->getMouseScrollDiff()))
         player->setCurrentBlock(overlay->getCurrentBlock());
 
     keyboardController.apply(*player);

@@ -27,16 +27,37 @@ Overlay::Overlay() : selected(0), blockStart(BlockType::Grass)
 }
 
 bool Overlay::select(int selection) {
-	if(selection == selected) return false;
+	static const int nbBlocks = (int)BlockType::Birch_Stair + 1;//Last block of the array here
 
+	selection -= 1;
+	selection = selection % (nbBlocks - 1);
+	selection = selection < 0 ? selection + (nbBlocks - 1) : selection;
+
+	int currentSelect = (int)blockStart - 1 + (int)selected;
+	currentSelect = currentSelect % (nbBlocks - 1);
+	currentSelect = currentSelect < 0 ? currentSelect + (nbBlocks - 1) : currentSelect;
+
+	if(selection == currentSelect) return false;
 	cells[selected]->setSelected(false);
-	int nextScreen = selection / nbCells;
-	selection = selection % nbCells;
-	selection = selection < 0 ? selection + nbCells : selection;
-	
+
+	int newSelect;
+	int nextScreen;
+	int dist1 = nbBlocks - 1 - std::max(currentSelect, selection) + std::min(currentSelect, selection); //not signed
+	int dist2 = selection - currentSelect; //signed
+
+	if(dist1 < abs(dist2)) {
+		newSelect = dist1;
+		if(currentSelect < selection) newSelect *= -1; 
+	}
+	else {
+		newSelect = dist2;
+	}
+	newSelect += (int)selected;
+	nextScreen = newSelect / nbCells;
+	newSelect = newSelect % nbCells;
+	newSelect = newSelect < 0 ? newSelect + nbCells : newSelect;
 
 	if(nextScreen != 0) {
-		static const int nbBlocks = (int)BlockType::Birch_Stair + 1;//Last block of the array here
 		int blockID = (int)blockStart - 1 + nextScreen * (int)nbCells; // -1 easier for calculation bc air isn't taken in account
 		while(blockID < 0) blockID = nbBlocks - 1 + blockID; 
 		blockID %= nbBlocks - 1;
@@ -49,7 +70,7 @@ bool Overlay::select(int selection) {
 			cells[i]->setBlock(block);
 		}
 	}
-	selected = selection;
+	selected = newSelect;
 	cells[selected]->setSelected(true);
 
 	return true;
