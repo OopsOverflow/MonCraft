@@ -26,6 +26,7 @@ extern "C" {
   __declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001;
   __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 }
+#undef min
 #endif
 
 Viewport::Viewport(glm::ivec2 size)
@@ -48,8 +49,8 @@ Viewport::Viewport(glm::ivec2 size)
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, Config::getClientConfig().msaa);
   }
 
-  size.x = min((int)size.x, (int)(dm.w * 0.9));
-  size.y = min((int)size.y, (int)(dm.h * 0.9));
+  size.x = std::min((int)size.x, (int)(dm.w * 0.9));
+  size.y = std::min((int)size.y, (int)(dm.h * 0.9));
   this->size = size;
 
   //Create a Window
