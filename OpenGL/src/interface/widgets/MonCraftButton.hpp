@@ -16,6 +16,6 @@ public:
 
 protected:
   MonCraftButton(std::unique_ptr<ui::Pane> mainComp, std::unique_ptr<ui::Text> textComp);
-  std::unique_ptr<ui::Pane> mainComp;
-  std::unique_ptr<ui::Text> textComp;
+  std::shared_ptr<ui::Pane> mainComp;
+  std::shared_ptr<ui::Text> textComp;
 };

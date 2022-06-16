@@ -16,10 +16,10 @@ GameMenu::GameMenu()
 	buttons->setAnchorY(Anchor::CENTER);
 	buttons->setGap(10);
 
-	buttons->pack_start(continueButton.get());
+	buttons->pack_start(continueButton);
 	#ifndef EMSCRIPTEN
-		buttons->pack_start(parameterButton.get());
-		buttons->pack_start(quitButton.get());
+		buttons->pack_start(parameterButton);
+		buttons->pack_start(quitButton);
 	#endif
 
 	add(move(buttons));

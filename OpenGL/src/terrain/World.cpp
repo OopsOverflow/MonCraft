@@ -16,7 +16,7 @@ World& World::getInst() {
   return world;
 }
 
-World::World() : t((uint32_t)(8.f * dayDuration / 24.f))
+World::World()
 {}
 
 World::~World()

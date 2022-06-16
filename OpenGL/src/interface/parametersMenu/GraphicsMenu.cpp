@@ -38,12 +38,12 @@ GraphicsMenu::GraphicsMenu()
 	vsync->setChecked(clientConf.vsync);
 
 
-	addLine("Plein écran", fullscreen.get());
-	addLine("FOV", fov.get());
-	addLine("Ombres", shadows.get());
-	addLine("Distance horizontale", renderDistH.get());
-	addLine("Distance verticale", renderDistV.get());
-	addLine("VSync", vsync.get());
+	addLine("Plein écran", fullscreen);
+	addLine("FOV", fov);
+	addLine("Ombres", shadows);
+	addLine("Distance horizontale", renderDistH);
+	addLine("Distance verticale", renderDistV);
+	addLine("VSync", vsync);
 
 	// see application -> showParameters
 	// fullscreen->onRelease([&]{ clientConf.fullscreen = this->fullscreen->getChecked(); });

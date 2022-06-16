@@ -37,7 +37,7 @@ public:
    * a usual draw loop looks like the following:
    * for(vp.beginFrame(dt);;vp.endFrame()) { // update & draw // }
    */
-  bool beginFrame(uint32_t& dt);
+  bool beginFrame();
   void endFrame();
 
   void createRoot();
@@ -65,9 +65,6 @@ private:
 
   SDL_Window* window;
   SDL_GLContext context;
-
-  uint32_t timeBegin;
-  uint32_t lastTime;
 
   bool mouseCaptured;
   bool mustQuit;

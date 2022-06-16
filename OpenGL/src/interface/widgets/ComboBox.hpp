@@ -22,5 +22,5 @@ public:
 private:
   std::vector<std::string> options;
   size_t selected;
-  std::unique_ptr<ui::Text> text;
+  std::shared_ptr<ui::Text> text;
 };

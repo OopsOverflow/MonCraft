@@ -11,6 +11,7 @@
 #include "ui/Key.hpp"
 #include "util/Identifier.hpp"
 #include "util/Raycast.hpp"
+#include "parametersMenu/ParametersMenu.hpp"
 
 #ifndef EMSCRIPTEN
   #include "audio/Music.hpp"
@@ -33,15 +34,16 @@ namespace Config { struct ClientConfig; }
 class MonCraftScene : public ui::Component {
 
 public:
-  MonCraftScene(Viewport* vp);
+  static std::unique_ptr<MonCraftScene> create(Viewport* vp);
 private:
+  MonCraftScene(Viewport* vp);
   void updateFov(uint32_t dt);
   void updateShadowMaps();
   void updateUniforms(uint32_t t);
   void drawSkybox();
   void drawEntities();
   void draw() override;
-
+  
 protected:
   virtual bool onMousePressed(glm::ivec2 pos) override;
   virtual bool onMouseMove(glm::ivec2 pos) override;
@@ -67,12 +69,13 @@ private:
   GLuint normalMapID[30];
 
   //interface
-  std::unique_ptr<DebugOverlay> debugOverlay;  
-  std::unique_ptr<ui::Image> middleDot;
+  std::shared_ptr<DebugOverlay> debugOverlay;  
+  std::shared_ptr<ui::Image> middleDot;
 
 public:
-  std::unique_ptr<GameMenu> gameMenu;
-  std::unique_ptr<Overlay> overlay;
+  std::shared_ptr<GameMenu> gameMenu;
+  std::shared_ptr<Overlay> overlay;
+  std::shared_ptr<ParametersMenu> parameters;
 
   // components
   SkyBox sky;
@@ -86,4 +89,6 @@ public:
   // other parameters
   const float sunSpeed;
   glm::vec3 sunDir;
+
+  uint32_t lastClock;
 };

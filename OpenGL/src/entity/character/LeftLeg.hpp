@@ -69,7 +69,7 @@ public:
     geometryModel = glm::translate(I, {0, -6, 0}) * geometryModel;
 
     const float zFightingOffset = 0.2f; // offset the legs slightly inwards and backwards
-    geometryModel = glm::translate(I, {-zFightingOffset, 0, -zFightingOffset}) * geometryModel;
+    geometryModel = glm::translate(I, {zFightingOffset, 0, -zFightingOffset}) * geometryModel;
     //rotate arm by 90 degrees
     glm::quat rot = glm::quat({-glm::pi<float>()/2.f, 0.f, 0.f});
     geometryModel = (glm::mat4)glm::mat4_cast(rot) * geometryModel;

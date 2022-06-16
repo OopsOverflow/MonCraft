@@ -30,7 +30,7 @@ ComboBox::ComboBox(std::vector<std::string> _opt, size_t _sel)
   box->pack_end(move(lbtn));
 
   text = Text::create(options.at(selected), ResourceManager::getFont("roboto"));
-  box->pack_end(text.get());
+  box->pack_end(text);
 
   auto right = Image::create({51, 1179}, {20, 20});
   right->setSize({20, 20});

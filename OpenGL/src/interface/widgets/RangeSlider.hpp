@@ -19,7 +19,7 @@ public:
 
 private:
   int min, max, increment;
-  std::unique_ptr<ui::Slider> slider;
-  std::unique_ptr<ui::Text> text;
+  std::shared_ptr<ui::Slider> slider;
+  std::shared_ptr<ui::Text> text;
   std::shared_ptr<const Font> font;
 };

@@ -57,7 +57,8 @@ MonCraftScene::MonCraftScene(Viewport* vp)
       vp(vp),
       camera(ivec2(1)),
       shadows(4096),
-      sunSpeed(0.0075f)
+      sunSpeed(0.0075f),
+      lastClock(SDL_GetTicks())
 {
     auto const& serverConf = Config::getServerConfig();
     camera.setFar(16.0f * (float)sqrt(2 * pow(serverConf.renderDistH, 2) + pow(serverConf.renderDistV, 2)));
@@ -78,9 +79,26 @@ MonCraftScene::MonCraftScene(Viewport* vp)
 
     // UI stuff
     gameMenu = GameMenu::create();
-    debugOverlay = std::make_unique<DebugOverlay>(server);
-    overlay = std::make_unique<Overlay>();
+    debugOverlay = DebugOverlay::create(server);
+    overlay = Overlay::create();
     middleDot = Image::create({1, 1229}, {10, 10});
+
+    parameters = ParametersMenu::create();
+    parameters->quitButton->onClick([params = parameters.get(), this] { 
+        this->remove(params); 
+    });
+    parameters->graphicsMenu->fullscreen->onRelease([&, vp, fullscreen = parameters->graphicsMenu->fullscreen.get()] { 
+        config.fullscreen = fullscreen->getChecked();
+        vp->toggleFullscreen();
+    });
+	parameters->graphicsMenu->vsync->onRelease([&, vp, vsync = parameters->graphicsMenu->vsync.get()] { 
+        config.vsync = vsync->getChecked();
+        vp->toggleVSync();
+    });
+
+    gameMenu->parameterButton->onClick([param = parameters, this] {
+        this->add(param);
+    });
 
     debugOverlay->setAnchorY(Anchor::END);
 
@@ -92,11 +110,13 @@ MonCraftScene::MonCraftScene(Viewport* vp)
     gameMenu->setAnchorX(Anchor::CENTER);
     gameMenu->setAnchorY(Anchor::CENTER);
 
-    add(middleDot.get());
-    add(overlay.get());
-    add(debugOverlay.get());
+    add(middleDot);
+    add(overlay);
+    add(debugOverlay);
 
     player->setCurrentBlock(overlay->getCurrentBlock());
+
+    World::getInst().t = (uint32_t)(8.f * dayDuration / 24.f);
 }
 
 bool MonCraftScene::onMousePressed(glm::ivec2 pos) {
@@ -118,7 +138,7 @@ void MonCraftScene::onKeyReleased(Key k) {
         keyboardController.handleKeyReleased(k);
     if(k.asKeycode() == Config::getClientConfig().menu) {
         if(vp->isMouseCaptured()) {
-            add(gameMenu.get());
+            add(gameMenu);
             vp->freeMouse();
         }
         else {
@@ -205,6 +225,14 @@ void MonCraftScene::drawEntities() {
 }
 
 void MonCraftScene::draw() {
+    uint32_t time = SDL_GetTicks();
+    World::getInst().dt = time - lastClock; 
+    World::getInst().t += World::getInst().dt;
+    World::getInst().t = World::getInst().t % dayDuration;
+    lastClock = time;
+    
+    
+
     glEnable(GL_DEPTH_TEST);
 
     // updates
@@ -256,4 +284,10 @@ void MonCraftScene::draw() {
 
     glDisable(GL_DEPTH_TEST);
     Component::draw();
+}
+
+std::unique_ptr<MonCraftScene> MonCraftScene::create(Viewport* vp) {
+	auto scene = std::unique_ptr<MonCraftScene>(new MonCraftScene(vp));
+	scene->initialize();
+	return scene;
 }

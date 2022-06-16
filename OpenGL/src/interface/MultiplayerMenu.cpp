@@ -13,8 +13,6 @@ MultiplayerMenu::MultiplayerMenu() : Image({ 16, 1194 }, { 16, 16 })
 	serverAddrImg = ui::Image::create(glm::ivec2(0, 1083), glm::ivec2(429, 92));
 	portImg = ui::Image::create(glm::ivec2(0, 1083), glm::ivec2(429, 92));
 
-
-
 }
 
 void MultiplayerMenu::draw() {
@@ -22,4 +20,10 @@ void MultiplayerMenu::draw() {
 		setSize(parent->getSize());
 	}
 	Image::draw();
+}
+
+std::unique_ptr<MultiplayerMenu> MultiplayerMenu::create() {
+	auto multi = std::unique_ptr<MultiplayerMenu>(new MultiplayerMenu());
+	multi->initialize();
+	return multi;
 }

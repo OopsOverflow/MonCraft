@@ -13,11 +13,11 @@ public:
 	static std::unique_ptr<MainMenu> create();
 	void draw() override;
 
-	std::unique_ptr<ui::Button> singleplayerButton;
-	std::unique_ptr<ui::Button> multiplayerButton;
-	std::unique_ptr<ui::Button> parameterButton;
-	std::unique_ptr<ui::Button> quitButton;
+	std::shared_ptr<ui::Button> singleplayerButton;
+	std::shared_ptr<ui::Button> multiplayerButton;
+	std::shared_ptr<ui::Button> parameterButton;
+	std::shared_ptr<ui::Button> quitButton;
 
 private:
-	std::unique_ptr<ui::Image> background;
+	std::shared_ptr<ui::Image> background;
 };

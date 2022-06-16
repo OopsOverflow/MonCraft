@@ -13,7 +13,7 @@ Checkbox::Checkbox()
   img = Image::create(pos, {43, 20});
   img->setSize({43, 20});
   onClick([&] { setChecked(!getChecked()); });
-  add(img.get());
+  add(img);
 }
 
 bool Checkbox::getChecked() const {

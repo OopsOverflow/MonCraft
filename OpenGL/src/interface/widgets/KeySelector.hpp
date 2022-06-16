@@ -26,5 +26,5 @@ public:
 
 private:
   Key key;
-  std::unique_ptr<ui::Text> text;
+  std::shared_ptr<ui::Text> text;
 };

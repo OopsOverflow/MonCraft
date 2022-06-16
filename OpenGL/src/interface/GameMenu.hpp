@@ -16,8 +16,8 @@ protected :
 public:
 	static std::unique_ptr<GameMenu> create();
 
-	std::unique_ptr<ui::Button> continueButton;
-	std::unique_ptr<ui::Button> parameterButton;
-	std::unique_ptr<ui::Button> quitButton;
+	std::shared_ptr<ui::Button> continueButton;
+	std::shared_ptr<ui::Button> parameterButton;
+	std::shared_ptr<ui::Button> quitButton;
 
 };

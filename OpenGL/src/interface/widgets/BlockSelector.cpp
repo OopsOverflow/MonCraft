@@ -9,7 +9,7 @@ BlockSelector::BlockSelector()
     img->setSize({60, 60});
     setBlock(block);
     onClick([&] { setSelected(!getSelected()); });
-    add(img.get());
+    add(img);
 }
 
 bool BlockSelector::getSelected() const {
@@ -33,7 +33,7 @@ std::unique_ptr<BlockSelector> BlockSelector::create() {
 
 void BlockSelector::setBlock(BlockType block) {
     if(!img || block == BlockType::Air)return;
-    while(img->getChildren().size() > 0) img->remove(img->getChildren().at(0));
+    while(img->getChildren().size() > 0) img->remove(img->getChildren().at(0).get());
 
     glm::ivec2 position;
     position.x = 51 + (((int)block - 1) % 8) * 16;

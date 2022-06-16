@@ -23,7 +23,7 @@ Overlay::Overlay() : selected(0), blockStart(BlockType::Grass)
 	cells[selected]->setSelected(true);
 
 	selector->setOrientation(Box::Orientation::HORIZONTAL);
-	add(move(selector));
+	add(selector);
 }
 
 bool Overlay::select(int selection) {
@@ -81,4 +81,10 @@ void Overlay::draw() {
 		setSize(parent->getSize());
 	}
 	Component::draw();
+}
+
+std::unique_ptr<Overlay> Overlay::create() {
+	auto overlay = std::unique_ptr<Overlay>(new Overlay());
+	overlay->initialize();
+	return overlay;
 }

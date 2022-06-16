@@ -11,15 +11,16 @@ static const size_t nbCells = 8;
 class Overlay : public ui::Component
 {
 public:
-	Overlay();
+	static std::unique_ptr<Overlay> create();
 	void draw() override;
 	
 	bool select(int selection);
 	size_t getSelected() const { return selected; }
 	BlockType getCurrentBlock() { return cells[selected]->getBlock(); }
 
-	std::unique_ptr<ui::Box> selector;
+	std::shared_ptr<ui::Box> selector;
 private:
+	Overlay();
 	size_t selected;
 	BlockType blockStart;
 	BlockSelector* cells[nbCells];

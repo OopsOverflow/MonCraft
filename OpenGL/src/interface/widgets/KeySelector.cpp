@@ -23,7 +23,7 @@ KeySelector::KeySelector(Key key)
 
   onClick([&] { makeActive(); });
 
-  pane->add(text.get());
+  pane->add(text);
   add(move(pane));
 
 }

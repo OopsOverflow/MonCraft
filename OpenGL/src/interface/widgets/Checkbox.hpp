@@ -18,7 +18,7 @@ protected:
   Checkbox();
 
 private:
-  std::unique_ptr<ui::Image> img;
+  std::shared_ptr<ui::Image> img;
   bool checked;
   glm::vec2 pos;
 };

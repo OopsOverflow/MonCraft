@@ -16,6 +16,6 @@ protected:
 	AudioMenu();
 
 private:
-	std::unique_ptr<RangeSlider> mainVolume;
-	std::unique_ptr<RangeSlider> musicVolume;
+	std::shared_ptr<RangeSlider> mainVolume;
+	std::shared_ptr<RangeSlider> musicVolume;
 };

@@ -30,15 +30,15 @@ KeyMenu::KeyMenu()
 	// debug = KeySelector::create(config.debug); // TODO
 	
 	// addLine("Menu débogage", debug.get());
-	addLine("Changer de vue", changeView.get());
-	addLine("Dabber", dab.get());
-	addLine("Courir", sprint.get());
-	addLine("S'accroupir/Descendre", sneak.get());
-	addLine("Sauter/Monter", jump.get());
-	addLine("Droite", right.get());
-	addLine("Gauche", left.get());
-	addLine("Reculer", backward.get());
-	addLine("Avancer", forward.get());
+	addLine("Changer de vue", changeView);
+	addLine("Dabber", dab);
+	addLine("Courir", sprint);
+	addLine("S'accroupir/Descendre", sneak);
+	addLine("Sauter/Monter", jump);
+	addLine("Droite", right);
+	addLine("Gauche", left);
+	addLine("Reculer", backward);
+	addLine("Avancer", forward);
 
 	forward->onRelease([&]{ config.forward = forward->getKey().asKeycode(); });
 	backward->onRelease([&]{ config.backward = backward->getKey().asKeycode(); });

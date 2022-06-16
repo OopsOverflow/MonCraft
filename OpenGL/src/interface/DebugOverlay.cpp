@@ -26,11 +26,11 @@ DebugOverlay::DebugOverlay(std::shared_ptr<Server> server) :
 	text_uid = Text::create("UID : ", font);
 	text_gameTime = Text::create("Time : ", font);
 
-	pack_start(text_fps.get());
-	pack_start(text_posPlayer.get());
-	pack_start(text_players.get());
-	pack_start(text_uid.get());
-	pack_start(text_gameTime.get());
+	pack_start(text_fps);
+	pack_start(text_posPlayer);
+	pack_start(text_players);
+	pack_start(text_uid);
+	pack_start(text_gameTime);
 	setPadding(glm::ivec2(10));
 	setGap(10);
 
@@ -87,4 +87,11 @@ void DebugOverlay::draw() {
 
 
 	Box::draw();
+}
+
+
+std::unique_ptr<DebugOverlay> DebugOverlay::create(std::shared_ptr<Server> server) {
+	auto debug = std::unique_ptr<DebugOverlay>(new DebugOverlay(std::move(server)));
+	debug->initialize();
+	return debug;
 }

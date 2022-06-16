@@ -31,7 +31,6 @@ extern "C" {
 
 Viewport::Viewport(glm::ivec2 size)
   :   window(nullptr), context(nullptr),
-      timeBegin(0), lastTime(0),
       mouseCaptured(false), mustQuit(false),
       root(nullptr), mouseScroll(0)
 {
@@ -167,7 +166,7 @@ void Viewport::on_event(SDL_Event const& e) {
   }
 }
 
-bool Viewport::beginFrame(uint32_t& dt) {
+bool Viewport::beginFrame() {
   if(mustQuit) return false;
 
   SDL_Event event;
@@ -188,9 +187,6 @@ bool Viewport::beginFrame(uint32_t& dt) {
   glEnable(GL_MULTISAMPLE);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-  timeBegin = SDL_GetTicks();
-  dt = timeBegin - lastTime;
-
   return true;
 }
 
@@ -200,9 +196,7 @@ void Viewport::endFrame() {
 
   //Display on screen (swap the buffer on screen and the buffer you are drawing on)
   SDL_GL_SwapWindow(window);
-
-  //Time in ms telling us when this frame ended. Useful for keeping a fixed framerate
-  lastTime = timeBegin;
+  
 }
 
 void Viewport::on_window_event(SDL_WindowEvent const& e) {
@@ -262,9 +256,11 @@ void Viewport::on_mouseup(SDL_MouseButtonEvent const& e) {
 
 void Viewport::on_mouse_scroll(SDL_MouseWheelEvent const& e) {
   if(e.y > 0) {
-    mouseScroll += 1;
+    if(mouseCaptured)
+      mouseScroll -= 1;
   }else if(e.y < 0) {
-    mouseScroll -=1;
+    if(mouseCaptured)
+      mouseScroll +=1;
   }
 }
 

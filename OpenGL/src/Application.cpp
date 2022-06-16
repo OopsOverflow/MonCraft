@@ -70,12 +70,6 @@ void loadResources() {
     ResourceManager::loadFont("vt323", "VT323-Regular");
 }
 
-void loop(uint32_t dt) {
-    World::getInst().t += dt;
-    World::getInst().t = World::getInst().t % dayDuration;
-    World::getInst().dt = dt;
-}
-
 #ifdef EMSCRIPTEN
     float dt;
     Viewport* pwindow;
@@ -88,7 +82,7 @@ void loop(uint32_t dt) {
 
 void showView(Viewport& vp, std::unique_ptr<ui::Component> view) {
     auto children = vp.getRoot()->getChildren();
-    if(children.size() > 0) vp.getRoot()->remove(children.at(0));
+    if(children.size() > 0) vp.getRoot()->remove(children.at(0).get());
     vp.getRoot()->add(move(view));
 }
 
@@ -99,9 +93,8 @@ void showMainMenu(Viewport& vp);
 
 void showSinglePlayer(Viewport& vp) {
     Config::getClientConfig().multiplayer = false;
-    auto game = std::make_unique<MonCraftScene>(&vp);
+    auto game = MonCraftScene::create(&vp);
     game->gameMenu->quitButton->onClick([&] { showMainMenu(vp); });
-    game->gameMenu->parameterButton->onClick([&] { showParameters(vp); });
     game->gameMenu->continueButton->onClick([game = game.get(), menu = game->gameMenu.get(), &vp] { 
         game->remove(menu);
         vp.captureMouse();
@@ -114,13 +107,9 @@ void showSinglePlayer(Viewport& vp) {
 
 void showMultiPlayer(Viewport& vp) {
     Config::getClientConfig().multiplayer = true;
-    showView(vp, std::make_unique<MonCraftScene>(&vp));
-    auto game = std::make_unique<MonCraftScene>(&vp);
+    auto game = MonCraftScene::create(&vp);
 
     game->gameMenu->quitButton->onClick([&] { showMainMenu(vp); });
-    game->gameMenu->parameterButton->onClick([&] {
-        showParameters(vp);
-    });
     game->gameMenu->continueButton->onClick([game = game.get(), menu = game->gameMenu.get(), &vp] { 
         game->remove(menu);
         vp.captureMouse();
@@ -132,7 +121,7 @@ void showMultiPlayer(Viewport& vp) {
 }
 
 void showParameters(Viewport& vp) {
-    auto params = std::make_unique<ParametersMenu>();
+    auto params = ParametersMenu::create();
     auto& config = Config::getClientConfig();
     params->quitButton->onClick([&] { showMainMenu(vp); });
     params->graphicsMenu->fullscreen->onRelease([&vp, &config, fullscreen = params->graphicsMenu->fullscreen.get()]{ 
@@ -171,7 +160,7 @@ int main(int argc, char* argv[]) {
         pwindow = &window;
         emscripten_set_main_loop(em_loop, 0, 1);
     #else
-        for (uint32_t dt = 0; window.beginFrame(dt); window.endFrame()) loop(dt);
+        while(window.beginFrame()) window.endFrame();
     #endif
 
     ResourceManager::free();

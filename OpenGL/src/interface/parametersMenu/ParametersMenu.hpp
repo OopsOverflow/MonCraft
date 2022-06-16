@@ -15,25 +15,27 @@
 class ParametersMenu : public ui::Image
 {
 public:
-	ParametersMenu();
+	static std::unique_ptr<ParametersMenu> create();
+	~ParametersMenu() {std::cout<<"arhg"<<std::endl;}
 	void draw() override;
 
-	std::unique_ptr<ui::Button> quitButton;
+	std::shared_ptr<ui::Button> quitButton;
 
-	std::unique_ptr<ui::Button> keyButton;
-	std::unique_ptr<ui::Button> graphicsButton;
-	std::unique_ptr<ui::Button> audioButton;
-	std::unique_ptr<ui::Button> miscButton;
+	std::shared_ptr<ui::Button> keyButton;
+	std::shared_ptr<ui::Button> graphicsButton;
+	std::shared_ptr<ui::Button> audioButton;
+	std::shared_ptr<ui::Button> miscButton;
 
-	std::unique_ptr<GraphicsMenu> graphicsMenu;
+	std::shared_ptr<GraphicsMenu> graphicsMenu;
 
 private:
-	std::unique_ptr<ui::Box> mainDisplay;
-	std::unique_ptr<ui::Box> topDiv;
-	std::unique_ptr<ui::Box> folderDiv;
-	std::unique_ptr<ui::Box> menuDiv;
+	ParametersMenu();
+	std::shared_ptr<ui::Box> mainDisplay;
+	std::shared_ptr<ui::Box> topDiv;
+	std::shared_ptr<ui::Box> folderDiv;
+	std::shared_ptr<ui::Box> menuDiv;
 
-	std::unique_ptr<KeyMenu> keyMenu;
-	std::unique_ptr<AudioMenu> audioMenu;
-	std::unique_ptr<MiscMenu> miscMenu;
+	std::shared_ptr<KeyMenu> keyMenu;
+	std::shared_ptr<AudioMenu> audioMenu;
+	std::shared_ptr<MiscMenu> miscMenu;
 };

@@ -23,7 +23,7 @@ protected:
   BlockSelector();
 
 private:
-  std::unique_ptr<ui::Image> img;
+  std::shared_ptr<ui::Image> img;
   BlockType block;
   bool selected;
   glm::vec2 pos;

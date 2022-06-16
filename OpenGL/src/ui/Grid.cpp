@@ -49,21 +49,11 @@ style_const_t Grid::getDefaultStyle() const {
   return style;
 }
 
-
-void Grid::pack(glm::ivec2 pos, Component* comp) {
-  ensureCellExists(pos);
-  if(cells.at(pos) == nullptr) {
-    cells.at(pos) = Cell::create(comp);
-    add(cells.at(pos).get());
-  }
-  else throw std::runtime_error("grid cell already occupied");
-}
-
-void Grid::pack(glm::ivec2 pos, std::unique_ptr<Component> comp) {
+void Grid::pack(glm::ivec2 pos, std::shared_ptr<Component> comp) {
   ensureCellExists(pos);
   if(cells.at(pos) == nullptr) {
     cells.at(pos) = Cell::create(move(comp));
-    add(cells.at(pos).get());
+    add(cells.at(pos));
   }
   else throw std::runtime_error("grid cell already occupied");
 }
@@ -124,18 +114,12 @@ glm::ivec2 Grid::getGap() const {
 
 Grid::Cell::Cell() {}
 
-std::unique_ptr<Grid::Cell> Grid::Cell::create(Component* comp) {
-  auto cell = std::unique_ptr<Cell>(new Cell());
-  cell->add(comp);
-  return cell;
-}
-
-std::unique_ptr<Grid::Cell> Grid::Cell::create(std::unique_ptr<Component> comp) {
+std::unique_ptr<Grid::Cell> Grid::Cell::create(std::shared_ptr<Component> comp) {
   auto cell = std::unique_ptr<Cell>(new Cell());
   cell->add(move(comp));
   return cell;
 }
 
 bool Grid::Cell::contains(Component* comp) const {
-  return children.at(0) == comp;
+  return children.at(0).get() == comp;
 }
