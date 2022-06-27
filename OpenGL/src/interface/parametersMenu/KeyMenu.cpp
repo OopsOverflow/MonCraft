@@ -18,15 +18,15 @@ KeyMenu::KeyMenu()
 	auto& config = Config::getClientConfig();
 	auto font = ResourceManager::getFont("roboto");
 
-	forward = KeySelector::create(config.forward);
-	backward = KeySelector::create(config.backward);
-	left = KeySelector::create(config.left);
-	right = KeySelector::create(config.right);
-	jump = KeySelector::create(config.jump);
-	sneak = KeySelector::create(config.sneak);
-	sprint = KeySelector::create(config.sprint);
-	dab = KeySelector::create(config.dab);
-	changeView = KeySelector::create(config.view);
+	forward = KeySelector::create(&config.forward);
+	backward = KeySelector::create(&config.backward);
+	left = KeySelector::create(&config.left);
+	right = KeySelector::create(&config.right);
+	jump = KeySelector::create(&config.jump);
+	sneak = KeySelector::create(&config.sneak);
+	sprint = KeySelector::create(&config.sprint);
+	dab = KeySelector::create(&config.dab);
+	changeView = KeySelector::create(&config.view);
 	// debug = KeySelector::create(config.debug); // TODO
 	
 	// addLine("Menu débogage", debug.get());
@@ -39,30 +39,6 @@ KeyMenu::KeyMenu()
 	addLine("Gauche", left);
 	addLine("Reculer", backward);
 	addLine("Avancer", forward);
-
-	forward->onRelease([&]{ config.forward = forward->getKey().asKeycode(); });
-	backward->onRelease([&]{ config.backward = backward->getKey().asKeycode(); });
-	left->onRelease([&]{ config.left = left->getKey().asKeycode(); });
-	right->onRelease([&]{ config.right = right->getKey().asKeycode(); });
-	jump->onRelease([&]{ config.jump = jump->getKey().asKeycode(); });
-	sneak->onRelease([&]{ config.sneak = sneak->getKey().asKeycode(); });
-	sprint->onRelease([&]{ config.sprint = sprint->getKey().asKeycode(); });
-	dab->onRelease([&]{ config.dab = dab->getKey().asKeycode(); });
-	changeView->onRelease([&]{ config.view = changeView->getKey().asKeycode(); });
-}
-
-KeyMenu::~KeyMenu() {
-	auto& config = Config::getClientConfig();
-	config.forward = forward->getKey().asKeycode();
-	config.backward = backward->getKey().asKeycode();
-	config.left = left->getKey().asKeycode();
-	config.right = right->getKey().asKeycode();
-	config.jump = jump->getKey().asKeycode();
-	config.sneak = sneak->getKey().asKeycode();
-	config.sprint = sprint->getKey().asKeycode();
-	config.dab = dab->getKey().asKeycode();
-	config.view = changeView->getKey().asKeycode();
-	// config.debug = debug->getKey().asKeycode();
 }
 
 std::unique_ptr<KeyMenu> KeyMenu::create() {

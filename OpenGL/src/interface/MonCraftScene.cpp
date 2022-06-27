@@ -100,6 +100,15 @@ MonCraftScene::MonCraftScene(Viewport* vp)
         this->add(param);
     });
 
+    parameters->audioMenu->mainVolume->onRelease([=]{ 
+        config.mainVolume = (float)parameters->audioMenu->mainVolume->getValue(); 
+        musicPlayer.music.setVolume(config.mainVolume * config.musicVolume * 0.01f);
+    });
+	parameters->audioMenu->musicVolume->onRelease([=]{
+        config.musicVolume = (float)parameters->audioMenu->musicVolume->getValue();
+        musicPlayer.music.setVolume(config.mainVolume * config.musicVolume * 0.01f);
+    });
+
     debugOverlay->setAnchorY(Anchor::END);
 
     middleDot->setAnchorX(Anchor::CENTER);
@@ -136,7 +145,7 @@ void MonCraftScene::onKeyPressed(Key k) {
 void MonCraftScene::onKeyReleased(Key k) {
     if(vp->isMouseCaptured())
         keyboardController.handleKeyReleased(k);
-    if(k.asKeycode() == Config::getClientConfig().menu) {
+    if(k == Config::getClientConfig().menu) {
         if(vp->isMouseCaptured()) {
             add(gameMenu);
             vp->freeMouse();

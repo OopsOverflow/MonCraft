@@ -73,7 +73,7 @@ Config::ClientConfig::~ClientConfig() {
   openedFile << std::boolalpha << "MonCraft v1.1.0" << std::endl;
 
   #define KEY_PARAM(NAME)                                                      \
-    openedFile << "\t" #NAME ": " << SDL_GetKeyName(this->NAME) << std::endl;
+    openedFile << "\t" #NAME ": " << SDL_GetKeyName(this->NAME.asKeycode()) << std::endl;
   #define PARAM(NAME)                                                          \
     openedFile << "\t" #NAME ": " << this->NAME << std::endl;
 

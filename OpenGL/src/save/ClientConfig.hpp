@@ -2,6 +2,7 @@
 
 #include <string>
 #include <SDL2/SDL_keycode.h>
+#include "ui/Key.hpp"
 
 
 namespace Config {
@@ -27,16 +28,16 @@ namespace Config {
         bool fullscreen = false;
         bool vsync = true;
 	    int shadows = 2;
-        SDL_Keycode forward = SDLK_z;
-        SDL_Keycode backward = SDLK_s;
-        SDL_Keycode left = SDLK_q;
-        SDL_Keycode right = SDLK_d;
-        SDL_Keycode jump = SDLK_SPACE;
-        SDL_Keycode sneak = SDLK_LSHIFT;
-        SDL_Keycode view = SDLK_F5;
-        SDL_Keycode sprint = SDLK_LCTRL;
-        SDL_Keycode menu = SDLK_ESCAPE;
-        SDL_Keycode dab = SDLK_EXCLAIM;
+        Key forward = SDLK_z;
+        Key backward = SDLK_s;
+        Key left = SDLK_q;
+        Key right = SDLK_d;
+        Key jump = SDLK_SPACE;
+        Key sneak = SDLK_LSHIFT;
+        Key view = SDLK_F5;
+        Key sprint = SDLK_LCTRL;
+        Key menu = SDLK_ESCAPE;
+        Key dab = SDLK_EXCLAIM;
     };
 
     ClientConfig& getClientConfig();

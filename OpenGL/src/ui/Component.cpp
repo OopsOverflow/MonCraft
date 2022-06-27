@@ -309,6 +309,7 @@ bool Component::bubbleEvent(Event const& evt) { // goes to the bottom
     for(int i = (int)childrenCopy.size() - 1; i >= 0; i--) {
       std::shared_ptr<Component> child = childrenCopy.at(i);
       bubbled |= child->bubbleEvent(evt);
+      if(bubbled) break;
     }
     if(!bubbled) {
       if(evt.getType() == Event::Type::PRESS) makeActive();

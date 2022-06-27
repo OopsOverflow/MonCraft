@@ -15,33 +15,32 @@ KeyboardController::KeyboardController()
 {}
 
 bool KeyboardController::handleKeyReleased(Key k) {
-    auto code = k.asKeycode();
-    if (code == config.forward) {
+    if (k == config.forward) {
         if (direction.z == -1) direction.z = 0;
     }
-    else if (code == config.backward) {
+    else if (k == config.backward) {
         if (direction.z == 1) direction.z = 0;
      }
-    else if (code == config.right) {
+    else if (k == config.right) {
         if (direction.x == 1) direction.x = 0;
     }
-    else if (code == config.left) {
+    else if (k == config.left) {
         if (direction.x == -1) direction.x = 0;
     }
-    else if (code == config.jump) {
+    else if (k == config.jump) {
         if (direction.y == 1) direction.y = 0;
         spaceIsPressed = false;
     }
-    else if (code == config.sneak) {
+    else if (k == config.sneak) {
         if (direction.y == -1) direction.y = 0;
     }
-    else if (code == config.sprint) {
+    else if (k == config.sprint) {
         sprint = false;
     }
-    else if (code == config.view) {
+    else if (k == config.view) {
             view = CharacterView(((int)view + 1) % 3);
     }
-    else if (code == config.dab) {
+    else if (k == config.dab) {
         dab = false;
     }
 
@@ -64,30 +63,29 @@ bool KeyboardController::isDoubleSpace() {
 
 
 bool KeyboardController::handleKeyPressed(Key k) {
-    auto code = k.asKeycode();
-    if (code == config.forward) {
+    if (k == config.forward) {
         direction.z = -1;
     }
-    else if(code == config.backward){
+    else if(k == config.backward){
         direction.z = 1;
     }
-    else if (code == config.right) {
+    else if (k == config.right) {
         direction.x = 1;
     }
-    else if (code == config.left) {
+    else if (k == config.left) {
         direction.x = -1;
     }
-    else if (code == config.jump) {
+    else if (k == config.jump) {
         if(isDoubleSpace()) toggleGod = true;
         else direction.y = 1;
     }
-    else if (code == config.sneak) {
+    else if (k == config.sneak) {
         direction.y = -1;
     }
-    else if (code == config.sprint) {
+    else if (k == config.sprint) {
         sprint = true;
     }
-    else if (code == config.dab) {
+    else if (k == config.dab) {
         dab = true;
     }
 

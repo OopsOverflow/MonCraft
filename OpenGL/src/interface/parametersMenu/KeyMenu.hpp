@@ -9,7 +9,6 @@ class KeyMenu : public ParamList {
 
 public:
 	static std::unique_ptr<KeyMenu> create();
-	~KeyMenu();
 
 protected:
 	KeyMenu();

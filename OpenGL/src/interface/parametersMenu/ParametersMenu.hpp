@@ -16,7 +16,6 @@ class ParametersMenu : public ui::Image
 {
 public:
 	static std::unique_ptr<ParametersMenu> create();
-	~ParametersMenu() {std::cout<<"arhg"<<std::endl;}
 	void draw() override;
 
 	std::shared_ptr<ui::Button> quitButton;
@@ -27,6 +26,7 @@ public:
 	std::shared_ptr<ui::Button> miscButton;
 
 	std::shared_ptr<GraphicsMenu> graphicsMenu;
+	std::shared_ptr<AudioMenu> audioMenu;
 
 private:
 	ParametersMenu();
@@ -36,6 +36,5 @@ private:
 	std::shared_ptr<ui::Box> menuDiv;
 
 	std::shared_ptr<KeyMenu> keyMenu;
-	std::shared_ptr<AudioMenu> audioMenu;
 	std::shared_ptr<MiscMenu> miscMenu;
 };

@@ -11,11 +11,12 @@ class AudioMenu : public ParamList {
 public:
 	static std::unique_ptr<AudioMenu> create();
 	~AudioMenu();
+	std::shared_ptr<RangeSlider> mainVolume;
+	std::shared_ptr<RangeSlider> musicVolume;
 
 protected:
 	AudioMenu();
 
 private:
-	std::shared_ptr<RangeSlider> mainVolume;
-	std::shared_ptr<RangeSlider> musicVolume;
+	
 };

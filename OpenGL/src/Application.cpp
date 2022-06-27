@@ -97,6 +97,7 @@ void showSinglePlayer(Viewport& vp) {
     game->gameMenu->quitButton->onClick([&] { showMainMenu(vp); });
     game->gameMenu->continueButton->onClick([game = game.get(), menu = game->gameMenu.get(), &vp] { 
         game->remove(menu);
+        game->makeActive();
         vp.captureMouse();
     });
     vp.captureMouse();

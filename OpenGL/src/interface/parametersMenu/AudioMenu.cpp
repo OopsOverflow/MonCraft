@@ -21,9 +21,6 @@ AudioMenu::AudioMenu()
 
 	addLine("Volume de la musique", musicVolume);
 	addLine("Volume principal", mainVolume);
-
-	mainVolume->onRelease([&]{ config.mainVolume = (float)this->mainVolume->getValue(); });
-	musicVolume->onRelease([&]{ config.musicVolume = (float)this->musicVolume->getValue(); });
 }
 
 AudioMenu::~AudioMenu() {
