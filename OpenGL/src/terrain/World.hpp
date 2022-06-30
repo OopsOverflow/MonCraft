@@ -29,7 +29,7 @@ public:
   */
   bool setBlock(glm::ivec3 pos, Block::unique_ptr_t block);
   /**
-  * MATHIS CE GIGA FILS DEP
+  * Removes all entities and chunks from the world.
   */
   void unload();
 
