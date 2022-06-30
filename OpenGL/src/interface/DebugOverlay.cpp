@@ -26,11 +26,11 @@ DebugOverlay::DebugOverlay(std::shared_ptr<Server> server) :
 	text_uid = Text::create("UID : ", font);
 	text_gameTime = Text::create("Time : ", font);
 
-	pack_start(text_fps.get());
-	pack_start(text_posPlayer.get());
-	pack_start(text_players.get());
-	pack_start(text_uid.get());
-	pack_start(text_gameTime.get());
+	pack_start(text_fps);
+	pack_start(text_posPlayer);
+	pack_start(text_players);
+	pack_start(text_uid);
+	pack_start(text_gameTime);
 	setPadding(glm::ivec2(10));
 	setGap(10);
 
@@ -60,7 +60,7 @@ void DebugOverlay::draw() {
 	setSize(glm::ivec2(parent->getSize().x, 0));
 
 	std::ostringstream text;
-	text << "FPS : " << (int)(1.f / world.dt);
+	text << "FPS : " << (int)(1000 / (float)world.dt);
 	text_fps->setText(text.str());
 
 	text.str(""); // "clears" the string stream
@@ -76,9 +76,22 @@ void DebugOverlay::draw() {
 	text_uid->setText(text.str());
 
 	text.str(""); // "clears" the string stream
-	text << "Game Time : " << std::fixed << std::setprecision(3) << world.t;
+	int hour = (int)(world.t * convertFactor * 0.001f);
+	int min = (int)(((world.t * convertFactor * 0.001f) - hour) * 60.f);
+	text << "Game Time : ";
+	if(hour < 10) text << 0;
+	text << hour << ":";
+	if(min < 10) text << 0;
+	text << min;
 	text_gameTime->setText(text.str());
 
 
 	Box::draw();
+}
+
+
+std::unique_ptr<DebugOverlay> DebugOverlay::create(std::shared_ptr<Server> server) {
+	auto debug = std::unique_ptr<DebugOverlay>(new DebugOverlay(std::move(server)));
+	debug->initialize();
+	return debug;
 }

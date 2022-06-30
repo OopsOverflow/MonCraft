@@ -28,8 +28,8 @@ public:
 	float getValue() const;
 
 private:
-  std::unique_ptr<Pane> track;
-  std::unique_ptr<Pane> thumb;
+  std::shared_ptr<Pane> track;
+  std::shared_ptr<Pane> thumb;
   float value;
 
   void moveThumb(int pos);

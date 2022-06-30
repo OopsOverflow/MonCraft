@@ -12,7 +12,7 @@ ParamList::ParamList()
   grid = Grid::create();
 	grid->setGap({20, 20});
   setPadding({ 0, 20 });
-  add(grid.get());
+  add(grid);
 }
 
 void ParamList::addLine(std::string name, std::unique_ptr<Component> comp) {
@@ -21,7 +21,7 @@ void ParamList::addLine(std::string name, std::unique_ptr<Component> comp) {
   lastRow++;
 }
 
-void ParamList::addLine(std::string name, Component* comp) {
+void ParamList::addLine(std::string name, std::shared_ptr<Component> comp) {
   grid->pack({0, lastRow}, Text::create(name, font));
   grid->pack({1, lastRow}, comp);
   lastRow++;

@@ -19,7 +19,7 @@ public:
 
     void addAnim(Animation animType, Spline relatedAnimation);
 
-    glm::vec3 computeAnim(float dt);
+    glm::vec3 computeAnim(uint32_t dt);
 
     void setAnimation(Animation anim);
 

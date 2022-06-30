@@ -46,7 +46,7 @@ void Component::initialize() {
 Component::~Component() {
   if(parent) parent->remove(this);
   if(activeWidget == this) activeWidget = nullptr;
-  for(Component* child : children) {
+  for(std::shared_ptr<Component> child : children) {
     child->parent = nullptr;
   }
 }
@@ -161,7 +161,7 @@ style_const_t Component::getDefaultStyle() const {
 void Component::draw() {
   queueRecompute(false); // TODO wow this is a hack
   if(!drawQueued) return;
-  for(Component* child : children) {
+  for(std::shared_ptr<Component> child : children) {
     if(!child->getHidden())
       child->draw();
   }
@@ -170,16 +170,16 @@ void Component::draw() {
 
 void Component::queueDraw() {
   drawQueued = true;
-  for(Component* child : children) child->queueDraw();
+  for(std::shared_ptr<Component> child : children) child->queueDraw();
 }
 
 void Component::queueRecompute(bool propagate) {
   recomputeQueued = true;
   queueDraw();
-  if(propagate) for(Component* child : children) child->queueRecompute(true);
+  if(propagate) for(std::shared_ptr<Component> child : children) child->queueRecompute(true);
 }
 
-void Component::add(Component* child) {
+void Component::add(std::shared_ptr<Component> child) {
   if(child->parent != nullptr) {
     throw std::runtime_error("child already has parent");
   }
@@ -193,20 +193,18 @@ void Component::add(Component* child) {
   if(parent) parent->queueRecompute();
 }
 
-void Component::add(std::unique_ptr<Component> child) {
-  owned.push_back(std::move(child));
-  add(owned.back().get());
-}
-
 void Component::remove(Component* child) {
   if(!child->parent || child->parent != this) {
     throw std::runtime_error("element is not a child");
   }
-  children.erase(std::remove(children.begin(), children.end(), child));
   child->parent = nullptr;
+  auto it = std::find_if(children.begin(), children.end(), [&](auto& other) {
+    return other.get() == child;
+  });
+  children.erase(it);
 }
 
-std::vector<Component*> Component::getChildren() const {
+std::vector<std::shared_ptr<Component>> Component::getChildren() const {
   return children;
 }
 
@@ -249,12 +247,12 @@ void Component::recompute() {
 }
 
 void Component::computeOrigin() { // requires size to be properly computed
-  for(Component* child : children) child->computeOrigin();
+  for(std::shared_ptr<Component> child : children) child->computeOrigin();
 
   if(recomputeQueued) {
     ivec2 newOrig = getOrigin();
 
-    for(Component* child : children) {
+    for(std::shared_ptr<Component> child : children) {
       newOrig = min(newOrig, newOrig + child->computedOrigin);
     }
 
@@ -264,12 +262,12 @@ void Component::computeOrigin() { // requires size to be properly computed
 }
 
 void Component::computeSize() {
-  for(Component* child : children) child->computeSize();
+  for(std::shared_ptr<Component> child : children) child->computeSize();
 
   if(recomputeQueued) {
     ivec2 newCompSize = getSize() + 2 * getPadding();
 
-    for(Component* child : children) {
+    for(std::shared_ptr<Component> child : children) {
       newCompSize = max(newCompSize, abs(child->getPosition()) + child->computedSize + 2 * getPadding());
     }
 
@@ -288,14 +286,18 @@ bool Component::overlaps(ivec2 point) const {
     p1.y <= point.y && point.y <= p2.y;
 }
 
+#include <algorithm>
 // COMBAK: not sure if this works well.
 bool Component::bubbleEvent(Event const& evt) { // goes to the bottom
   if(!overlaps(evt.getPosition())) {
     if(hover) {
       hover = false;
       pressed = false;
-      for(auto child : children)
+      auto childrenCopy = children;
+      for(int i =0 ; i < (int)childrenCopy.size(); i++) {
+        std::shared_ptr<Component> child = childrenCopy.at(i);
         child->bubbleEvent(evt);
+      }
       onMouseOut(evt.getPosition());
     }
     return false;
@@ -303,9 +305,11 @@ bool Component::bubbleEvent(Event const& evt) { // goes to the bottom
 
   else {
     bool bubbled = false;
-    for(int it = children.size()-1; it >= 0; it--) {
-      Component* child = children.at(it);
+    auto childrenCopy = children;
+    for(int i = (int)childrenCopy.size() - 1; i >= 0; i--) {
+      std::shared_ptr<Component> child = childrenCopy.at(i);
       bubbled |= child->bubbleEvent(evt);
+      if(bubbled) break;
     }
     if(!bubbled) {
       if(evt.getType() == Event::Type::PRESS) makeActive();

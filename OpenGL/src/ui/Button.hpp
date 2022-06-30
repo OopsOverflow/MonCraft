@@ -31,7 +31,8 @@ public:
   // virtual prop_t getProperty(spec_t spec) const override;
   // virtual style_const_t getDefaultStyle() const override;
 
-  void onclick(std::function<void()> callback);
+  void onClick(std::function<void()> callback);
+  void onRelease(std::function<void()> callback);
 
 protected:
   void onMouseIn(glm::ivec2 pos) override;
@@ -44,6 +45,7 @@ protected:
 
 private:
   std::function<void()> clickCallback;
+  std::function<void()> releaseCallback;
 };
 
 } // namespace ui

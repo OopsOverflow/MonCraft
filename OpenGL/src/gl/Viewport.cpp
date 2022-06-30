@@ -11,6 +11,7 @@
 #include <stdexcept>
 #include <string>
 #include <glm/glm.hpp>
+#include <algorithm>
 
 #include "ui/Event.hpp"
 #include "ui/Root.hpp"
@@ -25,30 +26,40 @@ extern "C" {
   __declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001;
   __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 }
+#undef min
 #endif
 
 Viewport::Viewport(glm::ivec2 size)
-  :   size(size),
-      window(nullptr), context(nullptr),
-      timeBegin(0), lastTime(0),
-      mouseCaptured(false), vsync(true), mustQuit(false),
-      root(nullptr), config(Config::getClientConfig())
+  :   window(nullptr), context(nullptr),
+      mouseCaptured(false), mustQuit(false),
+      root(nullptr), mouseScroll(0)
 {
   // Initialize SDL2
   if (SDL_Init(SDL_INIT_VIDEO) < 0)
     throw std::runtime_error(std::string("SDL init failed: ") + SDL_GetError());
 
+  SDL_DisplayMode dm;
+  if (SDL_GetDesktopDisplayMode(0, &dm) != 0)
+      throw std::runtime_error(std::string("SDL_GetDesktopDisplayMode failed: ") + SDL_GetError());
+
   // MSAA
-  if(config.msaa) {
+  if(Config::getClientConfig().msaa) {
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, config.msaa);
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, Config::getClientConfig().msaa);
   }
+
+  size.x = std::min((int)size.x, (int)(dm.w * 0.9));
+  size.y = std::min((int)size.y, (int)(dm.h * 0.9));
+  this->size = size;
 
   //Create a Window
   window = SDL_CreateWindow("MonCraft",
       SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
       size.x, size.y,
       SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+
+  toggleFullscreen();
+  toggleVSync();
 
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
@@ -106,15 +117,21 @@ void Viewport::captureMouse() {
   mouseController.rotateStart(x, y);
 }
 
+void Viewport::freeMouse() {
+  SDL_SetRelativeMouseMode(SDL_FALSE);
+  mouseCaptured = false;
+  int x, y;
+  SDL_GetMouseState(&x, &y);
+  mouseController.rotateEnd(x, y);
+}
+
 void Viewport::toggleVSync() {
-  vsync = !vsync;
-  if(vsync) SDL_GL_SetSwapInterval(1);
+  if(Config::getClientConfig().vsync) SDL_GL_SetSwapInterval(1);
   else SDL_GL_SetSwapInterval(0);
 }
 
 void Viewport::toggleFullscreen() {
-  fullscreen = !fullscreen;
-  if(fullscreen) SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+  if(Config::getClientConfig().fullscreen) SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
   else SDL_SetWindowFullscreen(window, 0);
 }
 
@@ -143,10 +160,13 @@ void Viewport::on_event(SDL_Event const& e) {
   case SDL_MOUSEBUTTONUP:
     on_mouseup(e.button);
     break;
+  case SDL_MOUSEWHEEL:
+    on_mouse_scroll(e.wheel);
+    break;
   }
 }
 
-bool Viewport::beginFrame(float& dt) {
+bool Viewport::beginFrame() {
   if(mustQuit) return false;
 
   SDL_Event event;
@@ -160,15 +180,12 @@ bool Viewport::beginFrame(float& dt) {
   }
 
   glViewport(0, 0, size.x, size.y);
-  glClearColor(54/255.f, 199/255.f, 242/255.f, 1.0);
+  glClearColor(255/255.f, 0/255.f, 203/255.f, 1.0);
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);
   glEnable(GL_BLEND);
   glEnable(GL_MULTISAMPLE);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-  timeBegin = SDL_GetTicks();
-  dt = (timeBegin - lastTime) / 1000.f;
 
   return true;
 }
@@ -179,9 +196,7 @@ void Viewport::endFrame() {
 
   //Display on screen (swap the buffer on screen and the buffer you are drawing on)
   SDL_GL_SwapWindow(window);
-
-  //Time in ms telling us when this frame ended. Useful for keeping a fixed framerate
-  lastTime = timeBegin;
+  
 }
 
 void Viewport::on_window_event(SDL_WindowEvent const& e) {
@@ -196,14 +211,6 @@ void Viewport::on_window_event(SDL_WindowEvent const& e) {
 
 void Viewport::on_keydown(SDL_Keycode k) {
   root->keyPress(k); // controllers in ui (MonCraftScene)
-
-  if (k == config.menu) {
-      SDL_SetRelativeMouseMode(SDL_FALSE);
-      int x, y;
-      SDL_GetMouseState(&x, &y);
-      mouseController.rotateEnd(x, y);
-      mouseCaptured = false;
-  }
 }
 
 void Viewport::on_keyup(SDL_Keycode k) {
@@ -245,4 +252,20 @@ void Viewport::on_mouseup(SDL_MouseButtonEvent const& e) {
   default:
     break;
   }
+}
+
+void Viewport::on_mouse_scroll(SDL_MouseWheelEvent const& e) {
+  if(e.y > 0) {
+    if(mouseCaptured)
+      mouseScroll -= 1;
+  }else if(e.y < 0) {
+    if(mouseCaptured)
+      mouseScroll +=1;
+  }
+}
+
+int Viewport::getMouseScrollDiff() {
+  auto tmp = mouseScroll;
+  mouseScroll = 0;
+  return tmp;
 }

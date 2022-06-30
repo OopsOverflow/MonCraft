@@ -10,7 +10,8 @@
 /**
 * Manages the chunks, load/unload, render and manipulation of blocks.
 */
-
+static const uint32_t dayDuration = 360000; //ms
+static const float convertFactor = 24000.f / dayDuration; //convert dayduration on 24h factor
 class World
 {
 public:
@@ -27,13 +28,17 @@ public:
   * return false if the block is unavailable.
   */
   bool setBlock(glm::ivec3 pos, Block::unique_ptr_t block);
+  /**
+  * Removes all entities and chunks from the world.
+  */
+  void unload();
 
   static const int chunkSize = 16;
 
   ChunkMap chunks;
   Entities entities;
-  float t;
-  float dt;
+  uint32_t t;
+  uint32_t dt;
 
 private:
   World();

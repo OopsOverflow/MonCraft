@@ -8,6 +8,18 @@
 ChunkMap::ChunkMap()
 {}
 
+ChunkMap::ChunkMap(ChunkMap const& chunkMap) {
+  std::lock_guard<std::mutex> lck(chunkMap.chunksMutex);
+  this->chunks = chunkMap.chunks;
+}
+
+ChunkMap& ChunkMap::operator=(ChunkMap const& chunkMap) {
+  std::lock_guard<std::mutex> lck(chunkMap.chunksMutex);
+  std::lock_guard<std::mutex> lck2(this->chunksMutex);
+  this->chunks = chunkMap.chunks;
+  return *this;
+}
+
 std::shared_ptr<ChunkImpl> ChunkMap::find(glm::ivec3 cpos) {
   std::lock_guard<std::mutex> lck(chunksMutex);
   auto it = chunks.find(cpos);

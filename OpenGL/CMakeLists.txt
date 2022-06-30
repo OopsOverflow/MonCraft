@@ -72,6 +72,7 @@ if(${BUILD_TARGET} STREQUAL client)
 		${CMAKE_CURRENT_SOURCE_DIR}/src/controller/KeyboardController.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/controller/MouseController.cpp
 
+		${CMAKE_CURRENT_SOURCE_DIR}/src/interface/widgets/BlockSelector.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/interface/widgets/MonCraftButton.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/interface/widgets/ComboBox.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/interface/widgets/ParamList.cpp
@@ -319,8 +320,15 @@ else ()
 
 endif ()
 
-# Copy assets
+
 if (NOT ${BUILD_PLATFORM} STREQUAL wasm)
+	# Force shaders to be copied
+	add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E rm -rf
+			$<TARGET_FILE_DIR:${PROJECT_NAME}>/src
+	)
+
+	# Copy assets
 	add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E copy_directory
 			${CMAKE_CURRENT_SOURCE_DIR}/data/fonts $<TARGET_FILE_DIR:${PROJECT_NAME}>/data/fonts

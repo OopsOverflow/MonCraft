@@ -10,7 +10,7 @@
 #include "blocks/Block.hpp"
 
 std::vector<glm::ivec3> BlockArray::getChangedChunks() const {
-  float chunkSize = World::getInst().chunkSize; // TODO: in config
+  float chunkSize = (float)World::getInst().chunkSize; // TODO: in config
   std::vector<glm::ivec3> res;
   for(auto const& elt : *this) {
     glm::ivec3 cpos = floor(glm::vec3(elt.pos) / chunkSize);

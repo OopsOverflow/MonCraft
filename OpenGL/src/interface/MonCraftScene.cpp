@@ -56,11 +56,9 @@ MonCraftScene::MonCraftScene(Viewport* vp)
       config(Config::getClientConfig()),
       vp(vp),
       camera(ivec2(1)),
-      caster(100.f),
       shadows(4096),
-      fogEnabled(false),
-      sunSpeed(0.0075f), skyboxSpeed(0.0075f),
-      captured(false)
+      sunSpeed(0.0075f),
+      lastClock(SDL_GetTicks())
 {
     auto const& serverConf = Config::getServerConfig();
     camera.setFar(16.0f * (float)sqrt(2 * pow(serverConf.renderDistH, 2) + pow(serverConf.renderDistV, 2)));
@@ -68,7 +66,6 @@ MonCraftScene::MonCraftScene(Viewport* vp)
 
     // load resources
     shader = ResourceManager::getShader("simple");
-    fogShader = ResourceManager::getShader("fog");
     texAtlas = ResourceManager::getTexture("atlas");
     texCharacter = ResourceManager::getTexture("character");
     for (size_t i = 0; i < 30; i += 1) {
@@ -81,10 +78,36 @@ MonCraftScene::MonCraftScene(Viewport* vp)
     playerUid = server->getUid();
 
     // UI stuff
-    gameMenu = std::make_unique<GameMenu>();
-    debugOverlay = std::make_unique<DebugOverlay>(server);
-    overlay = std::make_unique<Overlay>();
-    middleDot = Image::create({1, 1230}, {10, 10});
+    gameMenu = GameMenu::create();
+    debugOverlay = DebugOverlay::create(server);
+    overlay = Overlay::create();
+    middleDot = Image::create({1, 1229}, {10, 10});
+
+    parameters = ParametersMenu::create();
+    parameters->quitButton->onClick([params = parameters.get(), this] { 
+        this->remove(params); 
+    });
+    parameters->graphicsMenu->fullscreen->onRelease([&, vp, fullscreen = parameters->graphicsMenu->fullscreen.get()] { 
+        config.fullscreen = fullscreen->getChecked();
+        vp->toggleFullscreen();
+    });
+	parameters->graphicsMenu->vsync->onRelease([&, vp, vsync = parameters->graphicsMenu->vsync.get()] { 
+        config.vsync = vsync->getChecked();
+        vp->toggleVSync();
+    });
+
+    gameMenu->parameterButton->onClick([param = parameters, this] {
+        this->add(param);
+    });
+
+    parameters->audioMenu->mainVolume->onRelease([=]{ 
+        config.mainVolume = (float)parameters->audioMenu->mainVolume->getValue(); 
+        musicPlayer.music.setVolume(config.mainVolume * config.musicVolume * 0.01f);
+    });
+	parameters->audioMenu->musicVolume->onRelease([=]{
+        config.musicVolume = (float)parameters->audioMenu->musicVolume->getValue();
+        musicPlayer.music.setVolume(config.mainVolume * config.musicVolume * 0.01f);
+    });
 
     debugOverlay->setAnchorY(Anchor::END);
 
@@ -93,34 +116,49 @@ MonCraftScene::MonCraftScene(Viewport* vp)
 
     middleDot->setSize({10, 10});
 
-    overlay->btn_block->onclick([&] {
-        auto prev = player->getCurrentBlock();
-        player->setCurrentBlock(AllBlocks::nextBlock(prev));
-    });
+    gameMenu->setAnchorX(Anchor::CENTER);
+    gameMenu->setAnchorY(Anchor::CENTER);
 
-    add(middleDot.get());
-    add(overlay.get());
-    add(debugOverlay.get());
+    add(middleDot);
+    add(overlay);
+    add(debugOverlay);
+
+    player->setCurrentBlock(overlay->getCurrentBlock());
+
+    World::getInst().t = (uint32_t)(8.f * dayDuration / 24.f);
+}
+
+MonCraftScene::~MonCraftScene() {
+    world.unload();
 }
 
 bool MonCraftScene::onMousePressed(glm::ivec2 pos) {
-    vp->captureMouse();
-    captured = true;
     makeActive();
     return true;
 }
 
 bool MonCraftScene::onMouseMove(glm::ivec2 pos) {
-    if(captured) return true;
-    return false;
+    return vp->isMouseCaptured();
 }
 
 void MonCraftScene::onKeyPressed(Key k) {
-    keyboardController.handleKeyPressed(k);
+    if(vp->isMouseCaptured())
+        keyboardController.handleKeyPressed(k);
 }
 
 void MonCraftScene::onKeyReleased(Key k) {
-    keyboardController.handleKeyReleased(k);
+    if(vp->isMouseCaptured())
+        keyboardController.handleKeyReleased(k);
+    if(k == Config::getClientConfig().menu) {
+        if(vp->isMouseCaptured()) {
+            add(gameMenu);
+            vp->freeMouse();
+        }
+        else {
+            remove(gameMenu.get());
+            vp->captureMouse();
+        }
+    }
 }
 
 void MonCraftScene::updateShadowMaps() {
@@ -140,17 +178,13 @@ void MonCraftScene::updateShadowMaps() {
     shadows.endFrame();
 }
 
-void MonCraftScene::updateUniforms(float t) {
+void MonCraftScene::updateUniforms(uint32_t t) {
     auto sunDirViewSpace = camera.view * vec4(sunDir, 0.0);
 
     glUniform1f(shader->getUniform("lightIntensity"), 1);
-    glUniform1f(shader->getUniform("skyTime"), t * skyboxSpeed);
+    glUniform1f(shader->getUniform("sunAmount"), 1.0f - sky.getBlendFactor());
     glUniform3fv(shader->getUniform("lightDirection"), 1, value_ptr(sunDirViewSpace));
-    glUniform1f(fogShader->getUniform("sunTime"), t);
-    glUniform1f(fogShader->getUniform("lightIntensity"), 1);
-    glUniform3fv(fogShader->getUniform("lightDirection"), 1, value_ptr(sunDirViewSpace));
-    glUniform1i(shader->getUniform("fog"), (int)fogEnabled); // TODO
-    size_t normalMapIndex = (size_t)(t * 15) % 30;
+    size_t normalMapIndex = (size_t)(t * 0.001f * 15) % 30; //TODO check day change
     shader->bindTexture(TEXTURE_NORMAL, normalMapID[normalMapIndex]);
 
     Block* block = world.getBlock(ivec3(camera.position + vec3(-0.5f, 0.6f, -0.5f)));
@@ -168,18 +202,18 @@ void MonCraftScene::updateUniforms(float t) {
     }
 }
 
-void MonCraftScene::updateFov(float dt) {
+void MonCraftScene::updateFov(uint32_t dt) {
   const float maxFov = 180.0f;
   const float smoothing = 0.005f;
   const float transition = 10.f;
   const float speed = glm::length(player->speed);
   const float fov = camera.getFovY();
   const auto targetFov = fov - (maxFov + (config.fov - maxFov) * exp(-smoothing * speed));
-  camera.setFovY(fov - targetFov * transition * dt);
+  camera.setFovY(fov - targetFov * transition * dt * 0.001f);
 }
 
-void MonCraftScene::drawSkybox(float t) {
-    sky.render(camera, t * skyboxSpeed);
+void MonCraftScene::drawSkybox() {
+    sky.render(camera);
     shader->activate();
     shadows.activate();
     camera.activate();
@@ -204,12 +238,23 @@ void MonCraftScene::drawEntities() {
 }
 
 void MonCraftScene::draw() {
+    uint32_t time = SDL_GetTicks();
+    World::getInst().dt = time - lastClock; 
+    World::getInst().t += World::getInst().dt;
+    World::getInst().t = World::getInst().t % dayDuration;
+    lastClock = time;
+    
+    
+
     glEnable(GL_DEPTH_TEST);
 
     // updates
     #ifndef EMSCRIPTEN
       musicPlayer.update();
     #endif
+
+    if(overlay->select((int)(player->getCurrentBlock()) + vp->getMouseScrollDiff()))
+        player->setCurrentBlock(overlay->getCurrentBlock());
 
     keyboardController.apply(*player);
     vp->mouseController.apply(*player);
@@ -223,7 +268,7 @@ void MonCraftScene::draw() {
     updateFov(world.dt);
 
     // update sun
-    float sunTime = quarter_pi<float>() + world.t * sunSpeed; // sun is fixed
+    float sunTime = quarter_pi<float>() + world.t * sunSpeed * 0.001f; // sun is fixed
     float sunDist = 100.f;
     sunDir = -normalize(vec3(cos(sunTime), 1, sin(sunTime))) * sunDist;
 
@@ -241,7 +286,7 @@ void MonCraftScene::draw() {
     updateUniforms(world.t);
 
     // draw skybox
-    drawSkybox(world.t);
+    drawSkybox();
 
     // draw the terrain
     shader->bindTexture(TEXTURE_COLOR, texAtlas);
@@ -252,4 +297,10 @@ void MonCraftScene::draw() {
 
     glDisable(GL_DEPTH_TEST);
     Component::draw();
+}
+
+std::unique_ptr<MonCraftScene> MonCraftScene::create(Viewport* vp) {
+	auto scene = std::unique_ptr<MonCraftScene>(new MonCraftScene(vp));
+	scene->initialize();
+	return scene;
 }

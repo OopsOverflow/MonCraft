@@ -9,15 +9,15 @@
 
 class GameMenu : public ui::Component
 {
-public:
+protected : 
 	GameMenu();
-	void draw() override;
+	virtual bool onMousePressed(glm::ivec2 pos) override;
 
-	std::unique_ptr<ui::Button> playButton;
-	std::unique_ptr<ui::Button> quitButton;
+public:
+	static std::unique_ptr<GameMenu> create();
 
-private:
-	std::unique_ptr<ui::Pane> titlePane;
-	std::unique_ptr<ui::Text> pauseTitle;
+	std::shared_ptr<ui::Button> continueButton;
+	std::shared_ptr<ui::Button> parameterButton;
+	std::shared_ptr<ui::Button> quitButton;
 
 };

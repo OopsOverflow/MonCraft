@@ -15,8 +15,8 @@ using namespace glm;
 
 MiscMenu::MiscMenu()
 {
-	mobileVersion = Checkbox::create();
-	addLine("Version mobile", mobileVersion.get());
+	// mobileVersion = Checkbox::create();
+	// addLine("Version mobile", mobileVersion);
 }
 
 std::unique_ptr<MiscMenu> MiscMenu::create() {

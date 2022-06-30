@@ -5,6 +5,8 @@ class Key {
 
 public:
   Key(int32_t keycode);
+  Key& operator=(int32_t);
+  bool operator==(Key const&);
 
   bool isLower();
   bool isUpper();

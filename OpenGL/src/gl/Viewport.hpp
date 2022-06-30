@@ -37,15 +37,18 @@ public:
    * a usual draw loop looks like the following:
    * for(vp.beginFrame(dt);;vp.endFrame()) { // update & draw // }
    */
-  bool beginFrame(float& dt);
+  bool beginFrame();
   void endFrame();
 
   void createRoot();
   ui::Root* getRoot();
   void captureMouse();
+  void freeMouse();
   void toggleVSync();
   void toggleFullscreen();
   void quit();
+  bool isMouseCaptured() const { return mouseCaptured; }
+  int getMouseScrollDiff();
 
   glm::ivec2 size;
 
@@ -58,19 +61,15 @@ private:
   void on_keyup(SDL_Keycode k);
   void on_mousedown(SDL_MouseButtonEvent const& e);
   void on_mouseup(SDL_MouseButtonEvent const& e);
+  void on_mouse_scroll(SDL_MouseWheelEvent const& e);
 
   SDL_Window* window;
   SDL_GLContext context;
 
-  uint32_t timeBegin;
-  uint32_t lastTime;
-
   bool mouseCaptured;
-  bool vsync;
-  bool fullscreen;
   bool mustQuit;
 
-  std::unique_ptr<ui::Root> root;
+  int mouseScroll;
 
-  Config::ClientConfig config;
+  std::unique_ptr<ui::Root> root;
 };

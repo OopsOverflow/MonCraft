@@ -23,19 +23,19 @@ ComboBox::ComboBox(std::vector<std::string> _opt, size_t _sel)
   auto left = Image::create({73, 1179}, {20, 20});
   left->setSize({20, 20});
   auto lbtn = Button::create();
-  lbtn->onclick([&] () {
+  lbtn->onClick([&] () {
     select(selected == 0 ? options.size() - 1 : selected - 1);
   });
   lbtn->add(move(left));
   box->pack_end(move(lbtn));
 
   text = Text::create(options.at(selected), ResourceManager::getFont("roboto"));
-  box->pack_end(text.get());
+  box->pack_end(text);
 
   auto right = Image::create({51, 1179}, {20, 20});
   right->setSize({20, 20});
   auto rbtn = Button::create();
-  rbtn->onclick([this] () {
+  rbtn->onClick([this] () {
     select(selected == options.size() - 1 ? 0 : selected + 1);
   });
   rbtn->add(move(right));
@@ -54,8 +54,13 @@ void ComboBox::select(std::string const& option) {
    select(std::distance(options.begin(), it));
 }
 
+size_t ComboBox::getSelected() const {
+  return selected;
+}
+
 std::unique_ptr<ComboBox> ComboBox::create(std::vector<std::string> options, size_t selected) {
   ComboBox* box = new ComboBox(options, selected);
   box->initialize();
   return std::unique_ptr<ComboBox>(box);
 }
+

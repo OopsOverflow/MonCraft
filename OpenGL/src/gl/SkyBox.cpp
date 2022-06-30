@@ -9,6 +9,7 @@
 #include "gl/Camera.hpp"
 #include "gl/ResourceManager.hpp"
 #include "gl/Shader.hpp"
+#include "terrain/World.hpp"
 
 GLuint SkyBox::initSky() {
     float skyboxVertices[] = {
@@ -76,7 +77,7 @@ GLuint SkyBox::initSky() {
 
 SkyBox::SkyBox() :
     skyBoxShader(ResourceManager::getShader("skyBox")),
-    buffer(initSky())
+    buffer(initSky()), blendFactor(0.f), rotation(0.f)
 {
   skyDayTxr = ResourceManager::getTexture("skyboxDay");
   skyNightTxr = ResourceManager::getTexture("skyboxNight");
@@ -85,59 +86,45 @@ SkyBox::SkyBox() :
   // Set Texture Locations for CubeSamplers.
   glUniform1i(skyBoxShader->getUniform("skyboxD"), 0);
   glUniform1i(skyBoxShader->getUniform("skyboxN"), 1);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, skyDayTxr);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, skyNightTxr);
+
 }
 
-void SkyBox::calcBlendFactor(float skytime) {
+void SkyBox::calcBlendFactor(uint32_t skytime) {
+    
+    uint32_t time = (uint32_t)(skytime * convertFactor);
 
-    int time = (int)(skytime * 10000);
-    // 24 Hour system
-    time %= 24000;
-    int texture1, texture2;
-
-    float blendFactor;
-    if (time >= 0 && time < 5000) {
-        texture1 = skyNightTxr;
-        texture2 = skyNightTxr;
-        blendFactor = (float)(time - 0) / (float)(5000 - 0);
-    }
-    else if (time >= 5000 && time < 8000) {
-        texture1 = skyNightTxr;
-        texture2 = skyDayTxr;
-        blendFactor = (float)(time - 5000) / (float)(8000 - 5000);
-    }
-    else if (time >= 8000 && time < 21000) {
-        texture1 = skyDayTxr;
-        texture2 = skyDayTxr;
-        blendFactor = (float)(time - 8000) / (float)(21000 - 8000);
-    }
-    else {
-        texture1 = skyDayTxr;
-        texture2 = skyNightTxr;
+    if (time >= 0 && time < 5000)
+        blendFactor = 1.f;
+    else if (time >= 5000 && time < 8000)
+        blendFactor = (float)(8000 - time) / (float)(8000 - 5000);
+    else if (time >= 8000 && time < 21000)
+        blendFactor = 0.f;
+    else 
         blendFactor = (float)(time - 21000) / (float)(24000 - 21000);
-    }
 
     glUniform1f(skyBoxShader->getUniform("blendFactor"), blendFactor);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, texture1);
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, texture2);
 
 }
 
-void SkyBox::render(Camera& camera, float time)
+void SkyBox::render(Camera& camera)
 {
     glDisable(GL_CULL_FACE);
     glDepthFunc(GL_LEQUAL);
     skyBoxShader->activate();
     glBindVertexArray(buffer);
     glm::mat4 view = glm::mat4(glm::mat3(camera.view));
-    time += 0.8f; // 8:00 (morning)
-    view = glm::rotate(view, time, glm::vec3(0, 1, 0));
+    rotation = fmod(rotation + World::getInst().dt * skyRotSpeed, glm::pi<float>() * 2.f);
+    view = glm::rotate(view, rotation, glm::vec3(0, 1, 0));
     glUniformMatrix4fv(skyBoxShader->getUniform(MATRIX_VIEW), 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(skyBoxShader->getUniform(MATRIX_PROJECTION), 1, GL_FALSE, glm::value_ptr(camera.projection));
 
     // Sampling
-    calcBlendFactor(time);
+    calcBlendFactor(World::getInst().t);
 
     glDrawArrays(GL_TRIANGLES, 0, 36);
     glBindVertexArray(0);

@@ -1,11 +1,12 @@
 #pragma once
 
 #include <memory>
+#include <glm/glm.hpp>
 
-#include "ui/Component.hpp"
+#include "ui/Button.hpp"
 #include "ui/Image.hpp"
 
-class Checkbox : public ui::Component {
+class Checkbox : public ui::Button {
 
 public:
   static std::unique_ptr<Checkbox> create();
@@ -17,6 +18,7 @@ protected:
   Checkbox();
 
 private:
-  std::unique_ptr<ui::Image> img;
+  std::shared_ptr<ui::Image> img;
   bool checked;
+  glm::vec2 pos;
 };

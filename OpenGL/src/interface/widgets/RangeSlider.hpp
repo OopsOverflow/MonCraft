@@ -2,11 +2,11 @@
 
 #include <memory>
 
-#include "ui/Component.hpp"
+#include "ui/Button.hpp"
 #include "ui/Slider.hpp"
 #include "ui/Text.hpp"
 
-class RangeSlider : public ui::Component {
+class RangeSlider : public ui::Button {
 
 protected:
   RangeSlider(int min, int max, int increment);
@@ -19,7 +19,7 @@ public:
 
 private:
   int min, max, increment;
-  std::unique_ptr<ui::Slider> slider;
-  std::unique_ptr<ui::Text> text;
+  std::shared_ptr<ui::Slider> slider;
+  std::shared_ptr<ui::Text> text;
   std::shared_ptr<const Font> font;
 };

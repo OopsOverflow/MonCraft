@@ -21,8 +21,8 @@ RangeSlider::RangeSlider(int min, int max, int increment)
 
   box->setOrientation(Box::Orientation::HORIZONTAL);
   box->setGap(10);
-  box->pack_end(slider.get());
-  box->pack_end(text.get());
+  box->pack_end(slider);
+  box->pack_end(text);
   add(move(box));
 }
 
@@ -41,7 +41,7 @@ std::unique_ptr<RangeSlider> RangeSlider::create(int min, int max, int increment
 
 int RangeSlider::getValue() const {
   // TODO increment
-  return round(slider->getValue() * (max - min) + min);
+  return (int)round(slider->getValue() * (max - min) + min);
 }
 
 void RangeSlider::setValue(int val) {
