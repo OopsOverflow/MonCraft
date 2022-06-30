@@ -28,6 +28,10 @@ public:
   * return false if the block is unavailable.
   */
   bool setBlock(glm::ivec3 pos, Block::unique_ptr_t block);
+  /**
+  * MATHIS CE GIGA FILS DEP
+  */
+  void unload();
 
   static const int chunkSize = 16;
 

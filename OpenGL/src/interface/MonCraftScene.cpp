@@ -128,6 +128,10 @@ MonCraftScene::MonCraftScene(Viewport* vp)
     World::getInst().t = (uint32_t)(8.f * dayDuration / 24.f);
 }
 
+MonCraftScene::~MonCraftScene() {
+    world.unload();
+}
+
 bool MonCraftScene::onMousePressed(glm::ivec2 pos) {
     makeActive();
     return true;

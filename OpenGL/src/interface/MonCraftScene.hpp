@@ -35,6 +35,8 @@ class MonCraftScene : public ui::Component {
 
 public:
   static std::unique_ptr<MonCraftScene> create(Viewport* vp);
+  ~MonCraftScene();
+  
 private:
   MonCraftScene(Viewport* vp);
   void updateFov(uint32_t dt);

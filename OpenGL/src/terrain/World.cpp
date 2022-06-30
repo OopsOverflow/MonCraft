@@ -43,3 +43,8 @@ bool World::setBlock(ivec3 pos, Block::unique_ptr_t block) {
   chunk->setBlock(dpos, std::move(block));
   return true;
 }
+
+void World::unload() {
+  chunks = ChunkMap();
+  entities = Entities();
+}
