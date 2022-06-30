@@ -18,8 +18,6 @@ class ChunkMap {
 
 public:
   ChunkMap();
-  ChunkMap(ChunkMap const&);
-  ChunkMap& operator=(ChunkMap const&);
 
   /**
    * Finds a chunks at a given chunk index.
@@ -66,6 +64,6 @@ private:
     }
   };
 
-  mutable std::mutex chunksMutex; // serializes access to the hashmap
+  std::mutex chunksMutex; // serializes access to the hashmap
   std::unordered_map<glm::ivec3, std::shared_ptr<ChunkImpl>, ivec3_hash, ivec3_hash> chunks;
 };

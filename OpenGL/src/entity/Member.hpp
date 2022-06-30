@@ -24,7 +24,7 @@ public:
    */
   void draw();
 
-  void animate(uint32_t dt);
+  void animate(float dt);
 
   /**
    * The node holds the loc/rot/scale of this member.

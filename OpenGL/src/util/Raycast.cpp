@@ -15,34 +15,29 @@ Raycast::Raycast(float maxDist) : maxDist(maxDist)
 Raycast::CastResult Raycast::cast(vec3 pos, vec3 direction) const {
   auto& world = World::getInst();
 
-  pos += .5f;
-
   CastResult res{
     false,
-    pos,
-    vec3(0),
     floor(pos),
-    nullptr,
-    0.f
+    vec3(0),
+    nullptr
   };
 
   const vec3 step = sign(direction); // (stepX/stepY)
   direction = glm::normalize(direction);
   const vec3 tdelta = abs(1.f / direction); // (tDeltaX/tDeltaY)
-  const vec3 offset = (res.blockPosition - pos) * step + (1.f + step) / 2.f; // <=> (step > 0) ? (1 - pos + ipos) : (pos - ipos)
+  const vec3 offset = (res.position - pos) * step + (1.f + step) / 2.f; // <=> (step > 0) ? (1 - pos + ipos) : (pos - ipos)
   vec3 tmax = offset * tdelta; // (tMaxX/tMaxY)
-  
 
+  float t = 0;
 
-  while(res.dist < maxDist) {
+  while(t < maxDist) {
 
     // check current block
-    res.block = world.getBlock(res.blockPosition);
+    res.block = world.getBlock(res.position);
     if (res.block){
         BlockType block = res.block->type;
         if(block != BlockType::Air && block != BlockType::Water) {
         res.success = true;
-        res.position = pos - 0.5f + direction * res.dist;
         return res;
       }
     }
@@ -50,33 +45,31 @@ Raycast::CastResult Raycast::cast(vec3 pos, vec3 direction) const {
     // update position
     if(tmax.x < tmax.y) {
       if(tmax.x < tmax.z) {
-        res.dist = tmax.x;
+        t = tmax.x;
         tmax.x += tdelta.x;
-        res.blockPosition.x += step.x;
+        res.position.x += step.x;
         res.normal = { -step.x, 0, 0 };
       } else {
-        res.dist = tmax.z;
+        t = tmax.z;
         tmax.z += tdelta.z;
-        res.blockPosition.z += step.z;
+        res.position.z += step.z;
         res.normal = { 0, 0, -step.z };
       }
     } else {
       if(tmax.y < tmax.z) {
-        res.dist = tmax.y;
+        t = tmax.y;
         tmax.y += tdelta.y;
-        res.blockPosition.y += step.y;
+        res.position.y += step.y;
         res.normal = { 0, -step.y, 0 };
       } else {
-        res.dist = tmax.z;
+        t = tmax.z;
         tmax.z += tdelta.z;
-        res.blockPosition.z += step.z;
+        res.position.z += step.z;
         res.normal = { 0, 0, -step.z };
       }
     }
 
   }
 
-  res.position = pos - 0.5f + direction * res.dist;
-  res.dist = maxDist;
   return res;
 }

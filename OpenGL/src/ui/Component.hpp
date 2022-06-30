@@ -115,14 +115,15 @@ public:
   void keyPress(Key k);
   void keyRelease(Key k);
 
-  void add(std::shared_ptr<Component> child);
+  void add(Component* child);
+  void add(std::unique_ptr<Component> child);
   void remove(Component* child);
-  std::vector<std::shared_ptr<Component>> getChildren() const;
+  std::vector<Component*> getChildren() const;
 
 //// PROTECTED STUFF ////
 protected:
   Component* parent;
-  std::vector<std::shared_ptr<Component>> children;
+  std::vector<Component*> children;
 
   void queueDraw();
   void recompute();
@@ -148,6 +149,7 @@ protected:
 private:
   bool drawQueued;
   bool recomputeQueued;
+  std::vector<std::unique_ptr<Component>> owned;
 
   glm::ivec2 computedSize;
   glm::ivec2 computedOrigin;

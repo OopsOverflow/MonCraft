@@ -51,7 +51,7 @@ public:
 	/**
 	 * Update the state of the entity
 	 */
-	virtual void update(uint32_t dt);
+	virtual void update(float dt);
 
 	virtual void render();
 

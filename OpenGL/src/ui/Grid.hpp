@@ -26,7 +26,8 @@ public:
   virtual prop_t getProperty(spec_t spec) const override;
   virtual style_const_t getDefaultStyle() const override;
 
-  void pack(glm::ivec2 pos, std::shared_ptr<Component> comp);
+  void pack(glm::ivec2 pos, Component* comp);
+  void pack(glm::ivec2 pos, std::unique_ptr<Component> comp);
 
   void draw() override;
   glm::ivec2 size() const { return cells.size(); }
@@ -38,7 +39,8 @@ private:
 
   class Cell : public Component {
   public:
-    static std::unique_ptr<Cell> create(std::shared_ptr<Component> comp);
+    static std::unique_ptr<Cell> create(Component* comp);
+    static std::unique_ptr<Cell> create(std::unique_ptr<Component> comp);
 
     bool contains(Component* comp) const;
 
@@ -49,7 +51,7 @@ private:
   void updateCells();
   void ensureCellExists(glm::ivec2 pos);
 
-  DataStore<std::shared_ptr<Cell>, 2> cells;
+  DataStore<std::unique_ptr<Cell>, 2> cells;
 };
 
 } // namespace ui

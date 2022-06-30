@@ -62,38 +62,21 @@ Character::~Character() {}
 
 
 void Character::cameraToHead(Camera& camera) {
-  vec3 eyePos;
-  vec3 eyeTarget;
 	if(view == CharacterView::FIRST_PERSON) {
-		eyePos = headNode.model * vec4(0, 4, 0, 1);
-		eyeTarget = headNode.model * vec4(0, 4, 50, 1);
-
+		vec3 eyePos = headNode.model * vec4(0, 4, 0, 1);
+		vec3 eyeTarget = headNode.model * vec4(0, 4, 50, 1);
+		camera.setLookAt(eyePos, eyeTarget);
 	}
-	else{
-    if(view == CharacterView::THIRD_PERSON){
-	  eyePos = headNode.model * vec4(0, 4, 1, 1);
-    eyeTarget = headNode.model * vec4(0, 4, 0, 1);
-
-    }
-    else if(view == CharacterView::FRONT) {
-      eyePos = headNode.model * vec4(0, 4, -1, 1);
-      eyeTarget = headNode.model * vec4(0, 4, 0, 1);
-
-    }
-    
-    camera.setLookAt(eyeTarget, eyePos);
-    auto tmp = camera.getBoxCorners();
-    
-    float min = 4.f;
-    for(size_t i = 0; i < 4; i += 1) {
-      auto cast = caster.cast(tmp.at(i), eyeTarget - eyePos);
-
-      min = std::min(min, cast.dist);
-    }
-    eyePos = eyeTarget + min * normalize(eyeTarget - eyePos);
-  } 
-
-  camera.setLookAt(eyePos, eyeTarget);
+	else if(view == CharacterView::THIRD_PERSON){
+		vec3 eyePos = headNode.model * vec4(0, 4, 4, 1);
+		vec3 eyeTarget = headNode.model * vec4(0, 4, -100, 1);
+		camera.setLookAt(eyeTarget, eyePos);
+	}
+  else if(view == CharacterView::FRONT) {
+    vec3 eyePos = headNode.model * vec4(0, 4, -4, 1);
+		vec3 eyeTarget = headNode.model * vec4(0, 4, 100, 1);
+		camera.setLookAt(eyeTarget, eyePos);
+  }
 }
 
 void Character::enableGodMode() {
@@ -152,13 +135,13 @@ void Character::breakBlock() {
     auto& world = World::getInst();
     vec3 eyePos = headNode.model * vec4(0, 4, 0, 1);
     vec3 eyeTarget = headNode.model * vec4(0, 4, 5, 1);
-    auto cast = caster.cast(eyePos, eyeTarget - eyePos);
+    auto cast = caster.cast(eyePos + .5f, eyeTarget - eyePos);
     if (cast.success) {
         BlockType block = cast.block->type;
         if (block != BlockType::Air && block != BlockType::Water) {
             auto airBlock = Block::create_static<Air_Block>();
-            record.push(cast.blockPosition, airBlock.get());
-            world.setBlock(cast.blockPosition, move(airBlock));
+            record.push(cast.position, airBlock.get());
+            world.setBlock(cast.position, move(airBlock));
         }
     }
   }
@@ -178,14 +161,14 @@ void Character::placeBlock() {
   auto& world = World::getInst();
   vec3 eyePos = headNode.model * vec4(0, 4, 4, 1);
   vec3 eyeTarget = headNode.model * vec4(0, 4, 5, 1);
-  auto cast = caster.cast(eyePos, eyeTarget - eyePos);
+  auto cast = caster.cast(eyePos + .5f, eyeTarget - eyePos);
 
   if(cast.success) {
     if(hitbox.collides(bodyNode.loc, cast.position + cast.normal)) return;
     Block* block = world.getBlock(cast.position + cast.normal);
     if(!block) return;
     if(block->type != BlockType::Air && block->type != BlockType::Water) return;
-    ivec3 pos = cast.blockPosition + cast.normal;
+    ivec3 pos = cast.position + cast.normal;
 
     Block::unique_ptr_t newBlock;
     Facing facing = getFacing(eyeTarget - eyePos);
@@ -209,11 +192,11 @@ void Character::placeBlock() {
 void Character::pickBlock() {
   vec3 eyePos = headNode.model * vec4(0, 4, 0, 1);
   vec3 eyeTarget = headNode.model * vec4(0, 4, 5, 1);
-  auto cast = caster.cast(eyePos, eyeTarget - eyePos);
+  auto cast = caster.cast(eyePos + .5f, eyeTarget - eyePos);
   if(cast.success) currentBlock = cast.block->type;
 }
 
-void Character::update(uint32_t dt) {
+void Character::update(float dt) {
   Entity::update(dt);
 
   // smooth head rot with constant speed
@@ -233,7 +216,7 @@ void Character::update(uint32_t dt) {
     
     dist = vec3(target - head.node.rot);
     if(dist != vec3(0)) {
-      auto delta = normalize(dist) * (speed * dt * 0.001f);
+      auto delta = normalize(dist) * speed * dt;
       if(any(greaterThan(abs(delta), abs(dist)))) {
         head.node.rot = target;
       }

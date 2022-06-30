@@ -14,5 +14,5 @@ protected:
 	MiscMenu();
 
 private:
-	std::shared_ptr<Checkbox> mobileVersion;
+	std::unique_ptr<Checkbox> mobileVersion;
 };

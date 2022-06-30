@@ -4,16 +4,15 @@
 class MultiplayerMenu : public ui::Image
 {
 public:
+	MultiplayerMenu();
 	void draw() override;
-	static std::unique_ptr<MultiplayerMenu> create();
 
-	std::shared_ptr<ui::Input> serverAddrInput;
-	std::shared_ptr<ui::Input> portInput;
+	std::unique_ptr<ui::Input> serverAddrInput;
+	std::unique_ptr<ui::Input> portInput;
 
 
 private:
-	MultiplayerMenu();
-	std::shared_ptr<ui::Image> serverAddrImg;
-	std::shared_ptr<ui::Image> portImg;
+	std::unique_ptr<ui::Image> serverAddrImg;
+	std::unique_ptr<ui::Image> portImg;
 
 };

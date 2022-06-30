@@ -11,35 +11,35 @@
 
 using namespace ui;
 
-KeySelector::KeySelector(Key* key)
+KeySelector::KeySelector(Key key)
   : key(key)
 {
+  auto button = Button::create();
   auto pane = Pane::create();
 
   pane->setPadding({ 10, 5 });
 
   auto font = ResourceManager::getFont("roboto");
-  text = Text::create(SDL_GetKeyName(key->asKeycode()), font);
+  text = Text::create(SDL_GetKeyName(key.asKeycode()), font);
 
-  onClick([&] { makeActive(); });
+  button->onclick([&] { makeActive(); });
 
-  pane->add(text);
-  add(move(pane));
-
+  pane->add(text.get());
+  button->add(move(pane));
+  add(move(button));
 }
 
-void KeySelector::setKey(Key* key) {
+void KeySelector::setKey(Key key) {
   this->key = key;
-  text->setText(SDL_GetKeyName(key->asKeycode()));
+  text->setText(SDL_GetKeyName(key.asKeycode()));
 }
 
-Key* KeySelector::getKey() const {
+Key KeySelector::getKey() const {
   return key;
 }
 
 void KeySelector::onKeyPressed(Key key) {
-  *this->key = key;
-  text->setText(SDL_GetKeyName(key.asKeycode()));
+  setKey(key);
   unfocus();
 }
 
@@ -64,7 +64,7 @@ void KeySelector::onDeactivated() {
     text->setColor({0.0, 0.0, 0.0, 1.0});
 }
 
-std::unique_ptr<KeySelector> KeySelector::create(Key* key) {
+std::unique_ptr<KeySelector> KeySelector::create(Key key) {
   auto sel = std::unique_ptr<KeySelector>(new KeySelector(key));
   sel->initialize();
   return sel;

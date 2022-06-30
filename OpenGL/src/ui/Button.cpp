@@ -66,12 +66,8 @@ std::unique_ptr<Button> Button::create() {
   return std::unique_ptr<Button>(btn);
 }
 
-void Button::onClick(std::function<void()> callback) {
+void Button::onclick(std::function<void()> callback) {
   this->clickCallback = callback;
-}
-
-void Button::onRelease(std::function<void()> callback) {
-  this->releaseCallback = callback;
 }
 
 void Button::setHoverStyle(prop_t prop) {
@@ -98,6 +94,5 @@ bool Button::onMousePressed(glm::ivec2 pos) {
 
 bool Button::onMouseReleased(glm::ivec2 pos) {
   setStylesheet(hover);
-  if(releaseCallback) releaseCallback();
   return false;
 }

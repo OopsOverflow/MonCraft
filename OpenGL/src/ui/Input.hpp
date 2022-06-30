@@ -43,7 +43,7 @@ protected:
   void onKeyPressed(Key k) override;
 
 private:
-  std::shared_ptr<Text> textComp;
+  std::unique_ptr<Text> textComp;
   style_t hover;
   style_t active;
   std::function<void()> changeCallback;

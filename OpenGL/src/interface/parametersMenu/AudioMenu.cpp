@@ -5,30 +5,17 @@
 #include "ui/Slider.hpp"
 #include "ui/style/Type.hpp"
 #include "interface/widgets/RangeSlider.hpp"
-#include "save/ClientConfig.hpp"
 
 using namespace ui;
 using namespace glm;
 
 AudioMenu::AudioMenu()
 {
-	auto config = Config::getClientConfig();
-
 	mainVolume = RangeSlider::create(0, 100);
 	musicVolume = RangeSlider::create(0, 100);
-	mainVolume->setValue((int)config.mainVolume);
-	musicVolume->setValue((int)config.musicVolume);
 
-	addLine("Volume de la musique", musicVolume);
-	addLine("Volume principal", mainVolume);
-}
-
-AudioMenu::~AudioMenu() {
-	auto& config = Config::getClientConfig();
-
-	config.mainVolume = (float)mainVolume->getValue();
-	config.musicVolume = (float)musicVolume->getValue();
-
+	addLine("Volume principal", mainVolume.get());
+	addLine("Volume de la musique", musicVolume.get());
 }
 
 std::unique_ptr<AudioMenu> AudioMenu::create() {

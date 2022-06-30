@@ -15,8 +15,8 @@ Slider::Slider()
   track = Pane::create();
   thumb = Pane::create();
 
-  add(track);
-  track->add(thumb);
+  add(track.get());
+  track->add(thumb.get());
 
   thumb->setColor({ 1, 0, 0, 1 });
   setSize(ivec2(100, 20));

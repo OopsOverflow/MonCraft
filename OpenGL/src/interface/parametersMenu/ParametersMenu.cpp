@@ -2,7 +2,10 @@
 
 #include <glm/glm.hpp>
 
-
+#include "interface/parametersMenu/AudioMenu.hpp"
+#include "interface/parametersMenu/KeyMenu.hpp"
+#include "interface/parametersMenu/MiscMenu.hpp"
+#include "interface/parametersMenu/GraphicsMenu.hpp"
 #include "interface/widgets/MonCraftButton.hpp"
 #include "gl/ResourceManager.hpp"
 #include "ui/Component.hpp"
@@ -35,7 +38,7 @@ ParametersMenu::ParametersMenu()
 
 	mainDisplay->setAnchorX(Anchor::CENTER);
 	mainDisplay->setAnchorY(Anchor::END);
-	add(mainDisplay);
+	add(mainDisplay.get());
 
 	topDiv->setAnchorX(Anchor::CENTER);
 	topDiv->setAnchorY(Anchor::CENTER);
@@ -48,38 +51,38 @@ ParametersMenu::ParametersMenu()
 	quitButtonImg->setSize({30, 30});
 	quitButton->add(move(quitButtonImg));
 
-	topDiv->pack_end(quitButton);
-	mainDisplay->pack_start(topDiv);
+	topDiv->pack_end(quitButton.get());
+	mainDisplay->pack_start(topDiv.get());
 
 	menuDiv->setAnchorX(Anchor::CENTER);
 	menuDiv->setAnchorY(Anchor::CENTER);
 	menuDiv->setOrientation(Box::Orientation::HORIZONTAL);
-	menuDiv->pack_end(graphicsButton);
-	menuDiv->pack_end(keyButton);
-	menuDiv->pack_end(audioButton);
-	menuDiv->pack_end(miscButton);
-	mainDisplay->pack_start(menuDiv);
-	folderDiv->pack_start(graphicsMenu);
-	mainDisplay->pack_start(folderDiv);
+	menuDiv->pack_end(graphicsButton.get());
+	menuDiv->pack_end(keyButton.get());
+	menuDiv->pack_end(audioButton.get());
+	menuDiv->pack_end(miscButton.get());
+	mainDisplay->pack_start(menuDiv.get());
+	folderDiv->pack_start(graphicsMenu.get());
+	mainDisplay->pack_start(folderDiv.get());
 
-	keyButton->onClick([&] {
+	keyButton->onclick([&] {
 		folderDiv->unpackAt(0);
-		folderDiv->pack_start(keyMenu);
+		folderDiv->pack_start(keyMenu.get());
 	});
 
-	graphicsButton->onClick([&] {
+	graphicsButton->onclick([&] {
 		folderDiv->unpackAt(0);
-		folderDiv->pack_start(graphicsMenu);
+		folderDiv->pack_start(graphicsMenu.get());
 	});
 
-	audioButton->onClick([&] {
+	audioButton->onclick([&] {
 		folderDiv->unpackAt(0);
-		folderDiv->pack_start(audioMenu);
+		folderDiv->pack_start(audioMenu.get());
 	});
 
-	miscButton->onClick([&] {
+	miscButton->onclick([&] {
 		folderDiv->unpackAt(0);
-		folderDiv->pack_start(miscMenu);
+		folderDiv->pack_start(miscMenu.get());
 	});
 }
 
@@ -88,10 +91,4 @@ void ParametersMenu::draw() {
 		setSize(parent->getSize());
 	}
 	Image::draw();
-}
-
-std::unique_ptr<ParametersMenu> ParametersMenu::create() {
-	auto menu = std::unique_ptr<ParametersMenu>(new ParametersMenu());
-	menu->initialize();
-	return menu;
 }

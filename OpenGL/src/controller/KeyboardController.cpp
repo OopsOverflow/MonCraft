@@ -4,43 +4,43 @@
 
 #include "save/ClientConfig.hpp"
 #include "terrain/World.hpp"
-#include <SDL2/SDL.h>
 
 KeyboardController::KeyboardController()
   : config(Config::getClientConfig()),
     direction(0.f),
     view(CharacterView::FIRST_PERSON),
     sprint(false), toggleGod(false), dab(false),
-    spaceIsPressed(false), lastSpacePress(SDL_GetTicks())
+    spaceIsPressed(false), lastSpacePress(0.f)
 {}
 
 bool KeyboardController::handleKeyReleased(Key k) {
-    if (k == config.forward) {
+    auto code = k.asKeycode();
+    if (code == config.forward) {
         if (direction.z == -1) direction.z = 0;
     }
-    else if (k == config.backward) {
+    else if (code == config.backward) {
         if (direction.z == 1) direction.z = 0;
      }
-    else if (k == config.right) {
+    else if (code == config.right) {
         if (direction.x == 1) direction.x = 0;
     }
-    else if (k == config.left) {
+    else if (code == config.left) {
         if (direction.x == -1) direction.x = 0;
     }
-    else if (k == config.jump) {
+    else if (code == config.jump) {
         if (direction.y == 1) direction.y = 0;
         spaceIsPressed = false;
     }
-    else if (k == config.sneak) {
+    else if (code == config.sneak) {
         if (direction.y == -1) direction.y = 0;
     }
-    else if (k == config.sprint) {
+    else if (code == config.sprint) {
         sprint = false;
     }
-    else if (k == config.view) {
+    else if (code == config.view) {
             view = CharacterView(((int)view + 1) % 3);
     }
-    else if (k == config.dab) {
+    else if (code == config.dab) {
         dab = false;
     }
 
@@ -48,11 +48,11 @@ bool KeyboardController::handleKeyReleased(Key k) {
 }
 
 bool KeyboardController::isDoubleSpace() {
-  static const uint32_t threshold = 300;
+  static const float threshold = 0.3f;
   bool res = false;
 
   if(!spaceIsPressed) {
-    auto time = SDL_GetTicks();
+    auto time = World::getInst().t;
     res = time - lastSpacePress < threshold;
     lastSpacePress = time;
     spaceIsPressed = true;
@@ -63,29 +63,30 @@ bool KeyboardController::isDoubleSpace() {
 
 
 bool KeyboardController::handleKeyPressed(Key k) {
-    if (k == config.forward) {
+    auto code = k.asKeycode();
+    if (code == config.forward) {
         direction.z = -1;
     }
-    else if(k == config.backward){
+    else if(code == config.backward){
         direction.z = 1;
     }
-    else if (k == config.right) {
+    else if (code == config.right) {
         direction.x = 1;
     }
-    else if (k == config.left) {
+    else if (code == config.left) {
         direction.x = -1;
     }
-    else if (k == config.jump) {
+    else if (code == config.jump) {
         if(isDoubleSpace()) toggleGod = true;
         else direction.y = 1;
     }
-    else if (k == config.sneak) {
+    else if (code == config.sneak) {
         direction.y = -1;
     }
-    else if (k == config.sprint) {
+    else if (code == config.sprint) {
         sprint = true;
     }
-    else if (k == config.dab) {
+    else if (code == config.dab) {
         dab = true;
     }
 

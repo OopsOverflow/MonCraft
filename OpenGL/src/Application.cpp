@@ -54,6 +54,7 @@ void loadResources() {
     ResourceManager::loadShader("skyBox", "skyBox.vert", "skyBox.frag");
     ResourceManager::loadShader("font",   "font.vert",   "font.frag");
     ResourceManager::loadShader("water",  "water.vert",  "water.frag");
+    ResourceManager::loadShader("fog", "fog.vert", "fog.frag");
     ResourceManager::loadShader("pane", "pane.vert", "pane.frag");
     ResourceManager::loadShader("shadow", "shadow.vert", "shadow.frag");
     ResourceManager::loadShader("image", "image.vert", "image.frag");
@@ -70,6 +71,11 @@ void loadResources() {
     ResourceManager::loadFont("vt323", "VT323-Regular");
 }
 
+void loop(float dt) {
+    World::getInst().t += dt;
+    World::getInst().dt = dt;
+}
+
 #ifdef EMSCRIPTEN
     float dt;
     Viewport* pwindow;
@@ -82,7 +88,7 @@ void loadResources() {
 
 void showView(Viewport& vp, std::unique_ptr<ui::Component> view) {
     auto children = vp.getRoot()->getChildren();
-    if(children.size() > 0) vp.getRoot()->remove(children.at(0).get());
+    if(children.size() > 0) vp.getRoot()->remove(children.at(0));
     vp.getRoot()->add(move(view));
 }
 
@@ -93,56 +99,27 @@ void showMainMenu(Viewport& vp);
 
 void showSinglePlayer(Viewport& vp) {
     Config::getClientConfig().multiplayer = false;
-    auto game = MonCraftScene::create(&vp);
-    game->gameMenu->quitButton->onClick([&] { showMainMenu(vp); });
-    game->gameMenu->continueButton->onClick([game = game.get(), menu = game->gameMenu.get(), &vp] { 
-        game->remove(menu);
-        game->makeActive();
-        vp.captureMouse();
-    });
-    vp.captureMouse();
-    game->makeActive();
-    showView(vp, move(game));
-    
+    showView(vp, std::make_unique<MonCraftScene>(&vp));
 }
 
 void showMultiPlayer(Viewport& vp) {
     Config::getClientConfig().multiplayer = true;
-    auto game = MonCraftScene::create(&vp);
-
-    game->gameMenu->quitButton->onClick([&] { showMainMenu(vp); });
-    game->gameMenu->continueButton->onClick([game = game.get(), menu = game->gameMenu.get(), &vp] { 
-        game->remove(menu);
-        vp.captureMouse();
-    });
-    vp.captureMouse();
-    game->makeActive();
-    showView(vp, move(game));
-    
+    showView(vp, std::make_unique<MonCraftScene>(&vp));
 }
 
 void showParameters(Viewport& vp) {
-    auto params = ParametersMenu::create();
-    auto& config = Config::getClientConfig();
-    params->quitButton->onClick([&] { showMainMenu(vp); });
-    params->graphicsMenu->fullscreen->onRelease([&vp, &config, fullscreen = params->graphicsMenu->fullscreen.get()]{ 
-        config.fullscreen = fullscreen->getChecked();
-        vp.toggleFullscreen();
-    });
-	params->graphicsMenu->vsync->onRelease([&vp, &config, vsync = params->graphicsMenu->vsync.get()]{ 
-        config.vsync = vsync->getChecked();
-        vp.toggleVSync();
-    });
+    auto params = std::make_unique<ParametersMenu>();
+    params->quitButton->onclick([&] { showMainMenu(vp); });
     showView(vp, move(params));
 }
 
 
 void showMainMenu(Viewport& vp) {
     auto mainMenu = MainMenu::create();
-    mainMenu->singleplayerButton->onClick([&]{ showSinglePlayer(vp); });
-    mainMenu->multiplayerButton->onClick([&]{ showMultiPlayer(vp); });
-    mainMenu->parameterButton->onClick([&]{ showParameters(vp); });
-    mainMenu->quitButton->onClick([&] { vp.quit(); });
+    mainMenu->singleplayerButton->onclick([&]{ showSinglePlayer(vp); });
+    mainMenu->multiplayerButton->onclick([&]{ showMultiPlayer(vp); });
+    mainMenu->parameterButton->onclick([&]{ showParameters(vp); });
+    mainMenu->quitButton->onclick([&] { vp.quit(); });
     showView(vp, move(mainMenu));
 }
 
@@ -161,7 +138,7 @@ int main(int argc, char* argv[]) {
         pwindow = &window;
         emscripten_set_main_loop(em_loop, 0, 1);
     #else
-        while(window.beginFrame()) window.endFrame();
+        for (float dt = 0; window.beginFrame(dt); window.endFrame()) loop(dt);
     #endif
 
     ResourceManager::free();

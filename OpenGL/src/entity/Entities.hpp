@@ -25,7 +25,7 @@ public:
 
   bool remove(Identifier uid);
 
-  void updateAll(uint32_t dt);
+  void updateAll(float dt);
   void renderAll();
 
   size_t count();

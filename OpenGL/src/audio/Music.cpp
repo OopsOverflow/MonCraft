@@ -4,7 +4,6 @@
 #include <string>
 
 #include "util/Random.hpp"
-#include "save/ClientConfig.hpp"
 
 
 /**For now music has to be added manually unforetunetly
@@ -25,8 +24,7 @@ Music::Music()
     : playlist(songList)
     , currentSong(0)
 {
-    auto config = Config::getClientConfig();
-    music.setVolume(config.mainVolume * config.musicVolume * 0.01f);
+    music.setVolume(5);
     getNextSong();
 }
 

@@ -14,8 +14,8 @@ using namespace glm;
 MonCraftButton::MonCraftButton(std::unique_ptr<Pane> mainComp, std::unique_ptr<Text> textComp)
   : mainComp(move(mainComp)), textComp(move(textComp))
 {
-  this->mainComp->add(this->textComp);
-  add(this->mainComp);
+  this->mainComp->add(this->textComp.get());
+  add(this->mainComp.get());
 }
 
 void MonCraftButton::draw() {
