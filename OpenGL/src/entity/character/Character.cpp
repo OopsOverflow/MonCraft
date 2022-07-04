@@ -90,7 +90,12 @@ void Character::cameraToHead(Camera& camera) {
 
       min = std::min(min, cast.dist);
     }
-    eyePos = eyeTarget + min * normalize(eyeTarget - eyePos);
+    if(min > 0.5f) 
+      eyePos = eyeTarget + min * normalize(eyeTarget - eyePos);
+    else
+      eyePos = eyeTarget + 0.5f * normalize(eyeTarget - eyePos);
+    
+   
   } 
 
   camera.setLookAt(eyePos, eyeTarget);
