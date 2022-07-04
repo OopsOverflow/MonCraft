@@ -24,7 +24,8 @@ glm::vec3 AnimationMixer::computeAnim(uint32_t dt) {
 				Spline* current = &animations.at(currentAnimation);
 				Spline* next = &animations.at(nextAnimation);
 
-				uint32_t transitionTime = (uint32_t)(distance(current->getCurrentPoint(), next->getCurrentPoint()) * 1000 / std::max(current->getCurrentSpeed(), next->getCurrentSpeed()));
+				const float minRotPerMs = 1.0f; //TODO super dirty but no dab otherwise
+				uint32_t transitionTime = (uint32_t)(distance(current->getCurrentPoint(), next->getCurrentPoint()) / std::max(std::max(current->getCurrentSpeed(), next->getCurrentSpeed()), minRotPerMs));
 
 				keyframes.emplace_back(0, current->getCurrentPoint());
 				keyframes.emplace_back(transitionTime, next->getCurrentPoint());
@@ -50,8 +51,8 @@ void AnimationMixer::setAnimation(Animation anim) {
 			current = &animations.at(currentAnimation);
 			
         Spline* next = &animations.at(anim);
-		
-		uint32_t transitionTime = (uint32_t)(distance(current->getCurrentPoint(), next->getCurrentPoint()) * 1000 / std::max(current->getCurrentSpeed(), next->getCurrentSpeed()));
+		const float minRotPerMs = 1.0f;//TODO super dirty but no dab otherwise
+		uint32_t transitionTime = (uint32_t)(distance(current->getCurrentPoint(), next->getCurrentPoint()) / std::max(std::max(current->getCurrentSpeed(), next->getCurrentSpeed()), minRotPerMs));
 
 		keyframes.emplace_back(0, current->getCurrentPoint());
 		keyframes.emplace_back(transitionTime, next->getCurrentPoint());

@@ -159,10 +159,10 @@ glm::vec3 Spline::getCurrentDerivative() {
 
 float Spline::getCurrentSpeed() {
     if(!finished) {
-        return 1000.f / beziers.at(currentBezier).first;
+        return beziers.at(currentBezier).second.descreteLength(10) / beziers.at(currentBezier).first;
     }
         
-    return 1000.f / beziers.at(beziers.size() - 1).first;
+    return beziers.at(beziers.size() - 1).second.descreteLength(10) / beziers.at(beziers.size() - 1).first;
 }
 
 

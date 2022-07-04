@@ -35,5 +35,5 @@ void Member::draw() {
 
 
 void Member::animate(uint32_t dt) {
-  node.lookAt(anim->computeAnim(dt));
+  node.rot = radians(anim->computeAnim(dt));
 }
