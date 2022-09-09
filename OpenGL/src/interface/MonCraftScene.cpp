@@ -99,7 +99,8 @@ MonCraftScene::MonCraftScene(Viewport* vp)
     gameMenu->parameterButton->onClick([param = parameters, this] {
         this->add(param);
     });
-
+    
+    #ifndef EMSCRIPTEN
     parameters->audioMenu->mainVolume->onRelease([=]{ 
         config.mainVolume = (float)parameters->audioMenu->mainVolume->getValue(); 
         musicPlayer.music.setVolume(config.mainVolume * config.musicVolume * 0.01f);
@@ -108,6 +109,7 @@ MonCraftScene::MonCraftScene(Viewport* vp)
         config.musicVolume = (float)parameters->audioMenu->musicVolume->getValue();
         musicPlayer.music.setVolume(config.mainVolume * config.musicVolume * 0.01f);
     });
+    #endif
 
     debugOverlay->setAnchorY(Anchor::END);
 

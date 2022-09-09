@@ -91,6 +91,11 @@
         // OpenBSD
         #define SFML_SYSTEM_OPENBSD
 
+    #elif defined(__EMSCRIPTEN__)
+
+        // OpenBSD
+        #define SFML_SYSTEM_EMSCRIPTEN
+
     #else
 
         // Unsupported UNIX system

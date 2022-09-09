@@ -71,11 +71,9 @@ void loadResources() {
 }
 
 #ifdef EMSCRIPTEN
-    float dt;
     Viewport* pwindow;
     void em_loop() {
-        pwindow->beginFrame(dt);
-        loop(dt);
+        pwindow->beginFrame();
         pwindow->endFrame();
     }
 #endif

@@ -6,6 +6,7 @@ OpenGL/Debug
 OpenGL/Release
 
 build
+build-*
 cert
 CMakeCache.txt
 CMakeSettings.json

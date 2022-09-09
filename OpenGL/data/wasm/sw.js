@@ -1,6 +1,6 @@
 const CACHE = 'v1';
 const WHITELIST = [
-  'MonCraft.data'
+  '/MonCraft.data'
 ]
 
 const onInstall = async (e) => {
@@ -9,17 +9,12 @@ const onInstall = async (e) => {
 };
 
 const onFetch = async (e) => {
+  console.log(e)
   const cache = await caches.open(CACHE);
   let resp = await cache.match(e.request);
 
   if (resp === undefined) {
     resp = await fetch(e.request);
-    for (const str of WHITELIST) {
-      if(e.request.url.endsWith(str)) {
-        cache.put(e.request, resp.clone());
-        break;
-      }
-    }
   }
 
   return resp;
