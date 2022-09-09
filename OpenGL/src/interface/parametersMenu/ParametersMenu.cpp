@@ -56,7 +56,9 @@ ParametersMenu::ParametersMenu()
 	menuDiv->setOrientation(Box::Orientation::HORIZONTAL);
 	menuDiv->pack_end(graphicsButton);
 	menuDiv->pack_end(keyButton);
-	menuDiv->pack_end(audioButton);
+	#ifndef EMSCRIPTEN
+		menuDiv->pack_end(audioButton);
+	#endif
 	menuDiv->pack_end(miscButton);
 	mainDisplay->pack_start(menuDiv);
 	folderDiv->pack_start(graphicsMenu);
