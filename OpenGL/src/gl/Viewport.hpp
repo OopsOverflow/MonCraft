@@ -8,6 +8,11 @@
 #include "controller/MouseController.hpp"
 #include "save/ClientConfig.hpp"
 
+#ifdef EMSCRIPTEN
+  #include <emscripten.h>
+  #include <emscripten/html5.h>
+#endif
+
 namespace ui { class Root; }
 
 /**
@@ -55,6 +60,9 @@ public:
   MouseController mouseController;
 
 private:
+  #ifdef EMSCRIPTEN
+    friend EM_BOOL onPointerLockChange(int evtType, EmscriptenPointerlockChangeEvent const* evt, void* data);
+  #endif
   void on_event(SDL_Event const& e);
   void on_window_event(SDL_WindowEvent const& e);
   void on_keydown(SDL_Keycode k);

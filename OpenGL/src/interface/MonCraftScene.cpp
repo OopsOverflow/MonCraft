@@ -91,7 +91,7 @@ MonCraftScene::MonCraftScene(Viewport* vp)
         config.fullscreen = fullscreen->getChecked();
         vp->toggleFullscreen();
     });
-	parameters->graphicsMenu->vsync->onRelease([&, vp, vsync = parameters->graphicsMenu->vsync.get()] { 
+    parameters->graphicsMenu->vsync->onRelease([&, vp, vsync = parameters->graphicsMenu->vsync.get()] { 
         config.vsync = vsync->getChecked();
         vp->toggleVSync();
     });

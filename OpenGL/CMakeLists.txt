@@ -221,7 +221,7 @@ else ()
 			-s USE_SDL_IMAGE=2 \
 			-s SDL2_IMAGE_FORMATS='[\"png\"]' \
 			-s USE_SDL_GFX=2 \
-			-s USE_FREETYPE=2 \
+			-s USE_FREETYPE=1 \
 			-s ALLOW_MEMORY_GROWTH=1 \
 			-s MAX_WEBGL_VERSION=2 \
 			-s MIN_WEBGL_VERSION=2 \
@@ -244,7 +244,7 @@ else ()
 			-s USE_SDL_IMAGE=2 \
 			-s SDL2_IMAGE_FORMATS='[\"png\"]' \
 			-s USE_SDL_GFX=2 \
-			-s USE_FREETYPE=2 \
+			-s USE_FREETYPE=1 \
 			-s ALLOW_MEMORY_GROWTH=1 \
 			-s MAX_WEBGL_VERSION=2 \
 			-s MIN_WEBGL_VERSION=2 \
@@ -268,7 +268,7 @@ else ()
 			-s USE_SDL_IMAGE=2 \
 			-s SDL2_IMAGE_FORMATS='[\"png\"]' \
 			-s USE_SDL_GFX=2 \
-			-s USE_FREETYPE=2 \
+			-s USE_FREETYPE=1 \
 			-s ALLOW_MEMORY_GROWTH=1 \
 			-s MAX_WEBGL_VERSION=2 \
 			-s MIN_WEBGL_VERSION=2 \
@@ -297,7 +297,7 @@ else ()
 			-s USE_SDL_IMAGE=2 \
 			-s SDL2_IMAGE_FORMATS='[\"png\"]' \
 			-s USE_SDL_GFX=2 \
-			-s USE_FREETYPE=2 \
+			-s USE_FREETYPE=1 \
 			-s ALLOW_MEMORY_GROWTH=1 \
 			-s MAX_WEBGL_VERSION=2 \
 			-s MIN_WEBGL_VERSION=2 \

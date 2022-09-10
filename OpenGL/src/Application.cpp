@@ -127,7 +127,7 @@ void showParameters(Viewport& vp) {
         config.fullscreen = fullscreen->getChecked();
         vp.toggleFullscreen();
     });
-	params->graphicsMenu->vsync->onRelease([&vp, &config, vsync = params->graphicsMenu->vsync.get()]{ 
+    params->graphicsMenu->vsync->onRelease([&vp, &config, vsync = params->graphicsMenu->vsync.get()]{ 
         config.vsync = vsync->getChecked();
         vp.toggleVSync();
     });

@@ -1,8 +1,29 @@
 #include "Viewport.hpp"
 
+// send a esc keypress on pointerlock leave.
 #ifdef EMSCRIPTEN
-  #include <emscripten.h>
-  #include <emscripten/html5.h>
+  EM_BOOL onPointerLockChange(int evtType, EmscriptenPointerlockChangeEvent const* evt, void* data) {
+    Viewport* vp = (Viewport*)data;
+  
+    if (!evt->isActive) {
+      SDL_Event evt {
+        .key = {
+          .type = SDL_KEYUP,
+          .timestamp = 0,
+          .windowID = 0,
+          .state = SDL_RELEASED,
+          .repeat = 0,
+          .keysym = {
+            .scancode = SDL_SCANCODE_ESCAPE,
+            .sym = SDLK_ESCAPE,
+            .mod = 0,
+          }
+        }
+      };
+      vp->on_event(evt);
+    }
+    return false;
+  }
 #endif
 
 #include <GL/glew.h>
@@ -28,6 +49,8 @@ extern "C" {
 }
 #undef min
 #endif
+
+
 
 Viewport::Viewport(glm::ivec2 size)
   :   window(nullptr), context(nullptr),
@@ -65,12 +88,17 @@ Viewport::Viewport(glm::ivec2 size)
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 
   #ifdef EMSCRIPTEN
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
-  // TODO
-  // EMSCRIPTEN_WEBGL_CONTEXT_HANDLE ctx = emscripten_webgl_get_current_context();
-  // EmscriptenWebGLContextAttributes attrs;
-  // emscripten_webgl_get_context_attributes(ctx, &attrs);
-  // emscripten_webgl_enable_extension(ctx, "WEBGL_depth_texture");
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+    // TODO
+    // EMSCRIPTEN_WEBGL_CONTEXT_HANDLE ctx = emscripten_webgl_get_current_context();
+    // EmscriptenWebGLContextAttributes attrs;
+    // emscripten_webgl_get_context_attributes(ctx, &attrs);
+    // emscripten_webgl_enable_extension(ctx, "WEBGL_depth_texture");
+
+    // handle esc keypress when pointerlock is enabled
+    EMSCRIPTEN_RESULT res = emscripten_set_pointerlockchange_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, this, true, &onPointerLockChange);
+    if (res < 0)
+      std::cerr << "Failed to watch pointerlock change event in emscripten" << std::endl;
   #endif
 
   //Initialize the OpenGL Context
@@ -99,6 +127,11 @@ Viewport::~Viewport() {
     if (window)
         SDL_DestroyWindow(window);
     SDL_Quit();
+  
+  #ifdef EMSCRIPTEN
+    // disable esc keypress handling
+    emscripten_set_pointerlockchange_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, this, true, nullptr);
+  #endif
 }
 
 void Viewport::quit() {
@@ -178,7 +211,7 @@ bool Viewport::beginFrame() {
       return false;
     on_event(event);
   }
-
+  
   glViewport(0, 0, size.x, size.y);
   glClearColor(255/255.f, 0/255.f, 203/255.f, 1.0);
   glEnable(GL_DEPTH_TEST);
