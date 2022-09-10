@@ -1,38 +1,36 @@
 #include "GameMenu.hpp"
-
-#include <glm/glm.hpp>
-
-#include "gl/ResourceManager.hpp"
-#include "ui/style/Type.hpp"
-
+#include "widgets/MonCraftButton.hpp"
+#include "ui/Box.hpp"
 using namespace ui;
 
 GameMenu::GameMenu()
 {
-	auto font = ResourceManager::getFont("roboto");
-	titlePane = Pane::create();
-	pauseTitle = Text::create("Pause", font);
-	playButton = Button::createPaneButton("Resume", font);
-	quitButton = Button::createPaneButton("Quit", font);
 
-	add(titlePane.get());
-	titlePane->add(pauseTitle.get());
-	add(playButton.get());
-	add(quitButton.get());
+	auto buttons = Box::create();
 
-	titlePane->setAnchorX(Anchor::CENTER);
-	titlePane->setAnchorY(Anchor::END);
+	continueButton = MonCraftButton::create("Continuer");
+	parameterButton = MonCraftButton::create("Paramètres");
+	quitButton = MonCraftButton::create("Quitter");
 
-	playButton->setAnchorX(Anchor::CENTER);
-	playButton->setPosition(glm::ivec2(0, -185)); // TODO: implement a box container
+	buttons->setAnchorX(Anchor::CENTER);
+	buttons->setAnchorY(Anchor::CENTER);
+	buttons->setGap(10);
 
-	quitButton->setAnchorX(Anchor::CENTER);
-	playButton->setPosition(glm::ivec2(0, -385)); // TODO: implement a box container
+	buttons->pack_start(continueButton);
+	buttons->pack_start(parameterButton);
+	buttons->pack_start(quitButton);
+
+	add(move(buttons));
 
 }
 
-void GameMenu::draw() {
-	setSize(parent->getSize());
-	Component::draw();
-
+std::unique_ptr<GameMenu> GameMenu::create() {
+	auto menu = std::unique_ptr<GameMenu>(new GameMenu());
+	menu->initialize();
+	return menu;
 }
+
+bool GameMenu::onMousePressed(glm::ivec2 pos) {
+    return true;
+}
+

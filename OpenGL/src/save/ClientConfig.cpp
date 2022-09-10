@@ -47,6 +47,13 @@ Config::ClientConfig::ClientConfig() {
     KEY_PARAM(sneak)
     KEY_PARAM(view)
     KEY_PARAM(menu)
+    KEY_PARAM(dab)
+    PARAM(mainVolume)
+    PARAM(musicVolume)
+    PARAM(fullscreen)
+    PARAM(vsync)
+    PARAM(shadows)
+
   }
 
   #undef KEY_PARAM
@@ -66,7 +73,7 @@ Config::ClientConfig::~ClientConfig() {
   openedFile << std::boolalpha << "MonCraft v1.1.0" << std::endl;
 
   #define KEY_PARAM(NAME)                                                      \
-    openedFile << "\t" #NAME ": " << SDL_GetKeyName(this->NAME) << std::endl;
+    openedFile << "\t" #NAME ": " << SDL_GetKeyName(this->NAME.asKeycode()) << std::endl;
   #define PARAM(NAME)                                                          \
     openedFile << "\t" #NAME ": " << this->NAME << std::endl;
 
@@ -82,6 +89,12 @@ Config::ClientConfig::~ClientConfig() {
   KEY_PARAM(sneak)
   KEY_PARAM(view)
   KEY_PARAM(menu)
+  KEY_PARAM(dab)
+  PARAM(mainVolume)
+  PARAM(musicVolume)
+  PARAM(fullscreen)
+  PARAM(vsync)
+  PARAM(shadows)
 
   #undef KEY_PARAM
   #undef PARAM

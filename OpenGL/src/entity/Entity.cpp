@@ -46,7 +46,7 @@ void Entity::jump() {
 
 void Entity::turn(vec2 rot) {
 	headNode.rot.x += rot.x;
-	auto maxRotX = radians(89.9);
+	auto maxRotX = radians(89.99);
 	headNode.rot.x = clamp(headNode.rot.x, -maxRotX, maxRotX);
 
 	auto thresold = quarter_pi<double>();
@@ -56,7 +56,7 @@ void Entity::turn(vec2 rot) {
 	bodyNode.rot.y += rot.y - headDelta;
 }
 
-void Entity::update(float dt) {
+void Entity::update(uint32_t dt) {
 
 	// update forces
 	highp_dvec3 posOffset;
@@ -72,7 +72,7 @@ void Entity::update(float dt) {
 			dragXZ -= normalize(accXZ) * max(dot(dragXZ, normalize(accXZ)), 0.f); // substract component in accel direction from drag
 
 		// update speed
-		speed = speed + acc * dt - vec3(dragXZ.x, dragY, dragXZ.y) * dt;
+		speed = speed + acc * (dt * 0.001f) - vec3(dragXZ.x, dragY, dragXZ.y) * (dt * 0.001f);
 		vec2 speedXZ = vec2(speed.x, speed.z);
 		if(length(speedXZ) >= properties.maxSpeed) {
 			speedXZ = normalize(speedXZ) * properties.maxSpeed;
@@ -82,7 +82,7 @@ void Entity::update(float dt) {
 
 		// apply motion
 		auto rotMatrix = rotate(I, bodyNode.rot.y + headNode.rot.y, {0, 1, 0});
-		posOffset = vec3(rotMatrix * vec4(speed * dt, 1.f));
+		posOffset = vec3(rotMatrix * vec4(speed * (dt * 0.001f), 1.f));
 	}
 
 	// check collisions
@@ -128,7 +128,7 @@ void Entity::update(float dt) {
 		float dist = targetRot - currentRot;
 
 		float speed = 4.f;
-	  float delta = min(speed * dt, abs(dist)) * sign(dist);
+	  float delta = min(speed * dt * 0.001f, abs(dist)) * sign(dist);
 
 	  bodyNode.rot.y += delta;
 	  headNode.rot.y -= delta;

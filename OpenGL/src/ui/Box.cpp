@@ -55,49 +55,35 @@ style_const_t Box::getDefaultStyle() const {
 }
 
 
-void Box::pack(size_t index, Component* comp) {
+void Box::pack(size_t index, std::shared_ptr<Component> comp) {
   auto it = cells.begin() + index;
   it = cells.insert(it, Cell::create(comp));
-  add(it->get());
+  add(*it);
 }
 
-void Box::pack_end(Component* comp) {
+void Box::pack_end(std::shared_ptr<Component> comp) {
   cells.emplace_back(Cell::create(comp));
-  add(cells.back().get());
+  add(cells.back());
 }
 
-void Box::pack_start(Component* comp) {
+void Box::pack_start(std::shared_ptr<Component> comp) {
   auto it = cells.emplace(cells.begin(), Cell::create(comp));
-  add(it->get());
+  add(*it);
 }
 
-void Box::unpack(Component* comp) {
+void Box::unpack(std::shared_ptr<Component> comp) {
+  remove(comp.get());
   for(auto it = cells.cbegin(); it != cells.cend(); ) {
-    if((*it)->contains(comp)) it = cells.erase(it);
+    if((*it)->contains(comp.get())) it = cells.erase(it);
     else ++it;
   }
 }
 
 void Box::unpackAt(size_t index) {
+  remove(cells.at(index).get());
   if(index >= cells.size())
     throw std::out_of_range("index out of range");
   cells.erase(cells.begin() + index);
-}
-
-void Box::pack(size_t index, std::unique_ptr<Component> comp) {
-  auto it = cells.begin() + index;
-  it = cells.insert(it, Cell::create(move(comp)));
-  add(it->get());
-}
-
-void Box::pack_end(std::unique_ptr<Component> comp) {
-  cells.emplace_back(Cell::create(move(comp)));
-  add(cells.back().get());
-}
-
-void Box::pack_start(std::unique_ptr<Component> comp) {
-  auto it = cells.emplace(cells.begin(), Cell::create(move(comp)));
-  add(it->get());
 }
 
 void Box::draw() {
@@ -147,18 +133,12 @@ Box::Orientation Box::getOrientation() const {
 
 Box::Cell::Cell() {}
 
-std::unique_ptr<Box::Cell> Box::Cell::create(Component* comp) {
-  auto cell = std::unique_ptr<Cell>(new Cell());
-  cell->add(comp);
-  return cell;
-}
-
-std::unique_ptr<Box::Cell> Box::Cell::create(std::unique_ptr<Component> comp) {
+std::unique_ptr<Box::Cell> Box::Cell::create(std::shared_ptr<Component> comp) {
   auto cell = std::unique_ptr<Cell>(new Cell());
   cell->add(move(comp));
   return cell;
 }
 
 bool Box::Cell::contains(Component* comp) const {
-  return children.at(0) == comp;
+  return children.at(0).get() == comp;
 }

@@ -1,5 +1,6 @@
 #include "Text.hpp"
 
+#include <gl/UTF8Iter.hpp>
 #include <glm/glm.hpp>
 
 #include "gl/ResourceManager.hpp"
@@ -101,7 +102,7 @@ void Text::computeSize() {
 
   if(text.size() > 0) {
 
-    for(auto c : text) {
+    for(char32_t c : UTF8StringAdaptator(text)) {
       auto const& ch = font->getChar(c);
       size.x += ch.advance;
       size.y = max(size.y, ch.bearing.y);

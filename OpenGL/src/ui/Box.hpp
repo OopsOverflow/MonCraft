@@ -28,14 +28,11 @@ public:
   virtual prop_t getProperty(spec_t spec) const override;
   virtual style_const_t getDefaultStyle() const override;
 
-  void pack(size_t index, Component* comp);
-  void pack_start(Component* comp);
-  void pack_end(Component* comp);
-  void unpack(Component* comp);
+  void pack(size_t index, std::shared_ptr<Component> comp);
+  void pack_start(std::shared_ptr<Component> comp);
+  void pack_end(std::shared_ptr<Component> comp);
+  void unpack(std::shared_ptr<Component> comp);
   void unpackAt(size_t index);
-  void pack(size_t index, std::unique_ptr<Component> comp);
-  void pack_start(std::unique_ptr<Component> comp);
-  void pack_end(std::unique_ptr<Component> comp);
   void draw() override;
 
   void setGap(int gap);
@@ -48,8 +45,7 @@ private:
 
   class Cell : public Component {
   public:
-    static std::unique_ptr<Cell> create(Component* comp);
-    static std::unique_ptr<Cell> create(std::unique_ptr<Component> comp);
+    static std::unique_ptr<Cell> create(std::shared_ptr<Component> comp);
 
     bool contains(Component* comp) const;
 
@@ -59,7 +55,7 @@ private:
 
   void updateCells();
 
-  std::vector<std::unique_ptr<Cell>> cells;
+  std::vector<std::shared_ptr<Cell>> cells;
 };
 
 } // namespace ui

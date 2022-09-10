@@ -26,7 +26,7 @@ uint32_t prng::hashString(std::string const& s) {
 }
 
 uint32_t prng::srands(std::string const& s) {
-  auto seed = prng::hashString(s);
+  seed = prng::hashString(s);
   srand(seed);
   return seed;
 }

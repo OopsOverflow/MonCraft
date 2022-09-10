@@ -18,3 +18,12 @@ bool Key::isEsc() { return keycode == SDLK_ESCAPE; }
 
 int32_t Key::asKeycode() { return keycode; }
 char Key::asChar() { return (char)keycode; }
+
+Key& Key::operator=(int32_t keycode) {
+  this->keycode = keycode;
+  return *this;
+}
+
+bool Key::operator==(Key const& k) {
+  return this->keycode == k.keycode;
+}

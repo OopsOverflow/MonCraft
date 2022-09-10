@@ -33,11 +33,11 @@ MainMenu::MainMenu()
 	buttons->setAnchorY(Anchor::CENTER);
 	buttons->setGap(10);
 
-	buttons->pack_start(singleplayerButton.get());
-	buttons->pack_start(multiplayerButton.get());
+	buttons->pack_start(singleplayerButton);
+	buttons->pack_start(multiplayerButton);
+	buttons->pack_start(parameterButton);
 	#ifndef EMSCRIPTEN
-		buttons->pack_start(parameterButton.get());
-		buttons->pack_start(quitButton.get());
+		buttons->pack_start(quitButton);
 	#endif
 
 	title->setAnchorX(Anchor::CENTER);
@@ -49,7 +49,7 @@ MainMenu::MainMenu()
 
 	background->add(move(title));
 	background->add(move(buttons));
-	add(background.get());
+	add(background);
 }
 
 void MainMenu::draw() {

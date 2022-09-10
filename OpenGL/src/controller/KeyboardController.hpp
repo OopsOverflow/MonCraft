@@ -25,7 +25,8 @@ private:
 
   bool sprint;
   bool toggleGod;
+  bool dab;
 
   bool spaceIsPressed;
-  float lastSpacePress;
+  uint32_t lastSpacePress;
 };

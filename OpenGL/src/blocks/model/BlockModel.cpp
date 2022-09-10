@@ -104,7 +104,7 @@ BlockMeshData BlockModel::flatten(QuadMesh<L> const& mesh) {
 }
 
 std::vector<GLfloat> BlockModel::computeUV(glm::vec2 index, Quad<2> quad) {
-  static const int atlasSize = 8.f;
+  static const int atlasSize = 8;
   glm::mat3 tr = glm::mat3(1.f);
   tr = glm::scale(tr, glm::vec2(1.f / atlasSize));
   tr = glm::translate(tr, index);
@@ -112,7 +112,7 @@ std::vector<GLfloat> BlockModel::computeUV(glm::vec2 index, Quad<2> quad) {
 }
 
 std::vector<GLfloat> BlockModel::computeUV(glm::vec2 index, std::vector<Quad<2>> quads) {
-  static const int atlasSize = 8.f;
+  static const int atlasSize = 8;
   glm::mat3 tr = glm::mat3(1.f);
   tr = glm::scale(tr, glm::vec2(1.f / atlasSize));
   tr = glm::translate(tr, index);

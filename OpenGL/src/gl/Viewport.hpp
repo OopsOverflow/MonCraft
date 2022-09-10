@@ -8,6 +8,11 @@
 #include "controller/MouseController.hpp"
 #include "save/ClientConfig.hpp"
 
+#ifdef EMSCRIPTEN
+  #include <emscripten.h>
+  #include <emscripten/html5.h>
+#endif
+
 namespace ui { class Root; }
 
 /**
@@ -37,40 +42,42 @@ public:
    * a usual draw loop looks like the following:
    * for(vp.beginFrame(dt);;vp.endFrame()) { // update & draw // }
    */
-  bool beginFrame(float& dt);
+  bool beginFrame();
   void endFrame();
 
   void createRoot();
   ui::Root* getRoot();
   void captureMouse();
+  void freeMouse();
   void toggleVSync();
   void toggleFullscreen();
   void quit();
+  bool isMouseCaptured() const { return mouseCaptured; }
+  int getMouseScrollDiff();
 
   glm::ivec2 size;
 
   MouseController mouseController;
 
 private:
+  #ifdef EMSCRIPTEN
+    friend EM_BOOL onPointerLockChange(int evtType, EmscriptenPointerlockChangeEvent const* evt, void* data);
+  #endif
   void on_event(SDL_Event const& e);
   void on_window_event(SDL_WindowEvent const& e);
   void on_keydown(SDL_Keycode k);
   void on_keyup(SDL_Keycode k);
   void on_mousedown(SDL_MouseButtonEvent const& e);
   void on_mouseup(SDL_MouseButtonEvent const& e);
+  void on_mouse_scroll(SDL_MouseWheelEvent const& e);
 
   SDL_Window* window;
   SDL_GLContext context;
 
-  uint32_t timeBegin;
-  uint32_t lastTime;
-
   bool mouseCaptured;
-  bool vsync;
-  bool fullscreen;
   bool mustQuit;
 
-  std::unique_ptr<ui::Root> root;
+  int mouseScroll;
 
-  Config::ClientConfig config;
+  std::unique_ptr<ui::Root> root;
 };

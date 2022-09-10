@@ -17,7 +17,7 @@ Input::Input(std::string text, std::shared_ptr<const Font> font)
     active(std::make_shared<Style>())
 {
   textComp = Text::create(std::move(text), std::move(font));
-  add(textComp.get());
+  add(textComp);
 
   hover->setParent(getOwnStylesheet());
   hover->set(make_prop(Text::COLOR, vec4(1.0, 0.0, 0.0, 1.0)));

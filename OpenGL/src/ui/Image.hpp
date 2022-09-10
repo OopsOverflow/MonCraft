@@ -54,13 +54,16 @@ namespace ui {
 		glm::mat4 computeModel();
 		glm::mat4 computeTexture();
 		void calculateCropping(glm::ivec2& offset, glm::ivec2& size);
-		static Shader* shader;
-		static GLuint texAtlas;
 
 		GLint minFilter;
 		GLint magFilter;
 
+		static size_t instances;
+		static Shader* shader;
+		static GLuint texAtlas;
 		static GLuint vao, vbo;
+	
+		static void initializeStatic();
 	};
 
 }; // namespace ui

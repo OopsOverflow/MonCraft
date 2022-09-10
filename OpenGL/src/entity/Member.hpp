@@ -5,7 +5,7 @@
 #include <glm/gtc/quaternion.hpp>
 
 #include "Node.hpp"
-#include "util/Animation.hpp"
+#include "util/AnimationMixer.hpp"
 
 class Mesh;
 
@@ -24,14 +24,14 @@ public:
    */
   void draw();
 
-  void animate(float dt);
+  void animate(uint32_t dt);
 
   /**
    * The node holds the loc/rot/scale of this member.
    */
   Node node;
 
-  std::unique_ptr<Animation> anim;
+  std::unique_ptr<AnimationMixer> anim;
 
 protected:
   glm::mat4 geometryModel;

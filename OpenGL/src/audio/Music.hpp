@@ -16,10 +16,10 @@ public:
 
     void update();
     void playNext();
+    sf::Music music;
 private:
     void getNextSong();
 
-    sf::Music music;
     sf::Time  duration;
     sf::Clock timer;
 

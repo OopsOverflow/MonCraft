@@ -57,8 +57,9 @@ if(${BUILD_TARGET} STREQUAL client)
 		${CMAKE_CURRENT_SOURCE_DIR}/src/util/Raycast.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/util/Random.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/util/Bezier.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/src/util/Animation.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/util/Spline.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/src/util/AnimationMixer.cpp
+		
 
 		${CMAKE_CURRENT_SOURCE_DIR}/src/save/ClientConfig.cpp
 
@@ -71,6 +72,7 @@ if(${BUILD_TARGET} STREQUAL client)
 		${CMAKE_CURRENT_SOURCE_DIR}/src/controller/KeyboardController.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/controller/MouseController.cpp
 
+		${CMAKE_CURRENT_SOURCE_DIR}/src/interface/widgets/BlockSelector.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/interface/widgets/MonCraftButton.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/interface/widgets/ComboBox.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/interface/widgets/ParamList.cpp
@@ -173,13 +175,26 @@ if (NOT ${BUILD_PLATFORM} STREQUAL wasm)
 	include_directories(${ZLIB_INCLUDE_DIRS})
 	target_link_libraries(${PROJECT_NAME} ${ZLIB_LIBRARIES})
 
-	find_package(SFML REQUIRED COMPONENTS system network audio)
+	
 	if(UNIX)
+		find_package(SFML REQUIRED COMPONENTS system network audio)
+		include_directories(${SFML_INCLUDE_DIR})
 		target_link_libraries(${PROJECT_NAME} sfml-system sfml-network sfml-audio)
-	else()
-		include_directories(${SFML_INCLUDE_DIRS})
-		target_link_libraries(${PROJECT_NAME} ${SFML_LIBRARIES})
+	else(WIN32)
+		set(SFML_STATIC_LIBRARIES TRUE)
+		find_package(SFML REQUIRED COMPONENTS system network audio)
+		include_directories(${SFML_INCLUDE_DIR})
+		target_link_libraries(${PROJECT_NAME} ${SFML_LIBRARIES} ${SFML_DEPENDENCIES})
+		target_link_libraries(${PROJECT_NAME} "${CMAKE_SOURCE_DIR}/Dependencies/SFML-2.5.1/lib/openal32.lib")
+		add_library(openal SHARED IMPORTED GLOBAL)
+		set_property(TARGET openal PROPERTY IMPORTED_LOCATION "${CMAKE_SOURCE_DIR}/Dependencies/SFML-2.5.1/bin/openal32.dll")
+		add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different
+		$<TARGET_FILE:openal> $<TARGET_FILE_DIR:${PROJECT_NAME}>
+	)	
+
 	endif()
+
 
 	find_package(GLEW REQUIRED)
 	include_directories(${GLEW_INCLUDE_DIRS})
@@ -202,7 +217,7 @@ if (NOT ${BUILD_PLATFORM} STREQUAL wasm)
 	endif()
 
 else ()
-	include_directories("${CMAKE_SOURCE_DIR}/Dependencies/SFML/include")
+	include_directories("${CMAKE_SOURCE_DIR}/Dependencies/SFML-2.5.1/include")
 	include_directories("${CMAKE_SOURCE_DIR}/Dependencies/EMSFML/src")
 
 	if (${CMAKE_BUILD_TYPE} STREQUAL Release)
@@ -216,7 +231,7 @@ else ()
 			-s USE_SDL_IMAGE=2 \
 			-s SDL2_IMAGE_FORMATS='[\"png\"]' \
 			-s USE_SDL_GFX=2 \
-			-s USE_FREETYPE=2 \
+			-s USE_FREETYPE=1 \
 			-s ALLOW_MEMORY_GROWTH=1 \
 			-s MAX_WEBGL_VERSION=2 \
 			-s MIN_WEBGL_VERSION=2 \
@@ -240,7 +255,7 @@ else ()
 			-s USE_SDL_IMAGE=2 \
 			-s SDL2_IMAGE_FORMATS='[\"png\"]' \
 			-s USE_SDL_GFX=2 \
-			-s USE_FREETYPE=2 \
+			-s USE_FREETYPE=1 \
 			-s ALLOW_MEMORY_GROWTH=1 \
 			-s MAX_WEBGL_VERSION=2 \
 			-s MIN_WEBGL_VERSION=2 \
@@ -264,7 +279,7 @@ else ()
 			-s USE_SDL_IMAGE=2 \
 			-s SDL2_IMAGE_FORMATS='[\"png\"]' \
 			-s USE_SDL_GFX=2 \
-			-s USE_FREETYPE=2 \
+			-s USE_FREETYPE=1 \
 			-s ALLOW_MEMORY_GROWTH=1 \
 			-s MAX_WEBGL_VERSION=2 \
 			-s MIN_WEBGL_VERSION=2 \
@@ -294,7 +309,7 @@ else ()
 			-s USE_SDL_IMAGE=2 \
 			-s SDL2_IMAGE_FORMATS='[\"png\"]' \
 			-s USE_SDL_GFX=2 \
-			-s USE_FREETYPE=2 \
+			-s USE_FREETYPE=1 \
 			-s ALLOW_MEMORY_GROWTH=1 \
 			-s MAX_WEBGL_VERSION=2 \
 			-s MIN_WEBGL_VERSION=2 \
@@ -317,8 +332,15 @@ else ()
 
 endif ()
 
-# Copy assets
+
 if (NOT ${BUILD_PLATFORM} STREQUAL wasm)
+	# Force shaders to be copied
+	add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E rm -rf
+			$<TARGET_FILE_DIR:${PROJECT_NAME}>/src
+	)
+
+	# Copy assets
 	add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E copy_directory
 			${CMAKE_CURRENT_SOURCE_DIR}/data/fonts $<TARGET_FILE_DIR:${PROJECT_NAME}>/data/fonts

@@ -34,6 +34,6 @@ void Member::draw() {
 }
 
 
-void Member::animate(float dt) {
+void Member::animate(uint32_t dt) {
   node.lookAt(anim->computeAnim(dt));
 }

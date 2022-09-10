@@ -41,16 +41,39 @@ static const std::vector<GLfloat> rightArmUVs= {
   9 / 16.f, 16 / 16.f,
 };
 
-static const std::vector<std::pair<float, glm::vec3> > rightArmKeyframes = {
-  {0.f, {0.f, -1.f, 0.f}},
-  {2.f/ 3.f, {-0.05f, -1.f, 0.005f}},
-  {4.f/ 3.f, {0.05f, -1.f, 0.005f}},
-  {2.f, {0.f, -1.f, 0.f}},
-  {8.f/ 3.f, {-0.05f, -1.f, -0.005f}},
-  {10.f/ 3.f, {0.05f, -1.f, -0.005f}},
-  {4.f, {0.f, -1.f, 0.f}},
+static const Spline rightArmIdleAnim ({
+  {0,    {0.f, -1.f, 0.f}},
+  {666,  {-0.05f, -1.f, 0.005f}},
+  {1333, {0.05f, -1.f, 0.005f}},
+  {2000, {0.f, -1.f, 0.f}},
+  {2666, {-0.05f, -1.f, -0.005f}},
+  {3333, {0.05f, -1.f, -0.005f}},
+  {4000, {0.f, -1.f, 0.f}},
 
-};
+});
+
+static const Spline rightArmWalkAnim ({
+  {0,    {0.f, -1.f, 1.0f}},
+  {250,  {0.05f, -1.f, 0.f}},
+  {500,  {0.f, -1.f, -1.0f}},
+  {750,  {-0.05f, -1.f, 0.f}},
+  {1000, {0.f, -1.f, 1.0f}},
+  
+});
+
+static const Spline rightArmBreakAnim ({
+  {0,   {-0.50f, -0.25f, 0.80f}},
+  {50,  {-0.65f, 0.05f, 0.80f}},
+  {100,  {0.15f, 0.25f, 1.f}},
+  {150, {0.15f, -0.25f, 1.f}},
+  
+}, {0.f, smoothing, 0.f}, {0.f, -smoothing, 0.f});
+
+static const Spline rightArmDabAnim ({
+  {0,  {.4f, 0.3f, 0.7f}},
+  {50, {.4f, 0.3f, 0.7f}},
+  
+}, {0.f, 0.f, 0.f}, {0.f, 0.f, 0.f});
 
 class RightArm : public Member {
 
@@ -66,9 +89,10 @@ public:
 
     node.loc = {-6, 4, 0};
 
-    glm::vec3 line = (rightArmKeyframes[5].second - rightArmKeyframes[1].second) * smoothing;
-    Spline idleAnim(rightArmKeyframes, -line, line);
-    anim = std::make_unique<Animation>(idleAnim);
+    anim = std::make_unique<AnimationMixer>(rightArmIdleAnim);
+    anim->addAnim(Animation::Walk, rightArmWalkAnim);
+    anim->addAnim(Animation::Break, rightArmBreakAnim);
+    anim->addAnim(Animation::Dab, rightArmDabAnim);
   }
 
 protected:

@@ -21,7 +21,7 @@ class Camera;
  * The main character.
  */
 
-enum class CharacterView { FIRST_PERSON, THIRD_PERSON };
+enum class CharacterView { FIRST_PERSON, THIRD_PERSON, FRONT };
 
 class Character : public Entity {
 
@@ -44,7 +44,7 @@ public:
   /**
    * Update the character state.
    */
-	void update(float dt) override;
+	void update(uint32_t dt) override;
 
   /**
    * Breaks the block in line of sight if within reach of the character.
@@ -73,6 +73,8 @@ public:
   bool getGodMode();
 
   void setSprint(bool sprint);
+  void setDab(bool dab);
+  bool getDab() const;
 
   /**
    * Set the selected block type (in hand).
@@ -101,16 +103,7 @@ private:
   BlockType currentBlock;
   BlockArray record;
 
-  Spline breakAnim;
-
   bool god;
   bool sprint;
-};
-
-
-static const std::vector<std::pair<float, glm::vec3> > breakKeyframes = {
-  {0.f, {-0.65f, 0.05f, 1.f}},
-  {1.f/ 6.f, {0.05f, 0.05f, 1.f}},
-  {3.f/ 12.f, {0.05f, -0.05f, 1.f}},
-
+  bool dab;
 };

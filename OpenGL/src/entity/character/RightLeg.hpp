@@ -41,6 +41,24 @@ static const std::vector<GLfloat> rightLegUVs = {
   5 / 16.f, 16 / 16.f,
 };
 
+static const Spline rightLegIdleAnim ({
+  {0,    {0.f, -1.f, 0.f}},
+  {750,  {0.f, -1.f, -0.005f}},
+  {1500, {-0.005f, -1.f, 0.005f}},
+  {2250, {0.f, -1.f, 0.005f}},
+  {3000, {0.f, -1.f, 0.f}},
+
+});
+
+static const Spline rightLegWalkAnim ({
+  {0,    {0.f, -1.f, -1.0f}},
+  {250,  {-0.01f, -1.f, 0.f}},
+  {500,  {0.f, -1.f, 1.0f}},
+  {750,  {0.01f, -1.f, 0.f}},
+  {1000, {0.f, -1.f, -1.0f}},
+  
+});
+
 class RightLeg : public Member {
 
 public:
@@ -57,6 +75,9 @@ public:
     geometryModel = (glm::mat4)glm::mat4_cast(rot) * geometryModel;
 
     node.loc = {-2, -6, 0};
+
+    anim = std::make_unique<AnimationMixer>(rightLegIdleAnim);
+    anim->addAnim(Animation::Walk, rightLegWalkAnim);
   }
 
 protected:
@@ -64,3 +85,4 @@ protected:
     return std::make_unique<Mesh>(Cube::vertices, Cube::normals, rightLegUVs, Cube::occlusions, Cube::indices, Cube::normalMap);
   }
 };
+

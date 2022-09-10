@@ -36,8 +36,7 @@ Character::Character(vec3 pos)
       view(CharacterView::FIRST_PERSON),
       caster(100), // distance the player can place blocks
       currentBlock(BlockType::Oak_Stair),
-      god(true), sprint(false),
-      breakAnim(breakKeyframes, {-smoothing, 0.f, 0.f}, {sqrt(smoothing / 2.f), -sqrt(smoothing / 2.f), 0.f})
+      god(true), sprint(false), dab(false)
 {
   bodyNode.loc = pos;
   rootNode.sca = vec3(1.85f / 32.f); // steve is 1.85 blocks high, 32 pixels high
@@ -63,16 +62,43 @@ Character::~Character() {}
 
 
 void Character::cameraToHead(Camera& camera) {
+  vec3 eyePos;
+  vec3 eyeTarget;
 	if(view == CharacterView::FIRST_PERSON) {
-		vec3 eyePos = headNode.model * vec4(0, 4, 0, 1);
-		vec3 eyeTarget = headNode.model * vec4(0, 4, 50, 1);
-		camera.setLookAt(eyePos, eyeTarget);
+		eyePos = headNode.model * vec4(0, 4, 0, 1);
+		eyeTarget = headNode.model * vec4(0, 4, 50, 1);
+
 	}
-	else {
-		vec3 eyePos = headNode.model * vec4(0, 4, 4, 1);
-		vec3 eyeTarget = headNode.model * vec4(0, 4, -100, 1);
-		camera.setLookAt(eyeTarget, eyePos);
-	}
+	else{
+    if(view == CharacterView::THIRD_PERSON){
+	  eyePos = headNode.model * vec4(0, 4, 1, 1);
+    eyeTarget = headNode.model * vec4(0, 4, 0, 1);
+
+    }
+    else if(view == CharacterView::FRONT) {
+      eyePos = headNode.model * vec4(0, 4, -1, 1);
+      eyeTarget = headNode.model * vec4(0, 4, 0, 1);
+
+    }
+    
+    camera.setLookAt(eyeTarget, eyePos);
+    auto tmp = camera.getBoxCorners();
+    
+    float min = 4.f;
+    for(size_t i = 0; i < 4; i += 1) {
+      auto cast = caster.cast(tmp.at(i), eyeTarget - eyePos);
+
+      min = std::min(min, cast.dist);
+    }
+    if(min > 0.5f) 
+      eyePos = eyeTarget + min * normalize(eyeTarget - eyePos);
+    else
+      eyePos = eyeTarget + 0.5f * normalize(eyeTarget - eyePos);
+    
+   
+  } 
+
+  camera.setLookAt(eyePos, eyeTarget);
 }
 
 void Character::enableGodMode() {
@@ -116,21 +142,30 @@ void Character::setSprint(bool sprint) {
   }
 }
 
+void Character::setDab(bool dab) {
+  this->dab = dab;
+}
+
+bool Character::getDab() const {
+  return dab;
+}
 
 void Character::breakBlock() {
-  r_arm.anim->eventAnim(&breakAnim, .25f);
-
-  auto& world = World::getInst();
-  vec3 eyePos = headNode.model * vec4(0, 4, 0, 1);
-  vec3 eyeTarget = headNode.model * vec4(0, 4, 5, 1);
-  auto cast = caster.cast(eyePos + .5f, eyeTarget - eyePos);
-  if (cast.success) {
-      BlockType block = cast.block->type;
-      if (block != BlockType::Air && block != BlockType::Water) {
-          auto airBlock = Block::create_static<Air_Block>();
-          record.push(cast.position, airBlock.get());
-          world.setBlock(cast.position, move(airBlock));
-      }
+  if(!dab) { //we can't break when we are dabbing wtf???
+    r_arm.anim->setAnimation(Animation::Break);
+    
+    auto& world = World::getInst();
+    vec3 eyePos = headNode.model * vec4(0, 4, 0, 1);
+    vec3 eyeTarget = headNode.model * vec4(0, 4, 5, 1);
+    auto cast = caster.cast(eyePos, eyeTarget - eyePos);
+    if (cast.success) {
+        BlockType block = cast.block->type;
+        if (block != BlockType::Air && block != BlockType::Water) {
+            auto airBlock = Block::create_static<Air_Block>();
+            record.push(cast.blockPosition, airBlock.get());
+            world.setBlock(cast.blockPosition, move(airBlock));
+        }
+    }
   }
 }
 
@@ -148,14 +183,14 @@ void Character::placeBlock() {
   auto& world = World::getInst();
   vec3 eyePos = headNode.model * vec4(0, 4, 4, 1);
   vec3 eyeTarget = headNode.model * vec4(0, 4, 5, 1);
-  auto cast = caster.cast(eyePos + .5f, eyeTarget - eyePos);
+  auto cast = caster.cast(eyePos, eyeTarget - eyePos);
 
   if(cast.success) {
-    if(hitbox.collides(bodyNode.loc, cast.position + cast.normal)) return;
-    Block* block = world.getBlock(cast.position + cast.normal);
+    if(hitbox.collides(bodyNode.loc, cast.blockPosition + cast.normal)) return;
+    Block* block = world.getBlock(cast.blockPosition + cast.normal);
     if(!block) return;
     if(block->type != BlockType::Air && block->type != BlockType::Water) return;
-    ivec3 pos = cast.position + cast.normal;
+    ivec3 pos = cast.blockPosition + cast.normal;
 
     Block::unique_ptr_t newBlock;
     Facing facing = getFacing(eyeTarget - eyePos);
@@ -179,21 +214,33 @@ void Character::placeBlock() {
 void Character::pickBlock() {
   vec3 eyePos = headNode.model * vec4(0, 4, 0, 1);
   vec3 eyeTarget = headNode.model * vec4(0, 4, 5, 1);
-  auto cast = caster.cast(eyePos + .5f, eyeTarget - eyePos);
+  auto cast = caster.cast(eyePos, eyeTarget - eyePos);
   if(cast.success) currentBlock = cast.block->type;
 }
 
-void Character::update(float dt) {
+void Character::update(uint32_t dt) {
   Entity::update(dt);
 
   // smooth head rot with constant speed
   {
-    float speed = 5;
-    auto dist = vec3(headNode.rot - head.node.rot);
+    float speed;
+    glm::vec3 dist;
+    glm::highp_dvec3 target;
+    if(!dab) {
+      target = headNode.rot;
+      speed = 5;
+    }
+    else {
+      target = radians(highp_dvec3(35., -40., 0.));
+      speed = 15;
+    }
+      
+    
+    dist = vec3(target - head.node.rot);
     if(dist != vec3(0)) {
-      auto delta = normalize(dist) * speed * dt;
+      auto delta = normalize(dist) * (speed * dt * 0.001f);
       if(any(greaterThan(abs(delta), abs(dist)))) {
-        head.node.rot = headNode.rot;
+        head.node.rot = target;
       }
       else {
         head.node.rot += delta;
@@ -203,41 +250,28 @@ void Character::update(float dt) {
 
   r_arm.animate(dt);
   l_arm.animate(dt);
+  l_leg.animate(dt);
+  r_leg.animate(dt);
 
   // // walk animation
-  // if(state == State::Walking) {
-  //   float speed = 10;
-  //   float dx = cos(speed * animState);
+    if(state == State::Walking) {
+        r_arm.anim->setAnimation(Animation::Walk);
+        l_arm.anim->setAnimation(Animation::Walk);
+        r_leg.anim->setAnimation(Animation::Walk);
+        l_leg.anim->setAnimation(Animation::Walk);
+    }
+    else {
+      r_arm.anim->setAnimation(Animation::Idle);
+      l_arm.anim->setAnimation(Animation::Idle);
+      r_leg.anim->setAnimation(Animation::Idle);
+      l_leg.anim->setAnimation(Animation::Idle);
 
-  //   l_leg.node.rot.x = dx;
-  //   r_leg.node.rot.x = -dx;
-  //   l_arm.node.rot.x = -dx;
-  //   r_arm.node.rot.x = dx;
+    }
 
-  //   animState += dt;
-  // }    
-
-  // // transition to stand-by
-  // else {
-  //   float speed = 10;
-  //   auto dist = l_leg.node.rot.x;
-  //   if(dist != 0) {
-  //     auto delta = dist * speed * dt;
-  //     if(abs(delta) > abs(dist)) {
-  //       l_leg.node.rot.x = 0;
-  //       r_leg.node.rot.x = 0;
-  //       l_arm.node.rot.x = 0;
-  //       r_arm.node.rot.x = 0;
-  //       animState = 0;
-  //     }
-  //     else {
-  //       l_leg.node.rot.x -= delta;
-  //       r_leg.node.rot.x += delta;
-  //       l_arm.node.rot.x += delta;
-  //       r_arm.node.rot.x -= delta;
-  //     }
-  //   }
-  // }
+    if(dab) {
+      r_arm.anim->setAnimation(Animation::Dab);
+      l_arm.anim->setAnimation(Animation::Dab);
+    }
 
 }
 

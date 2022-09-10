@@ -8,7 +8,7 @@
 #include "entity/Cube.hpp"
 #include "gl/Mesh.hpp"
 
-static const std::vector<GLfloat> leftArmUVs= {
+static const std::vector<GLfloat> leftArmUVs = {
   //TOP
   12 / 16.f, 5 / 16.f,
   11 / 16.f, 5 / 16.f,
@@ -41,18 +41,31 @@ static const std::vector<GLfloat> leftArmUVs= {
   11 / 16.f, 8 / 16.f,
 };
 
-static const std::vector<std::pair<float, glm::vec3> > leftArmKeyframes = {
-    
-    {0.f, {0.f, -1.f, 0.f}},
-    {2.f/ 3.f, {0.05f, -1.f, -0.005f}},
-    {4.f/ 3.f, {-0.05f, -1.f, -0.005f}},
-    {2.f, {0.f, -1.f, 0.f}},
-    {8.f/ 3.f, {0.05f, -1.f, 0.005f}},
-    {10.f/ 3.f, {-0.05f, -1.f, 0.005f}},
-    {4.f, {0.f, -1.f, 0.f}},
+static const Spline leftArmIdleAnim ({
+    {0,    {0.f, -1.f, 0.f}},
+    {666,  {0.05f, -1.f, -0.005f}},
+    {1333, {-0.05f, -1.f, -0.005f}},
+    {2000, {0.f, -1.f, 0.f}},
+    {2666, {0.05f, -1.f, 0.005f}},
+    {3333, {-0.05f, -1.f, 0.005f}},
+    {4000, {0.f, -1.f, 0.f}},
 
+});
 
-};
+static const Spline leftArmWalkAnim ({
+    {0,    {0.f, -1.f, -1.0f}},
+    {250,  {-0.05f, -1.f, 0.f}},
+    {500,  {0.f, -1.f, 1.0f}},
+    {750,  {0.05f, -1.f, 0.f}},
+    {1000, {0.f, -1.f, -1.0f}},
+  
+});
+
+static const Spline leftArmDabAnim ({
+    {0,  {1.f, 0.5f, 0.3f}},
+    {50, {1.f, 0.5f, 0.3f}},
+  
+}, {0.f, 0.f, 0.f}, {0.f, 0.f, 0.f});
 
 class LeftArm : public Member {
 
@@ -68,9 +81,9 @@ public:
 
     node.loc = {6, 4, 0};
 
-    glm::vec3 line = (leftArmKeyframes[5].second - leftArmKeyframes[1].second) * smoothing;
-    Spline idleAnim(leftArmKeyframes, -line, line);
-    anim = std::make_unique<Animation>(idleAnim);
+    anim = std::make_unique<AnimationMixer>(leftArmIdleAnim);
+    anim->addAnim(Animation::Walk, leftArmWalkAnim);
+    anim->addAnim(Animation::Dab, leftArmDabAnim);
   }
 
 

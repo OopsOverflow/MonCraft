@@ -6,16 +6,14 @@ OpenGL/Debug
 OpenGL/Release
 
 build
-build-client
-build-server
-build-wasm
-
+build-*
 cert
 CMakeCache.txt
 CMakeSettings.json
 
 .clang-format
 .vs
+.vscode
 .cache
 CMakeFiles
 compile_commands.json

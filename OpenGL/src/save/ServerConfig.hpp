@@ -23,7 +23,7 @@ namespace Config {
         unsigned short packetSize = 100;
         unsigned short serverTick = 10; // millis
         unsigned short webSocketServerTick = 50; // millis
-        glm::vec3 spawnPoint = glm::vec3(0.0f, 15.0f, 0.0f);
+        glm::vec3 spawnPoint = glm::vec3(0.0f, 30.0f, 0.0f);
     };
 
     ServerConfig& getServerConfig();

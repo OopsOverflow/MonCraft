@@ -2,10 +2,9 @@
   box-sizing: border-box;
 }
 
-canvas.emscripten {
+canvas {
   position: absolute;
-  top: 0;
-  left: 0;
+  inset: 0;
   width: 100%;
   height: 100%;
 }
@@ -15,7 +14,7 @@ canvas.emscripten {
   src: url("AvenirLTStd-Book.otf") format("opentype");
 }
 
-#moncraft-info {
+.card {
   position: absolute;
   top: 0;
   left: 0;
@@ -31,14 +30,14 @@ canvas.emscripten {
   align-items: center;
 }
 
-#moncraft-info .content {
+.card .content {
   padding: 1rem;
   border-radius: 5px;
   background: white;
   position: relative;
 }
 
-#moncraft-info .content button[name="close"] {
+.card .content button[name="close"] {
   position: absolute;
   top: 0;
   right: 0;
@@ -56,15 +55,15 @@ canvas.emscripten {
   outline: none;
 }
 
-#moncraft-info .content button[name="close"]:hover {
+.card .content button[name="close"]:hover {
   color: rgba(155, 0, 0, 1);
 }
 
-#moncraft-info.hidden {
+.card.hidden {
   display: none;
 }
 
-#more-info.hidden {
+.card.hidden {
   display: none;
 }
 

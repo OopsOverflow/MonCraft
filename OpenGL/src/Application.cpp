@@ -55,13 +55,12 @@ void loadResources() {
     ResourceManager::loadShader("skyBox", "skyBox.vert", "skyBox.frag");
     ResourceManager::loadShader("font",   "font.vert",   "font.frag");
     ResourceManager::loadShader("water",  "water.vert",  "water.frag");
-    ResourceManager::loadShader("fog", "fog.vert", "fog.frag");
     ResourceManager::loadShader("pane", "pane.vert", "pane.frag");
     ResourceManager::loadShader("shadow", "shadow.vert", "shadow.frag");
     ResourceManager::loadShader("image", "image.vert", "image.frag");
 
     ResourceManager::loadTexture("atlas", "Texture_atlas");
-    ResourceManager::loadTexture("character", "CharacterDebug");
+    ResourceManager::loadTexture("character", "Character");
     for (size_t i = 0; i < 30; i += 1) {
         std::string filename = "water/water_normal_" + std::to_string(i+1)+"_frame";
         ResourceManager::loadTexture("waterNormal" + std::to_string(i), filename);
@@ -72,24 +71,17 @@ void loadResources() {
     ResourceManager::loadFont("vt323", "VT323-Regular");
 }
 
-void loop(float dt) {
-    World::getInst().t += dt;
-    World::getInst().dt = dt;
-}
-
 #ifdef EMSCRIPTEN
-    float dt;
     Viewport* pwindow;
     void em_loop() {
-        pwindow->beginFrame(dt);
-        loop(dt);
+        pwindow->beginFrame();
         pwindow->endFrame();
     }
 #endif
 
 void showView(Viewport& vp, std::unique_ptr<ui::Component> view) {
     auto children = vp.getRoot()->getChildren();
-    if(children.size() > 0) vp.getRoot()->remove(children.at(0));
+    if(children.size() > 0) vp.getRoot()->remove(children.at(0).get());
     vp.getRoot()->add(move(view));
 }
 
@@ -100,27 +92,56 @@ void showMainMenu(Viewport& vp);
 
 void showSinglePlayer(Viewport& vp) {
     Config::getClientConfig().multiplayer = false;
-    showView(vp, std::make_unique<MonCraftScene>(&vp));
+    auto game = MonCraftScene::create(&vp);
+    game->gameMenu->quitButton->onClick([&] { showMainMenu(vp); });
+    game->gameMenu->continueButton->onClick([game = game.get(), menu = game->gameMenu.get(), &vp] { 
+        game->remove(menu);
+        game->makeActive();
+        vp.captureMouse();
+    });
+    vp.captureMouse();
+    game->makeActive();
+    showView(vp, move(game));
+    
 }
 
 void showMultiPlayer(Viewport& vp) {
     Config::getClientConfig().multiplayer = true;
-    showView(vp, std::make_unique<MonCraftScene>(&vp));
+    auto game = MonCraftScene::create(&vp);
+
+    game->gameMenu->quitButton->onClick([&] { showMainMenu(vp); });
+    game->gameMenu->continueButton->onClick([game = game.get(), menu = game->gameMenu.get(), &vp] { 
+        game->remove(menu);
+        vp.captureMouse();
+    });
+    vp.captureMouse();
+    game->makeActive();
+    showView(vp, move(game));
+    
 }
 
 void showParameters(Viewport& vp) {
-    auto params = std::make_unique<ParametersMenu>();
-    params->quitButton->onclick([&] { showMainMenu(vp); });
+    auto params = ParametersMenu::create();
+    auto& config = Config::getClientConfig();
+    params->quitButton->onClick([&] { showMainMenu(vp); });
+    params->graphicsMenu->fullscreen->onRelease([&vp, &config, fullscreen = params->graphicsMenu->fullscreen.get()]{ 
+        config.fullscreen = fullscreen->getChecked();
+        vp.toggleFullscreen();
+    });
+    params->graphicsMenu->vsync->onRelease([&vp, &config, vsync = params->graphicsMenu->vsync.get()]{ 
+        config.vsync = vsync->getChecked();
+        vp.toggleVSync();
+    });
     showView(vp, move(params));
 }
 
 
 void showMainMenu(Viewport& vp) {
     auto mainMenu = MainMenu::create();
-    mainMenu->singleplayerButton->onclick([&]{ showSinglePlayer(vp); });
-    mainMenu->multiplayerButton->onclick([&]{ showMultiPlayer(vp); });
-    mainMenu->parameterButton->onclick([&]{ showParameters(vp); });
-    mainMenu->quitButton->onclick([&] { vp.quit(); });
+    mainMenu->singleplayerButton->onClick([&]{ showSinglePlayer(vp); });
+    mainMenu->multiplayerButton->onClick([&]{ showMultiPlayer(vp); });
+    mainMenu->parameterButton->onClick([&]{ showParameters(vp); });
+    mainMenu->quitButton->onClick([&] { vp.quit(); });
     showView(vp, move(mainMenu));
 }
 
@@ -139,7 +160,7 @@ int main(int argc, char* argv[]) {
         pwindow = &window;
         emscripten_set_main_loop(em_loop, 0, 1);
     #else
-        for (float dt = 0; window.beginFrame(dt); window.endFrame()) loop(dt);
+        while(window.beginFrame()) window.endFrame();
     #endif
 
     ResourceManager::free();
