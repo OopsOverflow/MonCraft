@@ -1,15 +1,18 @@
 // credit: https://googlechrome.github.io/samples/service-worker/basic/
 
-
-const PRECACHE = 'precache-v1';
+const version = 3
+const PRECACHE = 'precache-v' + version;
 const RUNTIME = 'runtime';
 
 const PRECACHE_URLS = [
   '/MonCraft.data',
+  '/MonCraft.wasm',
+  '/MonCraft.js',
 ];
 
 // The install handler takes care of precaching the resources we always need.
 self.addEventListener('install', event => {
+  caches.delete(PRECACHE);
   event.waitUntil(
     caches.open(PRECACHE)
       .then(cache => cache.addAll(PRECACHE_URLS))
@@ -40,17 +43,20 @@ self.addEventListener('fetch', event => {
     event.respondWith(
       caches.match(event.request).then(cachedResponse => {
         if (cachedResponse) {
+          console.log('using cached', event.request.url)
           return cachedResponse;
         }
-
-        return caches.open(RUNTIME).then(cache => {
-          return fetch(event.request).then(response => {
-            // Put a copy of the response in the runtime cache.
-            return cache.put(event.request, response.clone()).then(() => {
-              return response;
+        else {
+          console.log('downloading', event.request.url)
+          return caches.open(RUNTIME).then(cache => {
+            return fetch(event.request).then(response => {
+              // Put a copy of the response in the runtime cache.
+              return cache.put(event.request, response.clone()).then(() => {
+                return response;
+              });
             });
           });
-        });
+        }
       })
     );
   }
