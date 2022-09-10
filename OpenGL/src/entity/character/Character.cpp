@@ -186,8 +186,8 @@ void Character::placeBlock() {
   auto cast = caster.cast(eyePos, eyeTarget - eyePos);
 
   if(cast.success) {
-    if(hitbox.collides(bodyNode.loc, cast.position + cast.normal)) return;
-    Block* block = world.getBlock(cast.position + cast.normal);
+    if(hitbox.collides(bodyNode.loc, cast.blockPosition + cast.normal)) return;
+    Block* block = world.getBlock(cast.blockPosition + cast.normal);
     if(!block) return;
     if(block->type != BlockType::Air && block->type != BlockType::Water) return;
     ivec3 pos = cast.blockPosition + cast.normal;
