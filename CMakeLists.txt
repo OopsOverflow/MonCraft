@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "" FORCE) #remove RelWithDebInfo and MinSizeRel
 
+if (WIN32)
+    include(${CMAKE_SOURCE_DIR}/Dependencies/vcpkg/scripts/buildsystems/vcpkg.cmake)
+endif ()
+
 # set the project name
 set(PROJECT_NAME "MonCraft")
 project(${PROJECT_NAME} VERSION 1.1.1)
@@ -15,7 +19,6 @@ add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/MP>)
 if ("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
   message(SEND_ERROR "In-source builds are not allowed.")
 endif ()
-
 
 set(BUILD_TARGET client CACHE STRING "Choose build target client/server" )
 set(BUILD_PLATFORM app CACHE STRING "Choose targer platform wasm/app" )
