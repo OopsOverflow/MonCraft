@@ -85,15 +85,18 @@ void WebSocketServer::on_open(std::shared_ptr<rtc::WebSocket> socket) {
     socket->onMessage(std::bind(&WebSocketServer::on_message, this, peer, _1));
     socket->onError([] (std::string e) { std::cerr << "[ERR] WebSocket error! " << e << std::endl; });
     socket->onClosed(std::bind(&WebSocketServer::on_close, this, peer));
-    socket->onOpen([] () { std::cerr << "[INFO] WebSocket open" << std::endl; });
+    // socket->onOpen([] () { std::cerr << "[INFO] WebSocket open" << std::endl; });
 
-  	peer->conn.onLocalDescription([socket](rtc::Description description) { std::cout << "[INFO] Peer local description" << std::endl; socket->send(description); });
-  	peer->conn.onLocalCandidate([socket](rtc::Candidate candidate) { std::cout << "[INFO] Peer Local candidate" << candidate << std::endl; socket->send(candidate); });
-  	peer->conn.onStateChange([](rtc::PeerConnection::State state) { std::cout << "[INFO] Peer State: " << state << std::endl; });
-  	peer->conn.onGatheringStateChange([](rtc::PeerConnection::GatheringState state) { std::cout << "[INFO] Peer Gathering State: " << state << std::endl; });
+  	peer->conn.onLocalDescription([socket](rtc::Description description) { socket->send(description); });
+  	peer->conn.onLocalCandidate([socket](rtc::Candidate candidate) { socket->send(candidate); });
+  	// peer->conn.onLocalDescription([socket](rtc::Description description) { std::cout << "[INFO] Peer local description" << std::endl; socket->send(description); });
+  	// peer->conn.onLocalCandidate([socket](rtc::Candidate candidate) { std::cout << "[INFO] Peer Local candidate" << candidate << std::endl; socket->send(candidate); });
+  	// peer->conn.onStateChange([](rtc::PeerConnection::State state) { std::cout << "[INFO] Peer State: " << state << std::endl; });
+  	// peer->conn.onGatheringStateChange([](rtc::PeerConnection::GatheringState state) { std::cout << "[INFO] Peer Gathering State: " << state << std::endl; });
+
   	peer->conn.onDataChannel([this, peer](std::shared_ptr<rtc::DataChannel> channel) {
       std::lock_guard<std::mutex> lck(peer->mutex);
-      std::cout << "[INFO] Peer Datachannel" << std::endl;
+      // std::cout << "[INFO] Peer Datachannel" << std::endl;
       peer->channel = channel;
       channel->onMessage(std::bind(&WebSocketServer::on_message, this, peer, _1));
       // channel->onClosed(std::bind(&WebSocketServer::on_close, this, peer));
@@ -127,13 +130,13 @@ void WebSocketServer::on_message(std::shared_ptr<Peer> peer, rtc::message_varian
     std::string data = std::get<std::string>(msg);
     if(data.starts_with("a=candidate")) {
       rtc::Candidate candidate(data, "MonCraft");
-      std::cout << "[INFO] Peer Remote candidate: " << candidate << std::endl;
+      // std::cout << "[INFO] Peer Remote candidate: " << candidate << std::endl;
       std::lock_guard lck(peer->mutex);
       peer->conn.addRemoteCandidate(candidate);
     }
     else {
       rtc::Description description(data, rtc::Description::Type::Offer);
-      std::cout << "[INFO] Peer Remote description" << std::endl;
+      // std::cout << "[INFO] Peer Remote description" << std::endl;
       std::lock_guard lck(peer->mutex);
       peer->conn.setRemoteDescription(description);
     }

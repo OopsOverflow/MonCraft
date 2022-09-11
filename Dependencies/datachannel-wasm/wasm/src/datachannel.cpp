@@ -22,6 +22,7 @@
 
 #include "datachannel.hpp"
 
+#include <iostream>
 #include <emscripten/emscripten.h>
 
 #include <exception>
