@@ -23,7 +23,7 @@ WebSocketServer* WebSocketServer::inst = nullptr;
 bool WebSocketServer::stopSignal = false;
 
 WebSocketServer::WebSocketServer(unsigned short port)
-  : Server(port), server({ port })
+  : Server(port), server({ port, true, "cert.pem", "key.pem" })
 {}
 
 WebSocketServer::~WebSocketServer()
