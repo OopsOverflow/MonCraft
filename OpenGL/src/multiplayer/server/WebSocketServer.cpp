@@ -15,16 +15,19 @@
 
 using std::placeholders::_1;
 
-static const rtc::Configuration config {
 
-};
-
+static rtc::WebSocketServer::Configuration makeServerConf(unsigned short port, bool useTLS) {
+  if (useTLS) return { port, true, "cert/pi.thissma.fr/cert.pem", "cert/pi.thissma.fr/privkey.pem" };
+  else return { port };
+}
 WebSocketServer* WebSocketServer::inst = nullptr;
 bool WebSocketServer::stopSignal = false;
 
-WebSocketServer::WebSocketServer(unsigned short port)
-  : Server(port), server({ port, true, "cert.pem", "key.pem" })
-{}
+WebSocketServer::WebSocketServer(unsigned short port, bool tls)
+  : Server(port), server(makeServerConf(port, tls))
+{
+  
+}
 
 WebSocketServer::~WebSocketServer()
 {}
@@ -77,7 +80,7 @@ void WebSocketServer::on_open(std::shared_ptr<rtc::WebSocket> socket) {
 
     auto peer = std::shared_ptr<Peer>(new Peer{
       .id = client,
-      .conn = rtc::PeerConnection(config),
+      .conn = rtc::PeerConnection(),
       .socket = socket,
       .channel = nullptr,
     });

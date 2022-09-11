@@ -37,6 +37,7 @@ Config::ClientConfig::ClientConfig() {
 
     PARAM(serverAddr)
     PARAM(serverPort)
+    PARAM(serverTLS)
     PARAM(fov)
     PARAM(msaa)
     KEY_PARAM(forward)
@@ -79,6 +80,7 @@ Config::ClientConfig::~ClientConfig() {
 
   PARAM(serverAddr)
   PARAM(serverPort)
+  PARAM(serverTLS)
   PARAM(fov)
   PARAM(msaa)
   KEY_PARAM(forward)

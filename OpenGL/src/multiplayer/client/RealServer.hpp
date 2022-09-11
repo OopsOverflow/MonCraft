@@ -21,7 +21,7 @@ namespace sf { class Packet; }
 class RealServer: public Server {
 
 public:
-  RealServer(std::string url, unsigned short port);
+  RealServer(std::string url, unsigned short port, bool tls);
   virtual ~RealServer();
 
   void ping() override;

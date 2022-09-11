@@ -12,8 +12,8 @@
 
 
 std::unique_ptr<Server> make_server() {
-  auto port = Config::getServerConfig().serverPort;
-  return std::make_unique<WebSocketServer>(port);
+  auto& config = Config::getServerConfig();
+  return std::make_unique<WebSocketServer>(config.serverPort, config.serverTLS);
   // return std::make_unique<UdpServer>(port);
 }
 

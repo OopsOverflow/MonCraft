@@ -10,6 +10,7 @@ namespace Config {
         ~ServerConfig();
 
         unsigned short serverPort = 55000;
+        bool serverTLS = true;
 
         #ifdef EMSCRIPTEN
           unsigned int threadCount = 2;

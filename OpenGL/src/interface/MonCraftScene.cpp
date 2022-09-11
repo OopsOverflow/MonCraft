@@ -41,7 +41,7 @@ std::shared_ptr<Server> createServer(bool multiplayer) {
 
     std::unique_ptr<Server> server;
     if (multiplayer) {
-        server = std::make_unique<RealServer>(cconf.serverAddr, cconf.serverPort);
+        server = std::make_unique<RealServer>(cconf.serverAddr, cconf.serverPort, cconf.serverTLS);
     }
     else {
         server = std::make_unique<ClientServer>();

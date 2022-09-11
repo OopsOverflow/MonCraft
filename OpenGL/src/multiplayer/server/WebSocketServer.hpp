@@ -25,7 +25,7 @@ namespace sf { class Packet; }
 class WebSocketServer : public Server {
 
 public:
-  WebSocketServer(unsigned short port);
+  WebSocketServer(unsigned short port, bool tls);
   virtual ~WebSocketServer();
 
   void run() override;

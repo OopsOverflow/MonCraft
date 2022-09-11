@@ -39,7 +39,7 @@ static const rtc::DataChannelInit init {
   }
 };
 
-RealServer::RealServer(std::string addr, unsigned short port)
+RealServer::RealServer(std::string addr, unsigned short port, bool tls)
   : addr(addr), port(port),
     peer(nullptr), channel(nullptr),
     frameDuration(sf::milliseconds(Config::getServerConfig().serverTick)),
@@ -80,7 +80,7 @@ RealServer::RealServer(std::string addr, unsigned short port)
     packet_login();
   });
 
-  std::string url = "ws://" + addr + ":" + std::to_string(port);
+  std::string url = "ws" + std::string(tls ? "s" : "") + "://" + addr + ":" + std::to_string(port);
   std::cout << "[INFO] connecting to websocket server at " << url << std::endl;
   socket.open(url);
 }
