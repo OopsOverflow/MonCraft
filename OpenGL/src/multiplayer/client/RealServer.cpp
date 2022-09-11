@@ -64,10 +64,10 @@ RealServer::RealServer(std::string addr, unsigned short port)
     std::cout << "[INFO] WebSocket open" << std::endl;
 
     peer = std::make_unique<rtc::PeerConnection>(config);
-  	peer->onLocalDescription([this](rtc::Description description) { socket.send(description); });
-  	peer->onLocalCandidate([this](rtc::Candidate candidate) { socket.send(candidate); });
-  	// peer->onStateChange([](rtc::PeerConnection::State state) { std::cout << "[INFO] Peer State: " << state << std::endl; });
-  	// peer->onGatheringStateChange([](rtc::PeerConnection::GatheringState state) { std::cout << "[INFO] Peer Gathering State: " << state << std::endl; });
+  	peer->onLocalDescription([this](rtc::Description description) { std::cout << "[INFO] Peer Local Description" << std::endl; socket.send(description); });
+  	peer->onLocalCandidate([this](rtc::Candidate candidate) { std::cout << "[INFO] Peer Local Candidate: " << candidate << std::endl; socket.send(candidate); });
+  	peer->onStateChange([](rtc::PeerConnection::State state) { std::cout << "[INFO] Peer State: " << state << std::endl; });
+  	peer->onGatheringStateChange([](rtc::PeerConnection::GatheringState state) { std::cout << "[INFO] Peer Gathering State: " << state << std::endl; });
 
     channel = peer->createDataChannel(std::to_string(getUid()));
     channel->onMessage(std::bind(&RealServer::on_message, this, _1));
@@ -100,10 +100,14 @@ void RealServer::on_message(rtc::message_variant msg) {
   if (std::holds_alternative<std::string>(msg)) {
     auto data = std::get<std::string>(msg);
     if(data.starts_with("a=candidate")) {
-      peer->addRemoteCandidate(rtc::Candidate(data, "MonCraft"));
+      rtc::Candidate candidate(data, "MonCraft");
+      std::cout << "[INFO] Peer Remote candidate: " << candidate << std::endl;
+      peer->addRemoteCandidate(candidate);
     }
     else {
-      peer->setRemoteDescription(rtc::Description(data, rtc::Description::Type::Offer));
+      rtc::Description description(data, rtc::Description::Type::Answer);
+      std::cout << "[INFO] Peer Remote description" << std::endl;
+      peer->setRemoteDescription(description);
     }
   }
   else {
