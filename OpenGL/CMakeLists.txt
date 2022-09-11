@@ -154,17 +154,24 @@ endif()
 # Define the executable
 add_executable(${PROJECT_NAME} ${SOURCE})
 
+message(STATUS "Configuring dependencies")
+
 # Define the include DIRs
-message(STATUS "Configuring include directories")
+target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE "${CMAKE_SOURCE_DIR}/Dependencies")
+target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_SOURCE_DIR}/OpenGL/src")
 
 # glm
-include_directories("${CMAKE_SOURCE_DIR}/Dependencies/glm")
+target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE "${CMAKE_SOURCE_DIR}/Dependencies/glm")
 
 # libdatachannel
 if(${BUILD_PLATFORM} STREQUAL wasm)
 	add_subdirectory("${CMAKE_SOURCE_DIR}/Dependencies/datachannel-wasm" "datachannel-wasm" EXCLUDE_FROM_ALL)
 	target_link_libraries(${PROJECT_NAME} datachannel-wasm)
-else ()
+elseif (UNIX)
+	add_subdirectory("${CMAKE_SOURCE_DIR}/Dependencies/libdatachannel" "libdatachannel" EXCLUDE_FROM_ALL)
+	target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE "${CMAKE_SOURCE_DIR}/Dependencies/libdatachannel/include")
+	target_link_libraries(${PROJECT_NAME} datachannel)
+else (WIN32)
 	find_package(LIBDATACHANNEL REQUIRED)
 	target_link_libraries(${PROJECT_NAME} LibDataChannel::LibDataChannel)
 endif()
@@ -180,11 +187,12 @@ if (NOT ${BUILD_PLATFORM} STREQUAL wasm)
 		target_link_libraries(${PROJECT_NAME} sfml-system sfml-network sfml-audio)
 
 		find_package(OpenGL REQUIRED)
-		include_directories(${OPENGL_INCLUDE_DIRS})
+		target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE ${OPENGL_INCLUDE_DIRS})
 		target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES})
 		
 		find_package(glew REQUIRED)
-		include_directories(${GLEW_INCLUDE_DIRS})
+    target_compile_definitions(${PROJECT_NAME} -DGLEW_STATIC)
+		target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE ${GLEW_INCLUDE_DIRS})
 		target_link_libraries(${PROJECT_NAME} ${GLEW_LIBRARIES})
 
 		find_package(Freetype CONFIG REQUIRED)
@@ -199,8 +207,8 @@ if (NOT ${BUILD_PLATFORM} STREQUAL wasm)
 	endif()
 
 else (wasm)
-	include_directories("${CMAKE_SOURCE_DIR}/Dependencies/SFML-2.5.1/include")
-	include_directories("${CMAKE_SOURCE_DIR}/Dependencies/EMSFML/src")
+	target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE "${CMAKE_SOURCE_DIR}/Dependencies/SFML-2.5.1/include")
+	target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE "${CMAKE_SOURCE_DIR}/Dependencies/EMSFML/src")
 
 	if (${CMAKE_BUILD_TYPE} STREQUAL Release)
 		set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS
