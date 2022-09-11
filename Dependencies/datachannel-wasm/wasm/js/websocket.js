@@ -110,8 +110,8 @@
 			if(size >= 0) {
 				var heapBytes = new Uint8Array(Module['HEAPU8'].buffer, pBuffer, size);
 
-				// FIXME: since I compile with -pthreads, buffer may be a SharedArrayBuffer, which is not supported by
-				// webSocket.send().
+				// FIXME: since I compile with -pthreads, buffer may be a SharedArrayBuffer, which
+				// is not supported by webSocket.send().
 				// I added .slice() to copy the array. was: webSocket.send(heapBytes);
 				webSocket.send(heapBytes.slice());
 				// webSocket.send(heapBytes);

@@ -409,7 +409,12 @@
 			if(dataChannel.readyState != 'open') return -1;
 			if(size >= 0) {
 				var heapBytes = new Uint8Array(Module['HEAPU8'].buffer, pBuffer, size);
-				dataChannel.send(heapBytes);
+
+				// FIXME: since I compile with -pthreads, buffer may be a SharedArrayBuffer, which
+				// is not supported by dataChannel.send().
+				// I added .slice() to copy the array. was: dataChannel.send(heapBytes);
+				dataChannel.send(heapBytes.slice());
+				// dataChannel.send(heapBytes);
 				return size;
 			} else {
 				var str = UTF8ToString(pBuffer);

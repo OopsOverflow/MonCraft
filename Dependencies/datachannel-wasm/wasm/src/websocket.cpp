@@ -23,7 +23,6 @@
 #include "websocket.hpp"
 
 #include <emscripten/emscripten.h>
-#include <emscripten/threading.h>
 
 #include <exception>
 #include <memory>
@@ -107,9 +106,9 @@ bool WebSocket::send(message_variant message) {
 
 	return std::visit(overloaded{
 		[this](const binary &b) {
-			for(auto& byte: b)
-				std::cout << std::to_integer<unsigned char>(byte) << " ";
-			std::cout << std::endl;
+			// for(auto& byte: b)
+			// 	std::cout << std::to_integer<unsigned char>(byte) << " ";
+			// std::cout << std::endl;
 			auto data = reinterpret_cast<const char *>(b.data());
 			MAIN_THREAD_EM_ASM({ _wsSendMessage($0, $1, $2) }, mId, data, int(b.size()));
 			// emscripten_sync_run_in_main_thread_3((int)wsSendMessage, (void*)mId, (void*)data, (void*)int(b.size()));
@@ -129,15 +128,8 @@ bool WebSocket::send(message_variant message) {
 bool WebSocket::send(const byte *data, size_t size) {
 	if (!mId)
 		return false;
-	// EM_ASM(console.log(Library.WEBSOCKET));
-	std::cout << size << " ";
-	for(size_t i = 0; i < size; i++)
-		std::cout << std::to_integer<unsigned int>(data[i]) << " ";
-	std::cout << size << std::endl;
-	MAIN_THREAD_EM_ASM({ _wsSendMessage($0, $1, $2) }, mId, reinterpret_cast<const char *>(data), int(size));
-	// emscripten_sync_run_in_main_thread_3((int)wsSendMessage, (void*)mId, (void*)reinterpret_cast<const char *>(data), (void*)int(size));
-	// return wsSendMessage(mId, reinterpret_cast<const char *>(data), int(size)) >= 0;
-	return true;
+
+	return wsSendMessage(mId, reinterpret_cast<const char *>(data), int(size)) >= 0;
 }
 
 void WebSocket::triggerOpen() {

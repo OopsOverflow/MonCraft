@@ -6,6 +6,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <thread>
 
 #include "gl/ResourceManager.hpp"
 #include "gl/Viewport.hpp"
@@ -148,6 +149,7 @@ void showMainMenu(Viewport& vp) {
 
 int main(int argc, char* argv[]) {
     std::cout << "---- Main ----" << std::endl;
+    std::cout << "main thread is " << std::this_thread::get_id() << std::endl;
 
     Viewport window({ 1200, 800 });
     std::unique_ptr<ui::Component> view;

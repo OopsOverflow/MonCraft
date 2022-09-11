@@ -73,7 +73,7 @@ MonCraftScene::MonCraftScene(Viewport* vp)
     }
 
     server = createServer(Config::getClientConfig().multiplayer);
-    server->start();
+    // server->start();
     player = server->getPlayer();
     playerUid = server->getUid();
 
@@ -245,8 +245,6 @@ void MonCraftScene::draw() {
     World::getInst().t += World::getInst().dt;
     World::getInst().t = World::getInst().t % dayDuration;
     lastClock = time;
-    
-    
 
     glEnable(GL_DEPTH_TEST);
 
@@ -299,6 +297,8 @@ void MonCraftScene::draw() {
 
     glDisable(GL_DEPTH_TEST);
     Component::draw();
+    
+    server->update();
 }
 
 std::unique_ptr<MonCraftScene> MonCraftScene::create(Viewport* vp) {

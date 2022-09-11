@@ -43,15 +43,16 @@ private:
     std::shared_ptr<rtc::WebSocket> socket;
     std::shared_ptr<rtc::DataChannel> channel;
   };
+  
+  
+  std::shared_ptr<Peer> getPeer(ClientID id);
 
-  ClientID sock_to_client(std::shared_ptr<rtc::WebSocket> socket);
-  std::shared_ptr<rtc::WebSocket> client_to_sock(ClientID client);
-
-  void on_message(Peer* peer, rtc::message_variant msg);
+  void on_message(std::shared_ptr<Peer> peer, rtc::message_variant msg);
   void on_open(std::shared_ptr<rtc::WebSocket> socket);
-  void on_close(Peer* peer);
-  std::mutex clientLck;
-  std::map<ClientID, std::unique_ptr<Peer>> clientLookup;
+  void on_close(std::shared_ptr<Peer> peer);
+
+  std::mutex allClientsLck;
+  std::map<ClientID, std::shared_ptr<Peer>> clientLookup;
 
   std::thread mainThread;
   void loop();
