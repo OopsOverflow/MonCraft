@@ -221,7 +221,7 @@ if (NOT ${BUILD_PLATFORM} STREQUAL wasm)
 	endif()
 
 else (wasm)
-	target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE "${CMAKE_SOURCE_DIR}/Dependencies/SFML-2.5.1/include")
+	target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE "${CMAKE_SOURCE_DIR}/Dependencies/EMSFML/include")
 	target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE "${CMAKE_SOURCE_DIR}/Dependencies/EMSFML/src")
 
 	if (${CMAKE_BUILD_TYPE} STREQUAL Release)
