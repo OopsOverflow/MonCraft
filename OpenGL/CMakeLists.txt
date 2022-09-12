@@ -171,7 +171,7 @@ elseif (UNIX)
 	add_subdirectory("${CMAKE_SOURCE_DIR}/Dependencies/libdatachannel" "libdatachannel" EXCLUDE_FROM_ALL)
 	target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE "${CMAKE_SOURCE_DIR}/Dependencies/libdatachannel/include")
 	target_link_libraries(${PROJECT_NAME} datachannel)
-else (WIN32)
+else () # WIN32
 	find_package(LIBDATACHANNEL REQUIRED)
 	target_link_libraries(${PROJECT_NAME} LibDataChannel::LibDataChannel)
 endif()
@@ -220,7 +220,7 @@ if (NOT ${BUILD_PLATFORM} STREQUAL wasm)
 		target_link_libraries(${PROJECT_NAME} sfml-system sfml-network)
 	endif()
 
-else (wasm)
+else () # wasm
 	target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE "${CMAKE_SOURCE_DIR}/Dependencies/EMSFML/include")
 	target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE "${CMAKE_SOURCE_DIR}/Dependencies/EMSFML/src")
 
@@ -272,7 +272,7 @@ else (wasm)
 			-Wno-unused-command-line-argument \
 			-g0 -O3"
 		)
-	else (Debug)
+	else () # Debug
 		set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS
 			"-fno-rtti \
 			-Wno-pthreads-mem-growth \
