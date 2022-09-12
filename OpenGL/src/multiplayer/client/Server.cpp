@@ -42,12 +42,6 @@ bool Server::sleepFor(std::chrono::milliseconds millis) {
 void Server::loop() {
   bool stop = false;
   auto sleep = std::chrono::milliseconds(Config::getServerConfig().serverTick);
-  bool logged = false;
-
-  while(!stop && !logged) {
-    logged = login();
-    stop = sleepFor(sleep);
-  }
 
   while(!stop) {
     update();

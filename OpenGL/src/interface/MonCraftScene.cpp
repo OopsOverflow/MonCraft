@@ -246,6 +246,11 @@ void MonCraftScene::draw() {
     World::getInst().t = World::getInst().t % dayDuration;
     lastClock = time;
 
+    server->update();
+    std::cout<<(int)server->getState()<<std::endl;
+    if(server->getState() == ServerState::DISCONNECTED)
+        gameMenu->quitButton->click();
+
     glEnable(GL_DEPTH_TEST);
 
     // updates
@@ -298,7 +303,7 @@ void MonCraftScene::draw() {
     glDisable(GL_DEPTH_TEST);
     Component::draw();
     
-    server->update();
+    
 }
 
 std::unique_ptr<MonCraftScene> MonCraftScene::create(Viewport* vp) {

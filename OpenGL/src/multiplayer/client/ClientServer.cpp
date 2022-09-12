@@ -54,10 +54,8 @@ void ClientServer::update() {
       SaveManager::saveChunk(*chunk);
     }
   }
-}
 
-bool ClientServer::login() {
-  return true;
+  state = ServerState::CONNECTED;
 }
 
 std::shared_ptr<Character> ClientServer::getPlayer() {

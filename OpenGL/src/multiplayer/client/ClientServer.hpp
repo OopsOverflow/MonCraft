@@ -18,7 +18,6 @@ public:
 
   void ping() override;
   void update() override;
-  bool login() override;
   std::shared_ptr<Character> getPlayer() override;
   Identifier getUid() override;
 

@@ -33,6 +33,7 @@ public:
 
   void onClick(std::function<void()> callback);
   void onRelease(std::function<void()> callback);
+  void click();
 
 protected:
   void onMouseIn(glm::ivec2 pos) override;

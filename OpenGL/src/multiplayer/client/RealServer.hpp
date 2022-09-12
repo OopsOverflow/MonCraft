@@ -26,7 +26,6 @@ public:
 
   void ping() override;
   void update() override;
-  bool login() override;
 
   /**
    * Returns nullptr if the player was not created.

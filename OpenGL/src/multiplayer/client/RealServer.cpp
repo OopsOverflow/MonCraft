@@ -82,6 +82,7 @@ RealServer::RealServer(std::string addr, unsigned short port, bool tls)
 
   std::string url = "ws" + std::string(tls ? "s" : "") + "://" + addr + ":" + std::to_string(port);
   std::cout << "[INFO] connecting to websocket server at " << url << std::endl;
+  state = ServerState::CONNECTING;
   socket.open(url);
 }
 
@@ -120,37 +121,11 @@ void RealServer::on_message(rtc::message_variant msg) {
   }
 }
 
-bool RealServer::login() {
-  return serverAck;
-
-  // sf::IpAddress serverAddr;
-  // unsigned short serverPort;
-  // sf::Packet packet;
-
-  // if(!socket.isOpen()) return false;
-  // auto recv_res = socket.receive();
-
-  // if(recv_res) {
-  //   auto data = std::get<std::vector<std::byte>>(recv_res.value());
-  //   packet.append(data.data(), data.size());
-  //   PacketHeader header;
-  //   packet >> header;
-  //   auto type = header.getType();
-  //   lastServerUpdate = clock.getElapsedTime();
-
-  //   if(type == PacketType::ACK_LOGIN) return true; // TODO: check correct uid ?
-  //   else std::cout << "[WARN] not a login packet: " << header << std::endl;
-  // }
-
-  // packet_login();
-  // return false;
-}
-
 void RealServer::update() {
   Server::update();
 
   if(clock.getElapsedTime() - lastServerUpdate > timeout) {
-    throw std::runtime_error("server timeout");
+    state = ServerState::DISCONNECTED;
   }
 
   packet_blocks();
@@ -171,7 +146,10 @@ bool RealServer::on_packet_recv(sf::Packet& packet) {
   lastServerUpdate = clock.getElapsedTime();
   serverAck = true;
 
-  if(type == PacketType::ACK_LOGIN) std::cout << "login" << std::endl;
+  if(type == PacketType::ACK_LOGIN) {
+    state = ServerState::CONNECTED;
+    std::cout << "login" << std::endl;
+  } 
   else if(type == PacketType::ENTITY_TICK) handle_entity_tick(packet);
   else if(type == PacketType::LOGOUT) handle_logout(packet);
   else if(type == PacketType::BLOCKS) handle_blocks(packet);
