@@ -27,7 +27,7 @@ namespace Config {
         float musicVolume = 50.0;
         bool fullscreen = false;
         bool vsync = true;
-	    int shadows = 2;
+        int shadows = 2;
         Key forward = SDLK_z;
         Key backward = SDLK_s;
         Key left = SDLK_q;

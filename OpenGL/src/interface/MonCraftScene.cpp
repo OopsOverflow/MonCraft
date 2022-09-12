@@ -247,9 +247,11 @@ void MonCraftScene::draw() {
     lastClock = time;
 
     server->update();
-    std::cout<<(int)server->getState()<<std::endl;
-    if(server->getState() == ServerState::DISCONNECTED)
+    if(server->getState() == ServerState::DISCONNECTED) {
         gameMenu->quitButton->click();
+        vp->freeMouse();
+        return;
+    }
 
     glEnable(GL_DEPTH_TEST);
 
@@ -302,8 +304,6 @@ void MonCraftScene::draw() {
 
     glDisable(GL_DEPTH_TEST);
     Component::draw();
-    
-    
 }
 
 std::unique_ptr<MonCraftScene> MonCraftScene::create(Viewport* vp) {

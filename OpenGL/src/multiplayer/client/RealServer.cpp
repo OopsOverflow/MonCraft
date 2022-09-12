@@ -126,6 +126,7 @@ void RealServer::update() {
 
   if(clock.getElapsedTime() - lastServerUpdate > timeout) {
     state = ServerState::DISCONNECTED;
+    return;
   }
 
   packet_blocks();
@@ -148,7 +149,7 @@ bool RealServer::on_packet_recv(sf::Packet& packet) {
 
   if(type == PacketType::ACK_LOGIN) {
     state = ServerState::CONNECTED;
-    std::cout << "login" << std::endl;
+    std::cout << "[INFO] logged into the server" << std::endl;
   } 
   else if(type == PacketType::ENTITY_TICK) handle_entity_tick(packet);
   else if(type == PacketType::LOGOUT) handle_logout(packet);

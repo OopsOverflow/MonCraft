@@ -8,6 +8,7 @@
 #include "save/ServerConfig.hpp"
 
 Server::Server()
+  : state(ServerState::DISCONNECTED)
 {
   auto& config = Config::getServerConfig();
   renderDistH = config.renderDistH;

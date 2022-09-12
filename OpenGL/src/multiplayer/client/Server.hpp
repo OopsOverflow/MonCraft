@@ -23,7 +23,7 @@ public:
   void start();
   void stop();
 
-  ServerState getState() const{return state;}
+  ServerState getState() const { return state; }
 
   /**
    * Returns nullptr if the player was not created.
