@@ -9,6 +9,7 @@
 #include "entity/character/Character.hpp"
 #include "gl/ResourceManager.hpp"
 #include "multiplayer/client/Server.hpp"
+#include "multiplayer/client/RealServer.hpp"
 #include "terrain/World.hpp"
 #include "ui/Component.hpp"
 #include "ui/style/Type.hpp"
@@ -25,12 +26,14 @@ DebugOverlay::DebugOverlay(std::shared_ptr<Server> server) :
 	text_players = Text::create("Players : ", font);
 	text_uid = Text::create("UID : ", font);
 	text_gameTime = Text::create("Time : ", font);
+	text_connectivity = Text::create("Connectivity : ", font);
 
 	pack_start(text_fps);
 	pack_start(text_posPlayer);
 	pack_start(text_players);
 	pack_start(text_uid);
 	pack_start(text_gameTime);
+	pack_start(text_connectivity);
 	setPadding(glm::ivec2(10));
 	setGap(10);
 
@@ -54,6 +57,9 @@ DebugOverlay::DebugOverlay(std::shared_ptr<Server> server) :
 	text_gameTime->setAnchorY(Anchor::END);
 	text_gameTime->setFontSize(.35f);
 
+	text_connectivity->setColor({ 1.0f, 1.0f, 1.0f, 1.f });
+	text_connectivity->setAnchorY(Anchor::END);
+	text_connectivity->setFontSize(.35f);
 }
 
 void DebugOverlay::draw() {
@@ -84,6 +90,27 @@ void DebugOverlay::draw() {
 	if(min < 10) text << 0;
 	text << min;
 	text_gameTime->setText(text.str());
+	
+	text.str("");
+	text << "Connectivity: ";
+	const ServerState state = server->getState();
+	if (state == ServerState::CONNECTED) text << "Connected";
+	else if (state == ServerState::CONNECTING) text << "Connecting";
+	else if (state == ServerState::DISCONNECTED) text << "Disconnected";
+	else text << "Unknown";
+	text << ", ";
+	if(server->getUid() != 0) {
+		auto realServer = std::static_pointer_cast<RealServer>(server);
+		text << "Multiplayer:"
+				 << " Host="       << realServer->getHost()
+				 << " Port="      << realServer->getPort()
+				 << " WebSocket=" << realServer->isWebsocketOpen()
+			   << " WebRTC="    << realServer->isDatachannelOpen();
+	}
+	else {
+		text << "Singleplayer";
+	}
+	text_connectivity->setText(text.str());
 
 
 	Box::draw();

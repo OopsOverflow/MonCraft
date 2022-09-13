@@ -39,8 +39,8 @@ static const rtc::DataChannelInit init {
   }
 };
 
-RealServer::RealServer(std::string addr, unsigned short port, bool tls)
-  : addr(addr), port(port),
+RealServer::RealServer(std::string host, unsigned short port, bool tls)
+  : host(host), port(port),
     peer(nullptr), channel(nullptr),
     frameDuration(sf::milliseconds(Config::getServerConfig().serverTick)),
     world(World::getInst()),
@@ -80,7 +80,7 @@ RealServer::RealServer(std::string addr, unsigned short port, bool tls)
     packet_login();
   });
 
-  std::string url = "ws" + std::string(tls ? "s" : "") + "://" + addr + ":" + std::to_string(port);
+  std::string url = "ws" + std::string(tls ? "s" : "") + "://" + host + ":" + std::to_string(port);
   std::cout << "[INFO] connecting to websocket server at " << url << std::endl;
   state = ServerState::CONNECTING;
   socket.open(url);
@@ -104,12 +104,12 @@ void RealServer::on_message(rtc::message_variant msg) {
     auto data = std::get<std::string>(msg);
     if(data.starts_with("a=candidate")) {
       rtc::Candidate candidate(data, "MonCraft");
-      // std::cout << "[INFO] Peer Remote candidate: " << candidate << std::endl;
+      std::cout << "[INFO] Peer Remote candidate: " << candidate << std::endl;
       peer->addRemoteCandidate(candidate);
     }
     else {
       rtc::Description description(data, rtc::Description::Type::Answer);
-      // std::cout << "[INFO] Peer Remote description" << std::endl;
+      std::cout << "[INFO] Peer Remote description" << std::endl;
       peer->setRemoteDescription(description);
     }
   }

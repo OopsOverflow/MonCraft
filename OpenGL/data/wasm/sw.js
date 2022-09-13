@@ -1,6 +1,6 @@
 // credit: https://googlechrome.github.io/samples/service-worker/basic/
 
-const version = 3
+const version = 5
 const PRECACHE = 'precache-v' + version;
 const RUNTIME = 'runtime';
 
@@ -13,6 +13,7 @@ const PRECACHE_URLS = [
 // The install handler takes care of precaching the resources we always need.
 self.addEventListener('install', event => {
   caches.delete(PRECACHE);
+  caches.delete(RUNTIME);
   event.waitUntil(
     caches.open(PRECACHE)
       .then(cache => cache.addAll(PRECACHE_URLS))
@@ -22,10 +23,9 @@ self.addEventListener('install', event => {
 
 // The activate handler takes care of cleaning up old caches.
 self.addEventListener('activate', event => {
-  const currentCaches = [PRECACHE, RUNTIME];
   event.waitUntil(
     caches.keys().then(cacheNames => {
-      return cacheNames.filter(cacheName => !currentCaches.includes(cacheName));
+      return cacheNames.filter(cacheName => cacheName !== PRECACHE);
     }).then(cachesToDelete => {
       return Promise.all(cachesToDelete.map(cacheToDelete => {
         return caches.delete(cacheToDelete);

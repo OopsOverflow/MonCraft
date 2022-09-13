@@ -68,7 +68,7 @@ async function registerSW() {
   }
 }
 
-// registerSW();
+registerSW();
 
 var Module = {
   preRun: [],
