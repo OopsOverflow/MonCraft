@@ -37,7 +37,7 @@ namespace Config {
         Key view = SDLK_F5;
         Key sprint = SDLK_LCTRL;
         Key menu = SDLK_ESCAPE;
-        Key dab = SDLK_EXCLAIM;
+        Key dab = SDLK_t;
     };
 
     ClientConfig& getClientConfig();

@@ -16,7 +16,7 @@ public:
 
     bool isSolid() const override { return false; }
     bool isOpaque() const override { return false; }
-    bool isTransparent() const override { return true; }
+    bool isTransparent() const override { return false; }
     BlockModel* getModel() const override { return TallgrassModel::get(); }
 
 private:
