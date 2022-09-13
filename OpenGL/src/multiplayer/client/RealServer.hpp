@@ -21,7 +21,7 @@ namespace sf { class Packet; }
 class RealServer: public Server {
 
 public:
-  RealServer(std::string url, unsigned short port, bool tls);
+  RealServer(std::string host, unsigned short port, bool tls);
   virtual ~RealServer();
 
   void ping() override;
@@ -36,6 +36,11 @@ public:
   * Returns 0 if the player was not created.
   */
   Identifier getUid() override;
+  
+  std::string getHost() const { return host; }
+  unsigned short getPort() const { return port; }
+  bool isWebsocketOpen() const { return socket.isOpen(); }
+  bool isDatachannelOpen() const { return channel->isOpen(); }
 
 private:
   void on_message(rtc::message_variant msg);
@@ -55,7 +60,7 @@ private:
   void handle_entity_tick(sf::Packet& packet);
 
 
-  sf::IpAddress addr;
+  std::string host;
   unsigned short port;
 
   rtc::WebSocket socket;
