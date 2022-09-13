@@ -15,10 +15,10 @@
 
 #ifndef EMSCRIPTEN
   #include "audio/Music.hpp"
+  #include "gl/ShadowMap.hpp"
 #endif
 
 #include "gl/SkyBox.hpp"
-#include "gl/ShadowMap.hpp"
 #include "terrain/Renderer.hpp"
 #include "interface/GameMenu.hpp"
 #include "interface/Overlay.hpp"
@@ -40,7 +40,9 @@ public:
 private:
   MonCraftScene(Viewport* vp);
   void updateFov(uint32_t dt);
-  void updateShadowMaps();
+  #ifndef EMSCRIPTEN
+    void updateShadowMaps();
+  #endif
   void updateUniforms(uint32_t t);
   void drawSkybox();
   void drawEntities();
@@ -81,10 +83,10 @@ public:
 
   // components
   SkyBox sky;
-  ShadowMap shadows;
   std::shared_ptr<Server> server;
 
   #ifndef EMSCRIPTEN
+    ShadowMap shadows;
     Music musicPlayer;
   #endif
 

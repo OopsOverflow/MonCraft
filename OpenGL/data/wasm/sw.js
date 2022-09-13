@@ -1,6 +1,6 @@
 // credit: https://googlechrome.github.io/samples/service-worker/basic/
 
-const version = 5
+const version = 6
 const PRECACHE = 'precache-v' + version;
 const RUNTIME = 'runtime';
 
@@ -8,6 +8,7 @@ const PRECACHE_URLS = [
   '/MonCraft.data',
   '/MonCraft.wasm',
   '/MonCraft.js',
+  '/MonCraft.worker.js',
 ];
 
 // The install handler takes care of precaching the resources we always need.
