@@ -92,8 +92,8 @@ void WebSocketServer::on_open(std::shared_ptr<rtc::WebSocket> socket) {
 
   	peer->conn.onLocalDescription([socket](rtc::Description description) { socket->send(description); });
   	peer->conn.onLocalCandidate([socket](rtc::Candidate candidate) { socket->send(candidate); });
-  	// peer->conn.onLocalDescription([socket](rtc::Description description) { std::cout << "[INFO] Peer local description" << std::endl; socket->send(description); });
-  	// peer->conn.onLocalCandidate([socket](rtc::Candidate candidate) { std::cout << "[INFO] Peer Local candidate" << candidate << std::endl; socket->send(candidate); });
+  	// peer->conn.onLocalDescription([socket](rtc::Description description) { std::cout << "[INFO] Peer local description: " << description << std::endl; socket->send(description); });
+  	// peer->conn.onLocalCandidate([socket](rtc::Candidate candidate) { std::cout << "[INFO] Peer Local candidate: " << candidate << std::endl; socket->send(candidate); });
   	// peer->conn.onStateChange([](rtc::PeerConnection::State state) { std::cout << "[INFO] Peer State: " << state << std::endl; });
   	// peer->conn.onGatheringStateChange([](rtc::PeerConnection::GatheringState state) { std::cout << "[INFO] Peer Gathering State: " << state << std::endl; });
 
@@ -132,14 +132,14 @@ void WebSocketServer::on_message(std::shared_ptr<Peer> peer, rtc::message_varian
   if(std::holds_alternative<std::string>(msg)) {
     std::string data = std::get<std::string>(msg);
     if(data.starts_with("a=candidate")) {
-      rtc::Candidate candidate(data, "MonCraft");
+      rtc::Candidate candidate(data, "");
       // std::cout << "[INFO] Peer Remote candidate: " << candidate << std::endl;
       std::lock_guard lck(peer->mutex);
       peer->conn.addRemoteCandidate(candidate);
     }
     else {
       rtc::Description description(data, rtc::Description::Type::Offer);
-      // std::cout << "[INFO] Peer Remote description" << std::endl;
+      // std::cout << "[INFO] Peer Remote description: " << data << std::endl;
       std::lock_guard lck(peer->mutex);
       peer->conn.setRemoteDescription(description);
     }
@@ -153,10 +153,6 @@ void WebSocketServer::on_message(std::shared_ptr<Peer> peer, rtc::message_varian
 
     on_packet_recv(p, peer->id);
   }
-}
-
-std::string get_password() {
-  return "test";
 }
 
 std::shared_ptr<WebSocketServer::Peer> WebSocketServer::getPeer(ClientID peer) {

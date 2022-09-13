@@ -66,12 +66,12 @@ RealServer::RealServer(std::string host, unsigned short port, bool tls)
     peer = std::make_unique<rtc::PeerConnection>(config);
   	peer->onLocalDescription([this](rtc::Description description) { socket.send(description); });
   	peer->onLocalCandidate([this](rtc::Candidate candidate) {socket.send(candidate); });
-  	// peer->onLocalDescription([this](rtc::Description description) { std::cout << "[INFO] Peer Local Description" << std::endl; socket.send(description); });
+  	// peer->onLocalDescription([this](rtc::Description description) { std::cout << "[INFO] Peer Local Description: " << description << std::endl; socket.send(description); });
   	// peer->onLocalCandidate([this](rtc::Candidate candidate) { std::cout << "[INFO] Peer Local Candidate: " << candidate << std::endl; socket.send(candidate); });
   	// peer->onStateChange([](rtc::PeerConnection::State state) { std::cout << "[INFO] Peer State: " << state << std::endl; });
   	// peer->onGatheringStateChange([](rtc::PeerConnection::GatheringState state) { std::cout << "[INFO] Peer Gathering State: " << state << std::endl; });
 
-    channel = peer->createDataChannel(std::to_string(getUid()));
+    channel = peer->createDataChannel(std::to_string(playerUid));
     channel->onMessage(std::bind(&RealServer::on_message, this, _1));
     channel->onError([] (std::string e) { std::cerr << "[ERR] DataChannel error! " << e << std::endl; });
     channel->onClosed([] () { std::cout << "[INFO] DataChannel closed" << std::endl; });
@@ -103,13 +103,13 @@ void RealServer::on_message(rtc::message_variant msg) {
   if (std::holds_alternative<std::string>(msg)) {
     auto data = std::get<std::string>(msg);
     if(data.starts_with("a=candidate")) {
-      rtc::Candidate candidate(data, "MonCraft");
-      std::cout << "[INFO] Peer Remote candidate: " << candidate << std::endl;
+      rtc::Candidate candidate(data, "");
+      // std::cout << "[INFO] Peer Remote candidate: " << candidate.candidate() << std::endl;
       peer->addRemoteCandidate(candidate);
     }
     else {
       rtc::Description description(data, rtc::Description::Type::Answer);
-      std::cout << "[INFO] Peer Remote description" << std::endl;
+      // std::cout << "[INFO] Peer Remote description: " << data << std::endl;
       peer->setRemoteDescription(description);
     }
   }
