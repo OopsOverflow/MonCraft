@@ -55,6 +55,7 @@ Config::ClientConfig::ClientConfig() {
     PARAM(fullscreen)
     PARAM(vsync)
     PARAM(shadows)
+    PARAM(sensivity)
 
   }
 
@@ -98,6 +99,7 @@ Config::ClientConfig::~ClientConfig() {
   PARAM(fullscreen)
   PARAM(vsync)
   PARAM(shadows)
+  PARAM(sensivity)
 
   #undef KEY_PARAM
   #undef PARAM

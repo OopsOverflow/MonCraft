@@ -25,12 +25,6 @@
 #include "terrain/ChunkMap.hpp"
 #include "terrain/World.hpp"
 
-#if FMT_VERSION >= 90000 // fmt version >= 9 requires explicit formatter definitions.
-  template<typename T, length_t N>
-  struct fmt::formatter<rtc::Configuration> : ostream_formatter{};
-  template<typename T>
-  struct fmt::formatter<rtc::Candidate> : ostream_formatter{};
-#endif
 
 using namespace glm;
 using namespace serde;
@@ -78,11 +72,11 @@ RealServer::RealServer(std::string host, unsigned short port, bool tls)
 
     peer = std::make_unique<rtc::PeerConnection>(config);
     peer->onLocalDescription([this](rtc::Description description) {
-      spdlog::debug("RTC Local description: ", description);
+      spdlog::debug("RTC Local description: {}", description);
       socket.send(description);
     });
     peer->onLocalCandidate([this](rtc::Candidate candidate) {
-      spdlog::debug("RTC Local candidate: ", candidate);
+      spdlog::debug("RTC Local candidate: {}", candidate);
       socket.send(candidate);
     });
 

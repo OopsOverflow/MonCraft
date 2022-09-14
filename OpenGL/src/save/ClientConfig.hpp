@@ -22,9 +22,10 @@ namespace Config {
         unsigned int msaa = 4;
         #endif
 
-        float fov = 70.0;
-        float mainVolume = 50.0;
-        float musicVolume = 50.0;
+        float fov = 70.0f;
+        float mainVolume = 50.0f;
+        float musicVolume = 50.0f;
+        float sensivity = 50.0f; // rotation radians per mouse pixel on screen
         bool fullscreen = false;
         bool vsync = true;
         int shadows = 2;

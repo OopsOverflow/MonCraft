@@ -29,7 +29,6 @@ private:
   int deltaY;
   bool rotation;
 
-	float sensivity; // rotation radians per mouse pixel on screen
-
+  
 	std::vector<Action> actions;
 };
