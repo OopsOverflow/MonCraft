@@ -151,6 +151,10 @@ void showMainMenu(Viewport& vp) {
 
 
 int main(int argc, char* argv[]) {
+    #ifdef DEBUG
+        spdlog::set_level(spdlog::level::debug);
+        spdlog::debug("Debug logging is enabled.");
+    #endif
     spdlog::info("---- Main ----");
     spdlog::debug("Main thread is {}", std::this_thread::get_id());
 

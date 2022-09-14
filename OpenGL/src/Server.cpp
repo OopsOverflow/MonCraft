@@ -19,6 +19,10 @@ std::unique_ptr<Server> make_server() {
 }
 
 int main() {
+  #ifdef DEBUG
+    spdlog::set_level(spdlog::level::debug);
+    spdlog::debug("Debug logging is enabled.");
+  #endif
   spdlog::info("---- Server ----");
   auto& config = Config::getServerConfig();
 
