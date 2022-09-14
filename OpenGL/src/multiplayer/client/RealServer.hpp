@@ -40,7 +40,7 @@ public:
   std::string getHost() const { return host; }
   unsigned short getPort() const { return port; }
   bool isWebsocketOpen() const { return socket.isOpen(); }
-  bool isDatachannelOpen() const { return channel->isOpen(); }
+  bool isDatachannelOpen() const { return channel && channel->isOpen(); }
 
 private:
   void on_message(rtc::message_variant msg);

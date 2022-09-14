@@ -1,4 +1,5 @@
 Dependencies/glm/out
+Dependencies/vcpkg
 
 OpenGL/save
 OpenGL/Debug
