@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <spdlog/spdlog.h>
 #include <stddef.h>
 #include <cmath>
 #include <string>
@@ -37,7 +38,7 @@ std::shared_ptr<Server> createServer(bool multiplayer) {
 
     // game seed
     auto seed = prng::srands(sconf.seed);
-    std::cout << "seed : " << sconf.seed << " (" << seed << ")" << std::endl;
+    spdlog::info("Seed: {} ({})", sconf.seed, seed);
 
     std::unique_ptr<Server> server;
     if (multiplayer) {

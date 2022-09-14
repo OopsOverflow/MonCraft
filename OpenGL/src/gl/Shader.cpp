@@ -1,5 +1,6 @@
 #include "Shader.hpp"
 
+#include <spdlog/spdlog.h>
 #include <stddef.h>
 #include <fstream>
 #include <iostream>
@@ -65,27 +66,27 @@ void Shader::initLocations() {
   glUniform1i(uniformLookup[TEXTURE_SHADOW1], 3);
   glUniform1i(uniformLookup[TEXTURE_SHADOW2], 4);
 
-  #if defined(DEBUG) && SHADER_ENABLE_DEBUG == 1
     #define ATTRLOC(str) glGetAttribLocation(program, str)
-      std::cout << "---- SHADER ----" << std::endl
-                << "v_position: " << ATTRLOC("v_position") << std::endl
-                << "v_color: " << ATTRLOC("v_color") << std::endl
-                << "v_normal: " << ATTRLOC("v_normal") << std::endl
-                << "v_texture: " << ATTRLOC("v_texture") << std::endl
-                << "v_occlusion: " << ATTRLOC("v_occlusion") << std::endl
-                << "v_normalMap: " << ATTRLOC("v_normalMap") << std::endl
-                << "m_model: " << uniformLookup[MATRIX_MODEL] << std::endl
-                << "m_view: " << uniformLookup[MATRIX_VIEW] << std::endl
-                << "m_projection: " << uniformLookup[MATRIX_PROJECTION] << std::endl
-                << "m_normal: " << uniformLookup[MATRIX_NORMAL] << std::endl
-                << "m_shadows: " << uniformLookup[MATRIX_SHADOWS] << std::endl
-                << "t_color: " << uniformLookup[TEXTURE_COLOR] << std::endl
-                << "t_normal: " << uniformLookup[TEXTURE_NORMAL] << std::endl
-                << "t_shadow0: " << uniformLookup[TEXTURE_SHADOW0] << std::endl
-                << "t_shadow1: " << uniformLookup[TEXTURE_SHADOW1] << std::endl
-                << "t_shadow2: " << uniformLookup[TEXTURE_SHADOW2] << std::endl;
+      std::ostringstream ss;
+      ss << "---- SHADER ----\n" << std::endl
+         << "v_position: " << ATTRLOC("v_position") << std::endl
+         << "v_color: " << ATTRLOC("v_color") << std::endl
+         << "v_normal: " << ATTRLOC("v_normal") << std::endl
+         << "v_texture: " << ATTRLOC("v_texture") << std::endl
+         << "v_occlusion: " << ATTRLOC("v_occlusion") << std::endl
+         << "v_normalMap: " << ATTRLOC("v_normalMap") << std::endl
+         << "m_model: " << uniformLookup[MATRIX_MODEL] << std::endl
+         << "m_view: " << uniformLookup[MATRIX_VIEW] << std::endl
+         << "m_projection: " << uniformLookup[MATRIX_PROJECTION] << std::endl
+         << "m_normal: " << uniformLookup[MATRIX_NORMAL] << std::endl
+         << "m_shadows: " << uniformLookup[MATRIX_SHADOWS] << std::endl
+         << "t_color: " << uniformLookup[TEXTURE_COLOR] << std::endl
+         << "t_normal: " << uniformLookup[TEXTURE_NORMAL] << std::endl
+         << "t_shadow0: " << uniformLookup[TEXTURE_SHADOW0] << std::endl
+         << "t_shadow1: " << uniformLookup[TEXTURE_SHADOW1] << std::endl
+         << "t_shadow2: " << uniformLookup[TEXTURE_SHADOW2] << std::endl;
+      spdlog::debug(ss.str());
     #undef ATTRLOC
-  #endif
 }
 
 std::string Shader::readFile(const std::string &path) {
@@ -102,7 +103,7 @@ std::string Shader::readFile(const std::string &path) {
     file.close();
     contents = stream.str();
   } catch (std::ifstream::failure & /* e */) {
-    std::cout << "Failed to read file: " << path << std::endl;
+    spdlog::error("Failed to read file: '{}'", path);
   }
 
   return contents;
@@ -121,9 +122,7 @@ GLuint Shader::compileShader(int type, const std::string &contents) {
   if (!success) {
     char infoLog[512];
     glGetShaderInfoLog(shader, 512, NULL, infoLog);
-    std::cout << "Compilation failure in "
-              << (type == GL_VERTEX_SHADER ? "vertex" : "fragment")
-              << "shader: " << infoLog << std::endl;
+    spdlog::error("Compilation failure in {} shader: {}", (type == GL_VERTEX_SHADER ? "vertex" : "fragment"), infoLog);
   };
 
   return shader;
@@ -157,7 +156,7 @@ GLuint Shader::createProgram(GLuint vertex, GLuint fragment) {
   if (!success) {
     char infoLog[512];
     glGetProgramInfoLog(program, 512, NULL, infoLog);
-    std::cout << "Linking failure in program: " << infoLog << std::endl;
+    spdlog::error("Linking failure in program: {}", infoLog);
   }
 
   return program;

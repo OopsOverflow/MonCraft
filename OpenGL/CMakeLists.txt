@@ -163,6 +163,9 @@ target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_SOURCE_DIR}/OpenGL/s
 # glm
 target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE "${CMAKE_SOURCE_DIR}/Dependencies/glm")
 
+find_package(spdlog REQUIRED)
+target_link_libraries(${PROJECT_NAME} spdlog::spdlog)
+
 # libdatachannel
 if(${BUILD_PLATFORM} STREQUAL wasm)
 	add_subdirectory("${CMAKE_SOURCE_DIR}/Dependencies/datachannel-wasm" "datachannel-wasm" EXCLUDE_FROM_ALL)

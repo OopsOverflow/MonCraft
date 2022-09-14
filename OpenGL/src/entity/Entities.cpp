@@ -1,6 +1,7 @@
 #include "Entities.hpp"
 
 #include <iostream>
+#include <spdlog/spdlog.h>
 #include <utility>
 
 #include "entity/Entity.hpp"
@@ -15,7 +16,7 @@ Entities::~Entities()
 std::shared_ptr<Entity> Entities::get(Identifier uid) {
   auto found = find(uid);
   if(found == end()) {
-    std::cout << "[WARN] entity not found: " << uid << std::endl;
+    spdlog::warn("Entity not found: {}", uid);
     return nullptr;
   }
   else return found->second;

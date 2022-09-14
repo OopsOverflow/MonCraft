@@ -7,6 +7,8 @@
 #include <utility>
 #include <vector>
 #include <thread>
+#include <spdlog/spdlog.h>
+#include <spdlog/fmt/ostr.h>
 
 #include "gl/ResourceManager.hpp"
 #include "gl/Viewport.hpp"
@@ -149,8 +151,8 @@ void showMainMenu(Viewport& vp) {
 
 
 int main(int argc, char* argv[]) {
-    std::cout << "---- Main ----" << std::endl;
-    std::cout << "main thread is " << std::this_thread::get_id() << std::endl;
+    spdlog::info("---- Main ----");
+    spdlog::debug("Main thread is {}", std::this_thread::get_id());
 
     Viewport window({ 1200, 800 });
     std::unique_ptr<ui::Component> view;

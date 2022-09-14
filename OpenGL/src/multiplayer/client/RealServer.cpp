@@ -4,6 +4,8 @@
 #include <SFML/Network/Packet.hpp>
 #include <SFML/Network/Socket.hpp>
 #include <glm/glm.hpp>
+#include <spdlog/spdlog.h>
+#include <spdlog/fmt/ostr.h>
 #include <stddef.h>
 #include <algorithm>
 #include <array>
@@ -57,31 +59,43 @@ RealServer::RealServer(std::string host, unsigned short port, bool tls)
   // ---- websocket setup ----
 
   socket.onMessage(std::bind(&RealServer::on_message, this, _1));
-  socket.onError([] (std::string e) { std::cerr << "[ERR] WebSocket error! " << e << std::endl; });
-  socket.onClosed([] () { std::cout << "[INFO] WebSocket closed" << std::endl; });
+  socket.onError([] (std::string e) {
+    spdlog::error("WebSocket error: {}", e);
+  });
+  socket.onClosed([] () {
+    spdlog::info("WebSocket closed");
+  });
 
   socket.onOpen([this] () {
-    std::cout << "[INFO] WebSocket open" << std::endl;
+    spdlog::info("WebSocket open");
 
     peer = std::make_unique<rtc::PeerConnection>(config);
-  	peer->onLocalDescription([this](rtc::Description description) { socket.send(description); });
-  	peer->onLocalCandidate([this](rtc::Candidate candidate) {socket.send(candidate); });
-  	// peer->onLocalDescription([this](rtc::Description description) { std::cout << "[INFO] Peer Local Description: " << description << std::endl; socket.send(description); });
-  	// peer->onLocalCandidate([this](rtc::Candidate candidate) { std::cout << "[INFO] Peer Local Candidate: " << candidate << std::endl; socket.send(candidate); });
-  	// peer->onStateChange([](rtc::PeerConnection::State state) { std::cout << "[INFO] Peer State: " << state << std::endl; });
-  	// peer->onGatheringStateChange([](rtc::PeerConnection::GatheringState state) { std::cout << "[INFO] Peer Gathering State: " << state << std::endl; });
+    peer->onLocalDescription([this](rtc::Description description) {
+      spdlog::debug("RTC Local description: ", description);
+      socket.send(description);
+    });
+    peer->onLocalCandidate([this](rtc::Candidate candidate) {
+      spdlog::debug("RTC Local candidate: ", candidate);
+      socket.send(candidate);
+    });
 
     channel = peer->createDataChannel(std::to_string(playerUid));
     channel->onMessage(std::bind(&RealServer::on_message, this, _1));
-    channel->onError([] (std::string e) { std::cerr << "[ERR] DataChannel error! " << e << std::endl; });
-    channel->onClosed([] () { std::cout << "[INFO] DataChannel closed" << std::endl; });
-    channel->onOpen([] () { std::cout << "[INFO] DataChannel open" << std::endl; });
+    channel->onError([] (std::string e) {
+      spdlog::error("RTC error: {}", e);
+    });
+    channel->onClosed([] () {
+      spdlog::info("RTC closed");
+    });
+    channel->onOpen([] () {
+      spdlog::info("RTC open");
+    });
 
     packet_login();
   });
 
   std::string url = "ws" + std::string(tls ? "s" : "") + "://" + host + ":" + std::to_string(port);
-  std::cout << "[INFO] connecting to websocket server at " << url << std::endl;
+  spdlog::info("Connecting to WebSocket server at {} ", url);
   state = ServerState::CONNECTING;
   socket.open(url);
 }
@@ -104,12 +118,12 @@ void RealServer::on_message(rtc::message_variant msg) {
     auto data = std::get<std::string>(msg);
     if(data.starts_with("a=candidate")) {
       rtc::Candidate candidate(data, "");
-      // std::cout << "[INFO] Peer Remote candidate: " << candidate.candidate() << std::endl;
+      spdlog::debug("RTC remote candidate: {}", data);
       peer->addRemoteCandidate(candidate);
     }
     else {
       rtc::Description description(data, rtc::Description::Type::Answer);
-      // std::cout << "[INFO] Peer Remote description: " << data << std::endl;
+      spdlog::debug("RTC remote description: {}",data);
       peer->setRemoteDescription(description);
     }
   }
@@ -149,13 +163,13 @@ bool RealServer::on_packet_recv(sf::Packet& packet) {
 
   if(type == PacketType::ACK_LOGIN) {
     state = ServerState::CONNECTED;
-    std::cout << "[INFO] logged into the server" << std::endl;
+    spdlog::info("Logged into the server");
   } 
   else if(type == PacketType::ENTITY_TICK) handle_entity_tick(packet);
   else if(type == PacketType::LOGOUT) handle_logout(packet);
   else if(type == PacketType::BLOCKS) handle_blocks(packet);
   else if(type == PacketType::CHUNKS) handle_chunks(packet);
-  else std::cout << "[WARN] unhandled packet: " << header << std::endl;
+  else spdlog::error("Unhandled packet: {}", (int)type);
 
   return true;
 }
@@ -239,7 +253,7 @@ void RealServer::packet_logout() {
   auto send_res = send(packet);
 
   if(!send_res) {
-    std::cout << "[WARN] logout failed" << std::endl;
+    spdlog::error("Packet LOGOUT failed");
   }
 }
 
@@ -251,7 +265,7 @@ void RealServer::packet_player_tick() {
   auto send_res = send(packet);
 
   if(!send_res) {
-    std::cout << "[WARN] player_tick failed" << std::endl;
+    spdlog::error("Packet PLAYER_TICK failed");
   }
 }
 
@@ -265,7 +279,7 @@ void RealServer::packet_chunks() {
   auto send_res = send(packet);
 
   if(!send_res) {
-    std::cout << "[WARN] chunks failed" << std::endl;
+    spdlog::error("Packet CHUNKS failed");
   }
 }
 
@@ -279,7 +293,7 @@ void RealServer::packet_ack_chunks(std::vector<glm::ivec3> ack) {
   auto send_res = send(packet);
 
   if(!send_res) {
-    std::cout << "[WARN] ack_chunks failed" << std::endl;
+    spdlog::error("Packet ACK_CHUNKS failed");
   }
 }
 
@@ -288,7 +302,7 @@ void RealServer::handle_logout(sf::Packet& packet) {
   packet >> uid;
 
   if(!world.entities.remove(uid)) {
-    std::cout << "[WARN] logout of unknown player" << std::endl;
+    spdlog::error("Logout of unknown entity: {}", uid);
   }
 }
 

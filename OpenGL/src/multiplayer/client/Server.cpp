@@ -1,6 +1,7 @@
 #include "Server.hpp"
 
 #include <iostream>
+#include <spdlog/spdlog.h>
 
 #include "terrain/World.hpp"
 #include "terrain/ChunkImpl.hpp"
@@ -59,11 +60,12 @@ void Server::start() {
 }
 
 void Server::stop() {
-  std::cout << "shutting down server..." << std::endl;
+  spdlog::info("Shutting down local server...");
   {
     std::lock_guard<std::mutex> lk(stopMutex);
     stopFlag = true;
   }
   stopSignal.notify_all();
   if(serverThread.joinable()) serverThread.join();
+  spdlog::info("Local server terminated");
 }

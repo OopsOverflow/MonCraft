@@ -1,5 +1,6 @@
 #include "Bench.hpp"
 
+#include <spdlog/spdlog.h>
 #include <stddef.h>
 #include <algorithm>
 #include <fstream>
@@ -43,7 +44,7 @@ void Bench::capEnd(Bench::cap_id_t id) {
     cap->values.push_back(std::chrono::duration_cast<std::chrono::microseconds>(delta).count());
   }
   else {
-    std::cout << "[WARN] capEnd called but not started" << std::endl;
+    spdlog::warn("Bench::capEnd called but not started.");
   }
 }
 

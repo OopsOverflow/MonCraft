@@ -1,6 +1,7 @@
 #include "ClientServer.hpp"
 
 #include <glm/glm.hpp>
+#include <spdlog/spdlog.h>
 #include <stddef.h>
 #include <algorithm>
 #include <iostream>
@@ -31,7 +32,7 @@ ClientServer::~ClientServer()
 {}
 
 void ClientServer::ping() {
-  std::cout << "clientside server ping!" << std::endl;
+  spdlog::info("Clientsidee server ping!");
 }
 
 void ClientServer::update() {

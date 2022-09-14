@@ -67,7 +67,7 @@ void MouseController::apply(Character& character) {
       character.pickBlock();
       break;
     default:
-      std::cout << "MouseController: Action not supported." << std::endl;
+      assert(false);
       break;
   };
   actions = {};

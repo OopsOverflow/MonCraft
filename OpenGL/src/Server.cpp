@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <memory>
+#include <spdlog/spdlog.h>
 #include <string>
 
 // #include "multiplayer/server/UdpServer.hpp"
@@ -18,12 +19,12 @@ std::unique_ptr<Server> make_server() {
 }
 
 int main() {
-  std::cout << "---- Server ----" << std::endl;
+  spdlog::info("---- Server ----");
   auto& config = Config::getServerConfig();
 
   // game seed
   auto seed = prng::srands(config.seed);
-  std::cout << "seed : " << config.seed << " (" << seed << ")" << std::endl;
+  spdlog::info("Seed: {} ({})", config.seed, seed);
 
   SaveManager::configSaveDir = "save";
   SaveManager::entitySaveDir = "save/serverWorld/entities";

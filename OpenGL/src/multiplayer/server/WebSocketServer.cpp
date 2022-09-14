@@ -9,6 +9,8 @@
 #include <csignal>
 #include <functional>
 #include <iostream>
+#include <spdlog/spdlog.h>
+#include <spdlog/fmt/ostr.h>
 #include <utility>
 #include "multiplayer/server/Server.hpp"
 #include "save/ServerConfig.hpp"
@@ -26,14 +28,14 @@ bool WebSocketServer::stopSignal = false;
 WebSocketServer::WebSocketServer(unsigned short port, bool tls)
   : Server(port), server(makeServerConf(port, tls))
 {
-  
+  spdlog::info("Server config: port={}, tls={}", port, tls);
 }
 
 WebSocketServer::~WebSocketServer()
 {}
 
 void WebSocketServer::sigStop(int signal) {
-  std::cout << "stopping WebSocket server" << std::endl;
+  spdlog::info("Shutting down WebSocket/RTC server...");
   stopSignal = true;
 }
 
@@ -58,7 +60,7 @@ void WebSocketServer::run() {
   std::signal(SIGINT, &WebSocketServer::sigStop);
 
   server.onClient(std::bind(&WebSocketServer::on_open, this, _1));
-  std::cout << "listening on port " << server.port() << std::endl;
+  spdlog::info("Server listening on port {}", server.port());
 
   // loop
   mainThread = std::thread(&WebSocketServer::loop, this);
@@ -71,12 +73,12 @@ void WebSocketServer::run() {
     server.stop();
   }
 
-  std::cout << "stopped server" << std::endl;
+  spdlog::info("Stopped server");
 }
 
 void WebSocketServer::on_open(std::shared_ptr<rtc::WebSocket> socket) {
-  std::cout << "[INFO] client login" << std::endl;
   ClientID client(socket->remoteAddress().value());
+  spdlog::info("Client login: {}", client.getAddr());
 
     auto peer = std::shared_ptr<Peer>(new Peer{
       .id = client,
@@ -86,25 +88,36 @@ void WebSocketServer::on_open(std::shared_ptr<rtc::WebSocket> socket) {
     });
 
     socket->onMessage(std::bind(&WebSocketServer::on_message, this, peer, _1));
-    socket->onError([] (std::string e) { std::cerr << "[ERR] WebSocket error! " << e << std::endl; });
+    socket->onError([peer] (std::string e) {
+      spdlog::error("WebSocket error ({}): {}", peer->id.getAddr(), e);
+    });
     socket->onClosed(std::bind(&WebSocketServer::on_close, this, peer));
-    // socket->onOpen([] () { std::cerr << "[INFO] WebSocket open" << std::endl; });
+    socket->onOpen([peer] () {
+      spdlog::debug("WebSocket open ({})", peer->id.getAddr());
+    });
 
-  	peer->conn.onLocalDescription([socket](rtc::Description description) { socket->send(description); });
-  	peer->conn.onLocalCandidate([socket](rtc::Candidate candidate) { socket->send(candidate); });
-  	// peer->conn.onLocalDescription([socket](rtc::Description description) { std::cout << "[INFO] Peer local description: " << description << std::endl; socket->send(description); });
-  	// peer->conn.onLocalCandidate([socket](rtc::Candidate candidate) { std::cout << "[INFO] Peer Local candidate: " << candidate << std::endl; socket->send(candidate); });
-  	// peer->conn.onStateChange([](rtc::PeerConnection::State state) { std::cout << "[INFO] Peer State: " << state << std::endl; });
-  	// peer->conn.onGatheringStateChange([](rtc::PeerConnection::GatheringState state) { std::cout << "[INFO] Peer Gathering State: " << state << std::endl; });
+    peer->conn.onLocalDescription([socket, peer](rtc::Description description) {
+      spdlog::debug("RTC local description ({}): {}", peer->id.getAddr(), description);
+      socket->send(description);
+    });
+    peer->conn.onLocalCandidate([socket, peer](rtc::Candidate candidate) {
+      spdlog::debug("RTC local candidate ({}): {}", peer->id.getAddr(), candidate);
+      socket->send(candidate);
+    });
 
-  	peer->conn.onDataChannel([this, peer](std::shared_ptr<rtc::DataChannel> channel) {
+    peer->conn.onDataChannel([this, peer](std::shared_ptr<rtc::DataChannel> channel) {
       std::lock_guard<std::mutex> lck(peer->mutex);
-      // std::cout << "[INFO] Peer Datachannel" << std::endl;
       peer->channel = channel;
       channel->onMessage(std::bind(&WebSocketServer::on_message, this, peer, _1));
-      // channel->onClosed(std::bind(&WebSocketServer::on_close, this, peer));
-      channel->onError([] (std::string e) { std::cerr << "[ERR] DataChannel error! " << e << std::endl; });
-      channel->onOpen([] () { std::cout << "[INFO] DataChannel open" << std::endl; });
+      channel->onClosed([peer] () {
+        spdlog::debug("RTC closed ({})", peer->id.getAddr());
+      });
+      channel->onError([peer] (std::string e) {
+        spdlog::error("RTC error ({}): {}", peer->id.getAddr(), e);
+      });
+      channel->onOpen([peer] () {
+        spdlog::debug("RTC open ({})", peer->id.getAddr());
+      });
     });
     
     {
@@ -114,7 +127,7 @@ void WebSocketServer::on_open(std::shared_ptr<rtc::WebSocket> socket) {
 }
 
 void WebSocketServer::on_close(std::shared_ptr<Peer> peer) {
-  std::cout << "[INFO] client logout" << std::endl;
+  spdlog::info("Client logout: {}", peer->id.getAddr());
   {
     std::lock_guard lck(allClientsLck);
     auto it = clientLookup.find(peer->id);
@@ -122,7 +135,7 @@ void WebSocketServer::on_close(std::shared_ptr<Peer> peer) {
       clientLookup.erase(it);
     }
     else {
-      std::cerr << "[ERR] logout of unknown client: " << peer->id.getAddr() << std::endl;
+      spdlog::error("Logout of unknown client: {}", peer->id.getAddr());
     }
   }
 }
@@ -133,13 +146,13 @@ void WebSocketServer::on_message(std::shared_ptr<Peer> peer, rtc::message_varian
     std::string data = std::get<std::string>(msg);
     if(data.starts_with("a=candidate")) {
       rtc::Candidate candidate(data, "");
-      // std::cout << "[INFO] Peer Remote candidate: " << candidate << std::endl;
+      spdlog::debug("RTC Remote candidate ({}): {}", peer->id.getAddr(), data);
       std::lock_guard lck(peer->mutex);
       peer->conn.addRemoteCandidate(candidate);
     }
     else {
       rtc::Description description(data, rtc::Description::Type::Offer);
-      // std::cout << "[INFO] Peer Remote description: " << data << std::endl;
+      spdlog::debug("RTC Remote description ({}): {}", peer->id.getAddr(), data);
       std::lock_guard lck(peer->mutex);
       peer->conn.setRemoteDescription(description);
     }

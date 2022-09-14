@@ -3,6 +3,7 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <spdlog/spdlog.h>
 #include <sstream>
 
 #include "save/SaveManager.hpp"
@@ -47,7 +48,7 @@ Config::ServerConfig::~ServerConfig() {
   std::filesystem::create_directories(SaveManager::configSaveDir);
   std::ofstream openedFile(path, std::fstream::trunc);
   if (!openedFile) {
-    std::cout << "[WARN] failed to open file: " << path << std::endl;
+    spdlog::warn("Failed to open server config file: ''", path);
     return;
   }
   openedFile << std::boolalpha << "MonCraft v1.1.0" << std::endl;

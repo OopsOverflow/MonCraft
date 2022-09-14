@@ -4,6 +4,7 @@
 #include <SFML/Network/IpAddress.hpp>
 #include <SFML/Network/Packet.hpp>
 #include <glm/glm.hpp>
+#include <spdlog/spdlog.h>
 #include <stddef.h>
 #include <algorithm>
 #include <iostream>
@@ -37,15 +38,6 @@ Server::Server(unsigned short port)
 Server::~Server()
 {}
 
-bool isVerbose(PacketType type) {
-  return
-    type != PacketType::ENTITY_TICK &&
-    type != PacketType::BLOCKS &&
-    type != PacketType::CHUNKS &&
-    type != PacketType::ACK_CHUNKS &&
-    type != PacketType::PLAYER_TICK;
-}
-
 void Server::broadcast(sf::Packet& packet) {
   for(auto const& pair : clients) {
     send(packet, pair.first);
@@ -57,8 +49,6 @@ void Server::on_packet_recv(sf::Packet& packet, ClientID client) {
   PacketHeader header;
   packet >> header;
   auto type = header.getType();
-  bool verbose = isVerbose(type);
-  if(verbose) std::cout << "Packet " << header << std::endl;
 
   if(type == PacketType::LOGIN) handle_login(client, packet);
   else if(type == PacketType::LOGOUT) handle_logout(client);
@@ -66,7 +56,7 @@ void Server::on_packet_recv(sf::Packet& packet, ClientID client) {
   else {
     auto it = clients.find(client);
     if(it == clients.end()) {
-      std::cout << "[WARN] Client not registered" << std::endl;
+      spdlog::warn("Client not registered: {}", client.getAddr());
     }
     else {
       it->second.lastUpdate = clock.getElapsedTime();
@@ -77,8 +67,6 @@ void Server::on_packet_recv(sf::Packet& packet, ClientID client) {
       else if(type == PacketType::ACK_CHUNKS)  handle_ack_chunks(it->second, packet);
     }
   }
-
-  if(verbose) std::cout << "----------------" << std::endl;
 }
 
 void Server::on_server_tick() {
@@ -175,7 +163,7 @@ void Server::handle_login(ClientID client, sf::Packet& packet) {
   auto it = clients.find(client);
 
   if(it != clients.end()) {
-    std::cout << "[WARN] Login of already registered client" << std::endl;
+    spdlog::warn("Login packet of already logged client: {}", client.getAddr());
     packet_ack_login(it->first, it->second.uid);
   }
   else {
@@ -184,13 +172,10 @@ void Server::handle_login(ClientID client, sf::Packet& packet) {
     if(res.second) {
       packet_ack_login(res.first->first, uid);
       beep();
-      std::cout << "client connected: " << std::endl;
-      std::cout << "uid: " << res.first->second.uid << std::endl;
-      std::cout << "addr: " << res.first->first.getAddr() << std::endl;
-      // std::cout << "port: " << res.first->first.getPort() << std::endl;
+      spdlog::info("Client connected: uid {} / addr {}", res.first->second.uid, res.first->first.getAddr());
     }
     else {
-      std::cout << "[WARN] client insertion failed" << std::endl;
+      spdlog::warn("Client insertion failed");
     }
   }
 }
@@ -199,19 +184,19 @@ void Server::handle_logout(ClientID client) {
   auto it = clients.find(client);
 
   if(it == clients.end()) {
-    std::cout << "[WARN] Logout of unregistered client" << std::endl;
+    spdlog::warn("Logout of unregistered client: {}", client.getAddr());
   }
   else {
     Identifier uid = it->second.uid;
     clients.erase(it);
     packet_logout(uid);
     beep();
-    std::cout << "Client disconnected" << std::endl;
+    spdlog::info("Client disconnected: {}", uid);
   }
 }
 
 void Server::handle_ping(Client& client) {
-  std::cout << "Ping!" << std::endl;
+  spdlog::info("Ping! from {}", client.uid);
   beep();
 }
 
@@ -302,7 +287,7 @@ void Server::handleTimeouts() {
   for(auto it = clients.cbegin(); it != clients.cend(); ) {
     if(curTime - it->second.lastUpdate > timeout) {
       Identifier uid = it->second.uid;
-      std::cout << "Client timeout: uid " << uid << std::endl;
+      spdlog::warn("Client timeout: {}", uid);
       it = clients.erase(it);
       erased.push_back(uid);
       beep();

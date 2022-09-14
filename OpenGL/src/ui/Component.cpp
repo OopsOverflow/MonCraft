@@ -109,10 +109,6 @@ void Component::setProperty(prop_t prop) {
   }
   else {
     setStyle(prop);
-    // std::cout << "[WARN] unsupported style property: '"
-    //           << Spec::get(prop.spec).name
-    //           << "'"
-    //           << std::endl;
   }
 }
 

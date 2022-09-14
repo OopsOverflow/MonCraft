@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
+#include <spdlog/spdlog.h>
 #include <stdexcept>
 
 #include "debug/Debug.hpp"
@@ -48,7 +49,7 @@ Font::~Font() {
 
 Font::Glyph Font::loadGlyph(FT_UInt i) const {
   if (FT_Load_Glyph(face, i, FT_LOAD_RENDER))   {
-    std::cout << "[Warning] Failed to load Glyph index " << i << std::endl;
+    spdlog::warn("Failed to load glyph index {}", i);
     FT_Load_Char(face, 0, FT_LOAD_RENDER); // 0 is missing glyph
   }
 

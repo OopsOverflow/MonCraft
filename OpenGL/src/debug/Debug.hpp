@@ -4,6 +4,9 @@
 #include <chrono>
 #include <iomanip>
 #include <iostream>
+#include <spdlog/spdlog.h>
+#include <spdlog/fmt/ostr.h>
+#include <fmt/ostream.h>
 
 class DebugTimer {
 
@@ -17,28 +20,6 @@ public:
   static float debug_timer_time();
 };
 
-#define TIME(exec)                                                           \
-  {                                                                          \
-    DebugTimer::debug_timer_start();                                         \
-  }                                                                          \
-  exec {                                                                     \
-    DebugTimer::debug_timer_end();                                           \
-    std::cout << #exec << " took " << DebugTimer::debug_timer_time() << "ms" \
-              << std::endl;                                                  \
-  }
-
-#define TIME_ADD(exec)                                                       \
-  {                                                                          \
-    DebugTimer::debug_timer_start();                                         \
-  }                                                                          \
-  exec { DebugTimer::debug_timer_add(); }
-
-#define TIME_ADD_RESULT()                                                     \
-  {                                                                           \
-    std::cout << "operations took " << DebugTimer::debug_timer_time() << "ms" \
-              << std::endl;                                                   \
-  }
-
 #ifndef DEBUG
 #define ASSERT_GL_MAIN_THREAD()
 #else
@@ -51,8 +32,7 @@ static const std::thread::id mainThread = std::this_thread::get_id();
 #define ASSERT_GL_MAIN_THREAD() { \
   const std::thread::id thisThread = std::this_thread::get_id(); \
   if(mainThread != thisThread) { \
-    std::cout << "[CRITICAL] " << "gl called on worker thread " << thisThread \
-              << " while main thread is " << mainThread << "." << std::endl; \
+    spdlog::critical("gl called on worker thread {} while main thread is {}.", thisThread, mainThread); \
     std::raise(SIGINT); \
   } \
 }
@@ -60,28 +40,32 @@ static const std::thread::id mainThread = std::this_thread::get_id();
 
 template<typename T>
 void debug_bindump(T val) {
+  std::istringstream ss;
   for(int i = 8 * sizeof(T) -1; i >= 0; i--) {
-    std::cout << (val >> i & 1);
+    ss << (val >> i & 1);
   }
-  std::cout << std::endl;
+  spdlog::debug(ss.str());
 }
 
-template<typename T, glm::length_t N>
-std::ostream& operator<<(std::ostream& os, glm::vec<N, T> const& v) {
-  // os << std::setprecision(5);
-  os << "vec" << N << "(";
-  for(glm::length_t i = 0; i < N-1; i++)
-    os << v[i] << ", ";
-  os << v[N-1] << ")";
-  return os;
-}
-
-template<typename T>
-std::ostream& operator<<(std::ostream& os, glm::tmat4x4<T> const& mat) {
-    os << std::fixed << std::setprecision(5);
-    os << "mat: ";
-    for (glm::length_t i = 0; i < 4; i+=1) {
-         os  << mat[i] << std::endl << "     ";
-    }
+namespace glm {
+  template<typename T, length_t N>
+  std::ostream& operator<<(std::ostream& os, vec<N, T> const& v) {
+    // os << std::setprecision(5);
+    os << "vec" << N << "(";
+    for(length_t i = 0; i < N-1; i++)
+      os << v[i] << ", ";
+    os << v[N-1] << ")";
     return os;
+  }
+
+  template<typename T>
+  std::ostream& operator<<(std::ostream& os, tmat4x4<T> const& mat) {
+      os << std::fixed << std::setprecision(5);
+      os << "mat: ";
+      for (length_t i = 0; i < 4; i+=1) {
+           os  << mat[i] << std::endl << "     ";
+      }
+      return os;
+  }
 }
+

@@ -8,6 +8,7 @@
 #include <cmath>
 #include <iostream>
 #include <stdexcept>
+#include <spdlog/spdlog.h>
 
 #include "gl/Shader.hpp"
 
@@ -32,7 +33,7 @@ void Camera::activate() {
     glm::vec3 c = view * glm::vec4(center, 1.f);
     glUniform3f(CAMERA_CENTER, c.x, c.y, c.z);
   } else {
-    std::cout << "error: camera activated but no shader bound" << std::endl;
+    spdlog::error("Camera activated but no shader bound.");
   }
 }
 

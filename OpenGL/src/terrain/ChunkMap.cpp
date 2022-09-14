@@ -1,9 +1,10 @@
 #include "ChunkMap.hpp"
 
-#include <iostream>
-#include <utility>
-
 #include "debug/Debug.hpp"
+#include <iostream>
+#include <spdlog/spdlog.h>
+#include <spdlog/fmt/ostr.h>
+#include <utility>
 
 ChunkMap::ChunkMap()
 {}
@@ -31,7 +32,7 @@ std::shared_ptr<ChunkImpl> ChunkMap::insert(glm::ivec3 cpos, std::unique_ptr<Chu
   std::lock_guard<std::mutex> lck(chunksMutex);
   auto res = chunks.emplace(cpos, std::move(chunk));
   if(!res.second) {
-    std::cout << "[WARN] ChunkMap insert: chunk already existed: " << cpos << std::endl;
+    spdlog::warn("ChunkMap::insert: chunk already existed: {}", cpos);
   }
   return res.first->second;
 }
@@ -47,7 +48,7 @@ void ChunkMap::eraseChunks(int count, std::function<bool(ChunkImpl*)> predicate)
       count --;
       auto useCount = it->second.use_count();
       if(useCount > 1) {
-        std::cout << "[WARN] dangerous erase prevented " << it->second.use_count() << " " << it->first << std::endl;
+        spdlog::warn("Dangerous chunk erase prevented: uses={}, pos={}", it->second.use_count(), it->first);
         ++it;
       }
       else it = chunks.erase(it);

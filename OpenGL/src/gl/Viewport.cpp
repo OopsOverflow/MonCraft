@@ -1,4 +1,5 @@
 #include "Viewport.hpp"
+#include <spdlog/spdlog.h>
 
 // send a esc keypress on pointerlock leave.
 #ifdef EMSCRIPTEN
@@ -108,12 +109,12 @@ Viewport::Viewport(glm::ivec2 size)
   if (glewInit() != GLEW_OK)
     throw std::runtime_error("GLEW init failed");
 
-  std::cout << "---------" << std::endl;
-  std::cout << "OpenGL  :" << glGetString(GL_VERSION) << std::endl;
-  std::cout << "GLSL    :" << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
-  std::cout << "Vendor  :" << glGetString(GL_VENDOR) << std::endl;
-  std::cout << "Renderer:" << glGetString(GL_RENDERER) << std::endl;
-  std::cout << "---------" << std::endl;
+  spdlog::info("---------");
+  spdlog::info("OpenGL  : {}", glGetString(GL_VERSION));
+  spdlog::info("GLSL    : {}", glGetString(GL_SHADING_LANGUAGE_VERSION));
+  spdlog::info("Vendor  : {}", glGetString(GL_VENDOR));
+  spdlog::info("Renderer: {}", glGetString(GL_RENDERER));
+  spdlog::info("---------");
 }
 
 void Viewport::createRoot() {
