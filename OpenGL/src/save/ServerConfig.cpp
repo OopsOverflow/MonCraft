@@ -29,6 +29,7 @@ Config::ServerConfig::ServerConfig() {
     ss >> param;
 
     PARAM(serverPort)
+    PARAM(serverTLS)
     PARAM(seed)
     PARAM(threadCount)
     PARAM(renderDistH)
@@ -55,6 +56,7 @@ Config::ServerConfig::~ServerConfig() {
     openedFile << "\t" #NAME ": " << this->NAME << std::endl;
 
   PARAM(serverPort)
+  PARAM(serverTLS)
   PARAM(seed)
   PARAM(threadCount)
   PARAM(renderDistH)

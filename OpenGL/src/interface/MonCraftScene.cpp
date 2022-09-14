@@ -41,7 +41,7 @@ std::shared_ptr<Server> createServer(bool multiplayer) {
 
     std::unique_ptr<Server> server;
     if (multiplayer) {
-        server = std::make_unique<RealServer>(cconf.serverAddr, cconf.serverPort);
+        server = std::make_unique<RealServer>(cconf.serverAddr, cconf.serverPort, cconf.serverTLS);
     }
     else {
         server = std::make_unique<ClientServer>();
@@ -56,7 +56,9 @@ MonCraftScene::MonCraftScene(Viewport* vp)
       config(Config::getClientConfig()),
       vp(vp),
       camera(ivec2(1)),
-      shadows(4096),
+      #ifndef EMSCRIPTEN
+          shadows(4096),
+      #endif
       sunSpeed(0.0075f),
       lastClock(SDL_GetTicks())
 {
@@ -73,7 +75,7 @@ MonCraftScene::MonCraftScene(Viewport* vp)
     }
 
     server = createServer(Config::getClientConfig().multiplayer);
-    server->start();
+    // server->start();
     player = server->getPlayer();
     playerUid = server->getUid();
 
@@ -163,6 +165,7 @@ void MonCraftScene::onKeyReleased(Key k) {
     }
 }
 
+#ifndef EMSCRIPTEN
 void MonCraftScene::updateShadowMaps() {
     shadows.update(sunDir);
     shadows.attach(camera, Frustum::NEAR);
@@ -179,6 +182,7 @@ void MonCraftScene::updateShadowMaps() {
     renderer.renderSolid(shadows.camera);
     shadows.endFrame();
 }
+#endif
 
 void MonCraftScene::updateUniforms(uint32_t t) {
     auto sunDirViewSpace = camera.view * vec4(sunDir, 0.0);
@@ -217,7 +221,6 @@ void MonCraftScene::updateFov(uint32_t dt) {
 void MonCraftScene::drawSkybox() {
     sky.render(camera);
     shader->activate();
-    shadows.activate();
     camera.activate();
 }
 
@@ -245,8 +248,13 @@ void MonCraftScene::draw() {
     World::getInst().t += World::getInst().dt;
     World::getInst().t = World::getInst().t % dayDuration;
     lastClock = time;
-    
-    
+
+    server->update();
+    if(server->getState() == ServerState::DISCONNECTED) {
+        gameMenu->quitButton->click();
+        vp->freeMouse();
+        return;
+    }
 
     glEnable(GL_DEPTH_TEST);
 
@@ -292,6 +300,9 @@ void MonCraftScene::draw() {
 
     // draw the terrain
     shader->bindTexture(TEXTURE_COLOR, texAtlas);
+    #ifndef EMSCRIPTEN
+        shadows.activate();
+    #endif
     renderer.render(camera);
 
     // draw the entities

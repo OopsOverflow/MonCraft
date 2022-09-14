@@ -75,3 +75,7 @@ canvas {
 #more-info-cont hr {
   flex-grow: 1;
 }
+
+#more-info.hidden {
+  display: none;
+}

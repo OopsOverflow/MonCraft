@@ -1,10 +1,12 @@
-#include <glm/glm.hpp>
-#include <stddef.h>
+#include "rtc/rtc.hpp"
+
+#include <chrono>
 #include <iostream>
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
+#include <thread>
 
 #include "gl/ResourceManager.hpp"
 #include "gl/Viewport.hpp"
@@ -111,6 +113,7 @@ void showMultiPlayer(Viewport& vp) {
     game->gameMenu->quitButton->onClick([&] { showMainMenu(vp); });
     game->gameMenu->continueButton->onClick([game = game.get(), menu = game->gameMenu.get(), &vp] { 
         game->remove(menu);
+        game->makeActive();
         vp.captureMouse();
     });
     vp.captureMouse();
@@ -147,6 +150,7 @@ void showMainMenu(Viewport& vp) {
 
 int main(int argc, char* argv[]) {
     std::cout << "---- Main ----" << std::endl;
+    std::cout << "main thread is " << std::this_thread::get_id() << std::endl;
 
     Viewport window({ 1200, 800 });
     std::unique_ptr<ui::Component> view;

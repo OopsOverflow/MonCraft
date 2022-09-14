@@ -24,6 +24,7 @@ ClientServer::ClientServer()
   auto newPlayer = std::make_unique<Character>(Config::getServerConfig().spawnPoint);
   auto entity = World::getInst().entities.add(getUid(), std::move(newPlayer));
   player = std::static_pointer_cast<Character>(entity);
+  state = ServerState::CONNECTED;
 }
 
 ClientServer::~ClientServer()
@@ -54,10 +55,6 @@ void ClientServer::update() {
       SaveManager::saveChunk(*chunk);
     }
   }
-}
-
-bool ClientServer::login() {
-  return true;
 }
 
 std::shared_ptr<Character> ClientServer::getPlayer() {

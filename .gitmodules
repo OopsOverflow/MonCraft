@@ -1,0 +1,3 @@
+[submodule "Dependencies/libdatachannel"]
+	path = Dependencies/libdatachannel
+	url = https://github.com/paullouisageneau/libdatachannel

@@ -8,6 +8,7 @@
 #include "save/ServerConfig.hpp"
 
 Server::Server()
+  : state(ServerState::DISCONNECTED)
 {
   auto& config = Config::getServerConfig();
   renderDistH = config.renderDistH;
@@ -27,7 +28,7 @@ void Server::remOldChunks() {
   World& world = World::getInst();
   glm::ivec3 cpos = floor(getPlayer()->getPosition() / 16.f);
   int delCount = std::max<int>((unsigned int)world.chunks.size() - maxChunks, 0);
-  world.chunks.eraseChunks(delCount, [=](Chunk* chunk) {
+  world.chunks.eraseChunks(delCount, [=, this](Chunk* chunk) {
     glm::ivec3 dist = abs(cpos - chunk->chunkPos);
     return dist.x > renderDistH + 1 || dist.z > renderDistH + 1 || dist.y > renderDistV + 1;
   });
@@ -42,12 +43,6 @@ bool Server::sleepFor(std::chrono::milliseconds millis) {
 void Server::loop() {
   bool stop = false;
   auto sleep = std::chrono::milliseconds(Config::getServerConfig().serverTick);
-  bool logged = false;
-
-  while(!stop && !logged) {
-    logged = login();
-    stop = sleepFor(sleep);
-  }
 
   while(!stop) {
     update();

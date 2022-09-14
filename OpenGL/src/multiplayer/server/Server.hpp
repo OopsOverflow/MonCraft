@@ -22,7 +22,7 @@ public:
   virtual void run() = 0;
 
 protected:
-  virtual void send(sf::Packet& packet, ClientID client) = 0;
+  virtual bool send(sf::Packet& packet, ClientID client) = 0;
   void on_packet_recv(sf::Packet& packet, ClientID client);
   void on_server_tick();
 

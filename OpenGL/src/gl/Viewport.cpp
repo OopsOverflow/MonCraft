@@ -217,7 +217,9 @@ bool Viewport::beginFrame() {
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);
   glEnable(GL_BLEND);
-  glEnable(GL_MULTISAMPLE);
+  #ifndef EMSCRIPTEN
+    glEnable(GL_MULTISAMPLE);
+  #endif
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   return true;

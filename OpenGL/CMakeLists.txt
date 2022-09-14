@@ -128,7 +128,7 @@ else()
 		${CMAKE_CURRENT_SOURCE_DIR}/src/Server.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/multiplayer/server/Server.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/multiplayer/server/Client.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/src/multiplayer/server/UdpServer.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/src/multiplayer/server/WebSocketServer.cpp
 	)
 endif()
 
@@ -137,78 +137,92 @@ if(${BUILD_PLATFORM} STREQUAL wasm)
 	message(STATUS "Configuring wasm cpp files")
 	list(APPEND SOURCE
 		"${CMAKE_SOURCE_DIR}/Dependencies/EMSFML/src/SFML/Network/IpAddress.cpp"
-    "${CMAKE_SOURCE_DIR}/Dependencies/EMSFML/src/SFML/Network/Packet.cpp"
-    "${CMAKE_SOURCE_DIR}/Dependencies/EMSFML/src/SFML/Network/Socket.cpp"
-    "${CMAKE_SOURCE_DIR}/Dependencies/EMSFML/src/SFML/Network/TcpSocket.cpp"
-    "${CMAKE_SOURCE_DIR}/Dependencies/EMSFML/src/SFML/Network/UdpSocket.cpp"
-    "${CMAKE_SOURCE_DIR}/Dependencies/EMSFML/src/SFML/Network/Emscripten/SocketImpl.cpp"
-    "${CMAKE_SOURCE_DIR}/Dependencies/EMSFML/src/SFML/System/Err.cpp"
-    "${CMAKE_SOURCE_DIR}/Dependencies/EMSFML/src/SFML/System/Clock.cpp"
-    "${CMAKE_SOURCE_DIR}/Dependencies/EMSFML/src/SFML/System/Sleep.cpp"
-    "${CMAKE_SOURCE_DIR}/Dependencies/EMSFML/src/SFML/System/Time.cpp"
-    "${CMAKE_SOURCE_DIR}/Dependencies/EMSFML/src/SFML/System/Unix/ClockImpl.cpp"
-    "${CMAKE_SOURCE_DIR}/Dependencies/EMSFML/src/SFML/System/Unix/SleepImpl.cpp"
+		"${CMAKE_SOURCE_DIR}/Dependencies/EMSFML/src/SFML/Network/Packet.cpp"
+		"${CMAKE_SOURCE_DIR}/Dependencies/EMSFML/src/SFML/Network/Socket.cpp"
+		"${CMAKE_SOURCE_DIR}/Dependencies/EMSFML/src/SFML/Network/TcpSocket.cpp"
+		"${CMAKE_SOURCE_DIR}/Dependencies/EMSFML/src/SFML/Network/UdpSocket.cpp"
+		"${CMAKE_SOURCE_DIR}/Dependencies/EMSFML/src/SFML/Network/Emscripten/SocketImpl.cpp"
+		"${CMAKE_SOURCE_DIR}/Dependencies/EMSFML/src/SFML/System/Err.cpp"
+		"${CMAKE_SOURCE_DIR}/Dependencies/EMSFML/src/SFML/System/Clock.cpp"
+		"${CMAKE_SOURCE_DIR}/Dependencies/EMSFML/src/SFML/System/Sleep.cpp"
+		"${CMAKE_SOURCE_DIR}/Dependencies/EMSFML/src/SFML/System/Time.cpp"
+		"${CMAKE_SOURCE_DIR}/Dependencies/EMSFML/src/SFML/System/Unix/ClockImpl.cpp"
+		"${CMAKE_SOURCE_DIR}/Dependencies/EMSFML/src/SFML/System/Unix/SleepImpl.cpp"
 	)
 endif()
 
 # Define the executable
 add_executable(${PROJECT_NAME} ${SOURCE})
 
+message(STATUS "Configuring dependencies")
+
 # Define the include DIRs
-message(STATUS "Configuring include directories")
+target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE "${CMAKE_SOURCE_DIR}/Dependencies")
+target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_SOURCE_DIR}/OpenGL/src")
 
 # glm
-include_directories("${CMAKE_SOURCE_DIR}/Dependencies/glm")
+target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE "${CMAKE_SOURCE_DIR}/Dependencies/glm")
+
+# libdatachannel
+if(${BUILD_PLATFORM} STREQUAL wasm)
+	add_subdirectory("${CMAKE_SOURCE_DIR}/Dependencies/datachannel-wasm" "datachannel-wasm" EXCLUDE_FROM_ALL)
+	target_link_libraries(${PROJECT_NAME} datachannel-wasm)
+elseif (UNIX)
+	add_subdirectory("${CMAKE_SOURCE_DIR}/Dependencies/libdatachannel" "libdatachannel" EXCLUDE_FROM_ALL)
+	target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE "${CMAKE_SOURCE_DIR}/Dependencies/libdatachannel/include")
+	target_link_libraries(${PROJECT_NAME} datachannel)
+else () # WIN32
+	find_package(LIBDATACHANNEL REQUIRED)
+	target_link_libraries(${PROJECT_NAME} LibDataChannel::LibDataChannel)
+endif()
 
 if (NOT ${BUILD_PLATFORM} STREQUAL wasm)
+	# zlib
 	find_package(ZLIB REQUIRED)
-	include_directories(${ZLIB_INCLUDE_DIRS})
-	target_link_libraries(${PROJECT_NAME} ${ZLIB_LIBRARIES})
+	target_link_libraries(${PROJECT_NAME} ZLIB::ZLIB)
 
-	
-	if(UNIX)
-		find_package(SFML REQUIRED COMPONENTS system network audio)
-		include_directories(${SFML_INCLUDE_DIR})
-		target_link_libraries(${PROJECT_NAME} sfml-system sfml-network sfml-audio)
-	else(WIN32)
-		set(SFML_STATIC_LIBRARIES TRUE)
-		find_package(SFML REQUIRED COMPONENTS system network audio)
-		include_directories(${SFML_INCLUDE_DIR})
-		target_link_libraries(${PROJECT_NAME} ${SFML_LIBRARIES} ${SFML_DEPENDENCIES})
-		target_link_libraries(${PROJECT_NAME} "${CMAKE_SOURCE_DIR}/Dependencies/SFML-2.5.1/lib/openal32.lib")
-		add_library(openal SHARED IMPORTED GLOBAL)
-		set_property(TARGET openal PROPERTY IMPORTED_LOCATION "${CMAKE_SOURCE_DIR}/Dependencies/SFML-2.5.1/bin/openal32.dll")
-		add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E copy_if_different
-		$<TARGET_FILE:openal> $<TARGET_FILE_DIR:${PROJECT_NAME}>
-	)	
-
-	endif()
-
-
-	find_package(GLEW REQUIRED)
-	include_directories(${GLEW_INCLUDE_DIRS})
-	target_link_libraries(${PROJECT_NAME} ${GLEW_LIBRARIES})
 
 	if(${BUILD_TARGET} STREQUAL client)
-
-		find_package(Freetype REQUIRED)
-		include_directories(${FREETYPE_INCLUDE_DIRS})
-		target_link_libraries(${PROJECT_NAME} ${FREETYPE_LIBRARIES})
+		find_package(SFML REQUIRED COMPONENTS system network audio)
+		target_link_libraries(${PROJECT_NAME} sfml-system sfml-network sfml-audio)
 
 		find_package(OpenGL REQUIRED)
-		include_directories(${OPENGL_INCLUDE_DIRS})
+		target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE ${OPENGL_INCLUDE_DIRS})
 		target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES})
+		
+		find_package(GLEW REQUIRED)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC GLEW_STATIC)
+		target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE ${GLEW_INCLUDE_DIRS})
+		target_link_libraries(${PROJECT_NAME} ${GLEW_LIBRARIES})
 
-		find_package(SDL2 REQUIRED)
-		find_package(SDL2_image REQUIRED)
-		include_directories(${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS})
-		target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES})
+		if (UNIX)
+			find_package(Freetype REQUIRED)
+			target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE ${FREETYPE_INCLUDE_DIRS})
+			target_link_libraries(${PROJECT_NAME} freetype)
+		else ()
+			find_package(Freetype CONFIG REQUIRED)
+			target_link_libraries(${PROJECT_NAME} freetype)
+		endif ()
+
+		if (UNIX)
+			find_package(SDL2 REQUIRED)
+			find_package(SDL2_image REQUIRED)
+			target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE ${SDL2_IMAGE_INCLUDE_DIRS})
+			target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES})
+		else ()
+			find_package(SDL2 REQUIRED)
+			find_package(sdl2-image REQUIRED)
+			target_link_libraries(${PROJECT_NAME} SDL2::SDL2 SDL2::SDL2main SDL2::SDL2_image)
+		endif ()
+
+	else ()
+		find_package(SFML REQUIRED COMPONENTS system network)
+		target_link_libraries(${PROJECT_NAME} sfml-system sfml-network)
 	endif()
-	
-else ()
-	include_directories("${CMAKE_SOURCE_DIR}/Dependencies/SFML-2.5.1/include")
-	include_directories("${CMAKE_SOURCE_DIR}/Dependencies/EMSFML/src")
+
+else () # wasm
+	target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE "${CMAKE_SOURCE_DIR}/Dependencies/EMSFML/include")
+	target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE "${CMAKE_SOURCE_DIR}/Dependencies/EMSFML/src")
 
 	if (${CMAKE_BUILD_TYPE} STREQUAL Release)
 		set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS
@@ -229,6 +243,7 @@ else ()
 			-s FULL_ES3=1 \
 			-s WEBSOCKET_URL='wss://pi.thissma.fr:55001' \
 			-s WEBSOCKET_SUBPROTOCOL='binary' \
+			-s DEFAULT_LIBRARY_FUNCS_TO_INCLUDE=wsSendMessage \
 			--preload-file ${CMAKE_SOURCE_DIR}/OpenGL/data@data \
 			--preload-file ${CMAKE_SOURCE_DIR}/OpenGL/src@src \
 			-Wno-unused-command-line-argument \
@@ -257,7 +272,7 @@ else ()
 			-Wno-unused-command-line-argument \
 			-g0 -O3"
 		)
-	else ()
+	else () # Debug
 		set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS
 			"-fno-rtti \
 			-Wno-pthreads-mem-growth \
@@ -281,6 +296,7 @@ else ()
 			-s DEMANGLE_SUPPORT=1 \
 			-s ABORT_ON_WASM_EXCEPTIONS=1 \
 			-s EXIT_RUNTIME=1 \
+			-s DEFAULT_LIBRARY_FUNCS_TO_INCLUDE=wsSendMessage \
 			--preload-file ${CMAKE_SOURCE_DIR}/OpenGL/data@data \
 			--preload-file ${CMAKE_SOURCE_DIR}/OpenGL/src@src \
 			-Wno-unused-command-line-argument \
@@ -358,6 +374,10 @@ else ()
 		add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
 			COMMAND ${CMAKE_COMMAND} -E copy_directory
 				${CMAKE_CURRENT_SOURCE_DIR}/src $<TARGET_FILE_DIR:${PROJECT_NAME}>/sources/OpenGL/src
+		)
+		add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E copy_directory
+				${CMAKE_SOURCE_DIR}/Dependencies/datachannel-wasm $<TARGET_FILE_DIR:${PROJECT_NAME}>/sources/Dependencies/datachannel-wasm
 		)
 	endif ()
 endif ()

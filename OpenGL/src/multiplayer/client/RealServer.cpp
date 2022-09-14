@@ -25,66 +25,109 @@
 
 using namespace glm;
 using namespace serde;
+using std::placeholders::_1;
 
-RealServer::RealServer(std::string url, unsigned short port)
-  : addr(url), port(port),
+static const rtc::Configuration config {
+
+};
+
+static const rtc::DataChannelInit init {
+  .reliability = {
+    .type = rtc::Reliability::Type::Rexmit,
+    .unordered = true,
+    .rexmit = 0
+  }
+};
+
+RealServer::RealServer(std::string host, unsigned short port, bool tls)
+  : host(host), port(port),
+    peer(nullptr), channel(nullptr),
     frameDuration(sf::milliseconds(Config::getServerConfig().serverTick)),
     world(World::getInst()),
     playerUid(generateIdentifier()),
-    serverAck(true)
+    serverAck(false)
 {
   lastUpdate = clock.getElapsedTime() - frameDuration - frameDuration; // needs update
-
-  socket.setBlocking(false);
-
-  if(socket.bind(sf::Socket::AnyPort) != sf::Socket::Done) {
-    throw NetworkError("Failed to bind to any port");
-  }
-
   lastServerUpdate = clock.getElapsedTime();
 
   auto newPlayer = std::make_unique<Character>(Config::getServerConfig().spawnPoint);
   auto entity = world.entities.add(playerUid, std::move(newPlayer));
   player = std::static_pointer_cast<Character>(entity);
+
+  // ---- websocket setup ----
+
+  socket.onMessage(std::bind(&RealServer::on_message, this, _1));
+  socket.onError([] (std::string e) { std::cerr << "[ERR] WebSocket error! " << e << std::endl; });
+  socket.onClosed([] () { std::cout << "[INFO] WebSocket closed" << std::endl; });
+
+  socket.onOpen([this] () {
+    std::cout << "[INFO] WebSocket open" << std::endl;
+
+    peer = std::make_unique<rtc::PeerConnection>(config);
+  	peer->onLocalDescription([this](rtc::Description description) { socket.send(description); });
+  	peer->onLocalCandidate([this](rtc::Candidate candidate) {socket.send(candidate); });
+  	// peer->onLocalDescription([this](rtc::Description description) { std::cout << "[INFO] Peer Local Description: " << description << std::endl; socket.send(description); });
+  	// peer->onLocalCandidate([this](rtc::Candidate candidate) { std::cout << "[INFO] Peer Local Candidate: " << candidate << std::endl; socket.send(candidate); });
+  	// peer->onStateChange([](rtc::PeerConnection::State state) { std::cout << "[INFO] Peer State: " << state << std::endl; });
+  	// peer->onGatheringStateChange([](rtc::PeerConnection::GatheringState state) { std::cout << "[INFO] Peer Gathering State: " << state << std::endl; });
+
+    channel = peer->createDataChannel(std::to_string(playerUid));
+    channel->onMessage(std::bind(&RealServer::on_message, this, _1));
+    channel->onError([] (std::string e) { std::cerr << "[ERR] DataChannel error! " << e << std::endl; });
+    channel->onClosed([] () { std::cout << "[INFO] DataChannel closed" << std::endl; });
+    channel->onOpen([] () { std::cout << "[INFO] DataChannel open" << std::endl; });
+
+    packet_login();
+  });
+
+  std::string url = "ws" + std::string(tls ? "s" : "") + "://" + host + ":" + std::to_string(port);
+  std::cout << "[INFO] connecting to websocket server at " << url << std::endl;
+  state = ServerState::CONNECTING;
+  socket.open(url);
 }
 
 RealServer::~RealServer() {
   packet_logout();
 }
 
-bool RealServer::login() {
-  sf::Packet packet;
-  sf::IpAddress serverAddr;
-  unsigned short serverPort;
+bool RealServer::send(sf::Packet& packet) {
+  if(channel && channel->isOpen()) // prefer webrtc over websocket
+    return channel->send((std::byte*)packet.getData(), packet.getDataSize());
+  else if(socket.isOpen())
+    return socket.send((std::byte*)packet.getData(), packet.getDataSize());
+  else
+    return false;
+}
 
-  auto recv_res = socket.receive(packet, serverAddr, serverPort);
-
-  if(recv_res == sf::Socket::Done) {
-    PacketHeader header;
-    packet >> header;
-    auto type = header.getType();
-    lastServerUpdate = clock.getElapsedTime();
-
-    if(type == PacketType::ACK_LOGIN) return true; // TODO: check correct uid ?
-    else std::cout << "[WARN] not a login packet: " << header << std::endl;
+void RealServer::on_message(rtc::message_variant msg) {
+  if (std::holds_alternative<std::string>(msg)) {
+    auto data = std::get<std::string>(msg);
+    if(data.starts_with("a=candidate")) {
+      rtc::Candidate candidate(data, "");
+      // std::cout << "[INFO] Peer Remote candidate: " << candidate.candidate() << std::endl;
+      peer->addRemoteCandidate(candidate);
+    }
+    else {
+      rtc::Description description(data, rtc::Description::Type::Answer);
+      // std::cout << "[INFO] Peer Remote description: " << data << std::endl;
+      peer->setRemoteDescription(description);
+    }
   }
-
-  packet_login();
-  return false;
+  else {
+    auto data = std::get<rtc::binary>(msg);
+    sf::Packet packet;
+    packet.append(data.data(), data.size());
+    on_packet_recv(packet);
+  }
 }
 
 void RealServer::update() {
   Server::update();
-  
-  if(clock.getElapsedTime() - lastServerUpdate > timeout) {
-    throw std::runtime_error("server timeout");
-  }
 
-  #ifdef EMSCRIPTEN
-    poll(); // TODO: this hack avoids waiting too long and timeout
-  #else
-    while(poll()) {}
-  #endif
+  if(clock.getElapsedTime() - lastServerUpdate > timeout) {
+    state = ServerState::DISCONNECTED;
+    return;
+  }
 
   packet_blocks();
   packet_chunks();
@@ -97,22 +140,18 @@ void RealServer::update() {
   }
 }
 
-bool RealServer::poll() {
-  sf::Packet packet;
-  sf::IpAddress serverAddr;
-  unsigned short serverPort;
-
-  auto recv_res = socket.receive(packet, serverAddr, serverPort);
-
-  if(recv_res != sf::Socket::Done) return false;
-
+bool RealServer::on_packet_recv(sf::Packet& packet) {
   PacketHeader header;
   packet >> header;
   auto type = header.getType();
   lastServerUpdate = clock.getElapsedTime();
   serverAck = true;
 
-  if(type == PacketType::ENTITY_TICK) handle_entity_tick(packet);
+  if(type == PacketType::ACK_LOGIN) {
+    state = ServerState::CONNECTED;
+    std::cout << "[INFO] logged into the server" << std::endl;
+  } 
+  else if(type == PacketType::ENTITY_TICK) handle_entity_tick(packet);
   else if(type == PacketType::LOGOUT) handle_logout(packet);
   else if(type == PacketType::BLOCKS) handle_blocks(packet);
   else if(type == PacketType::CHUNKS) handle_chunks(packet);
@@ -157,9 +196,9 @@ void RealServer::packet_blocks() {
     packet << header << blocks;
     blocks.clear();
 
-    auto send_res = socket.send(packet, addr, port);
+    auto send_res = send(packet);
 
-    if(send_res != sf::Socket::Done) {
+    if(!send_res) {
       throw NetworkError("failed to send blocks to server");
     }
   }
@@ -171,9 +210,9 @@ void RealServer::packet_ping() {
 
   packet << header;
 
-  auto send_res = socket.send(packet, addr, port);
+  auto send_res = send(packet);
 
-  if(send_res != sf::Socket::Done) {
+  if(!send_res) {
     throw NetworkError("failed to ping server");
   }
 }
@@ -184,9 +223,9 @@ void RealServer::packet_login() {
 
   packet << header << playerUid;
 
-  auto send_res = socket.send(packet, addr, port);
+  auto send_res = send(packet);
 
-  if(send_res != sf::Socket::Done) {
+  if(!send_res) {
     throw NetworkError("login failed");
   }
 }
@@ -197,9 +236,9 @@ void RealServer::packet_logout() {
 
   packet << header;
 
-  auto send_res = socket.send(packet, addr, port);
+  auto send_res = send(packet);
 
-  if(send_res != sf::Socket::Done) {
+  if(!send_res) {
     std::cout << "[WARN] logout failed" << std::endl;
   }
 }
@@ -209,9 +248,9 @@ void RealServer::packet_player_tick() {
   PacketHeader header(PacketType::PLAYER_TICK);
   packet << header << *player;
 
-  auto send_res = socket.send(packet, addr, port);
+  auto send_res = send(packet);
 
-  if(send_res != sf::Socket::Done) {
+  if(!send_res) {
     std::cout << "[WARN] player_tick failed" << std::endl;
   }
 }
@@ -223,9 +262,9 @@ void RealServer::packet_chunks() {
   PacketHeader header(PacketType::CHUNKS);
   packet << header << pendingChunks.get();
 
-  auto send_res = socket.send(packet, addr, port);
+  auto send_res = send(packet);
 
-  if(send_res != sf::Socket::Done) {
+  if(!send_res) {
     std::cout << "[WARN] chunks failed" << std::endl;
   }
 }
@@ -237,9 +276,9 @@ void RealServer::packet_ack_chunks(std::vector<glm::ivec3> ack) {
   PacketHeader header(PacketType::ACK_CHUNKS);
   packet << header << ack;
 
-  auto send_res = socket.send(packet, addr, port);
+  auto send_res = send(packet);
 
-  if(send_res != sf::Socket::Done) {
+  if(!send_res) {
     std::cout << "[WARN] ack_chunks failed" << std::endl;
   }
 }

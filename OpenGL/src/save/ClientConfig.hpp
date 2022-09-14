@@ -11,14 +11,14 @@ namespace Config {
         ~ClientConfig();
 
         std::string serverAddr = "pi.thissma.fr";
+        unsigned short serverPort = 55000;
+        bool serverTLS = true;
 
         #ifdef EMSCRIPTEN
         bool multiplayer = true;
-        unsigned short serverPort = 55001;
         unsigned int msaa = 0;
         #else
         bool multiplayer = false;
-        unsigned short serverPort = 55000;
         unsigned int msaa = 4;
         #endif
 
@@ -27,7 +27,7 @@ namespace Config {
         float musicVolume = 50.0;
         bool fullscreen = false;
         bool vsync = true;
-	    int shadows = 2;
+        int shadows = 2;
         Key forward = SDLK_z;
         Key backward = SDLK_s;
         Key left = SDLK_q;
@@ -37,7 +37,7 @@ namespace Config {
         Key view = SDLK_F5;
         Key sprint = SDLK_LCTRL;
         Key menu = SDLK_ESCAPE;
-        Key dab = SDLK_EXCLAIM;
+        Key dab = SDLK_t;
     };
 
     ClientConfig& getClientConfig();
