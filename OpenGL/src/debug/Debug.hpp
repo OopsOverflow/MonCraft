@@ -67,5 +67,12 @@ namespace glm {
       }
       return os;
   }
+
+  #if FMT_VERSION >= 90000 // fmt version >= 9 requires explicit formatter definitions.
+    template<typename T, length_t N>
+    struct fmt::formatter<vec<N, T>> : ostream_formatter{};
+    template<typename T>
+    struct fmt::formatter<tmat4x4<T>> : ostream_formatter{};
+  #endif 
 }
 

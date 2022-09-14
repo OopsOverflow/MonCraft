@@ -25,6 +25,13 @@
 #include "terrain/ChunkMap.hpp"
 #include "terrain/World.hpp"
 
+#if FMT_VERSION >= 90000 // fmt version >= 9 requires explicit formatter definitions.
+  template<typename T, length_t N>
+  struct fmt::formatter<rtc::Configuration> : ostream_formatter{};
+  template<typename T>
+  struct fmt::formatter<rtc::Candidate> : ostream_formatter{};
+#endif
+
 using namespace glm;
 using namespace serde;
 using std::placeholders::_1;

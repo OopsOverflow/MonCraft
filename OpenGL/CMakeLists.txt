@@ -386,7 +386,5 @@ else ()
 endif ()
 
 # configure logger
-if (${CMAKE_BUILD_TYPE} STREQUAL Debug)
-	target_compile_definitions(${PROJECT_NAME} PUBLIC SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_DEBUG)
-	target_compile_definitions(${PROJECT_NAME} PUBLIC DEBUG)
-endif ()
+target_compile_definitions(${PROJECT_NAME} PUBLIC "$<$<CONFIG:DEBUG>:SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_DEBUG>")
+target_compile_definitions(${PROJECT_NAME} PUBLIC "$<$<CONFIG:DEBUG>:DEBUG>")

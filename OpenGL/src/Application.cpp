@@ -3,12 +3,10 @@
 #include <chrono>
 #include <iostream>
 #include <memory>
+#include <spdlog/spdlog.h>
 #include <string>
 #include <utility>
 #include <vector>
-#include <thread>
-#include <spdlog/spdlog.h>
-#include <spdlog/fmt/ostr.h>
 
 #include "gl/ResourceManager.hpp"
 #include "gl/Viewport.hpp"
@@ -153,10 +151,9 @@ void showMainMenu(Viewport& vp) {
 int main(int argc, char* argv[]) {
     #ifdef DEBUG
         spdlog::set_level(spdlog::level::debug);
-        spdlog::debug("Debug logging is enabled.");
     #endif
     spdlog::info("---- Main ----");
-    spdlog::debug("Main thread is {}", std::this_thread::get_id());
+    spdlog::debug("Debug logging is enabled.");
 
     Viewport window({ 1200, 800 });
     std::unique_ptr<ui::Component> view;

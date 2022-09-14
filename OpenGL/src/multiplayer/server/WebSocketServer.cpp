@@ -10,7 +10,6 @@
 #include <functional>
 #include <iostream>
 #include <spdlog/spdlog.h>
-#include <spdlog/fmt/ostr.h>
 #include <utility>
 #include "multiplayer/server/Server.hpp"
 #include "save/ServerConfig.hpp"
