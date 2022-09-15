@@ -72,6 +72,7 @@ public:
 	glm::vec3 accel;
 	glm::vec3 direction;
 
+	bool dab;
 	bool onFloor;
 	Hitbox hitbox;
 };

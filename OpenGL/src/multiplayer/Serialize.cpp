@@ -17,6 +17,7 @@ sf::Packet& serde::operator<<(sf::Packet& packet, Entity const& entity) {
 	packet << entity.speed;
 	packet << entity.accel;
 	packet << entity.direction;
+  packet << entity.dab;
 	packet << (sf::Uint8)entity.state;
 	return packet;
 }
@@ -29,6 +30,7 @@ sf::Packet& serde::operator>>(sf::Packet& packet, Entity& entity) {
 	packet >> entity.speed;
 	packet >> entity.accel;
 	packet >> entity.direction;
+  packet >> entity.dab;
 	packet >> state;
 	entity.state = (State)state;
 	return packet;
@@ -41,6 +43,7 @@ sf::Packet& serde::consume(Entity& e, sf::Packet& packet) {
 	decltype(e.speed) speed;
 	decltype(e.accel) accel;
 	decltype(e.direction) direction;
+  decltype(e.dab) dab;
 	sf::Uint8 state;
 	packet >> loc;
 	packet >> rot;
@@ -48,6 +51,7 @@ sf::Packet& serde::consume(Entity& e, sf::Packet& packet) {
 	packet >> speed;
 	packet >> accel;
 	packet >> direction;
+  packet >> dab;
 	packet >> state;
 	return packet;
 }

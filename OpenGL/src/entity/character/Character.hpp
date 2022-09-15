@@ -105,5 +105,5 @@ private:
 
   bool god;
   bool sprint;
-  bool dab;
+  
 };
