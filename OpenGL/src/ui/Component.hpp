@@ -126,7 +126,6 @@ protected:
 
   void queueDraw();
   void recompute();
-  void handleEvents(std::vector<Event> const& events);
   glm::ivec2 toRelative(glm::ivec2 absPos) const;
 
   bool isHover();
@@ -144,6 +143,9 @@ protected:
   virtual void onKeyPressed(Key k);
   virtual void onKeyReleased(Key k);
 
+  void handleEvent(Event const& evt);
+  bool applyEvent(Event const& evt);
+
 //// PRIVATE STUFF ////
 private:
   bool drawQueued;
@@ -155,14 +157,17 @@ private:
   bool hover;
   bool pressed;
 
-  static Component* activeWidget;
+  static Component* activeComponent;
+  static Component* hoverComponent;
 
   void queueRecompute(bool propagate = true);
   void computeSize();
   void computeOrigin();
-  bool handleEvent(Event const& evt);
-  bool bubbleEvent(Event const& evt);
-  void filterEvent(Event const& evt);
+  Component* findTargetComponent(glm::ivec2 pos);
+  Component* findCommonAncestor(Component* b);
+  Component* findRoot();
+  // ancestors in root-to-child order
+  std::vector<Component*> findAncestors();
   bool overlaps(glm::ivec2 point) const;
 };
 
