@@ -132,9 +132,7 @@ void Server::packet_blocks(Identifier uid, BlockArray changedBlocks) {
 void Server::packet_ack_login(ClientID client, Identifier uid) {
   sf::Packet packet;
   PacketHeader header(PacketType::ACK_LOGIN);
-  auto now = std::chrono::steady_clock::now().time_since_epoch();
-  uint32_t start = std::chrono::duration_cast<std::chrono::milliseconds>(now).count();
-  packet << header << world.t << start;
+  packet << header << world.t;
   send(packet, client);
 }
 
