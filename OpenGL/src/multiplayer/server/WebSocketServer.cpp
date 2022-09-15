@@ -18,15 +18,22 @@
 using std::placeholders::_1;
 
 
-static rtc::WebSocketServer::Configuration makeServerConf(unsigned short port, bool useTLS) {
+static rtc::WebSocketServer::Configuration makeWSConf(unsigned short port, bool useTLS) {
   if (useTLS) return { port, true, "cert/pi.thissma.fr/cert.pem", "cert/pi.thissma.fr/privkey.pem" };
   else return { port };
 }
+
+static rtc::Configuration makeRTCConf() {
+  rtc::Configuration config;
+  config.iceServers.emplace_back("stun:stun.stunprotocol.org:3478");
+  return config;
+}
+
 WebSocketServer* WebSocketServer::inst = nullptr;
 bool WebSocketServer::stopSignal = false;
 
 WebSocketServer::WebSocketServer(unsigned short port, bool tls)
-  : Server(port), server(makeServerConf(port, tls))
+  : Server(port), server(makeWSConf(port, tls))
 {
   spdlog::info("Server config: port={}, tls={}", port, tls);
 }
@@ -82,7 +89,7 @@ void WebSocketServer::on_open(std::shared_ptr<rtc::WebSocket> socket) {
 
     auto peer = std::shared_ptr<Peer>(new Peer{
       .id = client,
-      .conn = rtc::PeerConnection(),
+      .conn = rtc::PeerConnection(makeRTCConf()),
       .socket = socket,
       .channel = nullptr,
     });

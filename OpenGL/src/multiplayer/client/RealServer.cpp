@@ -30,9 +30,12 @@ using namespace glm;
 using namespace serde;
 using std::placeholders::_1;
 
-static const rtc::Configuration config {
+static rtc::Configuration makeRTCConf() {
+  rtc::Configuration config;
+  config.iceServers.emplace_back("stun:stun.stunprotocol.org:3478");
+  return config;
+}
 
-};
 
 static const rtc::DataChannelInit init {
   .reliability = {
@@ -70,7 +73,7 @@ RealServer::RealServer(std::string host, unsigned short port, bool tls)
   socket.onOpen([this] () {
     spdlog::info("WebSocket open");
 
-    peer = std::make_unique<rtc::PeerConnection>(config);
+    peer = std::make_unique<rtc::PeerConnection>(makeRTCConf());
     peer->onLocalDescription([this](rtc::Description description) {
       spdlog::debug("RTC Local description: {}", description);
       socket.send(description);
@@ -118,7 +121,7 @@ void RealServer::on_message(rtc::message_variant msg) {
   if (std::holds_alternative<std::string>(msg)) {
     std::string data = std::get<std::string>(msg);
     if(data.starts_with("a=candidate")) {
-      rtc::Candidate candidate(data, "");
+      rtc::Candidate candidate(data, "0");
       spdlog::debug("RTC remote candidate: {}", data);
       peer->addRemoteCandidate(candidate);
     }
