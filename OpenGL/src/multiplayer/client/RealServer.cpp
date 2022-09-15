@@ -149,6 +149,10 @@ void RealServer::update() {
 
   packet_blocks();
   packet_chunks();
+  if(player->hasBreak){
+    packet_player_break();
+    player->hasBreak = false;
+  }
 
   sf::Time now = clock.getElapsedTime();
   if(now - lastUpdate > frameDuration && serverAck) {
@@ -169,6 +173,7 @@ bool RealServer::on_packet_recv(sf::Packet& packet) {
     state = ServerState::CONNECTED;
     spdlog::info("Logged into the server");
   } 
+  else if(type == PacketType::PLAYER_ACTION) handle_player_action(packet);
   else if(type == PacketType::ENTITY_TICK) handle_entity_tick(packet);
   else if(type == PacketType::LOGOUT) handle_logout(packet);
   else if(type == PacketType::BLOCKS) handle_blocks(packet);
@@ -200,6 +205,33 @@ void RealServer::handle_entity_tick(sf::Packet& packet) {
       packet >> *entity;
     }
   }
+}
+
+void RealServer::handle_player_action(sf::Packet& packet) {
+
+  Identifier uid;
+  packet >> uid;
+
+  auto entity = world.entities.get(uid);
+
+  Action action;
+
+  if(uid == playerUid) {
+    consume(action, packet);
+  }
+  else {
+    if(entity == nullptr) { // create the player if not found
+      world.entities.add(uid, std::make_unique<Character>(Config::getServerConfig().spawnPoint));
+      entity = world.entities.get(uid);
+    }
+
+    packet >> action;
+    if(action == Action::BREAK)
+      entity->breaked = true;
+
+    spdlog::info((int)action);
+  }
+  
 }
 
 void RealServer::ping() {
@@ -270,6 +302,18 @@ void RealServer::packet_player_tick() {
 
   if(!send_res) {
     spdlog::error("Packet PLAYER_TICK failed");
+  }
+}
+
+void RealServer::packet_player_break() {
+  sf::Packet packet;
+  PacketHeader header(PacketType::PLAYER_ACTION);
+  packet << header << Action::BREAK;
+
+  auto send_res = send(packet);
+
+  if(!send_res) {
+    spdlog::error("Packet PLAYER_ACTION failed");
   }
 }
 

@@ -31,6 +31,7 @@ private:
   void handle_logout(ClientID client);
   void handle_ping(Client& client);
   void handle_player_tick(Client& client, sf::Packet& packet);
+  void handle_player_action(Client& client, sf::Packet& packet);
   void handle_blocks(Client const& client, sf::Packet& packet);
   void handle_chunks(Client& client, sf::Packet& packet);
   void handle_ack_chunks(Client& client, sf::Packet& packet);

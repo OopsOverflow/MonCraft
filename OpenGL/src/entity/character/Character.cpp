@@ -155,7 +155,6 @@ void Character::breakBlock() {
     hasBreak = true;
     breaked = true;
     
-    
     auto& world = World::getInst();
     vec3 eyePos = headNode.model * vec4(0, 4, 0, 1);
     vec3 eyeTarget = headNode.model * vec4(0, 4, 5, 1);
@@ -223,10 +222,11 @@ void Character::pickBlock() {
 void Character::update(uint32_t dt) {
   Entity::update(dt);
 
-  if(breaked)
+  if(breaked) {
     r_arm.anim->setAnimation(Animation::Break);
-
-  breaked = false;
+    breaked = false;
+  }
+   
 
   // smooth head rot with constant speed
   {

@@ -53,11 +53,13 @@ private:
   void packet_blocks();
   void packet_chunks();
   void packet_ack_chunks(std::vector<glm::ivec3> chunks);
+  void packet_player_break();
   bool on_packet_recv(sf::Packet& packet);
   void handle_logout(sf::Packet& packet);
   void handle_blocks(sf::Packet& packet);
   void handle_chunks(sf::Packet& packet);
   void handle_entity_tick(sf::Packet& packet);
+  void handle_player_action(sf::Packet& packet);
 
 
   std::string host;

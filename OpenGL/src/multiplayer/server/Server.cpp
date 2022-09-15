@@ -60,11 +60,12 @@ void Server::on_packet_recv(sf::Packet& packet, ClientID client) {
     }
     else {
       it->second.lastUpdate = clock.getElapsedTime();
-      if(type == PacketType::PING)             handle_ping(it->second);
-      else if(type == PacketType::BLOCKS)      handle_blocks(it->second, packet);
-      else if(type == PacketType::PLAYER_TICK) handle_player_tick(it->second, packet);
-      else if(type == PacketType::CHUNKS)      handle_chunks(it->second, packet);
-      else if(type == PacketType::ACK_CHUNKS)  handle_ack_chunks(it->second, packet);
+      if(type == PacketType::PING)               handle_ping(it->second);
+      else if(type == PacketType::BLOCKS)        handle_blocks(it->second, packet);
+      else if(type == PacketType::PLAYER_TICK)   handle_player_tick(it->second, packet);
+      else if(type == PacketType::PLAYER_ACTION) handle_player_action(it->second, packet);
+      else if(type == PacketType::CHUNKS)        handle_chunks(it->second, packet);
+      else if(type == PacketType::ACK_CHUNKS)    handle_ack_chunks(it->second, packet);
     }
   }
 }
@@ -83,7 +84,7 @@ void Server::packet_entity_tick() {
   packet << header;
   packet << (sf::Uint64)clients.size();
 
-  for(auto& pair : clients) {
+  for(auto const& pair : clients) {
     packet << pair.second.uid;
     packet << pair.second.player;
   }
@@ -203,6 +204,18 @@ void Server::handle_ping(Client& client) {
 void Server::handle_player_tick(Client& client, sf::Packet& packet) {
   packet >> client.player;
   client.ack = true;
+}
+
+void Server::handle_player_action(Client& client, sf::Packet& packet) {
+  PacketHeader header(PacketType::PLAYER_ACTION);
+  sf::Packet pck;
+  Action action;
+  packet >> action;
+  pck << header << client.uid << action;
+  for(auto& pair : clients) {
+    if(pair.second.uid != client.uid)
+      send(pck, pair.first);    
+  }
 }
 
 void Server::handle_chunks(Client& client, sf::Packet& packet) {
