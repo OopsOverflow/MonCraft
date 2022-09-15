@@ -2,7 +2,7 @@
 
 #include <glm/glm.hpp>
 
-
+#include "save/ClientConfig.hpp"
 #include "interface/widgets/MonCraftButton.hpp"
 #include "gl/ResourceManager.hpp"
 #include "ui/Component.hpp"
@@ -67,21 +67,25 @@ ParametersMenu::ParametersMenu()
 	keyButton->onClick([&] {
 		folderDiv->unpackAt(0);
 		folderDiv->pack_start(keyMenu);
+		this->makeActive();
 	});
 
 	graphicsButton->onClick([&] {
 		folderDiv->unpackAt(0);
 		folderDiv->pack_start(graphicsMenu);
+		this->makeActive();
 	});
 
 	audioButton->onClick([&] {
 		folderDiv->unpackAt(0);
 		folderDiv->pack_start(audioMenu);
+		this->makeActive();
 	});
 
 	miscButton->onClick([&] {
 		folderDiv->unpackAt(0);
 		folderDiv->pack_start(miscMenu);
+		this->makeActive();
 	});
 }
 
@@ -96,4 +100,11 @@ std::unique_ptr<ParametersMenu> ParametersMenu::create() {
 	auto menu = std::unique_ptr<ParametersMenu>(new ParametersMenu());
 	menu->initialize();
 	return menu;
+}
+
+void ParametersMenu::onKeyReleased(Key k) {
+	if(k == Config::getClientConfig().menu){
+		quitButton->click();
+	}
+        
 }

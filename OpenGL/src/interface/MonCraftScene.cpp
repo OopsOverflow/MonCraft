@@ -89,6 +89,7 @@ MonCraftScene::MonCraftScene(Viewport* vp)
     parameters = ParametersMenu::create();
     parameters->quitButton->onClick([params = parameters.get(), this] { 
         this->remove(params); 
+        this->makeActive();
     });
     parameters->graphicsMenu->fullscreen->onRelease([&, vp, fullscreen = parameters->graphicsMenu->fullscreen.get()] { 
         config.fullscreen = fullscreen->getChecked();
@@ -101,6 +102,7 @@ MonCraftScene::MonCraftScene(Viewport* vp)
 
     gameMenu->parameterButton->onClick([param = parameters, this] {
         this->add(param);
+        this->makeActive();
     });
     
     #ifndef EMSCRIPTEN
@@ -155,13 +157,20 @@ void MonCraftScene::onKeyReleased(Key k) {
     if(vp->isMouseCaptured())
         keyboardController.handleKeyReleased(k);
     if(k == Config::getClientConfig().menu) {
-        if(vp->isMouseCaptured()) {
-            add(gameMenu);
-            vp->freeMouse();
-        }
-        else {
-            remove(gameMenu.get());
-            vp->captureMouse();
+        bool paramDisplayed = children.end() != std::find_if(children.begin(), children.end(), [&](auto& other) {
+            return other.get() == parameters.get();
+        });
+        if(paramDisplayed) {
+            this->remove(parameters.get()); 
+        }else{
+            if(vp->isMouseCaptured() ) {
+                add(gameMenu);
+                vp->freeMouse();
+            }
+            else {
+                remove(gameMenu.get());
+                vp->captureMouse();
+            }
         }
     }
 }

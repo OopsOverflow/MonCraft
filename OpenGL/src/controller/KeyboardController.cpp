@@ -42,6 +42,13 @@ bool KeyboardController::handleKeyReleased(Key k) {
     }
     else if (k == config.dab) {
         dab = false;
+    }else if(k == config.menu) {
+        if (direction.z != 0) direction.z = 0;
+        if (direction.x != 0) direction.x = 0;
+        if (direction.y != 0) direction.y = 0;
+        sprint = false;
+        dab = false;
+        spaceIsPressed = false;
     }
 
     return true;
