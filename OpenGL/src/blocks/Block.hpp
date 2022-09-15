@@ -30,7 +30,8 @@ enum class BlockType
     Oak_Planks,
     Birch_Planks,
     Oak_Stair,
-    Birch_Stair
+    Birch_Stair,
+    Red_Brick,
 };
 
 enum class BlockFace { TOP, BOTTOM, FRONT, RIGHT, BACK, LEFT, INNER };
