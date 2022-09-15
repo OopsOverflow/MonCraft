@@ -59,8 +59,8 @@
 		wsSetOpenCallback: function(ws, openCallback) {
 			var webSocket = WEBSOCKET.map[ws];
 			var cb = function() {
-				if(webSocket.rtcUserDeleted) return;
-				var userPointer = webSocket.rtcUserPointer || 0;
+				if(webSocket.wsUserDeleted) return;
+				var userPointer = webSocket.wsUserPointer || 0;
 				Module['dynCall']('vi', openCallback, [userPointer]);
 			};
 			webSocket.onopen = cb;
@@ -70,8 +70,8 @@
  		wsSetErrorCallback: function(ws, errorCallback) {
 			var webSocket = WEBSOCKET.map[ws];
 			var cb = function() {
-				if(webSocket.rtcUserDeleted) return;
-				var userPointer = webSocket.rtcUserPointer || 0;
+				if(webSocket.wsUserDeleted) return;
+				var userPointer = webSocket.wsUserPointer || 0;
 				Module['dynCall']('vii', errorCallback, [0, userPointer]);
 			};
 			webSocket.onerror = cb;
@@ -80,10 +80,10 @@
 		wsSetMessageCallback: function(ws, messageCallback) {
 			var webSocket = WEBSOCKET.map[ws];
 			webSocket.onmessage = function(evt) {
-				if(webSocket.rtcUserDeleted) return;
+				if(webSocket.wsUserDeleted) return;
 				if(typeof evt.data == 'string') {
 					var pStr = WEBSOCKET.allocUTF8FromString(evt.data);
-					var userPointer = webSocket.rtcUserPointer || 0;
+					var userPointer = webSocket.wsUserPointer || 0;
 					Module['dynCall']('viii', messageCallback, [pStr, -1, userPointer]);
 					_free(pStr);
 				} else {
@@ -92,14 +92,14 @@
 					var pBuffer = _malloc(size);
 					var heapBytes = new Uint8Array(Module['HEAPU8'].buffer, pBuffer, size);
 					heapBytes.set(byteArray);
-					var userPointer = webSocket.rtcUserPointer || 0;
+					var userPointer = webSocket.wsUserPointer || 0;
 					Module['dynCall']('viii', messageCallback, [pBuffer, size, userPointer]);
 					_free(pBuffer);
 				}
 			};
 			webSocket.onclose = function() {
-				if(webSocket.rtcUserDeleted) return;
-				var userPointer = webSocket.rtcUserPointer || 0;
+				if(webSocket.wsUserDeleted) return;
+				var userPointer = webSocket.wsUserPointer || 0;
 				Module['dynCall']('viii', messageCallback, [0, 0, userPointer]);
 			};
 		},
@@ -125,7 +125,7 @@
 
 		wsSetUserPointer: function(ws, ptr) {
 			var webSocket = WEBSOCKET.map[ws];
-			if(webSocket) webSocket.rtcUserPointer = ptr;
+			if(webSocket) webSocket.wsUserPointer = ptr;
 		},
 	};
 

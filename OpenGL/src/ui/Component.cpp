@@ -338,7 +338,7 @@ Component* Component::findCommonAncestor(Component* other) {
   auto ancestorsB = other->findAncestors();
   int i = 0;
   int count = std::min(ancestorsA.size(), ancestorsB.size());
-  while (ancestorsA[i] == ancestorsB[i] && i < count) {
+  while (i < count && ancestorsA[i] == ancestorsB[i]) {
     i++;
   }
   if (i == 0) return nullptr;
@@ -354,8 +354,8 @@ Component* Component::findRoot() {
 
 void Component::handleEvent(Event const& evt) {
   Component* target = findTargetComponent(evt.getPosition());
-  Component* ancestor;
   if(!target) return;
+  Component* ancestor;
   
   // un-hover
   if(hoverComponent) {
@@ -391,8 +391,10 @@ void Component::handleEvent(Event const& evt) {
   // bubble event (child-to-parent)
   bool stop = false;
   comp = target;
-  while(!stop && comp) {
-    stop = comp->applyEvent(evt);
+  // notice that applyEvent may result in the component being destroyed, in which case
+  // we absolutely don't want to call comp->parent.
+  // comp MUST return true (stop propagation) in that case.
+  while(comp && !comp->applyEvent(evt)) {
     comp = comp->parent;
   }
 }
