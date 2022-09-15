@@ -10,7 +10,7 @@
 
 class Chunk;
 
-sf::Packet& serde::operator<<(sf::Packet& packet, Entity const& entity) {
+sf::Packet& serde::operator<<(sf::Packet& packet, Entity& entity) {
 	packet << entity.bodyNode.loc;
 	packet << entity.bodyNode.rot;
 	packet << entity.headNode.rot;
@@ -18,6 +18,8 @@ sf::Packet& serde::operator<<(sf::Packet& packet, Entity const& entity) {
 	packet << entity.accel;
 	packet << entity.direction;
   packet << entity.dab;
+  packet << entity.hasBreak;
+  entity.hasBreak = false;
 	packet << (sf::Uint8)entity.state;
 	return packet;
 }
@@ -31,6 +33,7 @@ sf::Packet& serde::operator>>(sf::Packet& packet, Entity& entity) {
 	packet >> entity.accel;
 	packet >> entity.direction;
   packet >> entity.dab;
+  packet >> entity.breaked;
 	packet >> state;
 	entity.state = (State)state;
 	return packet;
@@ -44,6 +47,7 @@ sf::Packet& serde::consume(Entity& e, sf::Packet& packet) {
 	decltype(e.accel) accel;
 	decltype(e.direction) direction;
   decltype(e.dab) dab;
+  decltype(e.breaked) breaked;
 	sf::Uint8 state;
 	packet >> loc;
 	packet >> rot;
@@ -52,6 +56,7 @@ sf::Packet& serde::consume(Entity& e, sf::Packet& packet) {
 	packet >> accel;
 	packet >> direction;
   packet >> dab;
+  packet >> breaked;
 	packet >> state;
 	return packet;
 }

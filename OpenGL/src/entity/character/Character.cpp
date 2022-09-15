@@ -152,7 +152,9 @@ bool Character::getDab() const {
 
 void Character::breakBlock() {
   if(!dab) { //we can't break when we are dabbing wtf???
-    r_arm.anim->setAnimation(Animation::Break);
+    hasBreak = true;
+    breaked = true;
+    
     
     auto& world = World::getInst();
     vec3 eyePos = headNode.model * vec4(0, 4, 0, 1);
@@ -220,6 +222,11 @@ void Character::pickBlock() {
 
 void Character::update(uint32_t dt) {
   Entity::update(dt);
+
+  if(breaked)
+    r_arm.anim->setAnimation(Animation::Break);
+
+  breaked = false;
 
   // smooth head rot with constant speed
   {

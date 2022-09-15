@@ -83,7 +83,7 @@ void Server::packet_entity_tick() {
   packet << header;
   packet << (sf::Uint64)clients.size();
 
-  for(auto const& pair : clients) {
+  for(auto& pair : clients) {
     packet << pair.second.uid;
     packet << pair.second.player;
   }
