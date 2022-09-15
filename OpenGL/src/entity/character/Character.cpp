@@ -104,7 +104,6 @@ void Character::cameraToHead(Camera& camera) {
 void Character::enableGodMode() {
   if(god) return;
   properties.verticalFriction = 5.5f;
-  gravity = 0;
   properties.maxSpeed = defaultSpeed * godMultiplier;
   if(sprint) properties.maxSpeed *= sprintMultiplier;
   properties.maxAccel = 40.f;
@@ -114,7 +113,6 @@ void Character::enableGodMode() {
 void Character::disableGodMode() {
   if(!god) return;
   properties.verticalFriction = 0.f;
-  gravity = 32.f;
   properties.maxSpeed = defaultSpeed;
   if(sprint) properties.maxSpeed *= sprintMultiplier;
   properties.maxAccel = 10.f;

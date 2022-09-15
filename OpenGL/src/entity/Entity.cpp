@@ -63,7 +63,7 @@ void Entity::update(uint32_t dt) {
 	highp_dvec3 posOffset;
 	{
 		vec3 acc = accel;
-		acc += vec3(0, -1, 0) * gravity; // gravity
+		acc += vec3(0, -1, 0) * gravity * (god? 0.0f: 1.0f); // gravity
 
 		// disable friction in accel direction
 		vec2 dragXZ = vec2(speed.x, speed.z) * properties.horizontalFriction;
