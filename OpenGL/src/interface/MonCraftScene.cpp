@@ -63,6 +63,8 @@ MonCraftScene::MonCraftScene(Viewport* vp)
       sunSpeed(0.0075f),
       lastClock(SDL_GetTicks())
 {
+    World::getInst().t = (uint32_t)(8.f * dayDuration / 24.f);
+    
     auto const& serverConf = Config::getServerConfig();
     camera.setFar(16.0f * (float)sqrt(2 * pow(serverConf.renderDistH, 2) + pow(serverConf.renderDistV, 2)));
     camera.setFovY(config.fov);
@@ -132,7 +134,7 @@ MonCraftScene::MonCraftScene(Viewport* vp)
 
     player->setCurrentBlock(overlay->getCurrentBlock());
 
-    World::getInst().t = (uint32_t)(8.f * dayDuration / 24.f);
+
 }
 
 MonCraftScene::~MonCraftScene() {

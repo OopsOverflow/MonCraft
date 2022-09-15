@@ -77,6 +77,8 @@ private:
   Identifier playerUid;
   PendingChunks pendingChunks;
 
+  uint32_t worldTime;
+
   bool serverAck;
   sf::Time lastServerUpdate;
   const sf::Time timeout = sf::seconds(10);

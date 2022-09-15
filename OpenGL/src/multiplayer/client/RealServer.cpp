@@ -170,6 +170,12 @@ bool RealServer::on_packet_recv(sf::Packet& packet) {
   serverAck = true;
 
   if(type == PacketType::ACK_LOGIN) {
+    uint32_t time;
+    uint32_t start;
+    auto now = std::chrono::steady_clock::now().time_since_epoch();
+    uint32_t end = std::chrono::duration_cast<std::chrono::milliseconds>(now).count();
+    packet >> time >> start;
+    world.t = time + (uint32_t)(end - start);
     state = ServerState::CONNECTED;
     spdlog::info("Logged into the server");
   } 

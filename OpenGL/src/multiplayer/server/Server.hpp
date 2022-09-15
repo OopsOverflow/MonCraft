@@ -57,6 +57,8 @@ protected:
   int renderDistH, renderDistV;
   static const unsigned int maxChunks = 50;
 
+  uint32_t lastClock;
+
   sf::Clock clock;
   const sf::Time timeout = sf::seconds(10);
   const sf::Time tickAckLimit = sf::milliseconds(1000);

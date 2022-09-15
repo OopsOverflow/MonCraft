@@ -11,6 +11,7 @@
 #include <memory>
 #include <utility>
 #include <vector>
+#include <chrono>
 
 #include "entity/Entity.hpp"
 #include "multiplayer/Packet.hpp"
@@ -33,6 +34,9 @@ Server::Server(unsigned short port)
   auto& config = Config::getServerConfig();
   renderDistH = config.renderDistH;
   renderDistV = config.renderDistV;
+  World::getInst().t = (uint32_t)(8.f * dayDuration / 24.f);
+  auto now = std::chrono::steady_clock::now().time_since_epoch();
+  lastClock = std::chrono::duration_cast<std::chrono::milliseconds>(now).count();
 }
 
 Server::~Server()
@@ -71,6 +75,13 @@ void Server::on_packet_recv(sf::Packet& packet, ClientID client) {
 }
 
 void Server::on_server_tick() {
+  auto now = std::chrono::steady_clock::now().time_since_epoch();
+  uint32_t time = std::chrono::duration_cast<std::chrono::milliseconds>(now).count();
+  World::getInst().dt = time - lastClock; 
+  World::getInst().t += World::getInst().dt;
+  World::getInst().t = World::getInst().t % dayDuration;
+  lastClock = time;
+
   std::lock_guard<std::mutex> lck(mutex);
   packet_entity_tick();
   packet_chunks();
@@ -121,7 +132,9 @@ void Server::packet_blocks(Identifier uid, BlockArray changedBlocks) {
 void Server::packet_ack_login(ClientID client, Identifier uid) {
   sf::Packet packet;
   PacketHeader header(PacketType::ACK_LOGIN);
-  packet << header << uid;
+  auto now = std::chrono::steady_clock::now().time_since_epoch();
+  uint32_t start = std::chrono::duration_cast<std::chrono::milliseconds>(now).count();
+  packet << header << world.t << start;
   send(packet, client);
 }
 
