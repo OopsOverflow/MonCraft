@@ -171,16 +171,16 @@ void MonCraftScene::updateShadowMaps() {
     shadows.update(sunDir);
     shadows.attach(camera, Frustum::NEAR);
     shadows.beginFrame(Frustum::NEAR);
-    renderer.renderSolid(shadows.camera);
+    renderer.renderSolid(renderer.visibleChunks(shadows.camera));
     world.entities.renderAll();
 
     shadows.attach(camera, Frustum::MEDIUM);
     shadows.beginFrame(Frustum::MEDIUM);
-    renderer.renderSolid(shadows.camera);
+    renderer.renderSolid(renderer.visibleChunks(shadows.camera));
 
     shadows.attach(camera, Frustum::FAR);
     shadows.beginFrame(Frustum::FAR);
-    renderer.renderSolid(shadows.camera);
+    renderer.renderSolid(renderer.visibleChunks(shadows.camera));
     shadows.endFrame();
 }
 #endif
@@ -256,8 +256,7 @@ void MonCraftScene::draw() {
         vp->freeMouse();
         return;
     }
-
-    glEnable(GL_DEPTH_TEST);
+    
 
     // updates
     #ifndef EMSCRIPTEN
@@ -284,11 +283,22 @@ void MonCraftScene::draw() {
     sunDir = -normalize(vec3(cos(sunTime), 1, sin(sunTime))) * sunDist;
 
     // update the shadow map
+    // update chunks
+    auto chunks = renderer.visibleChunks(camera);
+    for(auto& pair: chunks) {
+        pair.second->update();
+    }
+
+    // remove empty chunks
+    chunks.erase(std::remove_if(chunks.begin(), chunks.end(), [] (auto& pair) {
+        return !pair.second->hasData();
+    }), chunks.end());
+
+    // prepare render
+    glEnable(GL_DEPTH_TEST);
     #ifndef EMSCRIPTEN
       updateShadowMaps();
     #endif
-
-    // prepare render
     shader->activate();
     camera.activate();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -304,7 +314,7 @@ void MonCraftScene::draw() {
     #ifndef EMSCRIPTEN
         shadows.activate();
     #endif
-    renderer.render(camera);
+    renderer.render(camera, chunks);
 
     // draw the entities
     drawEntities();

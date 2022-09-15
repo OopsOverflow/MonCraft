@@ -21,34 +21,33 @@ Renderer::Renderer()
   : world(World::getInst())
 {}
 
-
-void Renderer::render(Camera const& camera) {
-  std::vector<std::pair<float, std::shared_ptr<ChunkMesh>>> toRender;
+ChunkList Renderer::visibleChunks(Camera const& camera) {
+  std::vector<std::pair<float, std::shared_ptr<ChunkMesh>>> res;
 
   world.chunks.for_each([&](std::shared_ptr<ChunkMesh> chunk) {
-    if(!chunk->hasData()) {
-      return;
-      chunk->update();
-    }
-
     vec3 worldChunkPos = vec3(chunk->chunkPos * world.chunkSize);
     vec3 chunkCenter = worldChunkPos + vec3(world.chunkSize) / 2.f;
     vec4 posCamSpace = camera.view * vec4(chunkCenter, 1.0f);
     static const float tolerance = world.chunkSize * .5f * sqrt(3.f);
 
     if(camera.chunkInView(posCamSpace, tolerance)) {
-      toRender.emplace_back(-posCamSpace.z, chunk);
+      res.emplace_back(-posCamSpace.z, chunk);
     }
   });
 
-  std::sort(toRender.begin(), toRender.end(), [](auto const& a, auto const& b) {
-    return a.first > b.first; // sort back-to-front (far chunks first)
+  // sort back-to-front (far chunks first)
+  std::sort(res.begin(), res.end(), [](auto const& a, auto const& b) {
+    return a.first > b.first;
   });
 
+  
+  return res;
+}
+
+void Renderer::render(Camera const& camera, ChunkList const& chunks) {
   // draw solid
-  for (auto iter = toRender.rbegin(); iter != toRender.rend(); ++iter) {
+  for (auto iter = chunks.rbegin(); iter != chunks.rend(); ++iter) {
     auto& pair = *iter;
-    pair.second->update();
     pair.second->drawSolid();
   }
 
@@ -60,7 +59,7 @@ void Renderer::render(Camera const& camera) {
   glUniform1i(shader->getUniform("flags"), flags);
 
   auto viewDir = camera.center - camera.position;
-  for(auto& pair : toRender) {
+  for(auto& pair : chunks) {
     pair.second->drawTransparent(viewDir);
   }
 
@@ -68,30 +67,8 @@ void Renderer::render(Camera const& camera) {
   glUniform1i(shader->getUniform("flags"), flags);
 }
 
-void Renderer::renderSolid(Camera const& camera) {
-  std::vector<std::pair<float, std::shared_ptr<ChunkMesh>>> toRender;
-
-  world.chunks.for_each([&](std::shared_ptr<ChunkMesh> chunk) {
-    if(!chunk->hasData()) {
-      chunk->update();
-      return;
-    }
-
-    vec3 worldChunkPos = vec3(chunk->chunkPos * world.chunkSize);
-    vec3 chunkCenter = worldChunkPos + vec3(world.chunkSize) / 2.f;
-    vec4 posCamSpace = camera.view * vec4(chunkCenter, 1.0f);
-    static const float tolerance = world.chunkSize * .5f * sqrt(3.f);
-
-    if(camera.chunkInView(posCamSpace, tolerance)) {
-      toRender.emplace_back(-posCamSpace.z, chunk);
-    }
-  });
-
-  std::sort(toRender.begin(), toRender.end(), [](auto& a, auto& b) {
-    return a.first < b.first; // sort front-to-back (near chunks first)
-  });
-
-  for(auto& pair : toRender) {
+void Renderer::renderSolid(ChunkList const& chunks) {
+  for(auto& pair : chunks) {
     pair.second->drawAllAsSolid();
   }
 }
