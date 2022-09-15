@@ -26,13 +26,6 @@ set(SOURCE
 	${CMAKE_CURRENT_SOURCE_DIR}/src/terrain/BlockArray.cpp
 
 	${CMAKE_CURRENT_SOURCE_DIR}/src/blocks/AllBlocks.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/src/blocks/model/BlockModel.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/src/blocks/model/DefaultModel.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/src/blocks/model/TallgrassModel.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/src/blocks/model/WaterModel.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/src/blocks/model/CactusModel.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/src/blocks/model/OrientableModel.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/src/blocks/model/StairModel.cpp
 
 	${CMAKE_CURRENT_SOURCE_DIR}/src/multiplayer/NetworkError.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/multiplayer/Packet.cpp
@@ -60,6 +53,13 @@ if(${BUILD_TARGET} STREQUAL client)
 		${CMAKE_CURRENT_SOURCE_DIR}/src/util/Spline.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/util/AnimationMixer.cpp
 		
+		${CMAKE_CURRENT_SOURCE_DIR}/src/blocks/model/BlockModel.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/src/blocks/model/DefaultModel.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/src/blocks/model/TallgrassModel.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/src/blocks/model/WaterModel.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/src/blocks/model/CactusModel.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/src/blocks/model/OrientableModel.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/src/blocks/model/StairModel.cpp
 
 		${CMAKE_CURRENT_SOURCE_DIR}/src/save/ClientConfig.cpp
 

@@ -1,11 +1,11 @@
 #pragma once
 
-#include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <vector>
 #include <memory>
-#include "model/DefaultModel.hpp"
-
+#ifdef MONCRAFT_CLIENT
+  #include "model/DefaultModel.hpp"
+#endif
 enum class BlockType
 {
     Air,
@@ -99,8 +99,9 @@ public:
     /**
      * Gets the block model generator.
      */
-    virtual BlockModel* getModel() const { return DefaultBlockModel::get(); }
-
+    #ifdef MONCRAFT_CLIENT
+      virtual BlockModel* getModel() const { return DefaultBlockModel::get(); }
+    #endif
     /**
      * Stringify the block data.
      */
