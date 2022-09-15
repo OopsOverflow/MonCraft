@@ -116,7 +116,7 @@ bool RealServer::send(sf::Packet& packet) {
 
 void RealServer::on_message(rtc::message_variant msg) {
   if (std::holds_alternative<std::string>(msg)) {
-    auto data = std::get<std::string>(msg);
+    std::string data = std::get<std::string>(msg);
     if(data.starts_with("a=candidate")) {
       rtc::Candidate candidate(data, "");
       spdlog::debug("RTC remote candidate: {}", data);
@@ -129,7 +129,7 @@ void RealServer::on_message(rtc::message_variant msg) {
     }
   }
   else {
-    auto data = std::get<rtc::binary>(msg);
+    rtc::binary data = std::get<rtc::binary>(msg);
     sf::Packet packet;
     packet.append(data.data(), data.size());
     on_packet_recv(packet);

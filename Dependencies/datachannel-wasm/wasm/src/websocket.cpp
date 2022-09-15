@@ -99,27 +99,16 @@ bool WebSocket::isOpen() const { return mConnected; }
 bool WebSocket::isClosed() const { return mId == 0; }
 
 bool WebSocket::send(message_variant message) {
-	// MAIN_THREAD_ASYNC_EM_ASM(console.log('hello'));
-	
 	if (!mId)
 		return false;
 
 	return std::visit(overloaded{
 		[this](const binary &b) {
-			// for(auto& byte: b)
-			// 	std::cout << std::to_integer<unsigned char>(byte) << " ";
-			// std::cout << std::endl;
 			auto data = reinterpret_cast<const char *>(b.data());
-			MAIN_THREAD_EM_ASM({ _wsSendMessage($0, $1, $2) }, mId, data, int(b.size()));
-			// emscripten_sync_run_in_main_thread_3((int)wsSendMessage, (void*)mId, (void*)data, (void*)int(b.size()));
-			// return wsSendMessage(mId, data, int(b.size())) >= 0;
-			return true;
+			return wsSendMessage(mId, data, int(b.size())) >= 0;
 		},
 		[this](const string &s) {
-			MAIN_THREAD_EM_ASM({ _wsSendMessage($0, $1, $2)}, mId, s.c_str(), -1);
-			// emscripten_sync_run_in_main_thread_3((int)wsSendMessage, (void*)mId, (void*)s.c_str(), (void*)-1);
-			// return wsSendMessage(mId, s.c_str(), -1) >= 0;
-			return true;
+			return wsSendMessage(mId, s.c_str(), -1) >= 0;
 		}
 	}, std::move(message));
 	return true;
