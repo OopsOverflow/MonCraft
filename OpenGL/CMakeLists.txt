@@ -287,6 +287,8 @@ else () # wasm
 			"-fno-rtti \
 			-Wno-pthreads-mem-growth \
 			-pthread \
+			-fsanitize=undefined \
+			-fsanitize=address \
 			-s PTHREAD_POOL_SIZE=5 \
 			-s WASM=1 \
 			-s USE_SDL=2 \
@@ -307,16 +309,21 @@ else () # wasm
 			-s ABORT_ON_WASM_EXCEPTIONS=1 \
 			-s EXIT_RUNTIME=1 \
 			-s DEFAULT_LIBRARY_FUNCS_TO_INCLUDE=wsSendMessage \
+			-s ASSERTIONS=2 \
+			-s STACK_OVERFLOW_CHECK=2 \
 			--preload-file ${CMAKE_SOURCE_DIR}/OpenGL/data@data \
 			--preload-file ${CMAKE_SOURCE_DIR}/OpenGL/src@src \
 			-Wno-unused-command-line-argument \
 			--source-map-base sources/build/Client/Wasm/Debug/ \
 			-gsource-map -O0"
+			# -s SAFE_HEAP=1 \
 		)
 		set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS
 			"-fno-rtti \
 			-Wno-pthreads-mem-growth \
 			-pthread \
+			-fsanitize=undefined \
+			-fsanitize=address \
 			-s PTHREAD_POOL_SIZE=5 \
 			-s WASM=1 \
 			-s USE_SDL=2 \
@@ -336,11 +343,14 @@ else () # wasm
 			-s DEMANGLE_SUPPORT=1 \
 			-s ABORT_ON_WASM_EXCEPTIONS=1 \
 			-s EXIT_RUNTIME=1 \
+			-s ASSERTIONS=2 \
+			-s STACK_OVERFLOW_CHECK=2 \
 			--preload-file ${CMAKE_SOURCE_DIR}/OpenGL/data@data \
 			--preload-file ${CMAKE_SOURCE_DIR}/OpenGL/src@src \
 			-Wno-unused-command-line-argument \
 			--source-map-base sources/build/Client/Wasm/Debug/ \
 			-gsource-map -O0"
+			# -s SAFE_HEAP=1 \
 		)
 	endif ()
 
@@ -395,3 +405,9 @@ endif ()
 # configure logger
 target_compile_definitions(${PROJECT_NAME} PUBLIC "$<$<CONFIG:DEBUG>:SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_DEBUG>")
 target_compile_definitions(${PROJECT_NAME} PUBLIC "$<$<CONFIG:DEBUG>:DEBUG>")
+
+# ASan / UBSan
+if (${ENABLE_SANITIZERS})
+	set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address -fsanitize=undefined")
+	set (CMAKE_LINKER_FLAGS_DEBUG "${CMAKE_LINKER_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address -fsanitize=undefined")
+endif ()

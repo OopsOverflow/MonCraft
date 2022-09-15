@@ -22,6 +22,7 @@ endif ()
 
 set(BUILD_TARGET client CACHE STRING "Choose build target client/server" )
 set(BUILD_PLATFORM app CACHE STRING "Choose targer platform wasm/app" )
+set(ENABLE_SANITIZERS OFF CACHE BOOL "Enable ASan / UBSan sanitizers (in debug mode)" )
 
 message(STATUS "Build Target : ${BUILD_TARGET}")
 message(STATUS "Build Platform : ${BUILD_PLATFORM}")

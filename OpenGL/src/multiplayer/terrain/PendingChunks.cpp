@@ -36,7 +36,7 @@ PendingChunks::~PendingChunks() {
     stopFlag = true;
   }
   stopSignal.notify_all();
-  thread.join();
+  thread.join(); // COMBAK: waiting on the main thread is problematic on wasm.
 }
 
 void PendingChunks::update(vec3 playerPos) {
