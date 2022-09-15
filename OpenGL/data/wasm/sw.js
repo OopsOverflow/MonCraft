@@ -1,8 +1,8 @@
 // credit: https://googlechrome.github.io/samples/service-worker/basic/
 
-const version = 6
+const version = 7
 const PRECACHE = 'precache-v' + version;
-const RUNTIME = 'runtime';
+const RUNTIME = 'runtime-v' + version;
 
 const PRECACHE_URLS = [
   '/MonCraft.data',

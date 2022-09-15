@@ -163,8 +163,15 @@ target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_SOURCE_DIR}/OpenGL/s
 # glm
 target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE "${CMAKE_SOURCE_DIR}/Dependencies/glm")
 
-find_package(spdlog REQUIRED)
-target_link_libraries(${PROJECT_NAME} spdlog::spdlog)
+# spdlog
+if(${BUILD_PLATFORM} STREQUAL wasm)
+	add_subdirectory("${CMAKE_SOURCE_DIR}/Dependencies/spdlog" "spdlog" EXCLUDE_FROM_ALL)
+	target_compile_options(spdlog PUBLIC -pthread)
+	target_link_libraries(${PROJECT_NAME} spdlog::spdlog)
+else ()
+	find_package(spdlog REQUIRED)
+	target_link_libraries(${PROJECT_NAME} spdlog::spdlog)
+endif ()
 
 # libdatachannel
 if(${BUILD_PLATFORM} STREQUAL wasm)
