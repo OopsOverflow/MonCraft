@@ -36,7 +36,7 @@ Character::Character(vec3 pos)
       view(CharacterView::FIRST_PERSON),
       caster(100), // distance the player can place blocks
       currentBlock(BlockType::Oak_Stair),
-      god(true), sprint(false)
+      sprint(false)
 {
   bodyNode.loc = pos;
   rootNode.sca = vec3(1.85f / 32.f); // steve is 1.85 blocks high, 32 pixels high
@@ -187,6 +187,8 @@ void Character::placeBlock() {
   auto cast = caster.cast(eyePos, eyeTarget - eyePos);
 
   if(cast.success) {
+    hasBreak = true;
+    breaked = true;
     if(hitbox.collides(bodyNode.loc, cast.blockPosition + cast.normal)) return;
     Block* block = world.getBlock(cast.blockPosition + cast.normal);
     if(!block) return;

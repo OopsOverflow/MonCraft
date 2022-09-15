@@ -103,7 +103,6 @@ private:
   BlockType currentBlock;
   BlockArray record;
 
-  bool god;
   bool sprint;
   
 };

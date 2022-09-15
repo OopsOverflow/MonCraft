@@ -74,6 +74,7 @@ public:
 
 	bool hasBreak;
 	bool breaked;
+	bool god;
 	bool dab;
 	bool onFloor;
 	Hitbox hitbox;

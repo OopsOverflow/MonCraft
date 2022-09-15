@@ -20,7 +20,8 @@ Entity::Entity(Hitbox hitbox, EntityProperties properties) :
 	properties(properties),
 	speed(0), accel(0), direction(0),
   	onFloor(false),
-	hitbox(std::move(hitbox)), dab(false), hasBreak(false), breaked(false)
+	hitbox(std::move(hitbox)),
+	dab(false), hasBreak(false), breaked(false), god(true)
 {}
 
 Entity::~Entity() {}

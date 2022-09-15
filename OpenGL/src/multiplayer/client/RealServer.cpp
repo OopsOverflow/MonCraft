@@ -228,8 +228,6 @@ void RealServer::handle_player_action(sf::Packet& packet) {
     packet >> action;
     if(action == Action::BREAK)
       entity->breaked = true;
-
-    spdlog::info((int)action);
   }
   
 }
