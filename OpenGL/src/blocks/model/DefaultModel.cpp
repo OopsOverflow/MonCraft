@@ -20,7 +20,7 @@ DefaultBlockModel* DefaultBlockModel::get() {
   return &inst;
 }
 
-face_t<1> DefaultBlockModel::genOcclusion(glm::ivec3 pos, std::array<Block*, 26> const& neighbors, BlockFace face) const {
+FaceData<1> DefaultBlockModel::genOcclusion(glm::ivec3 pos, std::array<Block*, 26> const& neighbors, BlockFace face) const {
   std::array<GLfloat, 4> occl{};
 
   std::array<bool, 9> b{};
@@ -31,11 +31,24 @@ face_t<1> DefaultBlockModel::genOcclusion(glm::ivec3 pos, std::array<Block*, 26>
     Block* neigh = neighbors[offsets[i]];
     b[i] = neigh->isSolid() && !neigh->isTransparent();
   }
+  
+  // neighbor on the face itself
+  occl[0] = (float)(b[8] * 2.f);
+  occl[1] = (float)(b[8] * 2.f);
+  occl[2] = (float)(b[8] * 2.f);
+  occl[3] = (float)(b[8] * 2.f);
 
-  occl[0] = min((float)(b[0] + b[1] + b[2] + b[8]), 3.f);
-  occl[1] = min((float)(b[2] + b[3] + b[4] + b[8]), 3.f);
-  occl[2] = min((float)(b[4] + b[5] + b[6] + b[8]), 3.f);
-  occl[3] = min((float)(b[6] + b[7] + b[0] + b[8]), 3.f);
+  // neighbors along the edges: only if no face
+  occl[0] = max(occl[0], (float)(b[0] + b[2]));
+  occl[1] = max(occl[1], (float)(b[2] + b[4]));
+  occl[2] = max(occl[2], (float)(b[4] + b[6]));
+  occl[3] = max(occl[3], (float)(b[6] + b[0]));
+
+  // neighbors in the corners: only if no edge
+  occl[0] = max(occl[0], (float)b[1]);
+  occl[1] = max(occl[1], (float)b[3]);
+  occl[2] = max(occl[2], (float)b[5]);
+  occl[3] = max(occl[3], (float)b[7]);
 
   return occl;
 }
@@ -232,7 +245,7 @@ const std::array<std::pair<int, BlockFace>, 6> DefaultBlockModel::blockFaceOffse
   {17, BlockFace::LEFT},
 };
 
-const face_t<2> DefaultBlockModel::faceNormalMap = {
+const FaceData<2> DefaultBlockModel::faceNormalMap = {
   1.f, 0.f,
   0.5f, 0.f,
   0.5f, 1.f,

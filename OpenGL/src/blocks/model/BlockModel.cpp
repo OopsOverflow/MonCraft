@@ -9,10 +9,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/matrix_transform_2d.hpp>
 
-using glm::mat4;
-using glm::vec3;
-using glm::pi;
-using glm::half_pi;
+using namespace glm;
 
 BlockModel::BlockModel() {}
 BlockModel::~BlockModel() {}
@@ -103,6 +100,18 @@ BlockMeshData BlockModel::flatten(QuadMesh<L> const& mesh) {
   return res;
 }
 
+// glm::vec2 BlockModel::toFaceCoordinates(BlockFace face, glm::vec3 pos) {
+  
+// }
+
+GLfloat BlockModel::lerp(FaceData<1> quad, glm::vec2 pos) {
+  return mix(
+    mix(quad[2], quad[3], pos.x + .5f),
+    mix(quad[1], quad[0], pos.x + .5f),
+    pos.y + .5f
+  );
+}
+
 std::vector<GLfloat> BlockModel::computeUV(glm::vec2 index, Quad<2> quad) {
   static const int atlasSize = 8;
   glm::mat3 tr = glm::mat3(1.f);
@@ -120,10 +129,25 @@ std::vector<GLfloat> BlockModel::computeUV(glm::vec2 index, std::vector<Quad<2>>
 }
 
 const std::array<mat4, 4> BlockModel::facingTransforms = {
-  mat4(1.f), // NORTH
-  rotate(mat4(1.f), pi<float>(), vec3(0, 1, 0)), // SOUTH
+  mat4(1.f),                                           // NORTH
+  rotate(mat4(1.f), pi<float>(), vec3(0, 1, 0)),       // SOUTH
   rotate(mat4(1.f), -half_pi<float>(), vec3(0, 1, 0)), // EAST
-  rotate(mat4(1.f), half_pi<float>(), vec3(0, 1, 0)), // WEST
+  rotate(mat4(1.f), half_pi<float>(), vec3(0, 1, 0)),  // WEST
+};
+
+
+static const mat4 I(1.f);
+static const vec3 x(1, 0, 0);
+static const vec3 y(0, 1, 0);
+static const vec3 z(0, 0, 1);
+
+const std::array<mat4, 6> BlockModel::faceTransforms = {
+  rotate(rotate(I, pi<float>(), y), half_pi<float>(), x), // TOP
+  rotate(I, -half_pi<float>(), x),                        // BOTTOM
+  I,                                                      // FRONT
+  rotate(I, -half_pi<float>(), y),                        // RIGHT
+  rotate(I, pi<float>(), y),                              // BACK
+  rotate(I, half_pi<float>(), y),                         // LEFT
 };
 
 template<glm::length_t L>

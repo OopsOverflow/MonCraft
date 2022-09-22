@@ -24,8 +24,8 @@ protected:
 private:
 	void genFace(glm::ivec3 pos, BlockFace face, Orientable_Block* block, std::array<Block*, 26> const& neighbors, MeshData& data) const;
 
-	std::array<size_t, 7> quadCount;
-	const std::array<BlockMeshData, 4> blockPositions;
-	const QuadMesh<2> blockUVs;
-	const std::array<BlockMeshData, 4> blockNormals;
+	const QuadMesh<3> mesh;
+	const QuadMesh<2> UVMesh;
+	const std::array<BlockMeshData, 4> orientedMesh;
+	const std::array<BlockMeshData, 4> orientedUVMesh;
 };

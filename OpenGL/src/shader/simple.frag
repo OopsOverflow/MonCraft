@@ -92,8 +92,8 @@ void main() {
   outputColor.xyz += color.xyz * lightIntensity * lambertian * shadow * 0.4 * sunAmount;
   outputColor.xyz += vec3(1.0) * specular * shadow * texture(t_normal, normalCoords).a * 1.0 * sunAmount;
 
-  float occl = .7;
-  outputColor.xyz *= 1.0 - (vertexOcclusion * vertexOcclusion / 9.0) * occl;
+  float occl = .5;
+  outputColor.xyz *= 1.0 - pow(vertexOcclusion / 2.0, 2) * occl;
   
   if((flags & TRANSPARENT_FLAG) == 0) { // not transparent
     if(outputColor.a < 0.5) discard;

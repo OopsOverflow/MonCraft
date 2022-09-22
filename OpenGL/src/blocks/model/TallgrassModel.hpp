@@ -17,8 +17,8 @@ public:
   void generateMesh(glm::ivec3 pos, Block* block, std::array<Block*, 26> const& neighbors, MeshData& data) const override;
 
 private:
-  static const std::array<face_t<3>, 4> positions;
-  static const std::array<face_t<3>, 4> normals;
+  static const std::array<FaceData<3>, 4> positions;
+  static const std::array<FaceData<3>, 4> normals;
   static const std::array<std::array<GLfloat, 4>, 4> occlusions;
-  static const face_t<2> faceNormalMap;
+  static const FaceData<2> faceNormalMap;
 };

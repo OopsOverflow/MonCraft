@@ -13,14 +13,11 @@
 using namespace glm;
 
 OrientableModel::OrientableModel(QuadMesh<3> mesh, QuadMesh<2> UVMesh)
-  : blockPositions(computeFacing(mesh)),
-    blockUVs(UVMesh),
-    blockNormals(computeFacing(normals(mesh)))
-{
-  for (size_t i = 0; i < 7; i++) {
-    quadCount[i] = mesh[i].size();
-  }
-}
+  : mesh(mesh),
+    UVMesh(UVMesh),
+    orientedMesh(computeFacing(mesh)),
+    orientedUVMesh(computeFacing(normals(mesh)))
+{}
 
 OrientableModel* OrientableModel::get() {
   static const QuadMesh<2> UVMesh = {
@@ -33,7 +30,7 @@ OrientableModel* OrientableModel::get() {
     { faceUVs },
     { }, // INNER
   };
-  static OrientableModel inst(mesh, UVMesh);
+  static OrientableModel inst(DefaultBlockModel::mesh, UVMesh);
   return &inst;
 }
 
@@ -59,47 +56,51 @@ void OrientableModel::genFace(glm::ivec3 pos, BlockFace face, Orientable_Block* 
     size_t flookup = facingLookup[(size_t)facing][(size_t)face];
 
     // indices
-    size_t count = quadCount[flookup];
-    for(size_t i = 0; i < count; i++) {
+    size_t quadCount = mesh[flookup].size();
+    for(size_t i = 0; i < quadCount; i++) {
       _ind.insert(_ind.end(), _scheme.begin(), _scheme.end());
       std::transform(_scheme.begin(), _scheme.end(), _scheme.begin(), [](int x) { return x+4; });
     }
 
     // positions
-    auto& posFace = blockPositions[(size_t)facing][flookup];
+    auto& posFace = orientedMesh[(size_t)facing][flookup];
     _pos.insert(_pos.end(), posFace.begin(), posFace.end());
     for(size_t i = 0, k = 0; i < posFace.size(); i++, k = (k+1) % 3) {
       _pos[_pos.size() - posFace.size() + i] += pos[k];
     }
 
     // normals
-    auto const& normFace = blockNormals[(size_t)facing][flookup];
+    auto const& normFace = orientedUVMesh[(size_t)facing][flookup];
     _norm.insert(_norm.end(), normFace.begin(), normFace.end());
 
     // textureCoords
     auto indexUV = block->getFaceUVs(face);
-    auto uvFace = computeUV(indexUV, blockUVs[flookup]);
+    auto uvFace = computeUV(indexUV, UVMesh[flookup]);
     _uvs.insert(_uvs.end(), uvFace.begin(), uvFace.end());
 
     // occlusion
-    // TODO occlusions
     if(face == BlockFace::INNER) {
-      for(size_t i = 0; i < count; i++) {
-        static const face_t<1> empty{};
+      for(size_t i = 0; i < quadCount; i++) {
+        static const FaceData<1> empty{};
         _occl.insert(_occl.end(), empty.begin(), empty.end());
       }
     }
     else {
       auto occl = genOcclusion(pos, neighbors, face);
-      _occl.insert(_occl.end(), occl.begin(), occl.end());
-      for(size_t i = 1; i < count; i++) {
-        static const face_t<1> empty{};
-        _occl.insert(_occl.end(), empty.begin(), empty.end());
+      auto const& quads = mesh[flookup];
+      for(auto quad : quads) {
+        if (face == BlockFace::TOP || face == BlockFace::BOTTOM) {
+          quad = transform(quad, facingTransforms[(size_t)facing]);
+        }
+        quad = transform(quad, faceTransforms[flookup]);
+        for(vec2 pos : quad) {
+          _occl.push_back(lerp(occl, pos));
+        }
       }
     }
 
     // normalMapCoords
-    for(size_t i = 0; i < count; i++) {
+    for(size_t i = 0; i < quadCount; i++) {
       _normm.insert(_normm.end(), faceNormalMap.begin(), faceNormalMap.end());
     }
 }

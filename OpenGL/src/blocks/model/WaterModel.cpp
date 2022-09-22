@@ -55,7 +55,7 @@ void WaterModel::genFace(glm::ivec3 pos, BlockFace face, Block* block, std::arra
     std::transform(_scheme.begin(), _scheme.end(), _scheme.begin(), [](int x) { return x + 4; });
 
     // positions
-    const face_t<3>* posFace = &blockPositions[(size_t)face];
+    const FaceData<3>* posFace = &blockPositions[(size_t)face];
     size_t blockfaceID = (size_t)face;
     if (blockfaceID >= 2) {
         Block* topBlock = neighbors[checkNeighbors[blockfaceID-2][2]];
@@ -119,7 +119,7 @@ void WaterModel::generateMesh(ivec3 pos, Block* block, std::array<Block*, 26> co
 /// below is all the data and lookup tables
 
 const BlockData<3> WaterModel::blockPositions = {
-  face_t<3>{ // TOP
+  FaceData<3>{ // TOP
     -0.5f,  0.4f,  0.5f,
     0.5f,  0.4f,  0.5f,
     0.5f,  0.4f, -0.5f,
@@ -153,7 +153,7 @@ const BlockData<3> WaterModel::blockPositions = {
 };
 
 const BlockData<3> WaterModel::fillSpaceBlockPositions = {
-  face_t<3>{ // TOP
+  FaceData<3>{ // TOP
     -0.5f,  0.5f,  0.5f,
     0.5f,  0.5f,  0.5f,
     0.5f,  0.5f, -0.5f,
@@ -187,7 +187,7 @@ const BlockData<3> WaterModel::fillSpaceBlockPositions = {
 };
 
 const BlockData<3> WaterModel::filledBlockPositions = {
-  face_t<3>{ // TOP
+  FaceData<3>{ // TOP
     -0.5f,  0.5f,  0.5f,
     0.5f,  0.5f,  0.5f,
     0.5f,  0.5f, -0.5f,
@@ -221,7 +221,7 @@ const BlockData<3> WaterModel::filledBlockPositions = {
 };
 
 const BlockData<3> WaterModel::blockNormals{
-  face_t<3>{ // TOP
+  FaceData<3>{ // TOP
     0.0f, 1.0f, 0.0f,
     0.0f, 1.0f, 0.0f,
     0.0f, 1.0f, 0.0f,
@@ -255,7 +255,7 @@ const BlockData<3> WaterModel::blockNormals{
 };
 
 const BlockData<3> WaterModel::invertBlockNormals{
-  face_t<3>{ // TOP
+  FaceData<3>{ // TOP
     0.0f, -1.0f, 0.0f,
     0.0f, -1.0f, 0.0f,
     0.0f, -1.0f, 0.0f,
@@ -333,7 +333,7 @@ const std::array<std::array<int, 3>, 4> WaterModel::checkNeighbors = {
 };
 
 //TODO post release maybe
-const face_t<2> WaterModel::faceNormalMap = {
+const FaceData<2> WaterModel::faceNormalMap = {
     0.5f, 0.f,
     0.f, 0.f,
     0.f, 1.f,

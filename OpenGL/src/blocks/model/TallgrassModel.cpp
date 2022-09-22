@@ -61,26 +61,26 @@ void TallgrassModel::generateMesh(glm::ivec3 pos, Block* block, std::array<Block
 // the coordinates of x and y such that the diagonal face is of length 1
 static const float off = sqrt(2.f) / 4.f;
 
-const std::array<face_t<3>, 4> TallgrassModel::positions = {
-  face_t<3>{ // face looking towards -x, +z
+const std::array<FaceData<3>, 4> TallgrassModel::positions = {
+  FaceData<3>{ // face looking towards -x, +z
     -off,  0.f, -off,
      off,  0.f,  off,
      off, -0.5f,  off,
     -off, -0.5f, -off,
   },
-  face_t<3>{ // face looking towards -x, -z
+  FaceData<3>{ // face looking towards -x, -z
      off,  0.f, -off,
     -off,  0.f,  off,
     -off, -0.5f,  off,
      off, -0.5f, -off,
   },
-  face_t<3>{ // face looking towards +x, -z
+  FaceData<3>{ // face looking towards +x, -z
      off,  0.f,  off,
     -off,  0.f, -off,
     -off, -0.5f, -off,
      off, -0.5f,  off,
   },
-  face_t<3>{ // face looking towards +x, +z
+  FaceData<3>{ // face looking towards +x, +z
     -off,  0.f,  off,
      off,  0.f, -off,
      off, -0.5f, -off,
@@ -88,26 +88,26 @@ const std::array<face_t<3>, 4> TallgrassModel::positions = {
   },
 };
 
-const std::array<face_t<3>, 4> TallgrassModel::normals {
-  face_t<3>{ // face looking towards -x, +z
+const std::array<FaceData<3>, 4> TallgrassModel::normals {
+  FaceData<3>{ // face looking towards -x, +z
     off,  0.f, -off,
     off,  0.f, -off,
     off,  0.f, -off,
     off,  0.f, -off,
   },
-  face_t<3>{ // face looking towards -x, -z
+  FaceData<3>{ // face looking towards -x, -z
     off,  0.f,  off,
     off,  0.f,  off,
     off,  0.f,  off,
     off,  0.f,  off,
   },
-  face_t<3>{ // face looking towards +x, -z
+  FaceData<3>{ // face looking towards +x, -z
     -off,  0.f,  off,
     -off,  0.f,  off,
     -off,  0.f,  off,
     -off,  0.f,  off,
   },
-  face_t<3>{ // face looking towards +x, +z
+  FaceData<3>{ // face looking towards +x, +z
     -off,  0.f, -off,
     -off,  0.f, -off,
     -off,  0.f, -off,
@@ -132,7 +132,7 @@ const std::array<std::array<GLfloat, 4>, 4> TallgrassModel::occlusions {
   },
 };
 
-const face_t<2> TallgrassModel::faceNormalMap = {
+const FaceData<2> TallgrassModel::faceNormalMap = {
     -1.0f, -1.0f,
     -1.0f, -1.0f,
     -1.0f, -1.0f,

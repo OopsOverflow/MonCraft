@@ -67,7 +67,7 @@ void CactusModel::generateMesh(ivec3 pos, Block* block, std::array<Block*, 26> c
 static const float off = 1.f / 16.f;
 
 const BlockData<3> CactusModel::blockPositions = {
-  face_t<3>{ // TOP
+  FaceData<3>{ // TOP
     -0.5f,  0.5f,  0.5f,
      0.5f,  0.5f,  0.5f,
      0.5f,  0.5f, -0.5f,
@@ -80,13 +80,13 @@ const BlockData<3> CactusModel::blockPositions = {
   }, { // FRONT
      0.5f,  0.5f,  0.5f - off,
     -0.5f,  0.5f,  0.5f - off,
-    -0.5, -0.5f,  0.5f - off,
+    -0.5,  -0.5f,  0.5f - off,
      0.5f, -0.5f,  0.5f - off,
   }, { // RIGHT
-    0.5f - off,  0.5f, -0.5f,
-    0.5f - off,  0.5f,  0.5f,
-    0.5f - off, -0.5f,  0.5f,
-    0.5f - off, -0.5f, -0.5f,
+     0.5f - off,  0.5f, -0.5f,
+     0.5f - off,  0.5f,  0.5f,
+     0.5f - off, -0.5f,  0.5f,
+     0.5f - off, -0.5f, -0.5f,
   }, { // BACK
     -0.5f,  0.5f, -0.5f + off,
      0.5f,  0.5f, -0.5f + off,

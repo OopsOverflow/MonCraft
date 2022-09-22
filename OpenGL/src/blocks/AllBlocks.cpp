@@ -31,6 +31,7 @@
 #include "Oak_Stair_Block.hpp"
 #include "Birch_Stair_Block.hpp"
 #include "Red_Brick_Block.hpp"
+#include "Debug_Block.hpp"
 
 const std::array<Block*(*)(), AllBlocks::BlockCount> AllBlocks::factories = {
   (Block*(*)())Air_Block::get,
@@ -57,6 +58,7 @@ const std::array<Block*(*)(), AllBlocks::BlockCount> AllBlocks::factories = {
   (Block*(*)())Oak_Stair_Block::get,
   (Block*(*)())Birch_Stair_Block::get,
   (Block*(*)())Red_Brick_Block::get,
+  (Block*(*)())Debug_Block::get,
 };
 
 Block::unique_ptr_t AllBlocks::create_static(BlockType type) {
