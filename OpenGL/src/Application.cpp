@@ -152,9 +152,9 @@ void showMainMenu(Viewport& vp) {
 
 
 int main(int argc, char* argv[]) {
-    #ifdef DEBUG || !_WIN32
+    #ifdef DEBUG
         spdlog::set_level(spdlog::level::debug);
-    #else
+    #elif _WIN32
         ShowWindow(GetConsoleWindow(), SW_HIDE); 
     #endif
     spdlog::info("---- Main ----");
