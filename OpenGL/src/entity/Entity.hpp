@@ -5,6 +5,7 @@
 #include "entity/Hitbox.hpp"
 #include "entity/Node.hpp"
 #include "util/Raycast.hpp"
+#include "gl/Camera.hpp"
 
 enum class State { Walking, Idle };
 
@@ -58,6 +59,8 @@ public:
 	virtual void update(uint32_t dt);
 
 	virtual void render();
+
+	virtual void cameraToHead(Camera& camera);
 
 	glm::vec3 getPosition() const;
 

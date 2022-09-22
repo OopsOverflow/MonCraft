@@ -2,7 +2,7 @@
 
 #include "Controller.hpp"
 
-class RemotePlayerController : Controller {
+class RemotePlayerController {
 public:
 	RemotePlayerController();
 

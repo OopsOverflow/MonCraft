@@ -58,7 +58,6 @@ private:
   World& world;
   Config::ClientConfig& config;
   Renderer renderer;
-  std::shared_ptr<Character> player;
   Identifier playerUid;
 
   // view controls

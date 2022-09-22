@@ -1,6 +1,6 @@
 #include "Controller.hpp"
 
 
-Controller::Controller()
-: entity(nullptr)
+Controller::Controller(std::shared_ptr<Entity> entity)
+: entity(entity)
 {}

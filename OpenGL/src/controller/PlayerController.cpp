@@ -4,8 +4,8 @@
 #include "save/ClientConfig.hpp"
 #include <SDL2/SDL.h>
 
-PlayerController::PlayerController()
-: toggleGod(false),
+PlayerController::PlayerController(std::shared_ptr<Entity> entity)
+: Controller(entity), toggleGod(false),
     spaceIsPressed(false), lastSpacePress(SDL_GetTicks())
 {}
 

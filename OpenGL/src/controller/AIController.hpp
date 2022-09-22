@@ -2,9 +2,7 @@
 
 #include "Controller.hpp"
 
-namespace Config { struct ClientConfig; }
-
-class AIController : Controller {
+class AIController {
 public:
 	AIController();
 

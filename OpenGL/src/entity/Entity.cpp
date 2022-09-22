@@ -26,6 +26,46 @@ Entity::Entity(Hitbox hitbox, EntityProperties properties) :
 
 Entity::~Entity() {}
 
+void Entity::cameraToHead(Camera& camera) {
+  vec3 eyePos;
+  vec3 eyeTarget;
+	if(view == PlayerView::FIRST_PERSON) {
+		eyePos = headNode.model * vec4(0, 4, 0, 1);
+		eyeTarget = headNode.model * vec4(0, 4, 50, 1);
+
+	}
+	else{
+    if(view == PlayerView::THIRD_PERSON){
+	  eyePos = headNode.model * vec4(0, 4, 1, 1);
+    eyeTarget = headNode.model * vec4(0, 4, 0, 1);
+
+    }
+    else if(view == PlayerView::FRONT) {
+      eyePos = headNode.model * vec4(0, 4, -1, 1);
+      eyeTarget = headNode.model * vec4(0, 4, 0, 1);
+
+    }
+    
+    camera.setLookAt(eyeTarget, eyePos);
+    auto tmp = camera.getBoxCorners();
+    
+    float min = 4.f;
+    for(size_t i = 0; i < 4; i += 1) {
+      auto cast = caster.cast(tmp.at(i), eyeTarget - eyePos);
+
+      min = std::min(min, cast.dist);
+    }
+    if(min > 0.5f) 
+      eyePos = eyeTarget + min * normalize(eyeTarget - eyePos);
+    else
+      eyePos = eyeTarget + 0.5f * normalize(eyeTarget - eyePos);
+    
+   
+  } 
+
+  camera.setLookAt(eyePos, eyeTarget);
+}
+
 void Entity::walk(vec3 dir) {
 	if(dir == vec3(0)) {
 		state = State::Idle;

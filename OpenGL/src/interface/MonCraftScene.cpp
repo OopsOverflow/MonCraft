@@ -61,7 +61,9 @@ MonCraftScene::MonCraftScene(Viewport* vp)
           shadows(4096),
       #endif
       sunSpeed(0.0075f),
-      lastClock(SDL_GetTicks())
+      lastClock(SDL_GetTicks()),
+      server(createServer(Config::getClientConfig().multiplayer)),
+      playerController(server->getPlayer())
 {
     World::getInst().t = (uint32_t)(8.f * dayDuration / 24.f);
     
@@ -77,9 +79,6 @@ MonCraftScene::MonCraftScene(Viewport* vp)
         normalMapID[i] = ResourceManager::getTexture("waterNormal" + std::to_string(i));
     }
 
-    server = createServer(Config::getClientConfig().multiplayer);
-    // server->start();
-    player = server->getPlayer();
     playerUid = server->getUid();
 
     // UI stuff
@@ -132,7 +131,7 @@ MonCraftScene::MonCraftScene(Viewport* vp)
     add(overlay);
     add(debugOverlay);
 
-    player->setCurrentBlock(overlay->getCurrentBlock());
+    server->getPlayer()->setCurrentBlock(overlay->getCurrentBlock());
 
 
 }
@@ -224,7 +223,7 @@ void MonCraftScene::updateFov(uint32_t dt) {
   const float maxFov = 180.0f;
   const float smoothing = 0.005f;
   const float transition = 10.f;
-  const float speed = glm::length(player->speed);
+  const float speed = glm::length(playerController.getEntity()->speed);
   const float fov = camera.getFovY();
   const auto targetFov = fov - (maxFov + (config.fov - maxFov) * exp(-smoothing * speed));
   camera.setFovY(fov - targetFov * transition * dt * 0.001f);
@@ -240,9 +239,9 @@ void MonCraftScene::drawEntities() {
     shader->bindTexture(TEXTURE_COLOR, texCharacter);
     for(auto pair : world.entities) {
         if(pair.first == playerUid) {
-            if(player->view != PlayerView::FIRST_PERSON) 
+            if(playerController.getEntity()->view != PlayerView::FIRST_PERSON) 
             {
-                player->render();
+                playerController.getEntity()->render();
                 middleDot->setHidden(true);
             }
             else
@@ -274,8 +273,8 @@ void MonCraftScene::draw() {
       musicPlayer.update();
     #endif
 
-    if(overlay->select((int)(player->getCurrentBlock()) + vp->getMouseScrollDiff()))
-        player->setCurrentBlock(overlay->getCurrentBlock());
+    if(overlay->select((int)(server->getPlayer()->getCurrentBlock()) + vp->getMouseScrollDiff()))
+        server->getPlayer()->setCurrentBlock(overlay->getCurrentBlock());
 
     // keyboardController.apply(*player);
     vp->mouseController.apply(playerController);
@@ -285,7 +284,7 @@ void MonCraftScene::draw() {
     setSize(parent->getSize());
     camera.setSize(getSize());
 
-    player->cameraToHead(camera);
+    playerController.getEntity()->cameraToHead(camera);
     updateFov(world.dt);
 
     // update sun

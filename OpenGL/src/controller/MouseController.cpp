@@ -46,7 +46,7 @@ void MouseController::triggerAction(Click action) {
 
 void MouseController::apply(PlayerController& controller) {
 
-  Entity* character = controller.getEntity();
+  auto character = controller.getEntity();
   if (makeRotation) {
     character->turn(glm::vec2(deltaY, -deltaX) * Config::getClientConfig().sensivity * 0.0001f);
   }

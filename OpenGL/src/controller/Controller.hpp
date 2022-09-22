@@ -5,10 +5,12 @@
 
 class Controller {
 public:
-  Controller();
+  Controller(std::shared_ptr<Entity> entity);
+
+  std::shared_ptr<Entity> getEntity() {return entity;}
 
   virtual void update() = 0;
 
 protected:
-  std::unique_ptr<Entity> entity;
+  std::shared_ptr<Entity> entity;
 };

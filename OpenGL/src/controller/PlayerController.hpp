@@ -4,17 +4,15 @@
 #include <glm/glm.hpp>
 #include "ui/Key.hpp"
 
-class PlayerController : Controller {
+class PlayerController : public Controller {
 public:
-	PlayerController();
+	PlayerController(std::shared_ptr<Entity> entity);
 
   bool handleKeyPressed(Key k);
   bool handleKeyReleased(Key k);
 
   void update();
 
-
-  Entity* getEntity() {return entity.get();}
 private:
 
   bool isDoubleSpace();

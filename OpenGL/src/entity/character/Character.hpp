@@ -36,8 +36,6 @@ public:
    */
 	void render() override;
 
-  void cameraToHead(Camera& camera);
-
   /**
    * Update the character state.
    */
