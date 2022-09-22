@@ -6,7 +6,8 @@
 
 PlayerController::PlayerController(std::shared_ptr<Entity> entity)
 : Controller(entity), toggleGod(false),
-    spaceIsPressed(false), lastSpacePress(SDL_GetTicks())
+    spaceIsPressed(false), lastSpacePress(SDL_GetTicks()),
+    direction(0)
 {}
 
 bool PlayerController::handleKeyReleased(Key k) {
@@ -31,19 +32,19 @@ bool PlayerController::handleKeyReleased(Key k) {
         if (direction.y == -1) direction.y = 0;
     }
     else if (k == config.sprint) {
-        entity.get()->sprint = false;
+        entity->sprint = false;
     }
     else if (k == config.view) {
-        entity.get()->view = (PlayerView)(((int)entity.get()->view + 1) % 3);
+        entity->view = (PlayerView)(((int)entity->view + 1) % 3);
     }
     else if (k == config.dab) {
-        entity.get()->dab = false;
+        entity->dab = false;
     }else if(k == config.menu) {
         if (direction.z != 0) direction.z = 0;
         if (direction.x != 0) direction.x = 0;
         if (direction.y != 0) direction.y = 0;
-        entity.get()->sprint = false;
-        entity.get()->dab = false;
+        entity->sprint = false;
+        entity->dab = false;
         spaceIsPressed = false;
     }
 
@@ -87,26 +88,25 @@ bool PlayerController::handleKeyPressed(Key k) {
         direction.y = -1;
     }
     else if (k == config.sprint) {
-        entity.get()->sprint = true;
+        entity->sprint = true;
     }
     else if (k == config.dab) {
-        entity.get()->dab = true;
+        entity->dab = true;
     }
 
     return true;
 }
 
 void PlayerController::update() {
-
   if (toggleGod) {
-      entity.get()->god = !entity.get()->god;
+      entity->god = !entity->god;
       toggleGod = false;
   }
-  if(entity.get()->god) {
-    entity.get()->walk(direction);
+  if(entity->god) {
+    entity->walk(direction);
   }
   else {
-    entity.get()->walk({direction.x, 0, direction.z});
-    if(direction.y > 0) entity.get()->jump();
+    entity->walk({direction.x, 0, direction.z});
+    if(direction.y > 0) entity->jump();
   }
 }

@@ -63,9 +63,11 @@ MonCraftScene::MonCraftScene(Viewport* vp)
       sunSpeed(0.0075f),
       lastClock(SDL_GetTicks()),
       server(createServer(Config::getClientConfig().multiplayer)),
-      playerController(server->getPlayer())
+      playerController(nullptr)
 {
     World::getInst().t = (uint32_t)(8.f * dayDuration / 24.f);
+    
+    playerController = std::make_unique<PlayerController>(server->getPlayer());
     
     auto const& serverConf = Config::getServerConfig();
     camera.setFar(16.0f * (float)sqrt(2 * pow(serverConf.renderDistH, 2) + pow(serverConf.renderDistV, 2)));
@@ -151,12 +153,12 @@ bool MonCraftScene::onMouseMove(glm::ivec2 pos) {
 
 void MonCraftScene::onKeyPressed(Key k) {
     if(vp->isMouseCaptured())
-        playerController.handleKeyPressed(k);
+        playerController->handleKeyPressed(k);
 }
 
 void MonCraftScene::onKeyReleased(Key k) {
     if(vp->isMouseCaptured())
-        playerController.handleKeyReleased(k);
+        playerController->handleKeyReleased(k);
     if(k == Config::getClientConfig().menu) {
         bool paramDisplayed = children.end() != std::find_if(children.begin(), children.end(), [&](auto& other) {
             return other.get() == parameters.get();
@@ -223,7 +225,7 @@ void MonCraftScene::updateFov(uint32_t dt) {
   const float maxFov = 180.0f;
   const float smoothing = 0.005f;
   const float transition = 10.f;
-  const float speed = glm::length(playerController.getEntity()->speed);
+  const float speed = glm::length(playerController->getEntity()->speed);
   const float fov = camera.getFovY();
   const auto targetFov = fov - (maxFov + (config.fov - maxFov) * exp(-smoothing * speed));
   camera.setFovY(fov - targetFov * transition * dt * 0.001f);
@@ -239,9 +241,9 @@ void MonCraftScene::drawEntities() {
     shader->bindTexture(TEXTURE_COLOR, texCharacter);
     for(auto pair : world.entities) {
         if(pair.first == playerUid) {
-            if(playerController.getEntity()->view != PlayerView::FIRST_PERSON) 
+            if(playerController->getEntity()->view != PlayerView::FIRST_PERSON) 
             {
-                playerController.getEntity()->render();
+                playerController->getEntity()->render();
                 middleDot->setHidden(true);
             }
             else
@@ -277,14 +279,15 @@ void MonCraftScene::draw() {
         server->getPlayer()->setCurrentBlock(overlay->getCurrentBlock());
 
     // keyboardController.apply(*player);
-    vp->mouseController.apply(playerController);
+    vp->mouseController.apply(*playerController);
+    playerController->update();
 
     world.entities.updateAll(world.dt);
 
     setSize(parent->getSize());
     camera.setSize(getSize());
 
-    playerController.getEntity()->cameraToHead(camera);
+    playerController->getEntity()->cameraToHead(camera);
     updateFov(world.dt);
 
     // update sun

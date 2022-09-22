@@ -18,10 +18,11 @@ Entity::Entity(Hitbox hitbox, EntityProperties properties) :
 	properties(properties),
 	speed(0), accel(0), direction(0),
 	view(PlayerView::FIRST_PERSON),
-  	onFloor(false), caster(100),
+	onFloor(false), caster(100),
 	hitbox(std::move(hitbox)),
 	dab(false), god(true),
-    sprint(false)
+	sprint(false),
+	breaked(false), hasBreak(false)
 {}
 
 Entity::~Entity() {}
@@ -36,14 +37,13 @@ void Entity::cameraToHead(Camera& camera) {
 	}
 	else{
     if(view == PlayerView::THIRD_PERSON){
-	  eyePos = headNode.model * vec4(0, 4, 1, 1);
-    eyeTarget = headNode.model * vec4(0, 4, 0, 1);
+	    eyePos = headNode.model * vec4(0, 4, 1, 1);
+      eyeTarget = headNode.model * vec4(0, 4, 0, 1);
 
     }
     else if(view == PlayerView::FRONT) {
       eyePos = headNode.model * vec4(0, 4, -1, 1);
       eyeTarget = headNode.model * vec4(0, 4, 0, 1);
-
     }
     
     camera.setLookAt(eyeTarget, eyePos);
@@ -103,7 +103,7 @@ void Entity::update(uint32_t dt) {
 	highp_dvec3 posOffset;
 	{
 		vec3 acc = accel;
-		acc += vec3(0, -1, 0) * gravity * (god? 0.0f: 1.0f); // gravity
+		acc += vec3(0, -1, 0) * gravity * (god ? 0.0f : 1.0f); // gravity
 
 		// disable friction in accel direction
 		vec2 dragXZ = vec2(speed.x, speed.z) * properties.horizontalFriction;

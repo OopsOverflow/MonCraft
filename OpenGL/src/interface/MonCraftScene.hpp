@@ -63,7 +63,7 @@ private:
   // view controls
   Viewport* vp;
   Camera camera;
-  PlayerController playerController;
+  std::unique_ptr<PlayerController> playerController;
 
   // resources
   Shader* shader;
