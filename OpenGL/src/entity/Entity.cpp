@@ -13,15 +13,15 @@
 using namespace glm;
 static const highp_dmat4 I(1.0);
 
-float Entity::gravity = 32.f;
-
 Entity::Entity(Hitbox hitbox, EntityProperties properties) :
 	state(State::Idle),
 	properties(properties),
 	speed(0), accel(0), direction(0),
-  	onFloor(false),
+	view(PlayerView::FIRST_PERSON),
+  	onFloor(false), caster(100),
 	hitbox(std::move(hitbox)),
-	dab(false), hasBreak(false), breaked(false), god(true)
+	dab(false), god(true),
+    sprint(false)
 {}
 
 Entity::~Entity() {}

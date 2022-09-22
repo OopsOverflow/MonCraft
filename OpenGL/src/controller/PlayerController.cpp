@@ -1,20 +1,16 @@
-#include "KeyboardController.hpp"
+#include "PlayerController.hpp"
 
 #include <glm/glm.hpp>
-
 #include "save/ClientConfig.hpp"
-#include "terrain/World.hpp"
 #include <SDL2/SDL.h>
 
-KeyboardController::KeyboardController()
-  : config(Config::getClientConfig()),
-    direction(0.f),
-    view(CharacterView::FIRST_PERSON),
-    sprint(false), toggleGod(false), dab(false),
+PlayerController::PlayerController()
+: toggleGod(false),
     spaceIsPressed(false), lastSpacePress(SDL_GetTicks())
 {}
 
-bool KeyboardController::handleKeyReleased(Key k) {
+bool PlayerController::handleKeyReleased(Key k) {
+    auto config = Config::getClientConfig();
     if (k == config.forward) {
         if (direction.z == -1) direction.z = 0;
     }
@@ -35,26 +31,26 @@ bool KeyboardController::handleKeyReleased(Key k) {
         if (direction.y == -1) direction.y = 0;
     }
     else if (k == config.sprint) {
-        sprint = false;
+        entity.get()->sprint = false;
     }
     else if (k == config.view) {
-            view = CharacterView(((int)view + 1) % 3);
+        entity.get()->view = (PlayerView)(((int)entity.get()->view + 1) % 3);
     }
     else if (k == config.dab) {
-        dab = false;
+        entity.get()->dab = false;
     }else if(k == config.menu) {
         if (direction.z != 0) direction.z = 0;
         if (direction.x != 0) direction.x = 0;
         if (direction.y != 0) direction.y = 0;
-        sprint = false;
-        dab = false;
+        entity.get()->sprint = false;
+        entity.get()->dab = false;
         spaceIsPressed = false;
     }
 
     return true;
 }
 
-bool KeyboardController::isDoubleSpace() {
+bool PlayerController::isDoubleSpace() {
   static const uint32_t threshold = 300;
   bool res = false;
 
@@ -69,7 +65,8 @@ bool KeyboardController::isDoubleSpace() {
 }
 
 
-bool KeyboardController::handleKeyPressed(Key k) {
+bool PlayerController::handleKeyPressed(Key k) {
+    auto config = Config::getClientConfig();
     if (k == config.forward) {
         direction.z = -1;
     }
@@ -90,28 +87,26 @@ bool KeyboardController::handleKeyPressed(Key k) {
         direction.y = -1;
     }
     else if (k == config.sprint) {
-        sprint = true;
+        entity.get()->sprint = true;
     }
     else if (k == config.dab) {
-        dab = true;
+        entity.get()->dab = true;
     }
 
     return true;
 }
 
-void KeyboardController::apply(Character& character) {
-  character.view = view;
-  character.setDab(dab);
-  character.setSprint(sprint);
+void PlayerController::update() {
+
   if (toggleGod) {
-      character.toggleGodMode();
+      entity.get()->god = !entity.get()->god;
       toggleGod = false;
   }
-  if(character.getGodMode()) {
-    character.walk(direction);
+  if(entity.get()->god) {
+    entity.get()->walk(direction);
   }
   else {
-    character.walk({direction.x, 0, direction.z});
-    if(direction.y > 0) character.jump();
+    entity.get()->walk({direction.x, 0, direction.z});
+    if(direction.y > 0) entity.get()->jump();
   }
 }

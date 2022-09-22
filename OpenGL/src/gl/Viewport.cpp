@@ -104,6 +104,8 @@ Viewport::Viewport(glm::ivec2 size)
 
   //Initialize the OpenGL Context
   context = SDL_GL_CreateContext(window);
+  if(!context)
+    throw std::runtime_error(std::string("SDL init failed: ") + SDL_GetError());
 
   // Initialize GLEW
   if (glewInit() != GLEW_OK)
@@ -257,7 +259,7 @@ void Viewport::on_mousedown(SDL_MouseButtonEvent const& e) {
   switch (e.button) {
   case SDL_BUTTON_LEFT:
     if(mouseCaptured) {
-      mouseController.triggerAction(MouseController::Action::DESTROY);
+      mouseController.triggerAction(Click::LEFT);
     }
     else {
       root->addEvent(Event(Event::Type::PRESS, {e.x, size.y - e.y}));
@@ -265,12 +267,12 @@ void Viewport::on_mousedown(SDL_MouseButtonEvent const& e) {
     break;
   case SDL_BUTTON_RIGHT:
     if(mouseCaptured) {
-      mouseController.triggerAction(MouseController::Action::PLACE);
+      mouseController.triggerAction(Click::RIGHT);
     }
     break;
   case SDL_BUTTON_MIDDLE:
     if(mouseCaptured) {
-      mouseController.triggerAction(MouseController::Action::PICK);
+      mouseController.triggerAction(Click::MIDDLE);
     }
     break;
   default:

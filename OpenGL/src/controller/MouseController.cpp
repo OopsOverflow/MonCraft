@@ -4,51 +4,51 @@
 #include <algorithm>
 #include <glm/glm.hpp>
 
-#include "entity/character/Character.hpp"
 #include "save/ClientConfig.hpp"
 
 MouseController::MouseController() {
   lastX = lastY = deltaX = deltaY = 0;
-  rotation = false;
+  makeRotation = false;
 }
 
 
 void MouseController::rotateStart(int x, int y) {
     lastX = x;
     lastY = y;
-    rotation = true;
+    makeRotation = true;
 }
 
 void MouseController::rotateEnd(int x, int y) {
-  if (rotation) {
+  if (makeRotation) {
     deltaX = x - lastX;
     deltaY = y - lastY;
-    rotation = false;
+    makeRotation = false;
   }
 }
 
 void MouseController::motion(int x, int y) {
-    if (rotation) {
+    if (makeRotation) {
     deltaX = x - lastX;
     deltaY = y - lastY;
   }
 }
 
 void MouseController::motionRel(int dx, int dy) {
-    if (rotation) {
+    if (makeRotation) {
     deltaX += dx;
     deltaY += dy;
   }
 }
 
-void MouseController::triggerAction(MouseController::Action action) {
+void MouseController::triggerAction(Click action) {
   actions.push_back(action);
 }
 
-void MouseController::apply(Character& character) {
+void MouseController::apply(PlayerController& controller) {
 
-  if (rotation) {
-    character.turn(glm::vec2(deltaY, -deltaX) * Config::getClientConfig().sensivity * 0.0001f);
+  Entity* character = controller.getEntity();
+  if (makeRotation) {
+    character->turn(glm::vec2(deltaY, -deltaX) * Config::getClientConfig().sensivity * 0.0001f);
   }
 
   lastX += deltaX;
@@ -57,14 +57,14 @@ void MouseController::apply(Character& character) {
   deltaY = 0;
 
   for(auto action : actions) switch (action) {
-    case Action::PLACE:
-      character.placeBlock();
+    case Click::LEFT:
+      character->leftClick();
       break;
-    case Action::DESTROY:
-      character.breakBlock();
+    case Click::MIDDLE:
+      character->middleClick();
       break;
-    case Action::PICK:
-      character.pickBlock();
+    case Click::RIGHT:
+      character->rightClick();
       break;
     default:
       assert(false);

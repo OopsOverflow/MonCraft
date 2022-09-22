@@ -4,6 +4,7 @@
 
 #include "entity/Hitbox.hpp"
 #include "entity/Node.hpp"
+#include "util/Raycast.hpp"
 
 enum class State { Walking, Idle };
 
@@ -17,6 +18,8 @@ struct EntityProperties {
 
 };
 
+enum class PlayerView { FIRST_PERSON, THIRD_PERSON, FRONT };
+
 /**
  * An entity is a living thing able to move around and subject to physics
  * (speed / acceleration, gravity, collisions...)
@@ -25,6 +28,7 @@ struct EntityProperties {
  * The Entity's implementation is responsible for linking correctly the
  * headNode to some other node and linking it's body parts to the main node.
  */
+static const float gravity = 32.f;
 
 class Entity
 {
@@ -59,7 +63,9 @@ public:
 
 	void setPosition(glm::vec3 pos);
 
-	static float gravity;
+	virtual void leftClick() = 0;
+	virtual void middleClick() = 0;
+	virtual void rightClick() = 0;
 
 	State state;
 
@@ -72,10 +78,17 @@ public:
 	glm::vec3 accel;
 	glm::vec3 direction;
 
-	bool hasBreak;
-	bool breaked;
+	PlayerView view;
+
+	bool sprint;
 	bool god;
 	bool dab;
 	bool onFloor;
+
+	bool hasBreak;
+	bool breaked;
+
+	Raycast caster;
+
 	Hitbox hitbox;
 };

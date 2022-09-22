@@ -69,8 +69,11 @@ if(${BUILD_TARGET} STREQUAL client)
 		${CMAKE_CURRENT_SOURCE_DIR}/src/entity/Member.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/entity/character/Character.cpp
 
-		${CMAKE_CURRENT_SOURCE_DIR}/src/controller/KeyboardController.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/src/controller/AIController.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/src/controller/RemotePlayerController.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/src/controller/PlayerController.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/controller/MouseController.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/src/controller/Controller.cpp
 
 		${CMAKE_CURRENT_SOURCE_DIR}/src/interface/widgets/BlockSelector.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/interface/widgets/MonCraftButton.cpp

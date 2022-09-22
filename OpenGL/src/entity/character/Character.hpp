@@ -5,7 +5,6 @@
 #include "entity/Entity.hpp"
 #include "entity/Node.hpp"
 #include "terrain/BlockArray.hpp"
-#include "util/Raycast.hpp"
 #include "blocks/Block.hpp"
 
 #include "LeftArm.hpp"
@@ -20,8 +19,6 @@ class Camera;
 /**
  * The main character.
  */
-
-enum class CharacterView { FIRST_PERSON, THIRD_PERSON, FRONT };
 
 class Character : public Entity {
 
@@ -49,18 +46,18 @@ public:
   /**
    * Breaks the block in line of sight if within reach of the character.
    */
-  void breakBlock();
+  void leftClick();
 
   /**
    * Place a block in front of the player, next to the nearest block face in
    * line of sight, if any.
    */
-  void placeBlock();
+  void rightClick();
 
   /**
    * Choose the block in line of sight to be placed.
    */
-  void pickBlock();
+  void middleClick();
 
   /**
   * Gets the blocks placed since the last call to this method.
@@ -86,8 +83,6 @@ public:
    */
   BlockType getCurrentBlock() const;
 
-  CharacterView view;
-
 private:
   Node rootNode;
   Head head;
@@ -99,10 +94,7 @@ private:
 
   float animState;
 
-  Raycast caster;
   BlockType currentBlock;
   BlockArray record;
 
-  bool sprint;
-  
 };

@@ -141,7 +141,7 @@ GLuint ResourceManager::loadCubeMap(std::string const& name, std::vector<std::st
         std::string path = "data/img/" + faces.at(i);
         SDL_Surface* img = IMG_Load(path.c_str());
         SDL_Surface* rgbImg = SDL_ConvertSurfaceFormat(img, SDL_PIXELFORMAT_RGBA32, 0);
-        if (rgbImg) {
+        if (rgbImg && img) {
             glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
                 0, GL_RGBA, rgbImg->w, rgbImg->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid*)rgbImg->pixels);
             SDL_FreeSurface(img);

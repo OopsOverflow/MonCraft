@@ -6,7 +6,7 @@
 
 #include "ui/Component.hpp"
 #include "gl/Camera.hpp"
-#include "controller/KeyboardController.hpp"
+#include "controller/PlayerController.hpp"
 #include "ui/Image.hpp"
 #include "ui/Key.hpp"
 #include "util/Identifier.hpp"
@@ -64,7 +64,7 @@ private:
   // view controls
   Viewport* vp;
   Camera camera;
-  KeyboardController keyboardController;
+  PlayerController playerController;
 
   // resources
   Shader* shader;

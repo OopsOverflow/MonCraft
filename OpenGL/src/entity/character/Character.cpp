@@ -33,10 +33,7 @@ const float sprintMultiplier = 2;
 
 Character::Character(vec3 pos)
     : Entity(CharacterHitbox()),
-      view(CharacterView::FIRST_PERSON),
-      caster(100), // distance the player can place blocks
-      currentBlock(BlockType::Oak_Stair),
-      sprint(false)
+      currentBlock(BlockType::Oak_Stair)
 {
   bodyNode.loc = pos;
   rootNode.sca = vec3(1.85f / 32.f); // steve is 1.85 blocks high, 32 pixels high
@@ -64,18 +61,18 @@ Character::~Character() {}
 void Character::cameraToHead(Camera& camera) {
   vec3 eyePos;
   vec3 eyeTarget;
-	if(view == CharacterView::FIRST_PERSON) {
+	if(view == PlayerView::FIRST_PERSON) {
 		eyePos = headNode.model * vec4(0, 4, 0, 1);
 		eyeTarget = headNode.model * vec4(0, 4, 50, 1);
 
 	}
 	else{
-    if(view == CharacterView::THIRD_PERSON){
+    if(view == PlayerView::THIRD_PERSON){
 	  eyePos = headNode.model * vec4(0, 4, 1, 1);
     eyeTarget = headNode.model * vec4(0, 4, 0, 1);
 
     }
-    else if(view == CharacterView::FRONT) {
+    else if(view == PlayerView::FRONT) {
       eyePos = headNode.model * vec4(0, 4, -1, 1);
       eyeTarget = headNode.model * vec4(0, 4, 0, 1);
 
@@ -148,7 +145,7 @@ bool Character::getDab() const {
   return dab;
 }
 
-void Character::breakBlock() {
+void Character::leftClick() {
   if(!dab) { //we can't break when we are dabbing wtf???
     hasBreak = true;
     breaked = true;
@@ -178,7 +175,7 @@ Facing getFacing(vec3 dir) {
   }
 }
 
-void Character::placeBlock() {
+void Character::rightClick() {
   auto& world = World::getInst();
   vec3 eyePos = headNode.model * vec4(0, 4, 4, 1);
   vec3 eyeTarget = headNode.model * vec4(0, 4, 5, 1);
@@ -212,7 +209,7 @@ void Character::placeBlock() {
   }
 }
 
-void Character::pickBlock() {
+void Character::middleClick() {
   vec3 eyePos = headNode.model * vec4(0, 4, 0, 1);
   vec3 eyeTarget = headNode.model * vec4(0, 4, 5, 1);
   auto cast = caster.cast(eyePos, eyeTarget - eyePos);

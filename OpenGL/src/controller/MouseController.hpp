@@ -1,9 +1,11 @@
 #pragma once
 
 #include <vector>
+#include "PlayerController.hpp"
 
-class Character;
-
+	enum class Click {
+		LEFT, MIDDLE, RIGHT
+	};
 class MouseController {
 public:
 	MouseController();
@@ -13,22 +15,18 @@ public:
   void motion(int x, int y);
   void motionRel(int dx, int dy);
 
-	// for now only two actions a player can achieve with the mouse: placing and destroying blocks.
-	enum class Action {
-		PLACE, DESTROY, PICK
-	};
+	void triggerAction(Click action);
 
-	void triggerAction(Action action);
-
-  void apply(Character& character);
+  void apply(PlayerController& controller);
+  bool getRotation() const {return makeRotation;}
 
 private:
   int lastX;
   int lastY;
   int deltaX;
   int deltaY;
-  bool rotation;
+  bool makeRotation;
 
   
-	std::vector<Action> actions;
+	std::vector<Click> actions;
 };

@@ -152,12 +152,12 @@ bool MonCraftScene::onMouseMove(glm::ivec2 pos) {
 
 void MonCraftScene::onKeyPressed(Key k) {
     if(vp->isMouseCaptured())
-        keyboardController.handleKeyPressed(k);
+        playerController.handleKeyPressed(k);
 }
 
 void MonCraftScene::onKeyReleased(Key k) {
     if(vp->isMouseCaptured())
-        keyboardController.handleKeyReleased(k);
+        playerController.handleKeyReleased(k);
     if(k == Config::getClientConfig().menu) {
         bool paramDisplayed = children.end() != std::find_if(children.begin(), children.end(), [&](auto& other) {
             return other.get() == parameters.get();
@@ -240,7 +240,7 @@ void MonCraftScene::drawEntities() {
     shader->bindTexture(TEXTURE_COLOR, texCharacter);
     for(auto pair : world.entities) {
         if(pair.first == playerUid) {
-            if(player->view != CharacterView::FIRST_PERSON) 
+            if(player->view != PlayerView::FIRST_PERSON) 
             {
                 player->render();
                 middleDot->setHidden(true);
@@ -277,8 +277,8 @@ void MonCraftScene::draw() {
     if(overlay->select((int)(player->getCurrentBlock()) + vp->getMouseScrollDiff()))
         player->setCurrentBlock(overlay->getCurrentBlock());
 
-    keyboardController.apply(*player);
-    vp->mouseController.apply(*player);
+    // keyboardController.apply(*player);
+    vp->mouseController.apply(playerController);
 
     world.entities.updateAll(world.dt);
 
