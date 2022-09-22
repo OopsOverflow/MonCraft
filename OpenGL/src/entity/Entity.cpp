@@ -13,6 +13,10 @@
 using namespace glm;
 static const highp_dmat4 I(1.0);
 
+const float defaultSpeed = 4.317f;
+const float godMultiplier = 5;
+const float sprintMultiplier = 2;
+
 Entity::Entity(Hitbox hitbox, EntityProperties properties) :
 	state(State::Idle),
 	properties(properties),
@@ -64,6 +68,41 @@ void Entity::cameraToHead(Camera& camera) {
   } 
 
   camera.setLookAt(eyePos, eyeTarget);
+}
+
+void Entity::enableGodMode() {
+  if(god) return;
+  properties.verticalFriction = 5.5f;
+  properties.maxSpeed = defaultSpeed * godMultiplier;
+  if(sprint) properties.maxSpeed *= sprintMultiplier;
+  properties.maxAccel = 40.f;
+  god = true;
+}
+
+void Entity::disableGodMode() {
+  if(!god) return;
+  properties.verticalFriction = 0.f;
+  properties.maxSpeed = defaultSpeed;
+  if(sprint) properties.maxSpeed *= sprintMultiplier;
+  properties.maxAccel = 10.f;
+  god = false;
+}
+
+void Entity::toggleGodMode() {
+  if(god) disableGodMode();
+  else enableGodMode();
+}
+
+void Entity::setSprint(bool sprint) {
+  if(this->sprint == sprint) return;
+  this->sprint = sprint;
+
+  if(sprint) {
+    properties.maxSpeed *= sprintMultiplier;
+  }
+  else {
+    properties.maxSpeed /= sprintMultiplier;
+  }
 }
 
 void Entity::walk(vec3 dir) {

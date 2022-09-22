@@ -32,7 +32,7 @@ bool PlayerController::handleKeyReleased(Key k) {
         if (direction.y == -1) direction.y = 0;
     }
     else if (k == config.sprint) {
-        entity->sprint = false;
+        entity->setSprint(false);
     }
     else if (k == config.view) {
         entity->view = (PlayerView)(((int)entity->view + 1) % 3);
@@ -88,7 +88,7 @@ bool PlayerController::handleKeyPressed(Key k) {
         direction.y = -1;
     }
     else if (k == config.sprint) {
-        entity->sprint = true;
+        entity->setSprint(true);
     }
     else if (k == config.dab) {
         entity->dab = true;
@@ -99,7 +99,7 @@ bool PlayerController::handleKeyPressed(Key k) {
 
 void PlayerController::update() {
   if (toggleGod) {
-      entity->god = !entity->god;
+      entity->toggleGodMode();
       toggleGod = false;
   }
   if(entity->god) {

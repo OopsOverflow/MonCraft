@@ -26,10 +26,6 @@
 
 using namespace glm;
 
-const float defaultSpeed = 4.317f;
-const float godMultiplier = 5;
-const float sprintMultiplier = 2;
-
 Character::Character(vec3 pos)
     : Entity(CharacterHitbox()),
       currentBlock(BlockType::Oak_Stair)
@@ -55,53 +51,6 @@ Character::Character(vec3 pos)
 }
 
 Character::~Character() {}
-
-void Character::enableGodMode() {
-  if(god) return;
-  properties.verticalFriction = 5.5f;
-  properties.maxSpeed = defaultSpeed * godMultiplier;
-  if(sprint) properties.maxSpeed *= sprintMultiplier;
-  properties.maxAccel = 40.f;
-  god = true;
-}
-
-void Character::disableGodMode() {
-  if(!god) return;
-  properties.verticalFriction = 0.f;
-  properties.maxSpeed = defaultSpeed;
-  if(sprint) properties.maxSpeed *= sprintMultiplier;
-  properties.maxAccel = 10.f;
-  god = false;
-}
-
-void Character::toggleGodMode() {
-  if(god) disableGodMode();
-  else enableGodMode();
-}
-
-bool Character::getGodMode() {
-  return god;
-}
-
-void Character::setSprint(bool sprint) {
-  if(this->sprint == sprint) return;
-  this->sprint = sprint;
-
-  if(sprint) {
-    properties.maxSpeed *= sprintMultiplier;
-  }
-  else {
-    properties.maxSpeed /= sprintMultiplier;
-  }
-}
-
-void Character::setDab(bool dab) {
-  this->dab = dab;
-}
-
-bool Character::getDab() const {
-  return dab;
-}
 
 void Character::leftClick() {
   if(!dab) { //we can't break when we are dabbing wtf???

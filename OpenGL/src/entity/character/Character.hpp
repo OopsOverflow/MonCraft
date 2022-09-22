@@ -62,15 +62,6 @@ public:
   */
   BlockArray& getRecord();
 
-  void enableGodMode();
-  void disableGodMode();
-  void toggleGodMode();
-  bool getGodMode();
-
-  void setSprint(bool sprint);
-  void setDab(bool dab);
-  bool getDab() const;
-
   /**
    * Set the selected block type (in hand).
    */

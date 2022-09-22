@@ -70,6 +70,12 @@ public:
 	virtual void middleClick() = 0;
 	virtual void rightClick() = 0;
 
+	virtual void enableGodMode();
+  	virtual void disableGodMode();
+  	virtual void toggleGodMode();
+
+	virtual void setSprint(bool sprint);
+
 	State state;
 
 	Node bodyNode;
