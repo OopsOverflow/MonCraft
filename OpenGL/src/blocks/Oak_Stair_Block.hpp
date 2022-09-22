@@ -1,7 +1,9 @@
 #pragma once
 
 #include "Orientable_Block.hpp"
+#ifdef MONCRAFT_CLIENT
 #include "model/StairModel.hpp"
+#endif
 #include "save/SaveManager.hpp"
 
 class Oak_Stair_Block : public Orientable_Block {
@@ -13,7 +15,9 @@ public:
 
     bool isOpaque() const override { return false; }
 
-    StairModel* getModel() const override { return StairModel::get(); }
+    #ifdef MONCRAFT_CLIENT
+        StairModel* getModel() const override { return StairModel::get(); }
+    #endif
 
     glm::ivec2 getFaceUVs(BlockFace face) const override {
         return {7, 1};

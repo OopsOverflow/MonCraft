@@ -27,10 +27,12 @@ GraphicsMenu::GraphicsMenu()
 	fullscreen = Checkbox::create();
 	shadows = ComboBox::create({ "None", "Low", "High" }, clientConf.shadows);
 	fov = RangeSlider::create(10, 170);
+	sensivity = RangeSlider::create(1, 100);
 	renderDistH = RangeSlider::create(1, 40);
 	renderDistV = RangeSlider::create(1, 20);
 	vsync = Checkbox::create();
 
+	sensivity->setValue((int)(clientConf.sensivity));
 	fov->setValue((int)clientConf.fov);
 	renderDistH->setValue(serverConf.renderDistH);
 	renderDistV->setValue(serverConf.renderDistV);
@@ -40,6 +42,7 @@ GraphicsMenu::GraphicsMenu()
 
 	addLine("Plein écran", fullscreen);
 	addLine("FOV", fov);
+	addLine("Sensibilité souris", sensivity);
 	addLine("Ombres", shadows);
 	addLine("Distance horizontale", renderDistH);
 	addLine("Distance verticale", renderDistV);
@@ -50,6 +53,7 @@ GraphicsMenu::GraphicsMenu()
 	// vsync->onRelease([&]{ clientConf.vsync = this->vsync->getChecked(); });
 	shadows->onRelease([&]{ clientConf.shadows = (int)this->shadows->getSelected(); });
 	fov->onRelease([&]{ clientConf.fov = (float)this->fov->getValue(); });
+	sensivity->onRelease([&]{ clientConf.sensivity = (float)this->sensivity->getValue(); });
 	renderDistH->onRelease([&]{ serverConf.renderDistH = this->renderDistH->getValue(); });
 	renderDistV->onRelease([&]{ serverConf.renderDistV = this->renderDistV->getValue(); });
 	
@@ -60,6 +64,7 @@ GraphicsMenu::~GraphicsMenu() {
 	auto& serverConf = Config::getServerConfig();
 
 	clientConf.fov = (float)fov->getValue();
+	clientConf.sensivity = (float)sensivity->getValue();
 	serverConf.renderDistH = renderDistH->getValue();
 	serverConf.renderDistV = renderDistV->getValue();
 	clientConf.fullscreen = fullscreen->getChecked(); 

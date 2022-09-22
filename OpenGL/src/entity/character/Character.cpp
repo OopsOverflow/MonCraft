@@ -36,7 +36,7 @@ Character::Character(vec3 pos)
       view(CharacterView::FIRST_PERSON),
       caster(100), // distance the player can place blocks
       currentBlock(BlockType::Oak_Stair),
-      god(true), sprint(false), dab(false)
+      sprint(false)
 {
   bodyNode.loc = pos;
   rootNode.sca = vec3(1.85f / 32.f); // steve is 1.85 blocks high, 32 pixels high
@@ -90,7 +90,12 @@ void Character::cameraToHead(Camera& camera) {
 
       min = std::min(min, cast.dist);
     }
-    eyePos = eyeTarget + min * normalize(eyeTarget - eyePos);
+    if(min > 0.5f) 
+      eyePos = eyeTarget + min * normalize(eyeTarget - eyePos);
+    else
+      eyePos = eyeTarget + 0.5f * normalize(eyeTarget - eyePos);
+    
+   
   } 
 
   camera.setLookAt(eyePos, eyeTarget);
@@ -99,7 +104,6 @@ void Character::cameraToHead(Camera& camera) {
 void Character::enableGodMode() {
   if(god) return;
   properties.verticalFriction = 5.5f;
-  gravity = 0;
   properties.maxSpeed = defaultSpeed * godMultiplier;
   if(sprint) properties.maxSpeed *= sprintMultiplier;
   properties.maxAccel = 40.f;
@@ -109,7 +113,6 @@ void Character::enableGodMode() {
 void Character::disableGodMode() {
   if(!god) return;
   properties.verticalFriction = 0.f;
-  gravity = 32.f;
   properties.maxSpeed = defaultSpeed;
   if(sprint) properties.maxSpeed *= sprintMultiplier;
   properties.maxAccel = 10.f;
@@ -147,7 +150,8 @@ bool Character::getDab() const {
 
 void Character::breakBlock() {
   if(!dab) { //we can't break when we are dabbing wtf???
-    r_arm.anim->setAnimation(Animation::Break);
+    hasBreak = true;
+    breaked = true;
     
     auto& world = World::getInst();
     vec3 eyePos = headNode.model * vec4(0, 4, 0, 1);
@@ -181,8 +185,10 @@ void Character::placeBlock() {
   auto cast = caster.cast(eyePos, eyeTarget - eyePos);
 
   if(cast.success) {
-    if(hitbox.collides(bodyNode.loc, cast.position + cast.normal)) return;
-    Block* block = world.getBlock(cast.position + cast.normal);
+    hasBreak = true;
+    breaked = true;
+    if(hitbox.collides(bodyNode.loc, cast.blockPosition + cast.normal)) return;
+    Block* block = world.getBlock(cast.blockPosition + cast.normal);
     if(!block) return;
     if(block->type != BlockType::Air && block->type != BlockType::Water) return;
     ivec3 pos = cast.blockPosition + cast.normal;
@@ -215,6 +221,12 @@ void Character::pickBlock() {
 
 void Character::update(uint32_t dt) {
   Entity::update(dt);
+
+  if(breaked) {
+    r_arm.anim->setAnimation(Animation::Break);
+    breaked = false;
+  }
+   
 
   // smooth head rot with constant speed
   {

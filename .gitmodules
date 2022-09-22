@@ -1,0 +1,6 @@
+[submodule "Dependencies/libdatachannel"]
+	path = Dependencies/libdatachannel
+	url = https://github.com/paullouisageneau/libdatachannel
+[submodule "Dependencies/spdlog"]
+	path = Dependencies/spdlog
+	url = https://github.com/gabime/spdlog

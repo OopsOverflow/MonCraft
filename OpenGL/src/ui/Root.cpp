@@ -29,7 +29,8 @@ void Root::addEvent(Event evt) {
 }
 
 void Root::update() {
-  handleEvents(events);
+  for(auto const& evt: events)
+    handleEvent(evt);
   events = {};
 }
 

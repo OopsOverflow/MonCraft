@@ -7,17 +7,21 @@
     <title>Emscripten-Generated Code</title>
   </head>
   <body>
-    <div class="emscripten" id="status">Downloading...</div>
+    <div id="loading" class="card">
+      <div class="content">
+        <div id="status">Downloading...</div><br/>
 
-    <div class="emscripten">
-      <progress value="0" max="100" id="progress" hidden=1></progress>
+        <div class="progress">
+          <progress value="0" max="100" id="progress" hidden=1></progress>
+        </div>
+      </div>
     </div>
 
-    <div class="emscripten_border">
-      <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
+    <div class="canvas">
+      <canvas class="emscripten" id="canvas" tabindex=-1></canvas>
     </div>
 
-    <div id="moncraft-info" class="hidden">
+    <div id="moncraft-info" class="card hidden">
       <div class="content">
         <h1>MONCRAFT</h1>
         <p>MonCraft est un jeu vidéo inspiré par Minecraft et développé en C++ et OpenGL.</p>

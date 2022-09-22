@@ -1,11 +1,12 @@
-Dependencies/boost
 Dependencies/glm/out
+Dependencies/vcpkg
 
 OpenGL/save
 OpenGL/Debug
 OpenGL/Release
 
 build
+build-*
 cert
 CMakeCache.txt
 CMakeSettings.json

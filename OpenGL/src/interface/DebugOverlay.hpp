@@ -21,6 +21,7 @@ private:
 	std::shared_ptr<ui::Text> text_players;
 	std::shared_ptr<ui::Text> text_uid;
 	std::shared_ptr<ui::Text> text_gameTime;
+	std::shared_ptr<ui::Text> text_connectivity;
 
 	std::shared_ptr<Server> server;
 	World& world;

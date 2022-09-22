@@ -1,7 +1,9 @@
 #pragma once
 
 #include "Block.hpp"
-#include "model/CactusModel.hpp"
+#ifdef MONCRAFT_CLIENT
+    #include "model/CactusModel.hpp"
+#endif
 
 class Cactus_Block : public Block {
 public:
@@ -18,8 +20,9 @@ public:
     
     bool isOpaque() const override { return false; }
 
-    BlockModel * getModel() const override { return CactusModel::get(); }
-
+    #ifdef MONCRAFT_CLIENT
+        BlockModel * getModel() const override { return CactusModel::get(); }
+    #endif
 private:
     Cactus_Block() : Block(BlockType::Cactus) {}
 };

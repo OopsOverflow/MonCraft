@@ -9,10 +9,15 @@ enum class PacketType {
   ENTITY_TICK,
   BLOCKS,
   PLAYER_TICK,
+  PLAYER_ACTION,
   PING,
   CHUNKS,
   ACK_CHUNKS,
   NONE
+};
+
+enum class Action {
+  BREAK
 };
 
 

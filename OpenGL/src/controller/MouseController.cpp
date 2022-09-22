@@ -5,10 +5,10 @@
 #include <glm/glm.hpp>
 
 #include "entity/character/Character.hpp"
+#include "save/ClientConfig.hpp"
 
 MouseController::MouseController() {
   lastX = lastY = deltaX = deltaY = 0;
-  sensivity = 0.005f;
   rotation = false;
 }
 
@@ -48,7 +48,7 @@ void MouseController::triggerAction(MouseController::Action action) {
 void MouseController::apply(Character& character) {
 
   if (rotation) {
-    character.turn(glm::vec2(deltaY, -deltaX) * sensivity);
+    character.turn(glm::vec2(deltaY, -deltaX) * Config::getClientConfig().sensivity * 0.0001f);
   }
 
   lastX += deltaX;
@@ -67,7 +67,7 @@ void MouseController::apply(Character& character) {
       character.pickBlock();
       break;
     default:
-      std::cout << "MouseController: Action not supported." << std::endl;
+      assert(false);
       break;
   };
   actions = {};

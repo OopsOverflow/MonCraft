@@ -2,6 +2,7 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <spdlog/spdlog.h>
 #include <stddef.h>
 #include <iostream>
 #include <stdexcept>
@@ -27,7 +28,7 @@ void ResourceManager::init() {
 }
 
 void ResourceManager::free() {
-  std::cout << "freeing resources..." << std::endl;
+  spdlog::info("Freeing resources...");
   shaders.clear();
 
   for(auto pair : textures)
@@ -46,7 +47,7 @@ Shader* ResourceManager::addShader(std::string const& name, std::unique_ptr<Shad
 }
 
 Shader* ResourceManager::loadShader(std::string const& name, std::string const& vert, std::string const& frag) {
-  std::cout << "loading shader: " << name << std::endl;
+  spdlog::debug("Loading shader: '{}'", name);
   std::unique_ptr<Shader> shader(new Shader(("src/shader/" + vert).c_str(), ("src/shader/" + frag).c_str()));
   return addShader(name, std::move(shader));
 }

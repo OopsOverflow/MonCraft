@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <spdlog/spdlog.h>
 #include <sstream>
 
 #include "save/SaveManager.hpp"
@@ -37,6 +38,7 @@ Config::ClientConfig::ClientConfig() {
 
     PARAM(serverAddr)
     PARAM(serverPort)
+    PARAM(serverTLS)
     PARAM(fov)
     PARAM(msaa)
     KEY_PARAM(forward)
@@ -53,6 +55,7 @@ Config::ClientConfig::ClientConfig() {
     PARAM(fullscreen)
     PARAM(vsync)
     PARAM(shadows)
+    PARAM(sensivity)
 
   }
 
@@ -67,7 +70,7 @@ Config::ClientConfig::~ClientConfig() {
   std::filesystem::create_directories(SaveManager::configSaveDir);
   std::ofstream openedFile(path, std::fstream::trunc);
   if (!openedFile) {
-    std::cout << "[WARN] failed to open file: " << path << std::endl;
+    spdlog::warn("Failed to open client config file: ''", path);
     return;
   }
   openedFile << std::boolalpha << "MonCraft v1.1.0" << std::endl;
@@ -79,6 +82,7 @@ Config::ClientConfig::~ClientConfig() {
 
   PARAM(serverAddr)
   PARAM(serverPort)
+  PARAM(serverTLS)
   PARAM(fov)
   PARAM(msaa)
   KEY_PARAM(forward)
@@ -95,6 +99,7 @@ Config::ClientConfig::~ClientConfig() {
   PARAM(fullscreen)
   PARAM(vsync)
   PARAM(shadows)
+  PARAM(sensivity)
 
   #undef KEY_PARAM
   #undef PARAM

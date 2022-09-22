@@ -1,11 +1,15 @@
 #pragma once
 
 #include "Block.hpp"
-#include "model/OrientableModel.hpp"
+#ifdef MONCRAFT_CLIENT
+    #include "model/OrientableModel.hpp"
+#endif
 
 class Orientable_Block : public Block {
 public:
-    OrientableModel* getModel() const override { return OrientableModel::get(); }
+    #ifdef MONCRAFT_CLIENT
+        OrientableModel* getModel() const override { return OrientableModel::get(); }
+    #endif
 
     Facing getFacing() const { return facing; }
 

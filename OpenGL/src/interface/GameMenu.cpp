@@ -17,10 +17,8 @@ GameMenu::GameMenu()
 	buttons->setGap(10);
 
 	buttons->pack_start(continueButton);
-	#ifndef EMSCRIPTEN
-		buttons->pack_start(parameterButton);
-		buttons->pack_start(quitButton);
-	#endif
+	buttons->pack_start(parameterButton);
+	buttons->pack_start(quitButton);
 
 	add(move(buttons));
 

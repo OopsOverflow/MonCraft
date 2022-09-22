@@ -1,7 +1,9 @@
-#include <glm/glm.hpp>
-#include <stddef.h>
+#include "rtc/rtc.hpp"
+
+#include <chrono>
 #include <iostream>
 #include <memory>
+#include <spdlog/spdlog.h>
 #include <string>
 #include <utility>
 #include <vector>
@@ -16,6 +18,9 @@
 #include "ui/Button.hpp"
 #include "ui/Component.hpp"
 #include "ui/Root.hpp"
+#ifdef _WIN32
+    #include <windows.h>
+#endif
 
 #ifdef EMSCRIPTEN
     #include <emscripten.h>
@@ -71,11 +76,9 @@ void loadResources() {
 }
 
 #ifdef EMSCRIPTEN
-    float dt;
     Viewport* pwindow;
     void em_loop() {
-        pwindow->beginFrame(dt);
-        loop(dt);
+        pwindow->beginFrame();
         pwindow->endFrame();
     }
 #endif
@@ -113,6 +116,7 @@ void showMultiPlayer(Viewport& vp) {
     game->gameMenu->quitButton->onClick([&] { showMainMenu(vp); });
     game->gameMenu->continueButton->onClick([game = game.get(), menu = game->gameMenu.get(), &vp] { 
         game->remove(menu);
+        game->makeActive();
         vp.captureMouse();
     });
     vp.captureMouse();
@@ -129,7 +133,7 @@ void showParameters(Viewport& vp) {
         config.fullscreen = fullscreen->getChecked();
         vp.toggleFullscreen();
     });
-	params->graphicsMenu->vsync->onRelease([&vp, &config, vsync = params->graphicsMenu->vsync.get()]{ 
+    params->graphicsMenu->vsync->onRelease([&vp, &config, vsync = params->graphicsMenu->vsync.get()]{ 
         config.vsync = vsync->getChecked();
         vp.toggleVSync();
     });
@@ -148,7 +152,13 @@ void showMainMenu(Viewport& vp) {
 
 
 int main(int argc, char* argv[]) {
-    std::cout << "---- Main ----" << std::endl;
+    #ifdef DEBUG || !_WIN32
+        spdlog::set_level(spdlog::level::debug);
+    #else
+        ShowWindow(GetConsoleWindow(), SW_HIDE); 
+    #endif
+    spdlog::info("---- Main ----");
+    spdlog::debug("Debug logging is enabled.");
 
     Viewport window({ 1200, 800 });
     std::unique_ptr<ui::Component> view;

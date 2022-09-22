@@ -1,6 +1,7 @@
 #include "TerrainGenerator.hpp"
 
 #include <glm/glm.hpp>
+#include <spdlog/spdlog.h>
 #include <stddef.h>
 #include <algorithm>
 #include <array>
@@ -142,7 +143,7 @@ void TerrainGenerator::genWorker() {
 
 void TerrainGenerator::stopGeneration() {
   if(!generating) return;
-  std::cout << "shutting down terrain thread..." << std::endl;
+  spdlog::info("Shutting down terrain threads...");
   {
     std::lock_guard<std::mutex> lk(stopMutex);
     stopFlag = true;
@@ -151,7 +152,7 @@ void TerrainGenerator::stopGeneration() {
   for(auto& thread : genWorkerThreads) {
     thread.join();
   }
-  std::cout << "terrain thread terminated" << std::endl;
+  spdlog::info("Terrain threads terminated");
   generating = false;
 }
 
@@ -161,7 +162,7 @@ void TerrainGenerator::startGeneration() {
     std::lock_guard<std::mutex> lk(stopMutex);
     stopFlag = false;
   }
-  std::cout << "starting generation" << std::endl;
+  spdlog::info("Starting generation");
   for(size_t i = 0; i < threadCount; i++) {
     genWorkerThreads.push_back(std::thread(&TerrainGenerator::genWorker, this));
   }

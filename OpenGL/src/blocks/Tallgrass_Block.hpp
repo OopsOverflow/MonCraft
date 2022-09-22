@@ -1,7 +1,9 @@
 #pragma once
 
 #include "Block.hpp"
-#include "model/TallgrassModel.hpp"
+#ifdef MONCRAFT_CLIENT
+  #include "model/TallgrassModel.hpp"
+#endif
 
 class Tallgrass_Block : public Block {
 public:
@@ -16,9 +18,11 @@ public:
 
     bool isSolid() const override { return false; }
     bool isOpaque() const override { return false; }
-    bool isTransparent() const override { return true; }
-    BlockModel* getModel() const override { return TallgrassModel::get(); }
+    bool isTransparent() const override { return false; }
 
+    #ifdef MONCRAFT_CLIENT
+      BlockModel* getModel() const override { return TallgrassModel::get(); }
+    #endif
 private:
     Tallgrass_Block() : Block(BlockType::Tallgrass) {}
 };

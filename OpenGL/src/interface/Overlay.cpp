@@ -27,7 +27,7 @@ Overlay::Overlay() : selected(0), blockStart(BlockType::Grass)
 }
 
 bool Overlay::select(int selection) {
-	static const int nbBlocks = (int)BlockType::Birch_Stair + 1;//Last block of the array here
+	static const int nbBlocks = AllBlocks::BlockCount;
 
 	selection -= 1;
 	selection = selection % (nbBlocks - 1);

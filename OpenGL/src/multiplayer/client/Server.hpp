@@ -10,6 +10,8 @@
 
 class Character;
 
+enum class ServerState {CONNECTED, CONNECTING, DISCONNECTED};
+
 class Server {
 
 public:
@@ -18,15 +20,19 @@ public:
 
   virtual void ping() = 0;
   virtual void update();
-  virtual bool login() = 0;
   void start();
   void stop();
+
+  ServerState getState() const { return state; }
 
   /**
    * Returns nullptr if the player was not created.
    */
   virtual std::shared_ptr<Character> getPlayer() = 0;
   virtual Identifier getUid() = 0;
+
+protected:
+  ServerState state;
 
 private:
   void remOldChunks();

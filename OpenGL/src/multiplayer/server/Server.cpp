@@ -4,12 +4,14 @@
 #include <SFML/Network/IpAddress.hpp>
 #include <SFML/Network/Packet.hpp>
 #include <glm/glm.hpp>
+#include <spdlog/spdlog.h>
 #include <stddef.h>
 #include <algorithm>
 #include <iostream>
 #include <memory>
 #include <utility>
 #include <vector>
+#include <chrono>
 
 #include "entity/Entity.hpp"
 #include "multiplayer/Packet.hpp"
@@ -32,19 +34,13 @@ Server::Server(unsigned short port)
   auto& config = Config::getServerConfig();
   renderDistH = config.renderDistH;
   renderDistV = config.renderDistV;
+  World::getInst().t = (uint32_t)(8.f * dayDuration / 24.f);
+  auto now = std::chrono::steady_clock::now().time_since_epoch();
+  lastClock = std::chrono::duration_cast<std::chrono::milliseconds>(now).count();
 }
 
 Server::~Server()
 {}
-
-bool isVerbose(PacketType type) {
-  return
-    type != PacketType::ENTITY_TICK &&
-    type != PacketType::BLOCKS &&
-    type != PacketType::CHUNKS &&
-    type != PacketType::ACK_CHUNKS &&
-    type != PacketType::PLAYER_TICK;
-}
 
 void Server::broadcast(sf::Packet& packet) {
   for(auto const& pair : clients) {
@@ -57,8 +53,6 @@ void Server::on_packet_recv(sf::Packet& packet, ClientID client) {
   PacketHeader header;
   packet >> header;
   auto type = header.getType();
-  bool verbose = isVerbose(type);
-  if(verbose) std::cout << "Packet " << header << std::endl;
 
   if(type == PacketType::LOGIN) handle_login(client, packet);
   else if(type == PacketType::LOGOUT) handle_logout(client);
@@ -66,22 +60,28 @@ void Server::on_packet_recv(sf::Packet& packet, ClientID client) {
   else {
     auto it = clients.find(client);
     if(it == clients.end()) {
-      std::cout << "[WARN] Client not registered" << std::endl;
+      spdlog::warn("Client not registered: {}", client.getAddr());
     }
     else {
       it->second.lastUpdate = clock.getElapsedTime();
-      if(type == PacketType::PING)             handle_ping(it->second);
-      else if(type == PacketType::BLOCKS)      handle_blocks(it->second, packet);
-      else if(type == PacketType::PLAYER_TICK) handle_player_tick(it->second, packet);
-      else if(type == PacketType::CHUNKS)      handle_chunks(it->second, packet);
-      else if(type == PacketType::ACK_CHUNKS)  handle_ack_chunks(it->second, packet);
+      if(type == PacketType::PING)               handle_ping(it->second);
+      else if(type == PacketType::BLOCKS)        handle_blocks(it->second, packet);
+      else if(type == PacketType::PLAYER_TICK)   handle_player_tick(it->second, packet);
+      else if(type == PacketType::PLAYER_ACTION) handle_player_action(it->second, packet);
+      else if(type == PacketType::CHUNKS)        handle_chunks(it->second, packet);
+      else if(type == PacketType::ACK_CHUNKS)    handle_ack_chunks(it->second, packet);
     }
   }
-
-  if(verbose) std::cout << "----------------" << std::endl;
 }
 
 void Server::on_server_tick() {
+  auto now = std::chrono::steady_clock::now().time_since_epoch();
+  uint32_t time = std::chrono::duration_cast<std::chrono::milliseconds>(now).count();
+  World::getInst().dt = time - lastClock; 
+  World::getInst().t += World::getInst().dt;
+  World::getInst().t = World::getInst().t % dayDuration;
+  lastClock = time;
+
   std::lock_guard<std::mutex> lck(mutex);
   packet_entity_tick();
   packet_chunks();
@@ -132,7 +132,7 @@ void Server::packet_blocks(Identifier uid, BlockArray changedBlocks) {
 void Server::packet_ack_login(ClientID client, Identifier uid) {
   sf::Packet packet;
   PacketHeader header(PacketType::ACK_LOGIN);
-  packet << header << uid;
+  packet << header << world.t;
   send(packet, client);
 }
 
@@ -175,7 +175,7 @@ void Server::handle_login(ClientID client, sf::Packet& packet) {
   auto it = clients.find(client);
 
   if(it != clients.end()) {
-    std::cout << "[WARN] Login of already registered client" << std::endl;
+    spdlog::warn("Login packet of already logged client: {}", client.getAddr());
     packet_ack_login(it->first, it->second.uid);
   }
   else {
@@ -184,13 +184,10 @@ void Server::handle_login(ClientID client, sf::Packet& packet) {
     if(res.second) {
       packet_ack_login(res.first->first, uid);
       beep();
-      std::cout << "client connected: " << std::endl;
-      std::cout << "uid: " << res.first->second.uid << std::endl;
-      std::cout << "addr: " << res.first->first.getAddr() << std::endl;
-      std::cout << "port: " << res.first->first.getPort() << std::endl;
+      spdlog::info("Client connected: uid {} / addr {}", res.first->second.uid, res.first->first.getAddr());
     }
     else {
-      std::cout << "[WARN] client insertion failed" << std::endl;
+      spdlog::warn("Client insertion failed");
     }
   }
 }
@@ -199,19 +196,19 @@ void Server::handle_logout(ClientID client) {
   auto it = clients.find(client);
 
   if(it == clients.end()) {
-    std::cout << "[WARN] Logout of unregistered client" << std::endl;
+    spdlog::warn("Logout of unregistered client: {}", client.getAddr());
   }
   else {
     Identifier uid = it->second.uid;
     clients.erase(it);
     packet_logout(uid);
     beep();
-    std::cout << "Client disconnected" << std::endl;
+    spdlog::info("Client disconnected: {}", uid);
   }
 }
 
 void Server::handle_ping(Client& client) {
-  std::cout << "Ping!" << std::endl;
+  spdlog::info("Ping! from {}", client.uid);
   beep();
 }
 
@@ -220,9 +217,21 @@ void Server::handle_player_tick(Client& client, sf::Packet& packet) {
   client.ack = true;
 }
 
+void Server::handle_player_action(Client& client, sf::Packet& packet) {
+  PacketHeader header(PacketType::PLAYER_ACTION);
+  sf::Packet pck;
+  Action action;
+  packet >> action;
+  pck << header << client.uid << action;
+  for(auto& pair : clients) {
+    if(pair.second.uid != client.uid)
+      send(pck, pair.first);    
+  }
+}
+
 void Server::handle_chunks(Client& client, sf::Packet& packet) {
   packet >> client.waitingChunks;
-    
+
   updateWaitingChunks();
 }
 
@@ -302,7 +311,7 @@ void Server::handleTimeouts() {
   for(auto it = clients.cbegin(); it != clients.cend(); ) {
     if(curTime - it->second.lastUpdate > timeout) {
       Identifier uid = it->second.uid;
-      std::cout << "Client timeout: uid " << uid << std::endl;
+      spdlog::warn("Client timeout: {}", uid);
       it = clients.erase(it);
       erased.push_back(uid);
       beep();

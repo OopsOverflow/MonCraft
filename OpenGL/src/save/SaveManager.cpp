@@ -1,6 +1,7 @@
 #include "SaveManager.hpp"
 
 #include <glm/glm.hpp>
+#include <spdlog/spdlog.h>
 #include <stdint.h>
 #include <filesystem>
 #include <fstream>
@@ -160,7 +161,7 @@ bool SaveManager::saveChunk(ChunkImpl const &chunk) {
 
   zstr::ofstream openedFile(filePath, std::fstream::trunc | std::fstream::binary);
   if (!openedFile) {
-    std::cout << "[WARN] failed to open file: " << filePath << std::endl;
+    spdlog::warn("Failed to open chunk file: ''", filePath);
     return false;
   }
 

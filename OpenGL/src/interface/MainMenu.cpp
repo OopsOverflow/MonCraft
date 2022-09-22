@@ -35,8 +35,8 @@ MainMenu::MainMenu()
 
 	buttons->pack_start(singleplayerButton);
 	buttons->pack_start(multiplayerButton);
+	buttons->pack_start(parameterButton);
 	#ifndef EMSCRIPTEN
-		buttons->pack_start(parameterButton);
 		buttons->pack_start(quitButton);
 	#endif
 

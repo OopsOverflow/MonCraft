@@ -22,6 +22,7 @@ private:
 
 	
 	std::shared_ptr<RangeSlider> fov;
+	std::shared_ptr<RangeSlider> sensivity;
 	
 	std::shared_ptr<ComboBox> shadows;
 	std::shared_ptr<RangeSlider> renderDistH, renderDistV;

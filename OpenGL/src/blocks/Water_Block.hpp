@@ -1,7 +1,9 @@
 #pragma once
 
 #include "Block.hpp"
-#include "model/WaterModel.hpp"
+#ifdef MONCRAFT_CLIENT
+    #include "model/WaterModel.hpp"
+#endif
 
 class Water_Block : public Block {
 public:
@@ -18,7 +20,9 @@ public:
     bool isOpaque() const override { return false; }
     bool isTransparent() const override { return true; }
     bool isLiquid() const override { return true; }
-    BlockModel* getModel() const override { return WaterModel::get(); }
+    #ifdef MONCRAFT_CLIENT
+        BlockModel* getModel() const override { return WaterModel::get(); }
+    #endif
 
 private:
     Water_Block() : Block(BlockType::Water) {}

@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <spdlog/spdlog.h>
 #include <stddef.h>
 #include <cmath>
 #include <string>
@@ -37,11 +38,11 @@ std::shared_ptr<Server> createServer(bool multiplayer) {
 
     // game seed
     auto seed = prng::srands(sconf.seed);
-    std::cout << "seed : " << sconf.seed << " (" << seed << ")" << std::endl;
+    spdlog::info("Seed: {} ({})", sconf.seed, seed);
 
     std::unique_ptr<Server> server;
     if (multiplayer) {
-        server = std::make_unique<RealServer>(cconf.serverAddr, cconf.serverPort);
+        server = std::make_unique<RealServer>(cconf.serverAddr, cconf.serverPort, cconf.serverTLS);
     }
     else {
         server = std::make_unique<ClientServer>();
@@ -56,10 +57,14 @@ MonCraftScene::MonCraftScene(Viewport* vp)
       config(Config::getClientConfig()),
       vp(vp),
       camera(ivec2(1)),
-      shadows(4096),
+      #ifndef EMSCRIPTEN
+          shadows(4096),
+      #endif
       sunSpeed(0.0075f),
       lastClock(SDL_GetTicks())
 {
+    World::getInst().t = (uint32_t)(8.f * dayDuration / 24.f);
+    
     auto const& serverConf = Config::getServerConfig();
     camera.setFar(16.0f * (float)sqrt(2 * pow(serverConf.renderDistH, 2) + pow(serverConf.renderDistV, 2)));
     camera.setFovY(config.fov);
@@ -73,7 +78,7 @@ MonCraftScene::MonCraftScene(Viewport* vp)
     }
 
     server = createServer(Config::getClientConfig().multiplayer);
-    server->start();
+    // server->start();
     player = server->getPlayer();
     playerUid = server->getUid();
 
@@ -86,20 +91,23 @@ MonCraftScene::MonCraftScene(Viewport* vp)
     parameters = ParametersMenu::create();
     parameters->quitButton->onClick([params = parameters.get(), this] { 
         this->remove(params); 
+        this->makeActive();
     });
     parameters->graphicsMenu->fullscreen->onRelease([&, vp, fullscreen = parameters->graphicsMenu->fullscreen.get()] { 
         config.fullscreen = fullscreen->getChecked();
         vp->toggleFullscreen();
     });
-	parameters->graphicsMenu->vsync->onRelease([&, vp, vsync = parameters->graphicsMenu->vsync.get()] { 
+    parameters->graphicsMenu->vsync->onRelease([&, vp, vsync = parameters->graphicsMenu->vsync.get()] { 
         config.vsync = vsync->getChecked();
         vp->toggleVSync();
     });
 
     gameMenu->parameterButton->onClick([param = parameters, this] {
         this->add(param);
+        this->makeActive();
     });
-
+    
+    #ifndef EMSCRIPTEN
     parameters->audioMenu->mainVolume->onRelease([=]{ 
         config.mainVolume = (float)parameters->audioMenu->mainVolume->getValue(); 
         musicPlayer.music.setVolume(config.mainVolume * config.musicVolume * 0.01f);
@@ -108,6 +116,7 @@ MonCraftScene::MonCraftScene(Viewport* vp)
         config.musicVolume = (float)parameters->audioMenu->musicVolume->getValue();
         musicPlayer.music.setVolume(config.mainVolume * config.musicVolume * 0.01f);
     });
+    #endif
 
     debugOverlay->setAnchorY(Anchor::END);
 
@@ -125,7 +134,7 @@ MonCraftScene::MonCraftScene(Viewport* vp)
 
     player->setCurrentBlock(overlay->getCurrentBlock());
 
-    World::getInst().t = (uint32_t)(8.f * dayDuration / 24.f);
+
 }
 
 MonCraftScene::~MonCraftScene() {
@@ -150,33 +159,42 @@ void MonCraftScene::onKeyReleased(Key k) {
     if(vp->isMouseCaptured())
         keyboardController.handleKeyReleased(k);
     if(k == Config::getClientConfig().menu) {
-        if(vp->isMouseCaptured()) {
-            add(gameMenu);
-            vp->freeMouse();
-        }
-        else {
-            remove(gameMenu.get());
-            vp->captureMouse();
+        bool paramDisplayed = children.end() != std::find_if(children.begin(), children.end(), [&](auto& other) {
+            return other.get() == parameters.get();
+        });
+        if(paramDisplayed) {
+            this->remove(parameters.get()); 
+        }else{
+            if(vp->isMouseCaptured() ) {
+                add(gameMenu);
+                vp->freeMouse();
+            }
+            else {
+                remove(gameMenu.get());
+                vp->captureMouse();
+            }
         }
     }
 }
 
+#ifndef EMSCRIPTEN
 void MonCraftScene::updateShadowMaps() {
     shadows.update(sunDir);
     shadows.attach(camera, Frustum::NEAR);
     shadows.beginFrame(Frustum::NEAR);
-    renderer.renderSolid(shadows.camera);
+    renderer.renderSolid(renderer.visibleChunks(shadows.camera));
     world.entities.renderAll();
 
     shadows.attach(camera, Frustum::MEDIUM);
     shadows.beginFrame(Frustum::MEDIUM);
-    renderer.renderSolid(shadows.camera);
+    renderer.renderSolid(renderer.visibleChunks(shadows.camera));
 
     shadows.attach(camera, Frustum::FAR);
     shadows.beginFrame(Frustum::FAR);
-    renderer.renderSolid(shadows.camera);
+    renderer.renderSolid(renderer.visibleChunks(shadows.camera));
     shadows.endFrame();
 }
+#endif
 
 void MonCraftScene::updateUniforms(uint32_t t) {
     auto sunDirViewSpace = camera.view * vec4(sunDir, 0.0);
@@ -215,7 +233,6 @@ void MonCraftScene::updateFov(uint32_t dt) {
 void MonCraftScene::drawSkybox() {
     sky.render(camera);
     shader->activate();
-    shadows.activate();
     camera.activate();
 }
 
@@ -243,10 +260,14 @@ void MonCraftScene::draw() {
     World::getInst().t += World::getInst().dt;
     World::getInst().t = World::getInst().t % dayDuration;
     lastClock = time;
-    
-    
 
-    glEnable(GL_DEPTH_TEST);
+    server->update();
+    if(server->getState() == ServerState::DISCONNECTED) {
+        gameMenu->quitButton->click();
+        vp->freeMouse();
+        return;
+    }
+    
 
     // updates
     #ifndef EMSCRIPTEN
@@ -273,11 +294,22 @@ void MonCraftScene::draw() {
     sunDir = -normalize(vec3(cos(sunTime), 1, sin(sunTime))) * sunDist;
 
     // update the shadow map
+    // update chunks
+    auto chunks = renderer.visibleChunks(camera);
+    for(auto& pair: chunks) {
+        pair.second->update();
+    }
+
+    // remove empty chunks
+    chunks.erase(std::remove_if(chunks.begin(), chunks.end(), [] (auto& pair) {
+        return !pair.second->hasData();
+    }), chunks.end());
+
+    // prepare render
+    glEnable(GL_DEPTH_TEST);
     #ifndef EMSCRIPTEN
       updateShadowMaps();
     #endif
-
-    // prepare render
     shader->activate();
     camera.activate();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -290,7 +322,10 @@ void MonCraftScene::draw() {
 
     // draw the terrain
     shader->bindTexture(TEXTURE_COLOR, texAtlas);
-    renderer.render(camera);
+    #ifndef EMSCRIPTEN
+        shadows.activate();
+    #endif
+    renderer.render(camera, chunks);
 
     // draw the entities
     drawEntities();

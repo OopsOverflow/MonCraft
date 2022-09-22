@@ -22,7 +22,7 @@ public:
   virtual void run() = 0;
 
 protected:
-  virtual void send(sf::Packet& packet, ClientID client) = 0;
+  virtual bool send(sf::Packet& packet, ClientID client) = 0;
   void on_packet_recv(sf::Packet& packet, ClientID client);
   void on_server_tick();
 
@@ -31,6 +31,7 @@ private:
   void handle_logout(ClientID client);
   void handle_ping(Client& client);
   void handle_player_tick(Client& client, sf::Packet& packet);
+  void handle_player_action(Client& client, sf::Packet& packet);
   void handle_blocks(Client const& client, sf::Packet& packet);
   void handle_chunks(Client& client, sf::Packet& packet);
   void handle_ack_chunks(Client& client, sf::Packet& packet);
@@ -55,6 +56,8 @@ protected:
 
   int renderDistH, renderDistV;
   static const unsigned int maxChunks = 50;
+
+  uint32_t lastClock;
 
   sf::Clock clock;
   const sf::Time timeout = sf::seconds(10);

@@ -72,6 +72,10 @@ public:
 	glm::vec3 accel;
 	glm::vec3 direction;
 
+	bool hasBreak;
+	bool breaked;
+	bool god;
+	bool dab;
 	bool onFloor;
 	Hitbox hitbox;
 };

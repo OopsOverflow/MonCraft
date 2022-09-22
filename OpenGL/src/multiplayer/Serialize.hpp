@@ -17,6 +17,10 @@ namespace serde {
   sf::Packet& operator<<(sf::Packet& packet, Entity const& entity);
   sf::Packet& operator>>(sf::Packet& packet, Entity& entity);
 
+  sf::Packet& consume(Action& a, sf::Packet& packet);
+  sf::Packet& operator<<(sf::Packet& packet, Action const& action);
+  sf::Packet& operator>>(sf::Packet& packet, Action& action);
+
   sf::Packet& operator<<(sf::Packet& packet, PacketHeader const& header);
   sf::Packet& operator>>(sf::Packet& packet, PacketHeader& header);
   std::ostream& operator<<(std::ostream& os, PacketHeader const& header);

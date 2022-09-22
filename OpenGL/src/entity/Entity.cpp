@@ -20,7 +20,8 @@ Entity::Entity(Hitbox hitbox, EntityProperties properties) :
 	properties(properties),
 	speed(0), accel(0), direction(0),
   	onFloor(false),
-	hitbox(std::move(hitbox))
+	hitbox(std::move(hitbox)),
+	dab(false), hasBreak(false), breaked(false), god(true)
 {}
 
 Entity::~Entity() {}
@@ -46,7 +47,7 @@ void Entity::jump() {
 
 void Entity::turn(vec2 rot) {
 	headNode.rot.x += rot.x;
-	auto maxRotX = radians(89.9);
+	auto maxRotX = radians(89.99);
 	headNode.rot.x = clamp(headNode.rot.x, -maxRotX, maxRotX);
 
 	auto thresold = quarter_pi<double>();
@@ -62,7 +63,7 @@ void Entity::update(uint32_t dt) {
 	highp_dvec3 posOffset;
 	{
 		vec3 acc = accel;
-		acc += vec3(0, -1, 0) * gravity; // gravity
+		acc += vec3(0, -1, 0) * gravity * (god? 0.0f: 1.0f); // gravity
 
 		// disable friction in accel direction
 		vec2 dragXZ = vec2(speed.x, speed.z) * properties.horizontalFriction;

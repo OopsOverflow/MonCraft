@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "" FORCE) #remove RelWithDebInfo and MinSizeRel
 
+if (WIN32)
+    include(${CMAKE_SOURCE_DIR}/Dependencies/vcpkg/scripts/buildsystems/vcpkg.cmake)
+endif ()
+
 # set the project name
 set(PROJECT_NAME "MonCraft")
 project(${PROJECT_NAME} VERSION 1.1.1)
@@ -16,9 +20,9 @@ if ("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
   message(SEND_ERROR "In-source builds are not allowed.")
 endif ()
 
-
 set(BUILD_TARGET client CACHE STRING "Choose build target client/server" )
 set(BUILD_PLATFORM app CACHE STRING "Choose targer platform wasm/app" )
+set(ENABLE_SANITIZERS OFF CACHE BOOL "Enable ASan / UBSan sanitizers (in debug mode)" )
 
 message(STATUS "Build Target : ${BUILD_TARGET}")
 message(STATUS "Build Platform : ${BUILD_PLATFORM}")
@@ -27,21 +31,17 @@ set(BUILDPATH ${CMAKE_BINARY_DIR})
 
 if(${BUILD_TARGET} STREQUAL client)
     set(BUILDPATH "${BUILDPATH}/Client")
-    add_definitions(-DMONCRAFT_CLIENT)
-    add_definitions(-DGLEW_STATIC)
+    add_compile_definitions(MONCRAFT_CLIENT)
     
     if(${BUILD_PLATFORM} STREQUAL wasm)
         set(BUILDPATH "${BUILDPATH}/Wasm")
-
     else()
         set(BUILDPATH "${BUILDPATH}/App")
-
     endif()
 
 else()
     set(BUILDPATH "${BUILDPATH}/Server")
-    add_definitions(-DMONCRAFT_SERVER)
-
+    add_compile_definitions(MONCRAFT_SERVER)
 endif()
 
 # Create build directories
@@ -58,7 +58,5 @@ else ()
     set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/windows/")
 endif ()
 
-include_directories(SYSTEM "${CMAKE_SOURCE_DIR}/Dependencies")
-include_directories(SYSTEM "${CMAKE_SOURCE_DIR}/OpenGL/src")
 
 add_subdirectory(OpenGL)

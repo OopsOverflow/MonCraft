@@ -28,6 +28,9 @@ public:
 	std::shared_ptr<GraphicsMenu> graphicsMenu;
 	std::shared_ptr<AudioMenu> audioMenu;
 
+protected:
+	virtual void onKeyReleased(Key k) override;
+
 private:
 	ParametersMenu();
 	std::shared_ptr<ui::Box> mainDisplay;

@@ -3,10 +3,12 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/quaternion.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <cmath>
 #include <iostream>
 #include <stdexcept>
+#include <spdlog/spdlog.h>
 
 #include "gl/Shader.hpp"
 
@@ -31,7 +33,7 @@ void Camera::activate() {
     glm::vec3 c = view * glm::vec4(center, 1.f);
     glUniform3f(CAMERA_CENTER, c.x, c.y, c.z);
   } else {
-    std::cout << "error: camera activated but no shader bound" << std::endl;
+    spdlog::error("Camera activated but no shader bound.");
   }
 }
 
@@ -64,10 +66,7 @@ void Camera::translate(const glm::vec3 &translation, bool localSpace) {
 }
 
 void Camera::rotate(const glm::vec3 &rotation, bool localSpace) {
-  glm::mat4 rot(1.f);
-  rot = glm::rotate(rot, glm::radians(rotation.x), {1, 0, 0});
-  rot = glm::rotate(rot, glm::radians(rotation.y), {0, 1, 0});
-  rot = glm::rotate(rot, glm::radians(rotation.z), {0, 0, 1});
+  glm::mat4 rot = glm::mat4_cast(glm::quat(rotation));;
 
   if (localSpace) {
     center = glm::inverse(view) * rot * view * glm::vec4(center, 1.f);

@@ -11,18 +11,18 @@
 
 class ClientID {
 public:
-  ClientID(sf::IpAddress addr, unsigned short port);
+  ClientID(std::string remoteAddress);
 
   bool operator==(ClientID const& lhs) const;
   bool operator<(ClientID const& lhs) const;
 
-  sf::IpAddress getAddr() const;
-  unsigned short getPort() const;
+  std::string getAddr() const;
+  // unsigned short getPort() const;
 
 
 private:
-  sf::IpAddress addr;
-  unsigned short port;
+  std::string addr;
+  // unsigned short port;
 };
 
 class Client {

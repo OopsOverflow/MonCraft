@@ -1,3 +1,4 @@
+#include <cassert>
 #include <glm/glm.hpp>
 #include <algorithm>
 #include <stdexcept>
@@ -16,7 +17,8 @@
 using namespace ui;
 using namespace glm;
 
-Component* Component::activeWidget = nullptr;
+Component* Component::activeComponent = nullptr;
+Component* Component::hoverComponent = nullptr;
 
 MAKE_TYPE(Anchor);
 const spec_t Component::SIZE     = MAKE_SPEC("Component::size", ivec2);
@@ -45,7 +47,11 @@ void Component::initialize() {
 
 Component::~Component() {
   if(parent) parent->remove(this);
-  if(activeWidget == this) activeWidget = nullptr;
+  if(activeComponent == this) activeComponent = nullptr;
+  if(hoverComponent == this) {
+    if(parent) hoverComponent = parent;
+    else hoverComponent = nullptr;
+  }
   for(std::shared_ptr<Component> child : children) {
     child->parent = nullptr;
   }
@@ -109,10 +115,6 @@ void Component::setProperty(prop_t prop) {
   }
   else {
     setStyle(prop);
-    // std::cout << "[WARN] unsupported style property: '"
-    //           << Spec::get(prop.spec).name
-    //           << "'"
-    //           << std::endl;
   }
 }
 
@@ -286,46 +288,6 @@ bool Component::overlaps(ivec2 point) const {
     p1.y <= point.y && point.y <= p2.y;
 }
 
-#include <algorithm>
-// COMBAK: not sure if this works well.
-bool Component::bubbleEvent(Event const& evt) { // goes to the bottom
-  if(!overlaps(evt.getPosition())) {
-    if(hover) {
-      hover = false;
-      pressed = false;
-      auto childrenCopy = children;
-      for(int i =0 ; i < (int)childrenCopy.size(); i++) {
-        std::shared_ptr<Component> child = childrenCopy.at(i);
-        child->bubbleEvent(evt);
-      }
-      onMouseOut(evt.getPosition());
-    }
-    return false;
-  }
-
-  else {
-    bool bubbled = false;
-    auto childrenCopy = children;
-    for(int i = (int)childrenCopy.size() - 1; i >= 0; i--) {
-      std::shared_ptr<Component> child = childrenCopy.at(i);
-      bubbled |= child->bubbleEvent(evt);
-      if(bubbled) break;
-    }
-    if(!bubbled) {
-      if(evt.getType() == Event::Type::PRESS) makeActive();
-      filterEvent(evt);
-    }
-    return true;
-  }
-}
-
-void Component::filterEvent(Event const& evt) { // goes bottom-up
-  bool stopPropagation = handleEvent(evt);
-  if(parent && !stopPropagation) {
-    parent->filterEvent(evt);
-  }
-}
-
 bool Component::isHover() {
   return hover;
 }
@@ -335,62 +297,136 @@ bool Component::isPressed() {
 }
 
 bool Component::isActive() {
-  return activeWidget == this;
+  return activeComponent == this;
 }
 
 void Component::unfocus() {
-  if(activeWidget == this) {
+  if(activeComponent == this) {
     onDeactivated();
-    activeWidget = nullptr;
+    activeComponent = nullptr;
   }
 }
 
-bool Component::handleEvent(Event const& evt) {
+Component* Component::findTargetComponent(ivec2 pos) {
+  if(overlaps(pos)) {
+    auto childrenCopy = children;
+    for(int i = (int)childrenCopy.size() - 1; i >= 0; --i) { // children are traversed last to first (last is on top)
+      std::shared_ptr<Component> child = childrenCopy[i];
+      Component* target = child->findTargetComponent(pos);
+      if(target) return target;
+    }
+    return this;
+  }
+  else {
+    return nullptr;
+  }
+}
+
+std::vector<Component*> Component::findAncestors() {
+  if(!parent) {
+    return { this };
+  }
+  else {
+    std::vector<Component*> ancestors = parent->findAncestors();
+    ancestors.push_back(this);
+    return ancestors;
+  }
+}
+
+Component* Component::findCommonAncestor(Component* other) {
+  auto ancestorsA = findAncestors();
+  auto ancestorsB = other->findAncestors();
+  int i = 0;
+  int count = std::min(ancestorsA.size(), ancestorsB.size());
+  while (i < count && ancestorsA[i] == ancestorsB[i]) {
+    i++;
+  }
+  if (i == 0) return nullptr;
+  else return ancestorsA[i - 1];
+}
+
+Component* Component::findRoot() {
+  if(!parent) return this;
+  return parent->findRoot();
+}
+
+#include "debug/Debug.hpp"
+
+void Component::handleEvent(Event const& evt) {
+  Component* target = findTargetComponent(evt.getPosition());
+  if(!target) return;
+  Component* ancestor;
+  
+  // un-hover
+  if(hoverComponent) {
+    ancestor = target->findCommonAncestor(hoverComponent);
+    Component* comp = hoverComponent;
+    while(comp && comp != ancestor) {
+      if(comp->hover)
+        comp->onMouseOut(toRelative(evt.getPosition()));
+      comp->hover = false;
+      comp->pressed = false;
+      comp = comp->parent;
+    }
+  }
+  else {
+    ancestor = findRoot();
+  }
+
+  // hover
+  Component* comp = target;
+  while(comp) {
+    if(!comp->hover)
+      comp->onMouseIn(toRelative(evt.getPosition()));
+    comp->hover = true;
+    comp = comp->parent;
+  }
+  hoverComponent = target;
+  
+  // make active
+  if(evt.getType() == Event::Type::PRESS) {
+    target->makeActive();
+  }
+  
+  // bubble event (child-to-parent)
+  bool stop = false;
+  comp = target;
+  // notice that applyEvent may result in the component being destroyed, in which case
+  // we absolutely don't want to call comp->parent.
+  // comp MUST return true (stop propagation) in that case.
+  while(comp && !comp->applyEvent(evt)) {
+    comp = comp->parent;
+  }
+}
+
+bool Component::applyEvent(Event const& evt) {
   ivec2 pos = toRelative(evt.getPosition());
-  Event::Type type = evt.getType();
-  bool res = false;
-
-  if(!hover) onMouseIn(pos);
-
-  // state is changed after event handling
-  hover = true;
-
-  switch(type) {
+  switch(evt.getType()) {
     case Event::Type::MOVE:
-      res = onMouseMove(pos);
-      break;
+      return onMouseMove(pos);
     case Event::Type::PRESS:
-      res = onMousePressed(pos);
-      break;
+      pressed = true;
+      return onMousePressed(pos);
     case Event::Type::RELEASE:
-      res = onMouseReleased(pos);
-      break;
+      pressed = false;
+      return onMouseReleased(pos);
+    default:
+      assert(false);
   }
-
-  // state is changed after event handling
-  if(type == Event::Type::PRESS) pressed = true;
-  else if(type == Event::Type::RELEASE) pressed = false;
-
-  return res;
-}
-
-void Component::handleEvents(std::vector<Event> const& events) {
-  for(auto const& evt : events)
-    bubbleEvent(evt);
 }
 
 void Component::makeActive() {
-  if(activeWidget == this) return;
+  if(activeComponent == this) return;
   else if(onActivate()) {
-    if(activeWidget) activeWidget->onDeactivated();
-    activeWidget = this;
+    if(activeComponent) activeComponent->onDeactivated();
+    activeComponent = this;
   }
   else if(parent) {
     parent->makeActive();
   }
-  else if(activeWidget) {
-    activeWidget->onDeactivated();
-    activeWidget = nullptr;
+  else if(activeComponent) {
+    activeComponent->onDeactivated();
+    activeComponent = nullptr;
   }
 }
 
@@ -457,11 +493,11 @@ bool Component::getHidden() const {
 }
 
 void Component::keyPress(Key k) {
-  if(activeWidget) activeWidget->onKeyPressed(k);
+  if(activeComponent) activeComponent->onKeyPressed(k);
 }
 
 void Component::keyRelease(Key k) {
-  if(activeWidget) activeWidget->onKeyReleased(k);
+  if(activeComponent) activeComponent->onKeyReleased(k);
 }
 
 // default event handlers

@@ -101,3 +101,7 @@ bool Button::onMouseReleased(glm::ivec2 pos) {
   if(releaseCallback) releaseCallback();
   return false;
 }
+
+void Button::click() {
+  if(clickCallback) clickCallback();
+}
