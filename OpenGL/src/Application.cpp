@@ -18,6 +18,9 @@
 #include "ui/Button.hpp"
 #include "ui/Component.hpp"
 #include "ui/Root.hpp"
+#ifdef _WIN32
+    #include <windows.h>
+#endif
 
 #ifdef EMSCRIPTEN
     #include <emscripten.h>
@@ -149,8 +152,10 @@ void showMainMenu(Viewport& vp) {
 
 
 int main(int argc, char* argv[]) {
-    #ifdef DEBUG
+    #ifdef DEBUG || !_WIN32
         spdlog::set_level(spdlog::level::debug);
+    #else
+        ShowWindow(GetConsoleWindow(), SW_HIDE); 
     #endif
     spdlog::info("---- Main ----");
     spdlog::debug("Debug logging is enabled.");
