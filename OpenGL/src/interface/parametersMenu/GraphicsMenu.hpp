@@ -16,14 +16,12 @@ public:
 
 	std::shared_ptr<Checkbox> fullscreen;
 	std::shared_ptr<Checkbox> vsync;
+	std::shared_ptr<RangeSlider> msaa;
+	std::shared_ptr<RangeSlider> fov;
+	std::shared_ptr<RangeSlider> sensivity;
+	std::shared_ptr<ComboBox> shadows;
+	std::shared_ptr<RangeSlider> renderDistH, renderDistV;
 
 private:
 	GraphicsMenu();
-
-	
-	std::shared_ptr<RangeSlider> fov;
-	std::shared_ptr<RangeSlider> sensivity;
-	
-	std::shared_ptr<ComboBox> shadows;
-	std::shared_ptr<RangeSlider> renderDistH, renderDistV;
 };

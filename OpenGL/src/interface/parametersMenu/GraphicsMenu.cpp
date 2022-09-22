@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <glm/glm.hpp>
+#include <glm/gtc/integer.hpp>
 
 #include "interface/widgets/ComboBox.hpp"
 #include "interface/widgets/MonCraftButton.hpp"
@@ -31,6 +32,7 @@ GraphicsMenu::GraphicsMenu()
 	renderDistH = RangeSlider::create(1, 40);
 	renderDistV = RangeSlider::create(1, 20);
 	vsync = Checkbox::create();
+	msaa = RangeSlider::create(0, 3);
 
 	sensivity->setValue((int)(clientConf.sensivity));
 	fov->setValue((int)clientConf.fov);
@@ -38,6 +40,7 @@ GraphicsMenu::GraphicsMenu()
 	renderDistV->setValue(serverConf.renderDistV);
 	fullscreen->setChecked(clientConf.fullscreen);
 	vsync->setChecked(clientConf.vsync);
+	msaa->setValue(clientConf.msaa ? glm::log2(clientConf.msaa) : 0);
 
 
 	addLine("Plein écran", fullscreen);
@@ -47,6 +50,7 @@ GraphicsMenu::GraphicsMenu()
 	addLine("Distance horizontale", renderDistH);
 	addLine("Distance verticale", renderDistV);
 	addLine("VSync", vsync);
+	addLine("MSAA", msaa);
 
 	// see application -> showParameters
 	// fullscreen->onRelease([&]{ clientConf.fullscreen = this->fullscreen->getChecked(); });
@@ -56,7 +60,6 @@ GraphicsMenu::GraphicsMenu()
 	sensivity->onRelease([&]{ clientConf.sensivity = (float)this->sensivity->getValue(); });
 	renderDistH->onRelease([&]{ serverConf.renderDistH = this->renderDistH->getValue(); });
 	renderDistV->onRelease([&]{ serverConf.renderDistV = this->renderDistV->getValue(); });
-	
 }
 
 GraphicsMenu::~GraphicsMenu() {
@@ -64,6 +67,7 @@ GraphicsMenu::~GraphicsMenu() {
 	auto& serverConf = Config::getServerConfig();
 
 	clientConf.fov = (float)fov->getValue();
+	clientConf.msaa = msaa->getValue() ? pow(2, msaa->getValue()) : 0;
 	clientConf.sensivity = (float)sensivity->getValue();
 	serverConf.renderDistH = renderDistH->getValue();
 	serverConf.renderDistV = renderDistV->getValue();

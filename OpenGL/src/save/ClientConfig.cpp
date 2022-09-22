@@ -56,7 +56,6 @@ Config::ClientConfig::ClientConfig() {
     PARAM(vsync)
     PARAM(shadows)
     PARAM(sensivity)
-
   }
 
   #undef KEY_PARAM
