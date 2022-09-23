@@ -194,15 +194,15 @@ void RealServer::handle_entity_tick(sf::Packet& packet) {
 
     auto entity = world.entities.get(uid);
 
+    if(entity == nullptr) { // create the player if not found
+      world.entities.add(uid, std::make_unique<CharacterMesh>(Config::getServerConfig().spawnPoint));
+      entity = world.entities.get(uid);
+    }
+
     if(uid == playerUid) {
       entity->consume(packet);
     }
     else {
-      if(entity == nullptr) { // create the player if not found
-        world.entities.add(uid, std::make_unique<CharacterMesh>(Config::getServerConfig().spawnPoint));
-        entity = world.entities.get(uid);
-      }
-
       entity->read(packet);
     }
   }
@@ -215,17 +215,17 @@ void RealServer::handle_player_action(sf::Packet& packet) {
 
   auto entity = world.entities.get(uid);
 
+  if(entity == nullptr) { // create the player if not found
+    world.entities.add(uid, std::make_unique<CharacterMesh>(Config::getServerConfig().spawnPoint));
+    entity = world.entities.get(uid);
+  }
+
   EntityAction action;
 
   if(uid == playerUid) {
     consume(action, packet);
   }
   else {
-    if(entity == nullptr) { // create the player if not found
-      world.entities.add(uid, std::make_unique<CharacterMesh>(Config::getServerConfig().spawnPoint));
-      entity = world.entities.get(uid);
-    }
-
     packet >> action;
     if(action == EntityAction::BREAK)
       entity->breaked = true;
