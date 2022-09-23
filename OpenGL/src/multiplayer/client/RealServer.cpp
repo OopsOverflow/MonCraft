@@ -172,7 +172,7 @@ bool RealServer::on_packet_recv(sf::Packet& packet) {
   if(type == PacketType::ACK_LOGIN) {
     packet >> world.t;
     state = ServerState::CONNECTED;
-    spdlog::info("Logged into the server");
+    spdlog::info("Logged into the server, time is {}", world.t);
   } 
   else if(type == PacketType::PLAYER_ACTION) handle_player_action(packet);
   else if(type == PacketType::ENTITY_TICK) handle_entity_tick(packet);

@@ -101,8 +101,6 @@ MonCraftScene::MonCraftScene(Viewport* vp)
       server(createServer(Config::getClientConfig().multiplayer)),
       playerController(nullptr)
 {
-    World::getInst().t = (uint32_t)(8.f * dayDuration / 24.f);
-    
     playerController = std::make_unique<PlayerController>(server->getPlayer());
     
     auto const& serverConf = Config::getServerConfig();
@@ -295,9 +293,9 @@ void MonCraftScene::drawEntities() {
 
 void MonCraftScene::draw() {
     uint32_t time = SDL_GetTicks();
-    World::getInst().dt = time - lastClock; 
-    World::getInst().t += World::getInst().dt;
-    World::getInst().t = World::getInst().t % dayDuration;
+    world.dt = time - lastClock; 
+    world.t += world.dt;
+    world.t = world.t % dayDuration;
     lastClock = time;
 
     server->update();

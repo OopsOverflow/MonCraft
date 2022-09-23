@@ -26,6 +26,7 @@ ClientServer::ClientServer()
   auto entity = World::getInst().entities.add(getUid(), std::move(newPlayer));
   player = std::static_pointer_cast<CharacterMesh>(entity);
   state = ServerState::CONNECTED;
+  world.t = (uint32_t)(8.f * dayDuration / 24.f);
 }
 
 ClientServer::~ClientServer()
