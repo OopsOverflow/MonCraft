@@ -238,7 +238,7 @@ void RealServer::ping() {
 }
 
 void RealServer::packet_blocks() {
-  BlockArray& blocks = player->getRecord();
+  BlockArray blocks = player->popRecord();
   if(!blocks.empty()) {
     sf::Packet packet;
     PacketHeader header(PacketType::BLOCKS);

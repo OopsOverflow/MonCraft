@@ -16,6 +16,7 @@
 #include "terrain/BlockArray.hpp"
 #include "terrain/ChunkMap.hpp"
 #include "terrain/World.hpp"
+#include "debug/Debug.hpp"
 
 using namespace glm;
 
@@ -49,11 +50,39 @@ void ClientServer::update() {
   }
 
   // save changes since last update
-  auto rec = player->getRecord();
+  auto rec = player->popRecord();
   for(auto cpos : rec.getChangedChunks()) {
     auto chunk = world.chunks.find(cpos);
     if(chunk) {
       SaveManager::saveChunk(*chunk);
+      
+      // need to also save all chunks in which the chunk has generated a slice.
+      for(ivec3 cpos : chunk->slices)  {
+        auto sliceChunk = world.chunks.find(cpos);
+        if(!sliceChunk) {
+          spdlog::warn("TODO: chunk {}, containing a slice from {}, is unloaded and cannot be saved.", cpos, chunk->chunkPos);
+          continue;
+        }
+        
+        // this is just in case, should not happen, I think.
+        auto slices = generator.sliceMap.pop_if(cpos, [cpos = chunk->chunkPos](Structure::Slice const& slice) {
+          return slice.origCpos == cpos;
+        });
+        uint32_t chunkPrio = generator.chunkPriority.sample1D(cpos);
+        for(auto const& slice : slices) {
+          bool override = generator.chunkPriority.sample1D(slice.origCpos) > chunkPrio;
+          Structure::applySlice(*sliceChunk, slice, override);
+        }
+
+        spdlog::debug("save slice {}", cpos);
+        SaveManager::saveSlice(*sliceChunk);
+      }
+
+      // now, we can forget in which chunks the slices have been generated.
+      chunk->slices = {};
+    }
+    else {
+      spdlog::warn("Cannot save unloaded chunk: {}", cpos);
     }
   }
 }

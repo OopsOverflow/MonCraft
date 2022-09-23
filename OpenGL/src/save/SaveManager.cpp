@@ -12,6 +12,7 @@
 #include "terrain/ChunkImpl.hpp"
 #include "util/Serde.hpp"
 #include "util/zstr.hpp"
+#include "debug/Debug.hpp"
 
 using serde::Binary;
 
@@ -130,14 +131,10 @@ std::ostream& serde::operator<<(std::ostream &stream, ChunkImpl const &chunk) {
   return stream;
 }
 
-std::unique_ptr<ChunkImpl> SaveManager::loadChunk(glm::ivec3 chunkPos) {
+std::unique_ptr<ChunkImpl> SaveManager::loadChunk(glm::ivec3 chunkPos, std::string file) {
   using namespace serde;
-  std::string filePath = chunkSaveDir + "/chunk_" +
-                         std::to_string(chunkPos.x) + "_" +
-                         std::to_string(chunkPos.y) + "_" +
-                         std::to_string(chunkPos.z) + ".chunk";
 
-  zstr::ifstream openedFile(filePath, std::fstream::binary);
+  zstr::ifstream openedFile(file, std::fstream::binary);
   if (!openedFile.is_open())
     return nullptr;
 
@@ -151,17 +148,13 @@ std::unique_ptr<ChunkImpl> SaveManager::loadChunk(glm::ivec3 chunkPos) {
   return std::unique_ptr<ChunkImpl>(newChunk);
 }
 
-bool SaveManager::saveChunk(ChunkImpl const &chunk) {
+bool SaveManager::saveChunk(ChunkImpl const& chunk, std::string file) {
   using namespace serde;
   std::filesystem::create_directories(chunkSaveDir);
-  std::string filePath = chunkSaveDir + "/chunk_" +
-                         std::to_string(chunk.chunkPos.x) + "_" +
-                         std::to_string(chunk.chunkPos.y) + "_" +
-                         std::to_string(chunk.chunkPos.z) + ".chunk";
 
-  zstr::ofstream openedFile(filePath, std::fstream::trunc | std::fstream::binary);
+  zstr::ofstream openedFile(file, std::fstream::trunc | std::fstream::binary);
   if (!openedFile) {
-    spdlog::warn("Failed to open chunk file: ''", filePath);
+    spdlog::warn("Failed to open chunk file: '{}'", file);
     return false;
   }
 
@@ -169,4 +162,48 @@ bool SaveManager::saveChunk(ChunkImpl const &chunk) {
   openedFile << chunkSize << chunk;
   openedFile.close();
   return true;
+}
+
+std::unique_ptr<ChunkImpl> SaveManager::loadChunk(glm::ivec3 chunkPos) {
+  std::string file = chunkSaveDir + "/chunk_" +
+                         std::to_string(chunkPos.x) + "_" +
+                         std::to_string(chunkPos.y) + "_" +
+                         std::to_string(chunkPos.z) + ".chunk";
+
+  return loadChunk(chunkPos, file);
+}
+
+std::unique_ptr<ChunkImpl> SaveManager::loadSlice(glm::ivec3 chunkPos) {
+  std::string file = chunkSaveDir + "/chunk_" +
+                         std::to_string(chunkPos.x) + "_" +
+                         std::to_string(chunkPos.y) + "_" +
+                         std::to_string(chunkPos.z) + ".slice";
+  
+  return loadChunk(chunkPos, file);
+}
+
+bool SaveManager::saveChunk(ChunkImpl const& chunk) {
+  std::filesystem::create_directories(chunkSaveDir);
+  std::string file = chunkSaveDir + "/chunk_" +
+                         std::to_string(chunk.chunkPos.x) + "_" +
+                         std::to_string(chunk.chunkPos.y) + "_" +
+                         std::to_string(chunk.chunkPos.z);
+
+  std::filesystem::remove(file + ".slice");
+  return saveChunk(chunk, file + ".chunk");
+}
+
+bool SaveManager::saveSlice(ChunkImpl const& chunk) {
+  std::filesystem::create_directories(chunkSaveDir);
+  std::string file = chunkSaveDir + "/chunk_" +
+                         std::to_string(chunk.chunkPos.x) + "_" +
+                         std::to_string(chunk.chunkPos.y) + "_" +
+                         std::to_string(chunk.chunkPos.z);
+
+  if(std::filesystem::exists(file + ".chunk")) {
+    return saveChunk(chunk);
+  }
+  else {
+    return saveChunk(chunk, file + ".slice");
+  }
 }

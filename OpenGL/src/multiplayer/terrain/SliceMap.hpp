@@ -5,6 +5,7 @@
 #include <mutex>
 #include <unordered_map>
 #include <vector>
+#include <algorithm>
 
 #include "terrain/Structure.hpp"
 
@@ -25,6 +26,26 @@ public:
    * Gives all the slices stored for a given chunk index and removes the entry.
    */
   Structure::slices_t pop(glm::ivec3 cpos);
+
+  template<typename Fn>
+  Structure::slices_t pop_if(glm::ivec3 cpos, Fn predicate) {
+    std::lock_guard<std::mutex> lck(slicesMutex);
+    auto it = map.find(cpos);
+    if(it != map.end()) {
+      auto end = std::remove_if(it->second.begin(), it->second.end(), predicate);
+      Structure::slices_t slices(end, it->second.end());
+      if(end == it->second.begin()) { // no slices left
+        map.erase(it);
+      }
+      else {
+        it->second.erase(end, it->second.end());
+      }
+      return slices;
+    }
+    else {
+      return {};
+    }
+  }
 
 private:
 

@@ -291,8 +291,10 @@ void Character::render() {
   r_leg.draw();
 }
 
-BlockArray& Character::getRecord() {
-  return record;
+BlockArray Character::popRecord() {
+  BlockArray rec;
+  record.swap(rec);
+  return rec;
 }
 
 BlockType Character::getCurrentBlock() const {

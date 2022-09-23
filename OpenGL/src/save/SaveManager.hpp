@@ -16,8 +16,16 @@ enum class EntityClass{Character};
 class SaveManager
 {
 public:
+    static std::unique_ptr<ChunkImpl> loadChunk(glm::ivec3 chunkPos, std::string file);
+    static bool saveChunk(ChunkImpl const& chunk, std::string file);
+
     static std::unique_ptr<ChunkImpl> loadChunk(glm::ivec3 chunkPos);
+    // will delete the .slice file if exists.
     static bool saveChunk(ChunkImpl const& chunk);
+    
+    static std::unique_ptr<ChunkImpl> loadSlice(glm::ivec3 chunkPos);
+    // will overwrite the .chunk file if exists, else write a .slice file.
+    static bool saveSlice(ChunkImpl const& chunk);
 
     // TODO
     // static std::unique_ptr<Entity> loadEntity(Identifier uid);

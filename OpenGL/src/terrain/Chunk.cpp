@@ -71,7 +71,7 @@ Block* Chunk::getBlockAccrossChunks(ivec3 pos) const {
 
     if(auto neigh = neighbors[index].lock()) {
       ivec3 otherChunkPos = pos - size() * (ivec3(greater) - ivec3(lesser));
-      return neigh->at(otherChunkPos).get();
+      return neigh->getBlockAccrossChunks(otherChunkPos);
     }
     else return nullptr;
   }
@@ -89,7 +89,7 @@ void Chunk::setBlockAccrossChunks(ivec3 pos, Block::unique_ptr_t block) {
 
     if(auto neigh = neighbors[index].lock()) {
       ivec3 otherChunkPos = pos - size() * (ivec3(greater) - ivec3(lesser));
-      return neigh->setBlock(otherChunkPos, std::move(block));
+      return neigh->setBlockAccrossChunks(otherChunkPos, std::move(block));
     }
   }
   else setBlock(pos, std::move(block));

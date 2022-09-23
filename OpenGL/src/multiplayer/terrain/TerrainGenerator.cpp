@@ -41,10 +41,6 @@ TerrainGenerator::~TerrainGenerator() {
   stopGeneration();
 }
 
-void TerrainGenerator::removeSlices(glm::ivec3 cpos) {
-  sliceMap.pop(cpos);
-}
-
 bool TerrainGenerator::sleepFor(std::chrono::milliseconds millis) {
   std::unique_lock<std::mutex> stopLck(stopMutex);
   return stopSignal.wait_for(stopLck, millis, [&]{return stopFlag;});
@@ -76,18 +72,28 @@ std::shared_ptr<ChunkImpl> TerrainGenerator::getOrGen(ivec3 cpos) {
     return neigh;
   }
   else if(addToBusyList(cpos)) {
-      std::shared_ptr<ChunkImpl> chunk;
-      std::unique_ptr<ChunkImpl> savedChunk = SaveManager::loadChunk(cpos);
-      if (!savedChunk) {
-        chunk = world.chunks.insert(cpos, generator.generate(cpos));
-        sliceMap.insert(generator.generateStructures(*chunk));
+    std::unique_ptr<ChunkImpl> chunk = SaveManager::loadChunk(cpos);
+    if (!chunk) {
+      chunk = SaveManager::loadSlice(cpos);
+      if (chunk) {
+        auto slices = generator.generateStructures(*chunk);
+        for(auto const& slice : slices)
+          chunk->slices.push_back(slice.targetCpos);
+        sliceMap.insert(slices);
       }
       else {
-        chunk = world.chunks.insert(cpos, std::move(savedChunk));
+        chunk = generator.generate(cpos);
+        auto slices = generator.generateStructures(*chunk);
+        for(auto const& slice : slices)
+          chunk->slices.push_back(slice.targetCpos);
+        sliceMap.insert(slices);
       }
+    }
+
+    auto insertedChunk = world.chunks.insert(cpos, std::move(chunk));
 
     remFromBusyList(cpos);
-    return chunk;
+    return insertedChunk;
   }
   else while(1) {
     sleepFor(sleep);

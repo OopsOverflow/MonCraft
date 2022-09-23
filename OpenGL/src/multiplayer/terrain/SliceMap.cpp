@@ -16,7 +16,7 @@ void SliceMap::insert(std::vector<Structure::Slice> const& slices) {
 
 Structure::slices_t SliceMap::pop(glm::ivec3 cpos) {
   std::lock_guard<std::mutex> lck(slicesMutex);
-  std::vector<Structure::Slice> slices = {};
+  Structure::slices_t slices = {};
   auto it = map.find(cpos);
   if(it != map.end()) {
     it->second.swap(slices);
