@@ -259,7 +259,7 @@ void Viewport::on_mousedown(SDL_MouseButtonEvent const& e) {
   switch (e.button) {
   case SDL_BUTTON_LEFT:
     if(mouseCaptured) {
-      mouseController.triggerAction(Click::LEFT);
+      mouseController.triggerAction(Action::ACTION_0_DOWN);
     }
     else {
       root->addEvent(Event(Event::Type::PRESS, {e.x, size.y - e.y}));
@@ -267,12 +267,12 @@ void Viewport::on_mousedown(SDL_MouseButtonEvent const& e) {
     break;
   case SDL_BUTTON_RIGHT:
     if(mouseCaptured) {
-      mouseController.triggerAction(Click::RIGHT);
+      mouseController.triggerAction(Action::ACTION_2_DOWN);
     }
     break;
   case SDL_BUTTON_MIDDLE:
     if(mouseCaptured) {
-      mouseController.triggerAction(Click::MIDDLE);
+      mouseController.triggerAction(Action::ACTION_1_DOWN);
     }
     break;
   default:

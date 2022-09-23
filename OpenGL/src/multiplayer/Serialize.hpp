@@ -5,21 +5,15 @@
 #include <iosfwd>
 #include <type_traits>
 
-#include "entity/Entity.hpp"
 #include "multiplayer/Packet.hpp"
 #include "terrain/ChunkImpl.hpp"
 
 class BlockArray;
 
-
 namespace serde {
-  sf::Packet& consume(Entity& e, sf::Packet& packet);
-  sf::Packet& operator<<(sf::Packet& packet, Entity const& entity);
-  sf::Packet& operator>>(sf::Packet& packet, Entity& entity);
-
-  sf::Packet& consume(Action& a, sf::Packet& packet);
-  sf::Packet& operator<<(sf::Packet& packet, Action const& action);
-  sf::Packet& operator>>(sf::Packet& packet, Action& action);
+  sf::Packet& consume(EntityAction& a, sf::Packet& packet);
+  sf::Packet& operator<<(sf::Packet& packet, EntityAction const& action);
+  sf::Packet& operator>>(sf::Packet& packet, EntityAction& action);
 
   sf::Packet& operator<<(sf::Packet& packet, PacketHeader const& header);
   sf::Packet& operator>>(sf::Packet& packet, PacketHeader& header);

@@ -5,74 +5,25 @@
 #include <vector>
 
 #include "entity/Node.hpp"
+#include "entity/Entity.hpp"
 #include "save/SaveManager.hpp"
 #include "terrain/BlockArray.hpp"
 
 class Chunk;
 
-sf::Packet& serde::operator<<(sf::Packet& packet, Entity const& entity) {
-	packet << entity.bodyNode.loc;
-	packet << entity.bodyNode.rot;
-	packet << entity.headNode.rot;
-	packet << entity.speed;
-	packet << entity.accel;
-	packet << entity.direction;
-  packet << entity.dab;
-  packet << entity.god;
-	packet << (sf::Uint8)entity.state;
-	return packet;
-}
-
-sf::Packet& serde::operator>>(sf::Packet& packet, Entity& entity) {
-	sf::Uint8 state;
-	packet >> entity.bodyNode.loc;
-	packet >> entity.bodyNode.rot;
-	packet >> entity.headNode.rot;
-	packet >> entity.speed;
-	packet >> entity.accel;
-	packet >> entity.direction;
-  packet >> entity.dab;
-  packet >> entity.god;
-	packet >> state;
-	entity.state = (State)state;
-	return packet;
-}
-
-sf::Packet& serde::consume(Entity& e, sf::Packet& packet) {
-	decltype(e.bodyNode.loc) loc;
-	decltype(e.bodyNode.rot) rot;
-	decltype(e.headNode.rot) headRot;
-	decltype(e.speed) speed;
-	decltype(e.accel) accel;
-	decltype(e.direction) direction;
-  decltype(e.dab) dab;
-  decltype(e.god) god;
-	sf::Uint8 state;
-	packet >> loc;
-	packet >> rot;
-	packet >> headRot;
-	packet >> speed;
-	packet >> accel;
-	packet >> direction;
-  packet >> dab;
-  packet >> god;
-	packet >> state;
-	return packet;
-}
-
-sf::Packet& serde::operator<<(sf::Packet& packet, Action const& action) {
+sf::Packet& serde::operator<<(sf::Packet& packet, EntityAction const& action) {
 	packet << (sf::Uint8)action;
 	return packet;
 }
 
-sf::Packet& serde::operator>>(sf::Packet& packet, Action& a) {
+sf::Packet& serde::operator>>(sf::Packet& packet, EntityAction& a) {
 	sf::Uint8 action;
 	packet >> action;
-	a = (Action)action;
+	a = (EntityAction)action;
 	return packet;
 }
 
-sf::Packet& serde::consume(Action& a, sf::Packet& packet) {
+sf::Packet& serde::consume(EntityAction& a, sf::Packet& packet) {
 	sf::Uint8 action;
 	packet >> action;
 	return packet;

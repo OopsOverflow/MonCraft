@@ -155,7 +155,7 @@ int main(int argc, char* argv[]) {
     #ifdef DEBUG
         spdlog::set_level(spdlog::level::debug);
     #elif _WIN32
-        ShowWindow(GetConsoleWindow(), SW_HIDE); 
+        //ShowWindow(GetConsoleWindow(), SW_HIDE); 
     #endif
     spdlog::info("---- Main ----");
     spdlog::debug("Debug logging is enabled.");

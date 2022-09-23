@@ -10,7 +10,7 @@
 
 #include "entity/Entities.hpp"
 #include "entity/Entity.hpp"
-#include "entity/character/Character.hpp"
+#include "entity/character/CharacterMesh.hpp"
 #include "save/SaveManager.hpp"
 #include "save/ServerConfig.hpp"
 #include "terrain/BlockArray.hpp"
@@ -22,9 +22,9 @@ using namespace glm;
 ClientServer::ClientServer()
   : world(World::getInst())
 {
-  auto newPlayer = std::make_unique<Character>(Config::getServerConfig().spawnPoint);
+  auto newPlayer = std::make_unique<CharacterMesh>(Config::getServerConfig().spawnPoint);
   auto entity = World::getInst().entities.add(getUid(), std::move(newPlayer));
-  player = std::static_pointer_cast<Character>(entity);
+  player = std::static_pointer_cast<CharacterMesh>(entity);
   state = ServerState::CONNECTED;
 }
 
@@ -58,7 +58,7 @@ void ClientServer::update() {
   }
 }
 
-std::shared_ptr<Character> ClientServer::getPlayer() {
+std::shared_ptr<Entity> ClientServer::getPlayer() {
   return player;
 }
 

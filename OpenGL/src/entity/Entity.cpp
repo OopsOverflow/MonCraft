@@ -15,7 +15,6 @@ static const highp_dmat4 I(1.0);
 
 const float defaultSpeed = 4.317f;
 const float godMultiplier = 5;
-const float sprintMultiplier = 2;
 
 Entity::Entity(Hitbox hitbox, EntityProperties properties) :
 	state(State::Idle),
@@ -24,85 +23,24 @@ Entity::Entity(Hitbox hitbox, EntityProperties properties) :
 	view(PlayerView::FIRST_PERSON),
 	onFloor(false), caster(100),
 	hitbox(std::move(hitbox)),
-	dab(false), god(true),
-	sprint(false),
+	god(true),
 	breaked(false), hasBreak(false)
 {}
 
 Entity::~Entity() {}
 
-void Entity::cameraToHead(Camera& camera) {
-  vec3 eyePos;
-  vec3 eyeTarget;
-	if(view == PlayerView::FIRST_PERSON) {
-		eyePos = headNode.model * vec4(0, 4, 0, 1);
-		eyeTarget = headNode.model * vec4(0, 4, 50, 1);
-
+void Entity::updateProperties() {
+	if(god) {
+		properties.verticalFriction = 5.5f;
+		properties.maxSpeed = defaultSpeed * godMultiplier;
+		properties.maxAccel = 40.f;
+	} 
+	else {
+		properties.verticalFriction = 0.f;
+		properties.maxSpeed = defaultSpeed;
+		properties.maxAccel = 10.f;
 	}
-	else{
-    if(view == PlayerView::THIRD_PERSON){
-	    eyePos = headNode.model * vec4(0, 4, 1, 1);
-      eyeTarget = headNode.model * vec4(0, 4, 0, 1);
 
-    }
-    else if(view == PlayerView::FRONT) {
-      eyePos = headNode.model * vec4(0, 4, -1, 1);
-      eyeTarget = headNode.model * vec4(0, 4, 0, 1);
-    }
-    
-    camera.setLookAt(eyeTarget, eyePos);
-    auto tmp = camera.getBoxCorners();
-    
-    float min = 4.f;
-    for(size_t i = 0; i < 4; i += 1) {
-      auto cast = caster.cast(tmp.at(i), eyeTarget - eyePos);
-
-      min = std::min(min, cast.dist);
-    }
-    if(min > 0.5f) 
-      eyePos = eyeTarget + min * normalize(eyeTarget - eyePos);
-    else
-      eyePos = eyeTarget + 0.5f * normalize(eyeTarget - eyePos);
-    
-   
-  } 
-
-  camera.setLookAt(eyePos, eyeTarget);
-}
-
-void Entity::enableGodMode() {
-  if(god) return;
-  properties.verticalFriction = 5.5f;
-  properties.maxSpeed = defaultSpeed * godMultiplier;
-  if(sprint) properties.maxSpeed *= sprintMultiplier;
-  properties.maxAccel = 40.f;
-  god = true;
-}
-
-void Entity::disableGodMode() {
-  if(!god) return;
-  properties.verticalFriction = 0.f;
-  properties.maxSpeed = defaultSpeed;
-  if(sprint) properties.maxSpeed *= sprintMultiplier;
-  properties.maxAccel = 10.f;
-  god = false;
-}
-
-void Entity::toggleGodMode() {
-  if(god) disableGodMode();
-  else enableGodMode();
-}
-
-void Entity::setSprint(bool sprint) {
-  if(this->sprint == sprint) return;
-  this->sprint = sprint;
-
-  if(sprint) {
-    properties.maxSpeed *= sprintMultiplier;
-  }
-  else {
-    properties.maxSpeed /= sprintMultiplier;
-  }
 }
 
 void Entity::walk(vec3 dir) {
@@ -225,4 +163,53 @@ vec3 Entity::getPosition() const {
 
 void Entity::setPosition(glm::vec3 pos) {
 	bodyNode.loc = pos;
+}
+
+BlockArray& Entity::getRecord() {
+  return record;
+}
+
+using namespace serde;
+
+void Entity::serialize(sf::Packet& packet) {
+	packet << bodyNode.loc;
+	packet << bodyNode.rot;
+	packet << headNode.rot;
+	packet << speed;
+	packet << accel;
+	packet << direction;
+	packet << god;
+	packet << (sf::Uint8)state;
+}
+
+void Entity::read(sf::Packet& packet) {
+	sf::Uint8 state;
+	packet >> bodyNode.loc;
+	packet >> bodyNode.rot;
+	packet >> headNode.rot;
+	packet >> speed;
+	packet >> accel;
+	packet >> direction;
+	packet >> god;
+	packet >> state;
+	this->state = (State)state;
+}
+
+void Entity::consume(sf::Packet& packet) {
+	decltype(bodyNode.loc) loc;
+	decltype(bodyNode.rot) rot;
+	decltype(headNode.rot) headRot;
+	decltype(speed) speed;
+	decltype(accel) accel;
+	decltype(direction) direction;
+	decltype(god) god;
+	sf::Uint8 state;
+	packet >> loc;
+	packet >> rot;
+	packet >> headRot;
+	packet >> speed;
+	packet >> accel;
+	packet >> direction;
+	packet >> god;
+	packet >> state;
 }

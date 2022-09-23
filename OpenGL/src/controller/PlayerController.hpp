@@ -11,6 +11,8 @@ public:
   bool handleKeyPressed(Key k);
   bool handleKeyReleased(Key k);
 
+  void addAction(Action action) {actionList.push_back(action);};
+
   void update();
 
 private:
@@ -21,5 +23,7 @@ private:
 
   bool spaceIsPressed;
   uint32_t lastSpacePress;
+
+  std::vector<Action> actionList;
 
 };

@@ -32,19 +32,19 @@ bool PlayerController::handleKeyReleased(Key k) {
         if (direction.y == -1) direction.y = 0;
     }
     else if (k == config.sprint) {
-        entity->setSprint(false);
+        actionList.push_back(Action::ACTION_3_UP);
     }
     else if (k == config.view) {
         entity->view = (PlayerView)(((int)entity->view + 1) % 3);
     }
     else if (k == config.dab) {
-        entity->dab = false;
+        actionList.push_back(Action::ACTION_4_UP);
     }else if(k == config.menu) {
         if (direction.z != 0) direction.z = 0;
         if (direction.x != 0) direction.x = 0;
         if (direction.y != 0) direction.y = 0;
-        entity->sprint = false;
-        entity->dab = false;
+        actionList.push_back(Action::ACTION_3_UP);
+        actionList.push_back(Action::ACTION_4_UP);
         spaceIsPressed = false;
     }
 
@@ -88,25 +88,30 @@ bool PlayerController::handleKeyPressed(Key k) {
         direction.y = -1;
     }
     else if (k == config.sprint) {
-        entity->setSprint(true);
+        actionList.push_back(Action::ACTION_3_DOWN);
     }
     else if (k == config.dab) {
-        entity->dab = true;
+        actionList.push_back(Action::ACTION_4_DOWN);
     }
 
     return true;
 }
 
 void PlayerController::update() {
-  if (toggleGod) {
-      entity->toggleGodMode();
-      toggleGod = false;
-  }
-  if(entity->god) {
-    entity->walk(direction);
-  }
-  else {
-    entity->walk({direction.x, 0, direction.z});
-    if(direction.y > 0) entity->jump();
-  }
+    for(auto action: actionList) 
+        entity->handleAction(action);
+    actionList = {};
+
+    if (toggleGod) {
+        entity->god = !entity->god;
+        entity->updateProperties();
+        toggleGod = false;
+    }
+    if(entity->god) {
+        entity->walk(direction);
+    }
+    else {
+        entity->walk({direction.x, 0, direction.z});
+        if(direction.y > 0) entity->jump();
+    }
 }

@@ -5,6 +5,7 @@
 #include <SFML/System/Time.hpp>
 #include <vector>
 #include <mutex>
+#include <memory>
 
 #include "util/Identifier.hpp"
 #include "entity/Entity.hpp"
@@ -27,10 +28,11 @@ private:
 
 class Client {
 public:
-  Client(Identifier uid, sf::Time creation);
+  Client(Identifier uid, sf::Time creation, EntityType type);
 
   Identifier uid;
-  Entity player;
+  std::unique_ptr<Entity> player;
+  EntityType playerType;
   std::vector<glm::ivec3> waitingChunks;
   bool ack;
   sf::Time lastUpdate;

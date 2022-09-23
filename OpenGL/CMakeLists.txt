@@ -2,7 +2,7 @@
 set(SOURCE
 	${CMAKE_CURRENT_SOURCE_DIR}/src/debug/Debug.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/debug/Bench.cpp
-
+	
 	${CMAKE_CURRENT_SOURCE_DIR}/src/noise/value.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/noise/voronoi.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/noise/simplex.cpp
@@ -11,6 +11,7 @@ set(SOURCE
 
 	${CMAKE_CURRENT_SOURCE_DIR}/src/util/Identifier.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/util/Serde.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/util/Raycast.cpp
 
 	${CMAKE_CURRENT_SOURCE_DIR}/src/save/SaveManager.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/save/ServerConfig.cpp
@@ -19,6 +20,8 @@ set(SOURCE
 	${CMAKE_CURRENT_SOURCE_DIR}/src/entity/Hitbox.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/entity/Node.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/entity/Entities.cpp
+
+	${CMAKE_CURRENT_SOURCE_DIR}/src/entity/character/Character.cpp
 
 	${CMAKE_CURRENT_SOURCE_DIR}/src/terrain/World.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/terrain/Chunk.cpp
@@ -47,7 +50,6 @@ if(${BUILD_TARGET} STREQUAL client)
 
 		${CMAKE_CURRENT_SOURCE_DIR}/src/audio/Music.cpp
 
-		${CMAKE_CURRENT_SOURCE_DIR}/src/util/Raycast.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/util/Random.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/util/Bezier.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/util/Spline.cpp
@@ -67,7 +69,7 @@ if(${BUILD_TARGET} STREQUAL client)
 		${CMAKE_CURRENT_SOURCE_DIR}/src/terrain/ChunkMesh.cpp
 
 		${CMAKE_CURRENT_SOURCE_DIR}/src/entity/Member.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/src/entity/character/Character.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/src/entity/character/CharacterMesh.cpp
 
 		${CMAKE_CURRENT_SOURCE_DIR}/src/controller/AIController.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/controller/RemotePlayerController.cpp

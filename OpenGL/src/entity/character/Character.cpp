@@ -16,41 +16,52 @@
 #include "entity/Entity.hpp"
 #include "entity/Hitbox.hpp"
 #include "entity/character/CharacterHitbox.hpp"
-#include "entity/character/Chest.hpp"
-#include "entity/character/Head.hpp"
-#include "entity/character/LeftArm.hpp"
-#include "entity/character/LeftLeg.hpp"
-#include "entity/character/RightArm.hpp"
-#include "entity/character/RightLeg.hpp"
 #include "terrain/World.hpp"
 
 using namespace glm;
+const float sprintMultiplier = 2;
 
 Character::Character(vec3 pos)
     : Entity(CharacterHitbox()),
-      currentBlock(BlockType::Oak_Stair)
+      currentBlock(BlockType::Oak_Stair),
+      sprint(false), dab(false)
 {
-  bodyNode.loc = pos;
-  rootNode.sca = vec3(1.85f / 32.f); // steve is 1.85 blocks high, 32 pixels high
-  rootNode.rot.y = glm::pi<float>();
-  rootNode.loc.y = 9.5 / 32. * 1.85;
-  headNode.loc = {0, 6, 0};
-  bodyNode.addChild(&rootNode);
-  rootNode.addChild(&headNode);
-  rootNode.addChild(&chest.node);
-  rootNode.addChild(&head.node);
-  chest.node.addChild(&l_arm.node);
-  chest.node.addChild(&r_arm.node);
-  chest.node.addChild(&l_leg.node);
-  chest.node.addChild(&r_leg.node);
-  animState = 0;
-
-  god = !god;
-  if(!god) enableGodMode();
-  else disableGodMode();
+  setPosition(pos);
+  updateProperties();
 }
 
 Character::~Character() {}
+
+void Character::handleAction(Action action) {
+  switch (action)
+  {
+  case (Action::ACTION_0_DOWN):
+    leftClick();
+    break;
+  case (Action::ACTION_1_DOWN):
+    middleClick();
+    break;
+  case (Action::ACTION_2_DOWN):
+    rightClick();
+    break;
+  case (Action::ACTION_3_DOWN):
+    sprint = true;
+    updateProperties();
+    break;
+  case (Action::ACTION_3_UP):
+    sprint = false;
+    updateProperties();
+    break;
+  case (Action::ACTION_4_DOWN):
+    dab = true;
+    break;
+  case (Action::ACTION_4_UP):
+    dab = false;
+    break;
+  default:
+    break;
+  }
+}
 
 void Character::leftClick() {
   if(!dab) { //we can't break when we are dabbing wtf???
@@ -123,80 +134,11 @@ void Character::middleClick() {
   if(cast.success) currentBlock = cast.block->type;
 }
 
-void Character::update(uint32_t dt) {
-  Entity::update(dt);
-
-  if(breaked) {
-    r_arm.anim->setAnimation(Animation::Break);
-    breaked = false;
-  }
-   
-
-  // smooth head rot with constant speed
-  {
-    float speed;
-    glm::vec3 dist;
-    glm::highp_dvec3 target;
-    if(!dab) {
-      target = headNode.rot;
-      speed = 5;
-    }
-    else {
-      target = radians(highp_dvec3(35., -40., 0.));
-      speed = 15;
-    }
-      
-    
-    dist = vec3(target - head.node.rot);
-    if(dist != vec3(0)) {
-      auto delta = normalize(dist) * (speed * dt * 0.001f);
-      if(any(greaterThan(abs(delta), abs(dist)))) {
-        head.node.rot = target;
-      }
-      else {
-        head.node.rot += delta;
-      }
-    }
-  }
-
-  r_arm.animate(dt);
-  l_arm.animate(dt);
-  l_leg.animate(dt);
-  r_leg.animate(dt);
-
-  // // walk animation
-    if(state == State::Walking) {
-        r_arm.anim->setAnimation(Animation::Walk);
-        l_arm.anim->setAnimation(Animation::Walk);
-        r_leg.anim->setAnimation(Animation::Walk);
-        l_leg.anim->setAnimation(Animation::Walk);
-    }
-    else {
-      r_arm.anim->setAnimation(Animation::Idle);
-      l_arm.anim->setAnimation(Animation::Idle);
-      r_leg.anim->setAnimation(Animation::Idle);
-      l_leg.anim->setAnimation(Animation::Idle);
-
-    }
-
-    if(dab) {
-      r_arm.anim->setAnimation(Animation::Dab);
-      l_arm.anim->setAnimation(Animation::Dab);
-    }
-
-}
-
-void Character::render() {
-  chest.draw();
-  head.draw();
-  l_arm.draw();
-  r_arm.draw();
-  l_leg.draw();
-  r_leg.draw();
-}
-
-BlockArray& Character::getRecord() {
-  return record;
+void Character::updateProperties() {
+  Entity::updateProperties();
+  if(sprint)
+    properties.maxSpeed *= sprintMultiplier;
+  
 }
 
 BlockType Character::getCurrentBlock() const {
@@ -205,4 +147,21 @@ BlockType Character::getCurrentBlock() const {
 
 void Character::setCurrentBlock(BlockType type) {
   currentBlock = type;
+}
+
+
+void Character::serialize(sf::Packet& packet) {
+  Entity::serialize(packet);
+  packet << dab; 
+}
+
+void Character::read(sf::Packet& packet) {
+  Entity::read(packet);
+  packet >> dab;
+}
+
+void Character::consume(sf::Packet& packet) {
+  Entity::consume(packet);
+  decltype(dab) dab;
+  packet >> dab;
 }

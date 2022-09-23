@@ -7,6 +7,7 @@
 #include <mutex>
 
 #include "util/Identifier.hpp"
+#include "entity/Entity.hpp"
 
 class Character;
 
@@ -28,7 +29,7 @@ public:
   /**
    * Returns nullptr if the player was not created.
    */
-  virtual std::shared_ptr<Character> getPlayer() = 0;
+  virtual std::shared_ptr<Entity> getPlayer() = 0;
   virtual Identifier getUid() = 0;
 
 protected:

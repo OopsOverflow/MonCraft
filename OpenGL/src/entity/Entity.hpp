@@ -5,9 +5,21 @@
 #include "entity/Hitbox.hpp"
 #include "entity/Node.hpp"
 #include "util/Raycast.hpp"
-#include "gl/Camera.hpp"
+#include "multiplayer/Serialize.hpp"
+#include "terrain/BlockArray.hpp"
 
 enum class State { Walking, Idle };
+
+enum class PlayerView { FIRST_PERSON, THIRD_PERSON, FRONT };
+
+//We will compare the actions with the normal character
+enum class Action{ACTION_0_DOWN, ACTION_0_UP, //left mouse click
+ACTION_1_DOWN, ACTION_1_UP, //middle mouse click
+ACTION_2_DOWN, ACTION_2_UP, //right mouse click
+ACTION_3_DOWN, ACTION_3_UP, //sprint button
+ACTION_4_DOWN, ACTION_4_UP,	//dab button
+ACTION_5_DOWN, ACTION_5_UP,
+};
 
 struct EntityProperties {
 	float maxSpeed = 4.3f;
@@ -19,7 +31,6 @@ struct EntityProperties {
 
 };
 
-enum class PlayerView { FIRST_PERSON, THIRD_PERSON, FRONT };
 
 /**
  * An entity is a living thing able to move around and subject to physics
@@ -54,27 +65,28 @@ public:
 	void turn(glm::vec2 rotation);
 
 	/**
+	 * Gets the entity terrain modification since the last call to this method.
+	 */
+  	BlockArray& getRecord();
+
+	/**
 	 * Update the state of the entity
 	 */
 	virtual void update(uint32_t dt);
 
 	virtual void render();
 
-	virtual void cameraToHead(Camera& camera);
-
 	glm::vec3 getPosition() const;
 
 	void setPosition(glm::vec3 pos);
 
-	virtual void leftClick() = 0;
-	virtual void middleClick() = 0;
-	virtual void rightClick() = 0;
+	virtual void handleAction(Action action) = 0;
 
-	virtual void enableGodMode();
-  	virtual void disableGodMode();
-  	virtual void toggleGodMode();
+	virtual void updateProperties();
 
-	virtual void setSprint(bool sprint);
+	virtual void serialize(sf::Packet& packet);
+	virtual void read(sf::Packet& packet);
+	virtual void consume(sf::Packet& packet);
 
 	State state;
 
@@ -89,9 +101,7 @@ public:
 
 	PlayerView view;
 
-	bool sprint;
 	bool god;
-	bool dab;
 	bool onFloor;
 
 	bool hasBreak;
@@ -100,4 +110,7 @@ public:
 	Raycast caster;
 
 	Hitbox hitbox;
+
+protected: 
+	BlockArray record;
 };

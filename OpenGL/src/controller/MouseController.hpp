@@ -3,9 +3,6 @@
 #include <vector>
 #include "PlayerController.hpp"
 
-	enum class Click {
-		LEFT, MIDDLE, RIGHT
-	};
 class MouseController {
 public:
 	MouseController();
@@ -15,8 +12,7 @@ public:
   void motion(int x, int y);
   void motionRel(int dx, int dy);
 
-	void triggerAction(Click action);
-
+	void triggerAction(Action action);
   void apply(PlayerController& controller);
   bool getRotation() const {return makeRotation;}
 
@@ -28,5 +24,5 @@ private:
   bool makeRotation;
 
   
-	std::vector<Click> actions;
+	std::vector<Action> actions;
 };

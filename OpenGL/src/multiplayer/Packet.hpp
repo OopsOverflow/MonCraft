@@ -16,8 +16,12 @@ enum class PacketType {
   NONE
 };
 
-enum class Action {
+enum class EntityAction {
   BREAK
+};
+
+enum class EntityType {
+  Character
 };
 
 

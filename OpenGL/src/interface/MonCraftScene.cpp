@@ -50,6 +50,42 @@ std::shared_ptr<Server> createServer(bool multiplayer) {
     return server;
 }
 
+void cameraToHead(Camera& camera, Entity& entity) {
+  vec3 eyePos;
+  vec3 eyeTarget;
+	if(entity.view == PlayerView::FIRST_PERSON) {
+		eyePos = entity.headNode.model * vec4(0, 4, 0, 1);
+		eyeTarget = entity.headNode.model * vec4(0, 4, 50, 1);
+
+	}
+	else{
+    if(entity.view == PlayerView::THIRD_PERSON){
+	    eyePos = entity.headNode.model * vec4(0, 4, 1, 1);
+      eyeTarget = entity.headNode.model * vec4(0, 4, 0, 1);
+
+    }
+    else if(entity.view == PlayerView::FRONT) {
+      eyePos = entity.headNode.model * vec4(0, 4, -1, 1);
+      eyeTarget = entity.headNode.model * vec4(0, 4, 0, 1);
+    }
+    
+    camera.setLookAt(eyeTarget, eyePos);
+    auto tmp = camera.getBoxCorners();
+    
+    float min = 4.f;
+    for(size_t i = 0; i < 4; i += 1) {
+      auto cast = entity.caster.cast(tmp.at(i), eyeTarget - eyePos);
+
+      min = std::min(min, cast.dist);
+    }
+    if(min > 0.5f) 
+      eyePos = eyeTarget + min * normalize(eyeTarget - eyePos);
+    else
+      eyePos = eyeTarget + 0.5f * normalize(eyeTarget - eyePos);
+  } 
+
+  camera.setLookAt(eyePos, eyeTarget);
+}
 
 MonCraftScene::MonCraftScene(Viewport* vp)
     : Component(),
@@ -133,7 +169,9 @@ MonCraftScene::MonCraftScene(Viewport* vp)
     add(overlay);
     add(debugOverlay);
 
-    server->getPlayer()->setCurrentBlock(overlay->getCurrentBlock());
+    auto player = std::dynamic_pointer_cast<Character>(server->getPlayer());
+    if(player)
+        player->setCurrentBlock(overlay->getCurrentBlock());
 
 
 }
@@ -275,8 +313,9 @@ void MonCraftScene::draw() {
       musicPlayer.update();
     #endif
 
-    if(overlay->select((int)(server->getPlayer()->getCurrentBlock()) + vp->getMouseScrollDiff()))
-        server->getPlayer()->setCurrentBlock(overlay->getCurrentBlock());
+    auto player = std::dynamic_pointer_cast<Character>(server->getPlayer());
+    if(player && overlay->select((int)(player->getCurrentBlock()) + vp->getMouseScrollDiff()))
+        player->setCurrentBlock(overlay->getCurrentBlock());
 
     // keyboardController.apply(*player);
     vp->mouseController.apply(*playerController);
@@ -287,7 +326,7 @@ void MonCraftScene::draw() {
     setSize(parent->getSize());
     camera.setSize(getSize());
 
-    playerController->getEntity()->cameraToHead(camera);
+    cameraToHead(camera, *playerController->getEntity());
     updateFov(world.dt);
 
     // update sun

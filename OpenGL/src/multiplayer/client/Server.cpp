@@ -5,7 +5,6 @@
 
 #include "terrain/World.hpp"
 #include "terrain/ChunkImpl.hpp"
-#include "entity/character/Character.hpp"
 #include "save/ServerConfig.hpp"
 
 Server::Server()

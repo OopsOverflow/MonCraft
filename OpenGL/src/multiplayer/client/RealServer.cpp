@@ -15,7 +15,7 @@
 
 #include "entity/Entities.hpp"
 #include "entity/Entity.hpp"
-#include "entity/character/Character.hpp"
+#include "entity/character/CharacterMesh.hpp"
 #include "multiplayer/NetworkError.hpp"
 #include "multiplayer/Packet.hpp"
 #include "multiplayer/Serialize.hpp"
@@ -56,9 +56,9 @@ RealServer::RealServer(std::string host, unsigned short port, bool tls)
   lastUpdate = clock.getElapsedTime() - frameDuration - frameDuration; // needs update
   lastServerUpdate = clock.getElapsedTime();
 
-  auto newPlayer = std::make_unique<Character>(Config::getServerConfig().spawnPoint);
+  auto newPlayer = std::make_unique<CharacterMesh>(Config::getServerConfig().spawnPoint);
   auto entity = world.entities.add(playerUid, std::move(newPlayer));
-  player = std::static_pointer_cast<Character>(entity);
+  player = std::static_pointer_cast<CharacterMesh>(entity);
 
   // ---- websocket setup ----
 
@@ -195,15 +195,15 @@ void RealServer::handle_entity_tick(sf::Packet& packet) {
     auto entity = world.entities.get(uid);
 
     if(uid == playerUid) {
-      consume(*entity, packet);
+      entity->consume(packet);
     }
     else {
       if(entity == nullptr) { // create the player if not found
-        world.entities.add(uid, std::make_unique<Character>(Config::getServerConfig().spawnPoint));
+        world.entities.add(uid, std::make_unique<CharacterMesh>(Config::getServerConfig().spawnPoint));
         entity = world.entities.get(uid);
       }
 
-      packet >> *entity;
+      entity->read(packet);
     }
   }
 }
@@ -215,19 +215,19 @@ void RealServer::handle_player_action(sf::Packet& packet) {
 
   auto entity = world.entities.get(uid);
 
-  Action action;
+  EntityAction action;
 
   if(uid == playerUid) {
     consume(action, packet);
   }
   else {
     if(entity == nullptr) { // create the player if not found
-      world.entities.add(uid, std::make_unique<Character>(Config::getServerConfig().spawnPoint));
+      world.entities.add(uid, std::make_unique<CharacterMesh>(Config::getServerConfig().spawnPoint));
       entity = world.entities.get(uid);
     }
 
     packet >> action;
-    if(action == Action::BREAK)
+    if(action == EntityAction::BREAK)
       entity->breaked = true;
   }
   
@@ -238,7 +238,9 @@ void RealServer::ping() {
 }
 
 void RealServer::packet_blocks() {
-  BlockArray& blocks = player->getRecord();
+  auto character = std::dynamic_pointer_cast<Character>(player);
+  if(!character) return;
+  BlockArray& blocks = character->getRecord();
   if(!blocks.empty()) {
     sf::Packet packet;
     PacketHeader header(PacketType::BLOCKS);
@@ -271,6 +273,8 @@ void RealServer::packet_login() {
   PacketHeader header(PacketType::LOGIN);
 
   packet << header << playerUid;
+  if(std::dynamic_pointer_cast<Character>(player) != nullptr) packet << (uint8_t)EntityType::Character;
+  else throw NetworkError("unknown entity type sent");
 
   auto send_res = send(packet);
 
@@ -295,7 +299,8 @@ void RealServer::packet_logout() {
 void RealServer::packet_player_tick() {
   sf::Packet packet;
   PacketHeader header(PacketType::PLAYER_TICK);
-  packet << header << *player;
+  packet << header;
+  player->serialize(packet);
 
   auto send_res = send(packet);
 
@@ -307,7 +312,7 @@ void RealServer::packet_player_tick() {
 void RealServer::packet_player_break() {
   sf::Packet packet;
   PacketHeader header(PacketType::PLAYER_ACTION);
-  packet << header << Action::BREAK;
+  packet << header << EntityAction::BREAK;
 
   auto send_res = send(packet);
 
@@ -403,7 +408,7 @@ void RealServer::handle_chunks(sf::Packet& packet) {
   packet_ack_chunks(ack);
 }
 
-std::shared_ptr<Character> RealServer::getPlayer() {
+std::shared_ptr<Entity> RealServer::getPlayer() {
   return player;
 }
 

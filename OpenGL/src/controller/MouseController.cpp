@@ -40,7 +40,7 @@ void MouseController::motionRel(int dx, int dy) {
   }
 }
 
-void MouseController::triggerAction(Click action) {
+void MouseController::triggerAction(Action action) {
   actions.push_back(action);
 }
 
@@ -56,19 +56,7 @@ void MouseController::apply(PlayerController& controller) {
   deltaX = 0;
   deltaY = 0;
 
-  for(auto action : actions) switch (action) {
-    case Click::LEFT:
-      character->leftClick();
-      break;
-    case Click::MIDDLE:
-      character->middleClick();
-      break;
-    case Click::RIGHT:
-      character->rightClick();
-      break;
-    default:
-      assert(false);
-      break;
-  };
+  for(auto action : actions)
+    controller.addAction(action);
   actions = {};
 }

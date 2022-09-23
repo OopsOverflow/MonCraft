@@ -1,6 +1,6 @@
 #include "Client.hpp"
 #include "save/ServerConfig.hpp"
-#include "entity/character/CharacterHitbox.hpp"
+#include "entity/character/Character.hpp"
 
 
 ClientID::ClientID(std::string remoteAddress)
@@ -17,10 +17,11 @@ bool ClientID::operator<(ClientID const& lhs) const {
 }
 
 
-Client::Client(Identifier uid, sf::Time creation)
-  : uid(uid), player(CharacterHitbox()), lastUpdate(creation)
+Client::Client(Identifier uid, sf::Time creation, EntityType type)
+  : uid(uid), lastUpdate(creation), playerType(type)
 {
-  player.setPosition(Config::getServerConfig().spawnPoint);
+  if(playerType == EntityType::Character) player = std::make_unique<Character>(Config::getServerConfig().spawnPoint);
+  else throw("Error, unknown entity");
 }
 
 

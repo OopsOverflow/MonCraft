@@ -4,17 +4,9 @@
 
 #include "entity/Entity.hpp"
 #include "entity/Node.hpp"
-#include "terrain/BlockArray.hpp"
 #include "blocks/Block.hpp"
 
-#include "LeftArm.hpp"
-#include "RightArm.hpp"
-#include "LeftLeg.hpp"
-#include "RightLeg.hpp"
-#include "Head.hpp"
-#include "Chest.hpp"
 
-class Camera;
 
 /**
  * The main character.
@@ -29,17 +21,11 @@ public:
    */
   Character(glm::vec3 pos);
 
-  virtual ~Character();
+  virtual ~Character();	
 
-  /**
-   * Draws the character entirely, including body parts.
-   */
-	void render() override;
+  void handleAction(Action action) override;
 
-  /**
-   * Update the character state.
-   */
-	void update(uint32_t dt) override;
+  void updateProperties();
 
   /**
    * Breaks the block in line of sight if within reach of the character.
@@ -58,11 +44,6 @@ public:
   void middleClick();
 
   /**
-  * Gets the blocks placed since the last call to this method.
-  */
-  BlockArray& getRecord();
-
-  /**
    * Set the selected block type (in hand).
    */
   void setCurrentBlock(BlockType type);
@@ -72,18 +53,18 @@ public:
    */
   BlockType getCurrentBlock() const;
 
-private:
+  void serialize(sf::Packet& packet) override;
+	void read(sf::Packet& packet) override;
+	void consume(sf::Packet& packet) override;
+
+protected:
   Node rootNode;
-  Head head;
-  Chest chest;
-  LeftArm l_arm;
-  RightArm r_arm;
-  LeftLeg l_leg;
-  RightLeg r_leg;
 
   float animState;
 
   BlockType currentBlock;
-  BlockArray record;
+
+  bool dab;
+  bool sprint;
 
 };

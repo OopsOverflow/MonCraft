@@ -7,7 +7,6 @@
 #include "multiplayer/terrain/PendingChunks.hpp"
 #include "util/Identifier.hpp"
 
-class Character;
 class World;
 
 class ClientServer : public Server {
@@ -18,11 +17,11 @@ public:
 
   void ping() override;
   void update() override;
-  std::shared_ptr<Character> getPlayer() override;
+  std::shared_ptr<Entity> getPlayer() override;
   Identifier getUid() override;
 
 private:
-  std::shared_ptr<Character> player;
+  std::shared_ptr<Entity> player;
   TerrainGenerator generator;
   PendingChunks pendingChunks;
   World& world;

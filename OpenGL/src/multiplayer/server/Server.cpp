@@ -97,7 +97,7 @@ void Server::packet_entity_tick() {
 
   for(auto const& pair : clients) {
     packet << pair.second.uid;
-    packet << pair.second.player;
+    pair.second.player->serialize(packet);
   }
 
   auto curTime = clock.getElapsedTime();
@@ -179,7 +179,9 @@ void Server::handle_login(ClientID client, sf::Packet& packet) {
     packet_ack_login(it->first, it->second.uid);
   }
   else {
-    auto res = clients.emplace(client, Client(uid, clock.getElapsedTime()));
+    uint8_t type;
+    packet >> type;
+    auto res = clients.emplace(client, Client(uid, clock.getElapsedTime(), (EntityType)type));
 
     if(res.second) {
       packet_ack_login(res.first->first, uid);
@@ -213,14 +215,14 @@ void Server::handle_ping(Client& client) {
 }
 
 void Server::handle_player_tick(Client& client, sf::Packet& packet) {
-  packet >> client.player;
+  client.player->read(packet);
   client.ack = true;
 }
 
 void Server::handle_player_action(Client& client, sf::Packet& packet) {
   PacketHeader header(PacketType::PLAYER_ACTION);
   sf::Packet pck;
-  Action action;
+  EntityAction action;
   packet >> action;
   pck << header << client.uid << action;
   for(auto& pair : clients) {
@@ -285,7 +287,7 @@ void Server::updateWaitingChunks() {
 void Server::remOldChunks() {
   std::vector<ivec3> playersCpos;
   for(auto const& pair : clients) {
-    ivec3 cpos = floor(pair.second.player.getPosition() / float(generator.chunkSize));
+    ivec3 cpos = floor(pair.second.player->getPosition() / float(generator.chunkSize));
     playersCpos.push_back(cpos);
   }
 

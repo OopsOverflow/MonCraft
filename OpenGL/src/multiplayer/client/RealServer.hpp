@@ -30,7 +30,7 @@ public:
   /**
    * Returns nullptr if the player was not created.
    */
-  std::shared_ptr<Character> getPlayer() override;
+  std::shared_ptr<Entity> getPlayer() override;
 
   /**
   * Returns 0 if the player was not created.
@@ -73,7 +73,7 @@ private:
   const sf::Time frameDuration;
   sf::Clock clock;
   World& world;
-  std::shared_ptr<Character> player;
+  std::shared_ptr<Entity> player;
   Identifier playerUid;
   PendingChunks pendingChunks;
 
