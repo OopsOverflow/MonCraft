@@ -378,11 +378,11 @@ void RealServer::handle_chunks(sf::Packet& packet) {
     sf::Uint8 chunkSize;
     glm::ivec3 chunkPos;
     packet >> chunkSize >> chunkPos;
-    auto newChunk = new ChunkImpl(chunkPos, chunkSize);
+    auto newChunk = std::make_unique<ChunkImpl>(chunkPos, chunkSize);
     packet >> *newChunk;
 
     if(!world.chunks.find(chunkPos)) {
-      auto chunk = world.chunks.insert(chunkPos, std::unique_ptr<ChunkImpl>(newChunk));
+      auto chunk = world.chunks.insert(chunkPos, std::move(newChunk));
 
       for(size_t j = 0; j < 26; j++) {
         if(!chunk->neighbors[j].lock()) {
