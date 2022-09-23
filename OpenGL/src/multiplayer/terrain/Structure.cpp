@@ -7,11 +7,12 @@
 
 using namespace glm;
 
-void Structure::applySlice(Chunk& chunk, Slice const& slice) {
+void Structure::applySlice(Chunk& chunk, Slice const& slice, bool override) {
   ivec3 dpos;
   for(dpos.x = slice.start.x; dpos.x < slice.end.x; dpos.x++) {
     for(dpos.y = slice.start.y; dpos.y < slice.end.y; dpos.y++) {
       for(dpos.z = slice.start.z; dpos.z < slice.end.z; dpos.z++) {
+        if(!override && chunk[dpos]->type != BlockType::Air) continue;
         auto blockType = (*slice.store)[slice.off + dpos - slice.start];
         if(blockType != BlockType::Air)
           chunk[dpos] = AllBlocks::create_static(blockType);
@@ -77,10 +78,11 @@ std::vector<Oak_Tree::Slice> Oak_Tree::spawn(Chunk& chunk, ivec3 pos) const {
         slices.emplace_back(Oak_Tree::Slice{
           store,
           chunk.chunkPos + chunkOffset,
+          chunk.chunkPos,
           max(sliceStart, ivec3(0)) - sliceStart,
           max(sliceStart, ivec3(0)),
           min(sliceStart + store->size(), chunk.size())
-            });
+        });
     };
 
     auto minCorner = -ivec3(lessThan(start, ivec3(0)));
@@ -155,10 +157,11 @@ std::vector<Birch_Tree::Slice> Birch_Tree::spawn(Chunk& chunk, ivec3 pos) const 
         slices.emplace_back(Birch_Tree::Slice{
           store,
           chunk.chunkPos + chunkOffset,
+          chunk.chunkPos,
           max(sliceStart, ivec3(0)) - sliceStart,
           max(sliceStart, ivec3(0)),
           min(sliceStart + store->size(), chunk.size())
-            });
+        });
     };
 
     auto minCorner = -ivec3(lessThan(start, ivec3(0)));
@@ -213,10 +216,11 @@ std::vector<EditPlateforme::Slice> EditPlateforme::spawn(Chunk& chunk, ivec3 pos
         slices.emplace_back(EditPlateforme::Slice{
           store,
           chunk.chunkPos + chunkOffset,
+          chunk.chunkPos,
           max(sliceStart, ivec3(0)) - sliceStart,
           max(sliceStart, ivec3(0)),
           min(sliceStart + store->size(), chunk.size())
-            });
+        });
     };
 
     auto minCorner = -ivec3(lessThan(start, ivec3(0)));
@@ -265,10 +269,11 @@ std::vector<Cactus::Slice> Cactus::spawn(Chunk& chunk, ivec3 pos) const {
         slices.emplace_back(Cactus::Slice{
           store,
           chunk.chunkPos + chunkOffset,
+          chunk.chunkPos,
           max(sliceStart, ivec3(0)) - sliceStart,
           max(sliceStart, ivec3(0)),
           min(sliceStart + store->size(), chunk.size())
-            });
+        });
     };
 
     auto minCorner = -ivec3(lessThan(start, ivec3(0)));

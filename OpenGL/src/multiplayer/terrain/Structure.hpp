@@ -22,7 +22,7 @@ public:
 
   struct Slice {
     std::shared_ptr<const BlockStore> store;
-    glm::ivec3 cpos;
+    glm::ivec3 targetCpos, origCpos;
     glm::ivec3 off, start, end;
   };
 
@@ -39,7 +39,7 @@ public:
   /**
    * Applies a slice to a given chunk.
    */
-  static void applySlice(Chunk& chunk, Slice const& slice);
+  static void applySlice(Chunk& chunk, Slice const& slice, bool override);
 };
 
 

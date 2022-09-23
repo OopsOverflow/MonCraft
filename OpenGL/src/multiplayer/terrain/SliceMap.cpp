@@ -9,7 +9,7 @@ SliceMap::SliceMap() {}
 void SliceMap::insert(std::vector<Structure::Slice> const& slices) {
   std::lock_guard<std::mutex> lck(slicesMutex);
   for(auto slice : slices) {
-    auto& dest = map[slice.cpos];
+    auto& dest = map[slice.targetCpos];
     dest.push_back(slice);
   }
 }

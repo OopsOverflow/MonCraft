@@ -12,6 +12,7 @@
 #include "multiplayer/terrain/ChunkGenerator.hpp"
 #include "multiplayer/terrain/SliceMap.hpp"
 #include "multiplayer/terrain/Structure.hpp"
+#include "noise/prng.hpp"
 #include "save/SaveManager.hpp"
 #include "save/ServerConfig.hpp"
 #include "terrain/ChunkImpl.hpp"
@@ -28,7 +29,8 @@ using namespace std::chrono_literals;
 TerrainGenerator::TerrainGenerator()
   : generating(false),
     generator(chunkSize),
-    world(World::getInst())
+    world(World::getInst()),
+    chunkPriority(prng::rand())
 {
   auto& config = Config::getServerConfig();
   threadCount = config.threadCount;
@@ -114,8 +116,10 @@ void TerrainGenerator::setupNeighbors(std::shared_ptr<ChunkImpl> chunk) {
 
 void TerrainGenerator::computeChunk(std::shared_ptr<ChunkImpl> chunk) {
   auto slices = sliceMap.pop(chunk->chunkPos);
+  uint32_t chunkPrio = chunkPriority.sample1D(chunk->chunkPos);
   for(auto const& slice : slices) {
-    Structure::applySlice(*chunk, slice);
+    bool override = chunkPriority.sample1D(slice.origCpos) > chunkPrio;
+    Structure::applySlice(*chunk, slice, true);
   }
   chunk->compute();
 }
