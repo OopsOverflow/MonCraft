@@ -255,8 +255,9 @@ else () # wasm
 			-s WEBSOCKET_URL='wss://pi.thissma.fr:55001' \
 			-s WEBSOCKET_SUBPROTOCOL='binary' \
 			-s DEFAULT_LIBRARY_FUNCS_TO_INCLUDE=wsSendMessage \
-			--preload-file ${CMAKE_SOURCE_DIR}/OpenGL/data@data \
-			--preload-file ${CMAKE_SOURCE_DIR}/OpenGL/src@src \
+			--preload-file ${CMAKE_SOURCE_DIR}/OpenGL/data/fonts@data/fonts \
+			--preload-file ${CMAKE_SOURCE_DIR}/OpenGL/data/wasm/img@data/img \
+			--preload-file ${CMAKE_SOURCE_DIR}/OpenGL/src/shader@src/shader \
 			-Wno-unused-command-line-argument \
 			-g0 -O3"
 		)
@@ -278,8 +279,9 @@ else () # wasm
 			-s FULL_ES3=1 \
 			-s WEBSOCKET_URL='wss://pi.thissma.fr:55001' \
 			-s WEBSOCKET_SUBPROTOCOL='binary' \
-			--preload-file ${CMAKE_SOURCE_DIR}/OpenGL/data@data \
-			--preload-file ${CMAKE_SOURCE_DIR}/OpenGL/src@src \
+			--preload-file ${CMAKE_SOURCE_DIR}/OpenGL/data/fonts@data/fonts \
+			--preload-file ${CMAKE_SOURCE_DIR}/OpenGL/data/wasm/img@data/img \
+			--preload-file ${CMAKE_SOURCE_DIR}/OpenGL/src/shader@src/shader \
 			-Wno-unused-command-line-argument \
 			-g0 -O3"
 		)
@@ -312,8 +314,9 @@ else () # wasm
 			-s DEFAULT_LIBRARY_FUNCS_TO_INCLUDE=wsSendMessage \
 			-s ASSERTIONS=2 \
 			-s STACK_OVERFLOW_CHECK=2 \
-			--preload-file ${CMAKE_SOURCE_DIR}/OpenGL/data@data \
-			--preload-file ${CMAKE_SOURCE_DIR}/OpenGL/src@src \
+			--preload-file ${CMAKE_SOURCE_DIR}/OpenGL/data/fonts@data/fonts \
+			--preload-file ${CMAKE_SOURCE_DIR}/OpenGL/data/wasm/img@data/img \
+			--preload-file ${CMAKE_SOURCE_DIR}/OpenGL/src/shader@src/shader \
 			-Wno-unused-command-line-argument \
 			--source-map-base sources/build/Client/Wasm/Debug/ \
 			-gsource-map -O0"
@@ -346,8 +349,9 @@ else () # wasm
 			-s EXIT_RUNTIME=1 \
 			-s ASSERTIONS=2 \
 			-s STACK_OVERFLOW_CHECK=2 \
-			--preload-file ${CMAKE_SOURCE_DIR}/OpenGL/data@data \
-			--preload-file ${CMAKE_SOURCE_DIR}/OpenGL/src@src \
+			--preload-file ${CMAKE_SOURCE_DIR}/OpenGL/data/fonts@data/fonts \
+			--preload-file ${CMAKE_SOURCE_DIR}/OpenGL/data/wasm/img@data/img \
+			--preload-file ${CMAKE_SOURCE_DIR}/OpenGL/src/shader@src/shader \
 			-Wno-unused-command-line-argument \
 			--source-map-base sources/build/Client/Wasm/Debug/ \
 			-gsource-map -O0"
