@@ -23,7 +23,7 @@ public:
 
   static BlockType nextBlock(BlockType type);
 
-  static const size_t BlockCount = 25;
+  static const size_t BlockCount = 24;
 
 private:
   static const std::array<Block*(*)(), BlockCount> factories;

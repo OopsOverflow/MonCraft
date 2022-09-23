@@ -25,5 +25,5 @@ public:
     }
 
 private:
-    Debug_Block() : Block(BlockType::Dirt) {}
+    Debug_Block() : Block(BlockType::Debug_Block) {}
 };

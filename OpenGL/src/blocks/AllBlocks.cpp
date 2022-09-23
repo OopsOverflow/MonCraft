@@ -1,5 +1,6 @@
 #include "AllBlocks.hpp"
 
+#include <spdlog/spdlog.h>
 #include <sstream>
 #include <memory>
 #include <stdexcept>
@@ -58,15 +59,13 @@ const std::array<Block*(*)(), AllBlocks::BlockCount> AllBlocks::factories = {
   (Block*(*)())Oak_Stair_Block::get,
   (Block*(*)())Birch_Stair_Block::get,
   (Block*(*)())Red_Brick_Block::get,
-  (Block*(*)())Debug_Block::get,
 };
 
 Block::unique_ptr_t AllBlocks::create_static(BlockType type) {
   auto index = (size_t)type;
-  if(index > factories.size()) {
-    std::ostringstream err;
-    err << "create_static: BlockType not recognized: " << index;
-    throw std::runtime_error(err.str());
+  if(index >= factories.size()) {
+    spdlog::warn("create_static: BlockType not recognized: {}", index);
+    return Block::unique_ptr_t(Debug_Block::get());
   }
   return Block::unique_ptr_t(factories[index]());
 }

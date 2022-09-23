@@ -32,6 +32,7 @@ enum class BlockType
     Oak_Stair,
     Birch_Stair,
     Red_Brick,
+    Debug_Block,
 };
 
 enum class BlockFace { TOP, BOTTOM, FRONT, RIGHT, BACK, LEFT, INNER };
