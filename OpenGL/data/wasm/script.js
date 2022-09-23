@@ -32,9 +32,13 @@ function updateStatus(text) {
   if (m && now - Module.setStatus.last.time < 30) return; // if this is a progress update, skip it if too soon
   Module.setStatus.last.time = now;
   Module.setStatus.last.text = text;
+  
 
   if (m) {
-    text = m[1];
+    var mb = (m[2] / 1E6).toPrecision(2)
+    var mbMax = (m[4] / 1E6).toPrecision(2)
+
+    text = `${m[1]}<br/>(${mb} / ${mbMax} MB)`;
     progressElement.value = parseInt(m[2])*100;
     progressElement.max = parseInt(m[4])*100;
     progressElement.hidden = false;
