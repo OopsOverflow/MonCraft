@@ -91,8 +91,10 @@ RealServer::RealServer(std::string host, unsigned short port, bool tls)
     channel->onClosed([] () {
       spdlog::info("RTC closed");
     });
-    channel->onOpen([] () {
+    channel->onOpen([=] () {
       spdlog::info("RTC open");
+      auto r = channel->reliability();
+      spdlog::debug("RTC reliability: unordered={}, type={}", r.unordered, (size_t)r.type);
     });
 
     packet_login();
