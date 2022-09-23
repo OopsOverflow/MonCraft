@@ -115,7 +115,7 @@ const std::array<FaceData<3>, 4> TallgrassModel::normals {
   },
 };
 
-static const float occl = 2.f;
+static const float occl = .5f;
 
 const std::array<std::array<GLfloat, 4>, 4> TallgrassModel::occlusions {
   std::array<GLfloat, 4>{
