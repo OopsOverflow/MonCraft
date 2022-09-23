@@ -33,6 +33,10 @@ float linearizeDepth(float depth) { // https://learnopengl.com/Advanced-OpenGL/D
     return (2.0 * near * far) / (far + near - z * (far - near)) / far;
 }
 
+float square(float x) {
+  return x * x;
+}
+
 void main() {
 
   vec3 normalizedLightDirection = normalize(lightDirection);
@@ -60,7 +64,7 @@ void main() {
   outputColor.xyz += vec3(1.0) * specular * shadow * texture(t_normal, normalCoords).a * 1.0 * sunAmount;
 
   float occl = .7;
-  outputColor.xyz *= 1.0 - (vertexOcclusion * vertexOcclusion / 9.0) * occl;
+  outputColor.xyz *= 1.0 - square(vertexOcclusion / 2.0) * occl;
 
   if((flags & TRANSPARENT_FLAG) == 0) { // not transparent
     if(outputColor.a < 0.5) discard;

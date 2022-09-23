@@ -1,6 +1,6 @@
 // credit: https://googlechrome.github.io/samples/service-worker/basic/
 
-const version = 12
+const version = 13
 const PRECACHE = 'precache-v' + version;
 const RUNTIME = 'runtime-v' + version;
 
