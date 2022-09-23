@@ -23,6 +23,7 @@ std::shared_ptr<Entity> Entities::get(Identifier uid) {
 }
 
 std::shared_ptr<Entity> Entities::add(Identifier uid, std::unique_ptr<Entity> entity) {
+  spdlog::debug("Added entity to Entities list: {}", uid);
   auto res = emplace(uid, std::move(entity));
   return res.first->second;
 }

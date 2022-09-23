@@ -40,6 +40,8 @@ std::shared_ptr<Server> createServer(bool multiplayer) {
     auto seed = prng::srands(sconf.seed);
     spdlog::info("Seed: {} ({})", sconf.seed, seed);
 
+    World::getInst().unload(); // ensure the world is reset before creating the server
+
     std::unique_ptr<Server> server;
     if (multiplayer) {
         server = std::make_unique<RealServer>(cconf.serverAddr, cconf.serverPort, cconf.serverTLS);
@@ -172,10 +174,6 @@ MonCraftScene::MonCraftScene(Viewport* vp)
         player->setCurrentBlock(overlay->getCurrentBlock());
 
 
-}
-
-MonCraftScene::~MonCraftScene() {
-    world.unload();
 }
 
 bool MonCraftScene::onMousePressed(glm::ivec2 pos) {

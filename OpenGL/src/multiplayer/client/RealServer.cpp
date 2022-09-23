@@ -108,6 +108,8 @@ RealServer::RealServer(std::string host, unsigned short port, bool tls)
 
 RealServer::~RealServer() {
   packet_logout();
+  channel = nullptr;
+  world.unload();
 }
 
 bool RealServer::send(sf::Packet& packet) {
@@ -240,9 +242,7 @@ void RealServer::ping() {
 }
 
 void RealServer::packet_blocks() {
-  auto character = std::dynamic_pointer_cast<Character>(player);
-  if(!character) return;
-  BlockArray& blocks = character->getRecord();
+  BlockArray& blocks = player->getRecord();
   if(!blocks.empty()) {
     sf::Packet packet;
     PacketHeader header(PacketType::BLOCKS);

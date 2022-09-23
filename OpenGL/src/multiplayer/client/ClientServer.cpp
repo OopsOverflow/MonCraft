@@ -30,7 +30,9 @@ ClientServer::ClientServer()
 }
 
 ClientServer::~ClientServer()
-{}
+{
+  world.unload();
+}
 
 void ClientServer::ping() {
   spdlog::info("Clientsidee server ping!");
