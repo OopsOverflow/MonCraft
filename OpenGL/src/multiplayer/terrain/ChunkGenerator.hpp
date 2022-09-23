@@ -3,7 +3,7 @@
 #include <memory>
 #include <glm/glm.hpp>
 
-#include "Structure.hpp"
+#include "Structures.hpp"
 #include "BiomeMap.hpp"
 #include "blocks/Block.hpp"
 #include "noise/XXHash.hpp"

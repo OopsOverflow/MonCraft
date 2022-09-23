@@ -4,8 +4,6 @@
 
 #include "blocks/AllBlocks.hpp"
 #include "noise/simplex.hpp"
-#include "multiplayer/terrain/Structure.hpp"
-
 
 enum class BiomeType { ICE, SEA, BEACH, TOUNDRA, PLAINS, DESERT, HILLS, MOUNTAINS, FOREST };
 

@@ -8,8 +8,8 @@
 #include <vector>
 #include <glm/glm.hpp>
 
-#include "multiplayer/terrain/SliceMap.hpp"
-#include "multiplayer/terrain/ChunkGenerator.hpp"
+#include "SliceMap.hpp"
+#include "ChunkGenerator.hpp"
 #include "noise/value.hpp"
 #include "util/AtomicCyclicList.hpp"
 

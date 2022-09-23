@@ -2,7 +2,7 @@
 
 #include <utility>
 
-#include "multiplayer/terrain/Structure.hpp"
+#include "terrain/Structure.hpp"
 
 SliceMap::SliceMap() {}
 

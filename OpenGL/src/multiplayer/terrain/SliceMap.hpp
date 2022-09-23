@@ -6,7 +6,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "multiplayer/terrain/Structure.hpp"
+#include "terrain/Structure.hpp"
 
 /**
  * Stores all the slices to be later applied to chunks.

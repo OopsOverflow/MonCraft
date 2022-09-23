@@ -9,9 +9,9 @@
 #include <stdexcept>
 #include <utility>
 
-#include "multiplayer/terrain/ChunkGenerator.hpp"
-#include "multiplayer/terrain/SliceMap.hpp"
-#include "multiplayer/terrain/Structure.hpp"
+#include "ChunkGenerator.hpp"
+#include "SliceMap.hpp"
+#include "terrain/Structure.hpp"
 #include "noise/prng.hpp"
 #include "save/SaveManager.hpp"
 #include "save/ServerConfig.hpp"
@@ -119,7 +119,7 @@ void TerrainGenerator::computeChunk(std::shared_ptr<ChunkImpl> chunk) {
   uint32_t chunkPrio = chunkPriority.sample1D(chunk->chunkPos);
   for(auto const& slice : slices) {
     bool override = chunkPriority.sample1D(slice.origCpos) > chunkPrio;
-    Structure::applySlice(*chunk, slice, true);
+    Structure::applySlice(*chunk, slice, override);
   }
   chunk->compute();
 }

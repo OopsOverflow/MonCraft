@@ -24,6 +24,7 @@ set(SOURCE
 	${CMAKE_CURRENT_SOURCE_DIR}/src/terrain/Chunk.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/terrain/ChunkMap.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/terrain/BlockArray.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/terrain/Structure.cpp
 
 	${CMAKE_CURRENT_SOURCE_DIR}/src/blocks/AllBlocks.cpp
 
@@ -34,7 +35,7 @@ set(SOURCE
 	${CMAKE_CURRENT_SOURCE_DIR}/src/multiplayer/terrain/TerrainGenerator.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/multiplayer/terrain/SliceMap.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/multiplayer/terrain/ChunkGenerator.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/src/multiplayer/terrain/Structure.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/multiplayer/terrain/Structures.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/multiplayer/terrain/BiomeMap.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/multiplayer/terrain/PendingChunks.cpp
 )
