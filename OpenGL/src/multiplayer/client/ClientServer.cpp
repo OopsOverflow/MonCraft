@@ -24,6 +24,7 @@ ClientServer::ClientServer()
 {
   auto newPlayer = std::make_unique<CharacterMesh>(Config::getServerConfig().spawnPoint);
   auto entity = World::getInst().entities.add(getUid(), std::move(newPlayer));
+  auto entity1 = World::getInst().entities.add(1, std::make_unique<CharacterMesh>(Config::getServerConfig().spawnPoint));
   player = std::static_pointer_cast<CharacterMesh>(entity);
   state = ServerState::CONNECTED;
   world.t = (uint32_t)(8.f * dayDuration / 24.f);

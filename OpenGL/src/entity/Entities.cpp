@@ -46,3 +46,11 @@ void Entities::renderAll() {
 size_t Entities::count() {
   return size();
 }
+
+std::vector<std::shared_ptr<Entity>> Entities::getAll() {
+  std::vector<std::shared_ptr<Entity>> res = {};
+  for (auto it = this->begin(); it != this->end(); it++)
+    res.push_back(it->second);
+    
+  return res;
+}

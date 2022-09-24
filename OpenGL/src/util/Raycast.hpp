@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 
 class Block;
+class Entity;
 /**
  * Raycast checks for solid blocks along a ray.
  */
@@ -13,9 +14,9 @@ public:
   /**
    * Constructs a ray with a maximum cast distance
    */
-  Raycast(float maxDist);
+  Raycast();
 
-  struct CastResult {
+  struct BlockCastResult {
     bool success;       // false if max dist was reached
     glm::vec3 position; // found ray position
     glm::vec3 normal;   // which block face (normal) was hit first by the ray
@@ -24,11 +25,22 @@ public:
     float dist;
   };
 
+  struct EntityCastResult {
+    bool success;       // false if max dist was reached
+    glm::vec3 position; // found ray position
+    Entity* entity;     // the hit target. Undefined content if success is false
+    float dist;
+  };
+
   /**
-   * Performs a ray cast.
+   * Performs a ray cast on blocks.
    * credit: http://www.cse.chalmers.se/edu/year/2010/course/TDA361/grid.pdf
    */
-  CastResult cast(glm::vec3 pos, glm::vec3 direction) const;
+  BlockCastResult blockCast(glm::vec3 pos, glm::vec3 direction, float maxDist) const;
 
-  float maxDist;
+  /**
+   * Performs a ray cast on entities.
+   * credit: https://www.researchgate.net/publication/220494140_An_Efficient_and_Robust_Ray-Box_Intersection_Algorithm
+   */
+  EntityCastResult entityCast(glm::vec3 pos, glm::vec3 direction, float maxDist) const;
 };

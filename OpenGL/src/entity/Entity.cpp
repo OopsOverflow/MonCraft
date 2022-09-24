@@ -21,7 +21,7 @@ Entity::Entity(Hitbox hitbox, EntityProperties properties) :
 	properties(properties),
 	speed(0), accel(0), direction(0),
 	view(PlayerView::FIRST_PERSON),
-	onFloor(false), caster(100),
+	onFloor(false), caster(),
 	hitbox(std::move(hitbox)),
 	god(true),
 	breaked(false), hasBreak(false)

@@ -76,7 +76,7 @@ void cameraToHead(Camera& camera, Entity& entity) {
     
     float min = 4.f;
     for(size_t i = 0; i < 4; i += 1) {
-      auto cast = entity.caster.cast(tmp.at(i), eyeTarget - eyePos);
+      auto cast = entity.caster.blockCast(tmp.at(i), eyeTarget - eyePos, min);
 
       min = std::min(min, cast.dist);
     }

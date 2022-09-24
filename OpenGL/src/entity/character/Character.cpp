@@ -18,6 +18,8 @@
 #include "entity/character/CharacterHitbox.hpp"
 #include "terrain/World.hpp"
 
+#include "debug/Debug.hpp"
+
 using namespace glm;
 const float sprintMultiplier = 2;
 
@@ -71,14 +73,19 @@ void Character::leftClick() {
     auto& world = World::getInst();
     vec3 eyePos = headNode.model * vec4(0, 4, 0, 1);
     vec3 eyeTarget = headNode.model * vec4(0, 4, 5, 1);
-    auto cast = caster.cast(eyePos, eyeTarget - eyePos);
-    if (cast.success) {
-        BlockType block = cast.block->type;
+    auto blockCast = caster.blockCast(eyePos, eyeTarget - eyePos, 5.f);
+    auto entityCast = caster.entityCast(eyePos, eyeTarget - eyePos, 5.f);
+    //std::cout<<entityCast.dist<<std::endl;
+    if(blockCast.success && blockCast.dist < entityCast.dist) {
+        BlockType block = blockCast.block->type;
         if (block != BlockType::Air && block != BlockType::Water) {
             auto airBlock = Block::create_static<Air_Block>();
-            record.push(cast.blockPosition, airBlock.get());
-            world.setBlock(cast.blockPosition, move(airBlock));
+            record.push(blockCast.blockPosition, airBlock.get());
+            world.setBlock(blockCast.blockPosition, move(airBlock));
         }
+    }
+    else if(entityCast.success) {
+      //std::cout<<entityCast.position<<std::endl;
     }
   }
 }
@@ -97,7 +104,7 @@ void Character::rightClick() {
   auto& world = World::getInst();
   vec3 eyePos = headNode.model * vec4(0, 4, 4, 1);
   vec3 eyeTarget = headNode.model * vec4(0, 4, 5, 1);
-  auto cast = caster.cast(eyePos, eyeTarget - eyePos);
+  auto cast = caster.blockCast(eyePos, eyeTarget - eyePos, 5.f);
 
   if(cast.success) {
     hasBreak = true;
@@ -130,7 +137,7 @@ void Character::rightClick() {
 void Character::middleClick() {
   vec3 eyePos = headNode.model * vec4(0, 4, 0, 1);
   vec3 eyeTarget = headNode.model * vec4(0, 4, 5, 1);
-  auto cast = caster.cast(eyePos, eyeTarget - eyePos);
+  auto cast = caster.blockCast(eyePos, eyeTarget - eyePos, 5.f);
   if(cast.success) currentBlock = cast.block->type;
 }
 
