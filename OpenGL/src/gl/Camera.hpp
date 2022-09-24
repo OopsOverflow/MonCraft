@@ -27,7 +27,7 @@ public:
    * Activates the camera.
    * In a nutshell, binds its view matrix to the currently activated shader.
    */
-  void activate();
+  void activate() const;
 
   /**
    * Sets the camera width / height and updates itself accordingly.

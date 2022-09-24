@@ -62,6 +62,7 @@ void loadResources() {
     ResourceManager::loadShader("pane", "pane.vert", "pane.frag");
     ResourceManager::loadShader("shadow", "shadow.vert", "shadow.frag");
     ResourceManager::loadShader("image", "image.vert", "image.frag");
+    ResourceManager::loadShader("wireframe", "wireframe.vert", "wireframe.frag");
 
     ResourceManager::loadTexture("atlas", "Texture_atlas");
     ResourceManager::loadTexture("character", "Character");

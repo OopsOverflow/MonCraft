@@ -329,6 +329,9 @@ void MonCraftScene::draw() {
 
     // draw the entities
     drawEntities();
+    
+    // draw debug wireframe stuff
+    renderer.renderWireframe(camera);
 
     glDisable(GL_DEPTH_TEST);
     Component::draw();

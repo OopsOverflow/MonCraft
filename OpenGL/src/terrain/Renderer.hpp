@@ -27,6 +27,12 @@ public:
   * Renders the visible chunks as solid.
   */
   void renderSolid(ChunkList const& chunks);
+  
+  /**
+   * Renders the chunk borders as wireframe.
+   * (debug display)
+   */
+  void renderWireframe(Camera const& camera);
 
 private:
   

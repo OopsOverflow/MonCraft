@@ -22,7 +22,7 @@ Camera::Camera(glm::ivec2 size)
   computeProjection();
 }
 
-void Camera::activate() {
+void Camera::activate() const {
   glViewport(0, 0, size.x, size.y);
   glm::mat4 normal = glm::transpose(glm::inverse(view));
   Shader *shader = Shader::getActive();
