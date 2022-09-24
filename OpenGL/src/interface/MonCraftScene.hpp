@@ -74,6 +74,8 @@ private:
   std::shared_ptr<DebugOverlay> debugOverlay;  
   std::shared_ptr<ui::Image> middleDot;
 
+  bool debug;
+
 public:
   std::shared_ptr<GameMenu> gameMenu;
   std::shared_ptr<Overlay> overlay;

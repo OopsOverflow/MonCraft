@@ -102,6 +102,9 @@ void Renderer::renderWireframe(Camera const& camera) {
   
   for (auto const& pair : world.entities) {
     std::shared_ptr<Entity> entity = pair.second;
+    if(pair.first == 0 && entity->view == PlayerView::FIRST_PERSON)
+      continue;
+
     vec3 p1 = vec3(entity->hitbox.c1) + entity->getPosition();
     vec3 p2 = vec3(entity->hitbox.c2) + entity->getPosition();
     data.insert(data.end(), { p1.x, p1.y, p1.z, p2.x, p1.y, p1.z });
@@ -116,13 +119,6 @@ void Renderer::renderWireframe(Camera const& camera) {
     data.insert(data.end(), { p2.x, p2.y, p2.z, p2.x, p1.y, p2.z });
     data.insert(data.end(), { p2.x, p2.y, p2.z, p2.x, p2.y, p1.z });
     data.insert(data.end(), { p2.x, p2.y, p2.z, p1.x, p2.y, p2.z });
-    // for (size_t i = 0; i < 3; i++) {
-    //   size_t j = (i + 1) % 3;
-    //   size_t k = (i + 1) % 3;
-    //   data.insert(data.end(), { p1[i], p1[j], p1[k], p2[i], p1[j], p1[k] });
-    //   data.insert(data.end(), { p1[i], p1[j], p1[k], p1[i], p2[j], p1[k] });
-    //   data.insert(data.end(), { p1[i], p1[j], p1[k], p1[i], p1[j], p2[k] });
-    // }
   }
   
   glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(GLfloat), data.data(), GL_STATIC_DRAW);
@@ -142,3 +138,37 @@ void Renderer::renderWireframe(Camera const& camera) {
   glDeleteVertexArrays(1, &vao);
   glDeleteBuffers(1, &vbo);
 }
+
+void Renderer::renderPosition(Camera const& camera, glm::vec3 position) {
+  using glm::vec3;
+
+  GLuint vao;
+  GLuint vbo;
+  glGenVertexArrays(1, &vao);
+  glGenBuffers(1, &vbo);
+
+  glBindVertexArray(vao);
+  glBindBuffer(GL_ARRAY_BUFFER, vbo);
+  
+  std::vector<GLfloat> data;
+  
+  data.insert(data.end(), { position.x, position.y, position.z });
+  
+  glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(GLfloat), data.data(), GL_STATIC_DRAW);
+
+  glVertexAttribPointer(VERTEX_POSITION, 3, GL_FLOAT, GL_FALSE, 0, 0);
+  glEnableVertexAttribArray(VERTEX_POSITION);
+  
+  Shader* shader = ResourceManager::getShader("wireframe");
+  shader->activate();
+  camera.activate();
+  glm::mat4 model(1.f);
+  glUniformMatrix4fv(shader->getUniform(MATRIX_MODEL), 1, GL_FALSE, glm::value_ptr(model));
+  glPointSize(10);
+  glDrawArrays(GL_POINTS, 0, data.size() / 3);
+  
+  glBindVertexArray(0);
+  glDeleteVertexArrays(1, &vao);
+  glDeleteBuffers(1, &vbo);
+}
+

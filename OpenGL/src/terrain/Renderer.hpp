@@ -34,6 +34,12 @@ public:
    */
   void renderWireframe(Camera const& camera);
 
+  /**
+   * Renders a dot at a position in the world.
+   * (util only)
+   */
+  void renderPosition(Camera const& camera, glm::vec3 position);
+
 private:
   
   World& world;

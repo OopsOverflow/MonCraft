@@ -101,7 +101,7 @@ MonCraftScene::MonCraftScene(Viewport* vp)
       sunSpeed(0.0075f),
       lastClock(SDL_GetTicks()),
       server(createServer(Config::getClientConfig().multiplayer)),
-      playerController(nullptr)
+      playerController(nullptr), debug(false)
 {
     playerController = std::make_unique<PlayerController>(server->getPlayer());
     
@@ -167,7 +167,6 @@ MonCraftScene::MonCraftScene(Viewport* vp)
 
     add(middleDot);
     add(overlay);
-    add(debugOverlay);
 
     auto player = std::dynamic_pointer_cast<Character>(server->getPlayer());
     if(player)
@@ -210,6 +209,14 @@ void MonCraftScene::onKeyReleased(Key k) {
             }
         }
     }
+    if(k == SDLK_F3) {
+        debug = !debug;
+        if(debug)
+            add(debugOverlay);
+        else
+            remove(debugOverlay.get());
+    }
+        
 }
 
 #ifndef EMSCRIPTEN
@@ -368,7 +375,10 @@ void MonCraftScene::draw() {
     drawEntities();
     
     // draw debug wireframe stuff
-    renderer.renderWireframe(camera);
+    if(debug)
+        renderer.renderWireframe(camera);
+
+    renderer.renderPosition(camera, {0.0f, 30.0f, 10.f});
 
     glDisable(GL_DEPTH_TEST);
     Component::draw();

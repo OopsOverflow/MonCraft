@@ -26,7 +26,5 @@ public:
    */
   bool collides(glm::highp_dvec3 pos, glm::ivec3 blockPos);
 
-  void getBounds(glm::highp_dvec3& c1, glm::highp_dvec3& c2) {c1 = this->c1; c2 = this->c2;}
-
   glm::highp_dvec3 c1, c2;
 };

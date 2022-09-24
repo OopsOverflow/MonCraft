@@ -98,16 +98,15 @@ Raycast::EntityCastResult Raycast::entityCast(glm::vec3 pos, glm::vec3 direction
     sign[1] = (invDir.y < 0);
     sign[2] = (invDir.z < 0);
 
-    auto entities = World::getInst().entities.getAll();
-    for(auto entity : entities) {
-      glm::highp_dvec3 bounds[2];
-      entity->hitbox.getBounds(bounds[0], bounds[1]);
-      bounds[0] += entity->getPosition();
-      bounds[1] += entity->getPosition();
-      float tmin = ((float)bounds[sign[0]].x - pos.x) * invDir.x;
-      float tmax = ((float)bounds[1 - sign[0]].x - pos.x) * invDir.x;
-      float tymin = ((float)bounds[sign[1]].y - pos.y) * invDir.y;
-      float tymax = ((float)bounds[1 - sign[1]].y - pos.y) * invDir.y;
+    for(auto& pair : World::getInst().entities) {
+      auto entity = pair.second;
+      glm::vec3 bounds[2];
+      bounds[0] = glm::vec3(entity->hitbox.c1) + entity->getPosition();
+      bounds[1] = glm::vec3(entity->hitbox.c2) + entity->getPosition();
+      float tmin = (bounds[sign[0]].x - pos.x) * invDir.x;
+      float tmax = (bounds[1 - sign[0]].x - pos.x) * invDir.x;
+      float tymin = (bounds[sign[1]].y - pos.y) * invDir.y;
+      float tymax = (bounds[1 - sign[1]].y - pos.y) * invDir.y;
     
       if(tmin > tymax || tymin > tmax)
         continue;
@@ -116,8 +115,8 @@ Raycast::EntityCastResult Raycast::entityCast(glm::vec3 pos, glm::vec3 direction
       if(tymax < tmax)
         tmax = tymax;
 
-      float tzmin = ((float)bounds[sign[2]].z - pos.z) * invDir.z;
-      float tzmax = ((float)bounds[1 - sign[2]].z - pos.z) * invDir.z;
+      float tzmin = (bounds[sign[2]].z - pos.z) * invDir.z;
+      float tzmax = (bounds[1 - sign[2]].z - pos.z) * invDir.z;
 
       if(tmin > tzmax || tzmin > tmax)
         continue;

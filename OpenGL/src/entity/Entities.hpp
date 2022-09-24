@@ -24,8 +24,6 @@ public:
 
   std::shared_ptr<Entity> add(Identifier uid, std::unique_ptr<Entity> entity);
 
-  std::vector<std::shared_ptr<Entity>> getAll();
-
   bool remove(Identifier uid);
 
   void updateAll(uint32_t dt);
