@@ -32,7 +32,7 @@ Mesh::Mesh(std::vector<GLfloat> const& positions,
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 
-  size_t size = positions.size() / 3 * sizeof(GLfloat);
+  size_t size = vertCount * sizeof(GLfloat);
 
   glBufferData(GL_ARRAY_BUFFER, size * 11, nullptr, GL_STATIC_DRAW);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, vertCount * sizeof(GLuint), indices.data(), GL_STATIC_DRAW);
@@ -95,7 +95,7 @@ Mesh::Mesh(MeshData& data) noexcept
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 
-  size_t size = data.positions.size() / 3 * sizeof(GLfloat);
+  size_t size = vertCount * sizeof(GLfloat);
 
   glBufferData(GL_ARRAY_BUFFER, size * 11, nullptr, GL_STATIC_DRAW);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, (data.indicesSolid.size() + 2 * transpCount) * sizeof(GLuint), nullptr, GL_STATIC_DRAW);
