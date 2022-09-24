@@ -75,7 +75,6 @@ void Character::leftClick() {
     vec3 eyeTarget = headNode.model * vec4(0, 4, 5, 1);
     auto blockCast = caster.blockCast(eyePos, eyeTarget - eyePos, 5.f);
     auto entityCast = caster.entityCast(eyePos, eyeTarget - eyePos, 5.f);
-    //std::cout<<entityCast.dist<<std::endl;
     if(blockCast.success && blockCast.dist < entityCast.dist) {
         BlockType block = blockCast.block->type;
         if (block != BlockType::Air && block != BlockType::Water) {
@@ -85,7 +84,7 @@ void Character::leftClick() {
         }
     }
     else if(entityCast.success) {
-      //std::cout<<entityCast.position<<std::endl;
+      
     }
   }
 }

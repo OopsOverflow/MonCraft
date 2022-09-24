@@ -378,8 +378,6 @@ void MonCraftScene::draw() {
     if(debug)
         renderer.renderWireframe(camera);
 
-    renderer.renderPosition(camera, {0.0f, 30.0f, 10.f});
-
     glDisable(GL_DEPTH_TEST);
     Component::draw();
 }

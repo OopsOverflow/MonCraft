@@ -85,13 +85,14 @@ Raycast::BlockCastResult Raycast::blockCast(vec3 pos, vec3 direction, float maxD
 #include <iostream>
 
 Raycast::EntityCastResult Raycast::entityCast(glm::vec3 pos, glm::vec3 direction, float maxDist) const {
+  direction = normalize(direction);
   EntityCastResult res{
     false,
-    pos,
+    pos + direction * maxDist,
     nullptr,
     maxDist
   };
-
+    
     glm::vec3 invDir = 1.0f / direction;
     int sign[3];
     sign[0] = (invDir.x < 0);
@@ -123,9 +124,12 @@ Raycast::EntityCastResult Raycast::entityCast(glm::vec3 pos, glm::vec3 direction
       if(tzmin > tmin)
         tmin = tzmin;
 
-      if(abs(tmin) < res.dist) {
-        res.dist = abs(tmin);
-        res.position = pos + direction * res.dist;
+      if(tmin <= 0)
+        continue;
+
+      if(tmin < res.dist) {
+        res.dist = tmin;
+        res.position = pos + direction * tmin;
         res.entity = entity.get();
         res.success = true;
       }
