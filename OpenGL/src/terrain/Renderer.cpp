@@ -15,6 +15,7 @@
 #include "terrain/ChunkMap.hpp"
 #include "terrain/World.hpp"
 #include "gl/ResourceManager.hpp"
+#include "entity/Entity.hpp"
 
 class Chunk;
 
@@ -77,6 +78,8 @@ void Renderer::renderSolid(ChunkList const& chunks) {
 }
 
 void Renderer::renderWireframe(Camera const& camera) {
+  using glm::vec3;
+
   GLuint vao;
   GLuint vbo;
   glGenVertexArrays(1, &vao);
@@ -88,14 +91,39 @@ void Renderer::renderWireframe(Camera const& camera) {
   std::vector<GLfloat> data;
   
   world.chunks.for_each([&] (std::shared_ptr<ChunkImpl> chunk) {
-    glm::vec3 p1 = chunk->chunkPos * 16;
-    glm::vec3 p2 = (chunk->chunkPos + 1) * 16;
+    vec3 p1 = chunk->chunkPos * 16;
+    vec3 p2 = (chunk->chunkPos + 1) * 16;
     p1 -= .5f;
     p2 -= .5f;
     data.insert(data.end(), { p1.x, p1.y, p1.z, p2.x, p1.y, p1.z });
     data.insert(data.end(), { p1.x, p1.y, p1.z, p1.x, p2.y, p1.z });
     data.insert(data.end(), { p1.x, p1.y, p1.z, p1.x, p1.y, p2.z });
   });
+  
+  for (auto const& pair : world.entities) {
+    std::shared_ptr<Entity> entity = pair.second;
+    vec3 p1 = vec3(entity->hitbox.c1) + entity->getPosition();
+    vec3 p2 = vec3(entity->hitbox.c2) + entity->getPosition();
+    data.insert(data.end(), { p1.x, p1.y, p1.z, p2.x, p1.y, p1.z });
+    data.insert(data.end(), { p1.x, p1.y, p1.z, p1.x, p2.y, p1.z });
+    data.insert(data.end(), { p1.x, p1.y, p1.z, p1.x, p1.y, p2.z });
+    data.insert(data.end(), { p2.x, p1.y, p1.z, p2.x, p2.y, p1.z });
+    data.insert(data.end(), { p1.x, p2.y, p1.z, p1.x, p2.y, p2.z });
+    data.insert(data.end(), { p1.x, p1.y, p2.z, p2.x, p1.y, p2.z });
+    data.insert(data.end(), { p2.x, p1.y, p1.z, p2.x, p1.y, p2.z });
+    data.insert(data.end(), { p1.x, p2.y, p1.z, p2.x, p2.y, p1.z });
+    data.insert(data.end(), { p1.x, p1.y, p2.z, p1.x, p2.y, p2.z });
+    data.insert(data.end(), { p2.x, p2.y, p2.z, p2.x, p1.y, p2.z });
+    data.insert(data.end(), { p2.x, p2.y, p2.z, p2.x, p2.y, p1.z });
+    data.insert(data.end(), { p2.x, p2.y, p2.z, p1.x, p2.y, p2.z });
+    // for (size_t i = 0; i < 3; i++) {
+    //   size_t j = (i + 1) % 3;
+    //   size_t k = (i + 1) % 3;
+    //   data.insert(data.end(), { p1[i], p1[j], p1[k], p2[i], p1[j], p1[k] });
+    //   data.insert(data.end(), { p1[i], p1[j], p1[k], p1[i], p2[j], p1[k] });
+    //   data.insert(data.end(), { p1[i], p1[j], p1[k], p1[i], p1[j], p2[k] });
+    // }
+  }
   
   glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(GLfloat), data.data(), GL_STATIC_DRAW);
 

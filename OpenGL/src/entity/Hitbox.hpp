@@ -26,6 +26,5 @@ public:
    */
   bool collides(glm::highp_dvec3 pos, glm::ivec3 blockPos);
 
-private:
   glm::highp_dvec3 c1, c2;
 };
