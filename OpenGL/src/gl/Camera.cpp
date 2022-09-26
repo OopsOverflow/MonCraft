@@ -12,6 +12,8 @@
 
 #include "gl/Shader.hpp"
 
+#include "debug/Debug.hpp"
+
 Camera::Camera(glm::ivec2 size)
   : view(1.f), projection(1.f),
     position(0.f), rotation(glm::vec2(0, 0)),
@@ -47,13 +49,9 @@ void Camera::setRotation(const glm::vec2 &rot) {
 }
 
 void Camera::setDirection(const glm::vec3 &dir) {
-  auto v1 = normalize(glm::vec3(dir.x, 0.0f, dir.z));
-  auto v2 = glm::vec3(0.0f, 0.0f, -1.0f);
-  this->rotation.y = std::atan2(v1.x * v2.x + v1.z * v2.z, v1.x * v2.z - v1.z * v2.x); 
-  glm::vec3 v3 = glm::rotate(glm::mat4(1.0), this->rotation.y, glm::vec3(0.0f, 1.0f, 0.0f)) * glm::vec4(v1, 1.0f);
-  glm::vec3 v4 = glm::rotate(glm::mat4(1.0), this->rotation.y, glm::vec3(0.0f, 1.0f, 0.0f)) * glm::vec4(normalize(dir), 1.0f);
-  this->rotation.x = std::atan2(v3.z * v4.z + v3.y * v4.y, v3.z * v4.y - v3.y * v4.z);
-  std::cout<<this->rotation.x<<std::endl;
+  glm::vec3 d = glm::normalize(dir);
+  this->rotation.y = -atan2(d.x, d.z) + glm::pi<float>(); // yaw
+  this->rotation.x = asin(-d.y); // pitch
   computeView();
   computeProjection();
 }
@@ -136,12 +134,10 @@ Projection Camera::getProjectionType() const { return projType; }
 // ----------- private -----------
 
 void Camera::computeView() {
-  rotation.x = std::clamp(rotation.x, glm::radians(90.0f), glm::radians(-90.0f));
-  view = //glm::translate(glm::mat4(1.0), position) *
-  glm::rotate(glm::mat4(1.0), rotation.x, glm::vec3(1.0f, 0.0f, 0.0f)) *
-  //glm::rotate(glm::mat4(1.0), rotation.y, glm::vec3(0.0f, 1.0f, 0.0f)) *
-  glm::translate(glm::mat4(1.0), -position);
-  
+  view =
+    glm::rotate(glm::mat4(1.0), rotation.x, glm::vec3(1.0f, 0.0f, 0.0f)) *
+    glm::rotate(glm::mat4(1.0), rotation.y, glm::vec3(0.0f, 1.0f, 0.0f)) *
+    glm::translate(glm::mat4(1.0), -position);
 }
 
 void Camera::computeProjection(float box[6]) {
