@@ -23,7 +23,7 @@ public:
   /**
    * Creates the character at the given position.
    */
-  CharacterMesh(glm::vec3 pos);
+  CharacterMesh();
 
   virtual ~CharacterMesh();
 

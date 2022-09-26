@@ -30,4 +30,6 @@ public:
   void renderAll();
 
   size_t count();
+  
+  void save();
 };

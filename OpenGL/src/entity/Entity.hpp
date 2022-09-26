@@ -84,9 +84,9 @@ public:
 
 	virtual void updateProperties();
 
-	virtual void serialize(sf::Packet& packet);
-	virtual void read(sf::Packet& packet);
 	virtual void consume(sf::Packet& packet);
+	virtual sf::Packet& operator<<(sf::Packet& packet);
+	virtual sf::Packet& operator>>(sf::Packet& packet) const;
 
 	State state;
 

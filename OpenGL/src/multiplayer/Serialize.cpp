@@ -104,3 +104,13 @@ sf::Packet& serde::operator>>(sf::Packet &packet, ChunkImpl &chunk) {
   stream >> chunk;
   return packet;
 }
+
+sf::Packet& serde::operator<<(sf::Packet &packet, Entity const& entity) {
+  entity >> packet;
+  return packet;
+}
+
+sf::Packet& serde::operator>>(sf::Packet &packet, Entity& entity) {
+  entity << packet;
+  return packet;
+}

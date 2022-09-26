@@ -8,10 +8,10 @@
 #include "blocks/Block.hpp"
 #include "entity/Entity.hpp"
 #include "terrain/ChunkImpl.hpp"
+#include "multiplayer/Packet.hpp"
+#include "util/Identifier.hpp"
 
 class Node;
-
-enum class EntityClass{Character};
 
 class SaveManager
 {
@@ -19,9 +19,8 @@ public:
     static std::unique_ptr<ChunkImpl> loadChunk(glm::ivec3 chunkPos);
     static bool saveChunk(ChunkImpl const& chunk);
 
-    // TODO
-    // static std::unique_ptr<Entity> loadEntity(Identifier uid);
-    // static bool saveEntity(const Entity& entity);
+    static std::unique_ptr<Entity> loadEntity(Identifier uid);
+    static bool saveEntity(Entity& entity, EntityType type, Identifier uid);
 
     static std::string chunkSaveDir, entitySaveDir, configSaveDir;
 
@@ -39,8 +38,8 @@ namespace serde {
     std::ostream &operator<<(std::ostream &stream, Facing facing);
     std::istream &operator>>(std::istream &stream, Facing &facing);
 
-    std::ostream &operator<<(std::ostream &stream, EntityClass entityClass);
-    std::istream &operator>>(std::istream &stream, EntityClass &entityClass);
+    std::ostream &operator<<(std::ostream &stream, EntityType type);
+    std::istream &operator>>(std::istream &stream, EntityType &type);
 
     std::ostream &operator<<(std::ostream &stream, const Node &node);
     std::istream &operator>>(std::istream &stream, Node &node);

@@ -16,27 +16,45 @@
 #include "terrain/BlockArray.hpp"
 #include "terrain/ChunkMap.hpp"
 #include "terrain/World.hpp"
+#include "debug/Debug.hpp"
 
 using namespace glm;
 
 ClientServer::ClientServer()
   : world(World::getInst())
 {
-  auto newPlayer = std::make_unique<CharacterMesh>(Config::getServerConfig().spawnPoint);
+  auto newPlayer = SaveManager::loadEntity(0);
+  if (!newPlayer) {
+    newPlayer = std::make_unique<CharacterMesh>();
+    newPlayer->setPosition(Config::getServerConfig().spawnPoint);
+  }
+  else {
+    spdlog::debug(newPlayer->getPosition());
+  }
   auto entity = World::getInst().entities.add(getUid(), std::move(newPlayer));
-  auto entity1 = World::getInst().entities.add(1, std::make_unique<CharacterMesh>(Config::getServerConfig().spawnPoint));
   player = std::static_pointer_cast<CharacterMesh>(entity);
+
+  { // TODO: this is temporary to debug
+    auto newPlayer2 = SaveManager::loadEntity(1);
+    if (!newPlayer2) {
+      newPlayer2 = std::make_unique<CharacterMesh>();
+      newPlayer2->setPosition(Config::getServerConfig().spawnPoint);
+    }
+    World::getInst().entities.add(getUid(), std::move(newPlayer2));
+  }
+
   state = ServerState::CONNECTED;
   world.t = (uint32_t)(8.f * dayDuration / 24.f);
 }
 
 ClientServer::~ClientServer()
 {
+  world.entities.save();
   world.unload();
 }
 
 void ClientServer::ping() {
-  spdlog::info("Clientsidee server ping!");
+  spdlog::info("Clientside server ping!");
 }
 
 void ClientServer::update() {

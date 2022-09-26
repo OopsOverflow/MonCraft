@@ -19,13 +19,13 @@ public:
   /**
    * Creates the character at the given position.
    */
-  Character(glm::vec3 pos);
+  Character();
 
   virtual ~Character();	
 
   void handleAction(Action action) override;
 
-  void updateProperties();
+  void updateProperties() override;
 
   /**
    * Breaks the block in line of sight if within reach of the character.
@@ -53,8 +53,8 @@ public:
    */
   BlockType getCurrentBlock() const;
 
-  void serialize(sf::Packet& packet) override;
-	void read(sf::Packet& packet) override;
+  sf::Packet& operator<<(sf::Packet& packet) override;
+	sf::Packet& operator>>(sf::Packet& packet) const override;
 	void consume(sf::Packet& packet) override;
 
 protected:

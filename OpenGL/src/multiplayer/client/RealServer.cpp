@@ -56,7 +56,8 @@ RealServer::RealServer(std::string host, unsigned short port, bool tls)
   lastUpdate = clock.getElapsedTime() - frameDuration - frameDuration; // needs update
   lastServerUpdate = clock.getElapsedTime();
 
-  auto newPlayer = std::make_unique<CharacterMesh>(Config::getServerConfig().spawnPoint);
+  auto newPlayer = std::make_unique<CharacterMesh>();
+  newPlayer->setPosition(Config::getServerConfig().spawnPoint);
   auto entity = world.entities.add(playerUid, std::move(newPlayer));
   player = std::static_pointer_cast<CharacterMesh>(entity);
 
@@ -199,7 +200,9 @@ void RealServer::handle_entity_tick(sf::Packet& packet) {
     auto entity = world.entities.get(uid);
 
     if(entity == nullptr) { // create the player if not found
-      world.entities.add(uid, std::make_unique<CharacterMesh>(Config::getServerConfig().spawnPoint));
+      auto player = std::make_unique<CharacterMesh>();
+      player->setPosition(Config::getServerConfig().spawnPoint);
+      world.entities.add(uid, std::move(player));
       entity = world.entities.get(uid);
     }
 
@@ -207,7 +210,7 @@ void RealServer::handle_entity_tick(sf::Packet& packet) {
       entity->consume(packet);
     }
     else {
-      entity->read(packet);
+      *entity << packet;
     }
   }
 }
@@ -220,7 +223,9 @@ void RealServer::handle_player_action(sf::Packet& packet) {
   auto entity = world.entities.get(uid);
 
   if(entity == nullptr) { // create the player if not found
-    world.entities.add(uid, std::make_unique<CharacterMesh>(Config::getServerConfig().spawnPoint));
+    auto player = std::make_unique<CharacterMesh>();
+    player->setPosition(Config::getServerConfig().spawnPoint);
+    world.entities.add(uid, std::move(player));
     entity = world.entities.get(uid);
   }
 
@@ -301,8 +306,7 @@ void RealServer::packet_logout() {
 void RealServer::packet_player_tick() {
   sf::Packet packet;
   PacketHeader header(PacketType::PLAYER_TICK);
-  packet << header;
-  player->serialize(packet);
+  packet << header << *player;
 
   auto send_res = send(packet);
 

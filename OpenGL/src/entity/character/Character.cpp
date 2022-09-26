@@ -23,12 +23,11 @@
 using namespace glm;
 const float sprintMultiplier = 2;
 
-Character::Character(vec3 pos)
+Character::Character()
     : Entity(CharacterHitbox()),
       currentBlock(BlockType::Oak_Stair),
       sprint(false), dab(false)
 {
-  setPosition(pos);
   updateProperties();
 }
 
@@ -156,14 +155,16 @@ void Character::setCurrentBlock(BlockType type) {
 }
 
 
-void Character::serialize(sf::Packet& packet) {
-  Entity::serialize(packet);
+sf::Packet& Character::operator>>(sf::Packet& packet) const {
+  Entity::operator>>(packet);
   packet << dab; 
+  return packet;
 }
 
-void Character::read(sf::Packet& packet) {
-  Entity::read(packet);
+sf::Packet& Character::operator<<(sf::Packet& packet) {
+  Entity::operator<<(packet);
   packet >> dab;
+  return packet;
 }
 
 void Character::consume(sf::Packet& packet) {

@@ -9,6 +9,7 @@
 
 #include "blocks/AllBlocks.hpp"
 #include "entity/Node.hpp"
+#include "entity/EntityImpl.hpp"
 #include "terrain/ChunkImpl.hpp"
 #include "util/Serde.hpp"
 #include "util/zstr.hpp"
@@ -57,15 +58,15 @@ std::istream& serde::operator>>(std::istream &stream, Facing &facing) {
   return stream;
 }
 
-std::ostream& serde::operator<<(std::ostream &stream, EntityClass entityClass) {
-  Binary temp((uint8_t)entityClass);
+std::ostream& serde::operator<<(std::ostream &stream, EntityType type) {
+  Binary temp((uint8_t)type);
   stream << temp;
   return stream;
 }
-std::istream& serde::operator>>(std::istream &stream, EntityClass &entityClass) {
+std::istream& serde::operator>>(std::istream &stream, EntityType &type) {
   Binary<uint8_t> temp;
   stream >> temp;
-  entityClass = (EntityClass)temp.val;
+  type = (EntityType)temp.val;
   return stream;
 }
 
@@ -170,3 +171,58 @@ bool SaveManager::saveChunk(ChunkImpl const &chunk) {
   openedFile.close();
   return true;
 }
+
+
+std::unique_ptr<Entity> SaveManager::loadEntity(Identifier uid) {
+  using namespace serde;
+  std::string file = entitySaveDir + "/entity_" + std::to_string(uid) + ".entity";
+
+  zstr::ifstream openedFile(file, std::fstream::binary);
+  if (!openedFile.is_open())
+    return nullptr;
+
+  EntityType type;
+  openedFile >> type;
+  
+  std::unique_ptr<Entity> entity;
+  
+  switch (type) {
+    case EntityType::Character:
+      entity = std::unique_ptr<Entity>(new CharacterImpl());
+      break;
+    default:
+      spdlog::error("Unknown entity type: {}", (size_t)type);
+  }
+  
+  // COMBAK: please get rid of sfml network
+  std::vector<uint8_t> contents((std::istreambuf_iterator<char>(openedFile)), std::istreambuf_iterator<char>());
+  sf::Packet packet;
+  packet.append(contents.data(), contents.size());
+
+  packet >> *entity;
+
+  openedFile.close();
+  return entity;
+}
+
+
+bool SaveManager::saveEntity(Entity& entity, EntityType type, Identifier uid) {
+  using namespace serde;
+  std::filesystem::create_directories(entitySaveDir);
+  std::string file = entitySaveDir + "/entity_" + std::to_string(uid) + ".entity";
+
+  zstr::ofstream openedFile(file, std::fstream::trunc | std::fstream::binary);
+  if (!openedFile) {
+    spdlog::warn("Failed to open entity file: ''", file);
+    return false;
+  }
+  
+  sf::Packet packet;
+  packet << entity;
+  openedFile << type;
+  openedFile.write((char*)packet.getData(), packet.getDataSize());
+  return true;
+}
+
+
+

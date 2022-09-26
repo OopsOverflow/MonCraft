@@ -5,6 +5,7 @@
 #include <iosfwd>
 #include <type_traits>
 
+#include "entity/Entity.hpp"
 #include "multiplayer/Packet.hpp"
 #include "terrain/ChunkImpl.hpp"
 
@@ -24,6 +25,9 @@ namespace serde {
 
   sf::Packet& operator<<(sf::Packet &packet, ChunkImpl const& chunk);
   sf::Packet& operator>>(sf::Packet &packet, ChunkImpl& chunk);
+
+  sf::Packet& operator<<(sf::Packet &packet, Entity const& chunk);
+  sf::Packet& operator>>(sf::Packet &packet, Entity& chunk);
 
   template <typename T, typename = void>
   struct is_valid_cont : std::false_type {};

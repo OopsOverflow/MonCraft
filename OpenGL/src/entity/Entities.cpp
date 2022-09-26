@@ -5,6 +5,7 @@
 #include <utility>
 
 #include "entity/Entity.hpp"
+#include "save/SaveManager.hpp"
 
 Entities::Entities()
 {}
@@ -45,4 +46,13 @@ void Entities::renderAll() {
 
 size_t Entities::count() {
   return size();
+}
+
+
+void Entities::save() {
+    spdlog::debug("Saving {} entities...", count());
+  for(auto& pair: *this) {
+    // TODO: not all entities are characters!
+    SaveManager::saveEntity(*pair.second, EntityType::Character, pair.first);
+  }
 }

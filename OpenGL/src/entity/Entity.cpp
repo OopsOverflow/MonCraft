@@ -171,7 +171,7 @@ BlockArray& Entity::getRecord() {
 
 using namespace serde;
 
-void Entity::serialize(sf::Packet& packet) {
+sf::Packet& Entity::operator>>(sf::Packet& packet) const {
 	packet << bodyNode.loc;
 	packet << bodyNode.rot;
 	packet << headNode.rot;
@@ -180,9 +180,12 @@ void Entity::serialize(sf::Packet& packet) {
 	packet << direction;
 	packet << god;
 	packet << (sf::Uint8)state;
+	return packet;
 }
 
-void Entity::read(sf::Packet& packet) {
+#include "debug/Debug.hpp"
+
+sf::Packet& Entity::operator<<(sf::Packet& packet) {
 	sf::Uint8 state;
 	packet >> bodyNode.loc;
 	packet >> bodyNode.rot;
@@ -193,6 +196,8 @@ void Entity::read(sf::Packet& packet) {
 	packet >> god;
 	packet >> state;
 	this->state = (State)state;
+	spdlog::debug(bodyNode.loc);
+	return packet;
 }
 
 void Entity::consume(sf::Packet& packet) {
