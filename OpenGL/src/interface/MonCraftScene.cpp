@@ -318,6 +318,7 @@ void MonCraftScene::draw() {
       musicPlayer.update();
     #endif
 
+    // TODO
     auto player = std::dynamic_pointer_cast<Character>(server->getPlayer());
     if(player && overlay->select((int)(player->getCurrentBlock()) + vp->getMouseScrollDiff()))
         player->setCurrentBlock(overlay->getCurrentBlock());

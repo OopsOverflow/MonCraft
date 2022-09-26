@@ -1,6 +1,7 @@
 #include "PlayerController.hpp"
 
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include "save/ClientConfig.hpp"
 #include <SDL2/SDL.h>
 
@@ -107,11 +108,17 @@ void PlayerController::update() {
         entity->updateProperties();
         toggleGod = false;
     }
+
+    float compY = direction.y;
+    auto rotMatrix = glm::rotate(glm::highp_dmat4(1.0), entity->bodyNode.rot.y + entity->headNode.rot.y, {0, 1, 0});
+    auto dir = glm::vec3(rotMatrix * glm::vec4(direction, 1.f));
+    dir.y = compY;
+
     if(entity->god) {
-        entity->walk(direction);
+        entity->walk(dir);
     }
     else {
-        entity->walk({direction.x, 0, direction.z});
+        entity->walk({dir.x, 0, dir.z});
         if(direction.y > 0) entity->jump();
     }
 }

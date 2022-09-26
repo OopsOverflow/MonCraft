@@ -23,7 +23,7 @@ using namespace glm;
 ClientServer::ClientServer()
   : world(World::getInst())
 {
-  auto newPlayer = SaveManager::loadEntity(0);
+  auto newPlayer = SaveManager::loadEntity(getUid());
   if (!newPlayer) {
     newPlayer = std::make_unique<CharacterMesh>();
     newPlayer->setPosition(Config::getServerConfig().spawnPoint);

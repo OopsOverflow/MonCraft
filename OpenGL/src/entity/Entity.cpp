@@ -75,7 +75,8 @@ void Entity::turn(vec2 rot) {
 	bodyNode.rot.y += rot.y - headDelta;
 }
 
-void Entity::update(uint32_t dt) {
+void Entity::update(uint32_t dt_) {
+	float dt = dt_ * 1E-3f;
 
 	// update forces
 	highp_dvec3 posOffset;
@@ -91,7 +92,7 @@ void Entity::update(uint32_t dt) {
 			dragXZ -= normalize(accXZ) * max(dot(dragXZ, normalize(accXZ)), 0.f); // substract component in accel direction from drag
 
 		// update speed
-		speed = speed + acc * (dt * 0.001f) - vec3(dragXZ.x, dragY, dragXZ.y) * (dt * 0.001f);
+		speed = speed + acc * dt - vec3(dragXZ.x, dragY, dragXZ.y) * dt;
 		vec2 speedXZ = vec2(speed.x, speed.z);
 		if(length(speedXZ) >= properties.maxSpeed) {
 			speedXZ = normalize(speedXZ) * properties.maxSpeed;
@@ -100,8 +101,7 @@ void Entity::update(uint32_t dt) {
 		speed.y = max(speed.y, -properties.maxFallSpeed);
 
 		// apply motion
-		auto rotMatrix = rotate(I, bodyNode.rot.y + headNode.rot.y, {0, 1, 0});
-		posOffset = vec3(rotMatrix * vec4(speed * (dt * 0.001f), 1.f));
+		posOffset = speed * dt;
 	}
 
 	// check collisions
@@ -126,8 +126,7 @@ void Entity::update(uint32_t dt) {
 
 		// cancel speed in collision direction
 		if(length(finalOffset) > 0.001) {
-			auto rotMatrix = rotate(I, -bodyNode.rot.y - headNode.rot.y, {0, 1, 0});
-			vec3 worldOffDir = normalize(vec3(rotMatrix * highp_dvec4(finalOffset, 1.0)));
+			vec3 worldOffDir = normalize(finalOffset);
 			speed -= worldOffDir * dot(speed, worldOffDir); // substract component in collision direction from speed
 		}
 	}

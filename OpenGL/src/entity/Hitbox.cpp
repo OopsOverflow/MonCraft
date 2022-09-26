@@ -78,3 +78,12 @@ bool Hitbox::collides(highp_dvec3 pos, ivec3 blockPos) {
 
   return all(greaterThanEqual(blockPos, min)) && all(lessThanEqual(blockPos, max));
 }
+
+bool Hitbox::collides(glm::highp_dvec3 p1, glm::highp_dvec3 p2, Hitbox const& o) {
+  auto a1 = p1 + c1;
+  auto a2 = p1 + c2;
+  auto b1 = p2 + o.c1;
+  auto b2 = p2 + o.c2;
+  
+  return all(lessThan(a1, b2)) && all(lessThan(b1, a2));
+}

@@ -22,9 +22,14 @@ public:
   glm::highp_dvec3 computeCollision(glm::highp_dvec3 pos, glm::highp_dvec3 displ);
 
   /**
-   * Checks if the hitbox collides with slid blocks.
+   * Checks if the hitbox collides with a block.
    */
   bool collides(glm::highp_dvec3 pos, glm::ivec3 blockPos);
+
+  /**
+   * Checks if the hitbox collides with another hitbox.
+   */
+  bool collides(glm::highp_dvec3 p1, glm::highp_dvec3 p2, Hitbox const& o);
 
   glm::highp_dvec3 c1, c2;
 };
