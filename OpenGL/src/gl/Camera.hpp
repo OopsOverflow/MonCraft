@@ -46,9 +46,14 @@ public:
   void setPosition(const glm::vec3 &position);
 
   /**
-   * Sets the camera lookat and updates itself accordingly.
+   * Sets the camera rotation and updates itself accordingly.
    */
-  void setLookAt(const glm::vec3 &pos, const glm::vec3 &center);
+  void setRotation(const glm::vec2 &rot);
+
+  /**
+   * Sets the camera direction and updates itself accordingly.
+   */
+  void setDirection(const glm::vec3 &dir);
 
   /**
    * Translate the camera by an amount in world space.
@@ -57,23 +62,11 @@ public:
   void translate(const glm::vec3 &direction, bool localSpace = false);
 
   /**
-   * Translate the camera by an amount given in pixels unit.
-   */
-  void translatePixels(int x, int y);
-
-  /**
-   * Rotate the camera along the 3 axes in local space or world space.
+   * Rotate the camera along the 2 axes .
    * The vector rotation gives the rotaton amount around its corresponding
    * axis, in degrees.
    */
-  void rotate(const glm::vec3 &rotation, bool localSpace = false);
-
-  /**
-   * Rotates the camera along the by an amount given in pixels unit.
-   * Can rotate in global space or camera space.
-   */
-  void rotatePixels(int x, int y, bool localSpace = false);
-  // void setRotation(const glm::vec3 &rotation);
+  void rotate(const glm::vec2 &rotation);
 
   /**
    * Sets the vertical fov and updates itself accordingly.
@@ -134,7 +127,7 @@ public:
   glm::mat4 view;
   glm::mat4 projection;
   glm::vec3 position;
-  glm::vec3 center;
+  glm::vec2 rotation;
 
 protected:
   float near_;

@@ -71,7 +71,8 @@ void cameraToHead(Camera& camera, Entity& entity) {
       eyeTarget = entity.headNode.model * vec4(0, 4, 0, 1);
     }
     
-    camera.setLookAt(eyeTarget, eyePos);
+    camera.setPosition(eyeTarget);
+    camera.setDirection(eyePos - eyeTarget);
     auto tmp = camera.getBoxCorners();
     
     float min = 4.f;
@@ -84,9 +85,10 @@ void cameraToHead(Camera& camera, Entity& entity) {
       eyePos = eyeTarget + min * normalize(eyeTarget - eyePos);
     else
       eyePos = eyeTarget + 0.5f * normalize(eyeTarget - eyePos);
-  } 
+    } 
 
-  camera.setLookAt(eyePos, eyeTarget);
+    camera.setPosition(eyePos);
+    camera.setDirection(eyeTarget - eyePos);
 }
 
 MonCraftScene::MonCraftScene(Viewport* vp)

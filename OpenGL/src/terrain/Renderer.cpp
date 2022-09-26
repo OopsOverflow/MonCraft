@@ -62,7 +62,7 @@ void Renderer::render(Camera const& camera, ChunkList const& chunks) {
   flags = (flags & 0b1101) | 0b0010;
   glUniform1i(shader->getUniform("flags"), flags);
 
-  auto viewDir = camera.center - camera.position;
+  glm::vec3 viewDir = camera.view * glm::vec4(0.0f, 0.0f, -1.0f, 0.0f);
   for(auto& pair : chunks) {
     pair.second->drawTransparent(viewDir);
   }

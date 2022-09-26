@@ -40,7 +40,7 @@ ClientServer::ClientServer()
       newPlayer2 = std::make_unique<CharacterMesh>();
       newPlayer2->setPosition(Config::getServerConfig().spawnPoint);
     }
-    World::getInst().entities.add(getUid(), std::move(newPlayer2));
+    World::getInst().entities.add(1, std::move(newPlayer2));
   }
 
   state = ServerState::CONNECTED;

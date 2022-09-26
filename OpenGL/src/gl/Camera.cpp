@@ -14,7 +14,7 @@
 
 Camera::Camera(glm::ivec2 size)
   : view(1.f), projection(1.f),
-    position(0.f), center(position + glm::vec3(0, 0, -1)),
+    position(0.f), rotation(glm::vec2(0, 0)),
     near_(0.1f), far_(1000.f), fovY(75.f),
     size(size), projType(Projection::PROJECTION_PERSPECTIVE)
 {
@@ -30,8 +30,6 @@ void Camera::activate() const {
     glUniformMatrix4fv(shader->getUniform(MATRIX_VIEW), 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(shader->getUniform(MATRIX_NORMAL), 1, GL_FALSE, glm::value_ptr(normal));
     glUniformMatrix4fv(shader->getUniform(MATRIX_PROJECTION), 1, GL_FALSE, glm::value_ptr(projection));
-    glm::vec3 c = view * glm::vec4(center, 1.f);
-    glUniform3f(CAMERA_CENTER, c.x, c.y, c.z);
   } else {
     spdlog::error("Camera activated but no shader bound.");
   }
@@ -42,9 +40,20 @@ void Camera::setPosition(const glm::vec3 &newPos) {
   position = newPos;
 }
 
-void Camera::setLookAt(const glm::vec3 &position, const glm::vec3 &center) {
-  this->position = position;
-  this->center = center;
+void Camera::setRotation(const glm::vec2 &rot) {
+  this->rotation = rot;
+  computeView();
+  computeProjection();
+}
+
+void Camera::setDirection(const glm::vec3 &dir) {
+  auto v1 = normalize(glm::vec3(dir.x, 0.0f, dir.z));
+  auto v2 = glm::vec3(0.0f, 0.0f, -1.0f);
+  this->rotation.y = std::atan2(v1.x * v2.x + v1.z * v2.z, v1.x * v2.z - v1.z * v2.x); 
+  glm::vec3 v3 = glm::rotate(glm::mat4(1.0), this->rotation.y, glm::vec3(0.0f, 1.0f, 0.0f)) * glm::vec4(v1, 1.0f);
+  glm::vec3 v4 = glm::rotate(glm::mat4(1.0), this->rotation.y, glm::vec3(0.0f, 1.0f, 0.0f)) * glm::vec4(normalize(dir), 1.0f);
+  this->rotation.x = std::atan2(v3.z * v4.z + v3.y * v4.y, v3.z * v4.y - v3.y * v4.z);
+  std::cout<<this->rotation.x<<std::endl;
   computeView();
   computeProjection();
 }
@@ -55,30 +64,18 @@ void Camera::translate(const glm::vec3 &translation, bool localSpace) {
 
   if (localSpace) {
     position = glm::inverse(view) * trans * view * glm::vec4(position, 1.f);
-    center = glm::inverse(view) * trans * view * glm::vec4(center, 1.f);
     view = invTrans * view;
   }
   else {
     view = view * invTrans;
     position += translation;
-    center += translation;
   }
 }
 
-void Camera::rotate(const glm::vec3 &rotation, bool localSpace) {
-  glm::mat4 rot = glm::mat4_cast(glm::quat(rotation));;
-
-  if (localSpace) {
-    center = glm::inverse(view) * rot * view * glm::vec4(center, 1.f);
-    view = glm::inverse(rot) * view;
-  } else {
-    glm::mat4 trans = glm::translate(glm::mat4(1.f), center);
-    position = trans * rot * glm::inverse(trans) * glm::vec4(position, 1.f);
-    view = view * glm::inverse(trans) * glm::inverse(rot) * trans;
-  }
-
-  // rotation can accumulate imperfections - better to recalculate.
+void Camera::rotate(const glm::vec2 &rotation) {
+  this->rotation += rotation;
   computeView();
+
 }
 
 void Camera::setSize(glm::ivec2 size) {
@@ -94,43 +91,6 @@ void Camera::setProjectionType(Projection projType) {
 void Camera::setProjectionType(Projection projType, float box[6]) {
   this->projType = projType;
   computeProjection(box);
-}
-
-void Camera::translatePixels(int x, int y) {
-  glm::vec3 translation((float)x, (float)-y, 0.f);
-
-  float aspect = (float)size.x / (float)size.y;
-  float localHeight =
-      2.f * glm::length(center - position) * tan(glm::radians(fovY / 2.f));
-  float localWidth = localHeight * aspect;
-
-  translation.x *= localWidth / (float)size.x;
-  translation.y *= localHeight / (float)size.y;
-
-  translate(translation, true);
-}
-
-void Camera::rotatePixels(int x, int y, bool localSpace) {
-  // in the turnTable rotation style we rotate around y axis in global space
-  // and around x axis in local space.
-
-  float rotX, rotY;
-
-  // can rotate by maxRotation degrees around x axis while translating from 0
-  // to size.x (resp. y axis & size.y).
-  float maxRotation = 360.f;
-
-  rotY = x * maxRotation / (float)size.x;
-  rotX = y * maxRotation / (float)size.y;
-
-  if(localSpace) {
-    rotate({rotX, rotY, 0.f}, localSpace);
-  } else {
-    rotate({0.f, rotY, 0.f});
-    // rotAxis should be normalized already (translations and rotations)
-    glm::vec3 rotAxis = glm::inverse(view) * glm::vec4(1.f, 0.f, 0.f, 0.f);
-    rotate(rotX * rotAxis);
-  }
 }
 
 void Camera::setFovY(float fovY) {
@@ -176,12 +136,12 @@ Projection Camera::getProjectionType() const { return projType; }
 // ----------- private -----------
 
 void Camera::computeView() {
-  glm::vec3 up(0.f, 1.f, 0.f);
-  glm::vec3 cameraUp = view * glm::vec4(up, 0.0);
-  if (glm::dot(up, cameraUp) < 0) {
-    up = -up;
-  }
-  view = glm::lookAt(position, center, up);
+  rotation.x = std::clamp(rotation.x, glm::radians(90.0f), glm::radians(-90.0f));
+  view = //glm::translate(glm::mat4(1.0), position) *
+  glm::rotate(glm::mat4(1.0), rotation.x, glm::vec3(1.0f, 0.0f, 0.0f)) *
+  //glm::rotate(glm::mat4(1.0), rotation.y, glm::vec3(0.0f, 1.0f, 0.0f)) *
+  glm::translate(glm::mat4(1.0), -position);
+  
 }
 
 void Camera::computeProjection(float box[6]) {
@@ -191,8 +151,8 @@ void Camera::computeProjection(float box[6]) {
     // kind of perspective division... To switch between persp & ortho.
     tanFovY = tan(glm::radians(getFovY()) * 0.5f);
     tanFovX = tan(glm::radians(getFovX()) * 0.5f);
-    float y = glm::length(center - position) * tanFovY;
-    float x = y * aspect;
+    float y = size.y * 0.5f;
+    float x = size.x * 0.5f;
     projection = glm::ortho(-x, x, -y, y, 0.f, 1000.f);
   }
 
@@ -261,9 +221,8 @@ std::vector<glm::vec3> Camera::getBoxCorners(Frustum frustum) const {
         x2 = z2 * tanFovX;
     }
     else if(projType == Projection::PROJECTION_ORTHOGRAPHIC) {
-        float aspect = (float)size.x / (float)size.y;
-        float y = glm::length(center - position) * tanFovY;
-        float x = y * aspect;
+        float y = size.y * 0.5f;
+        float x = size.x * 0.5f;
 
         z1 = 0.0f;
         z2 = 1000.0f;
@@ -327,9 +286,8 @@ bool Camera::chunkInView(glm::vec3 posCamSpace, float tolerance) const {
     }
     else {
       bool inFrustum = true;
-      float aspect = (float)size.x / (float)size.y;
-      float y = glm::length(center - position) * tanFovY;
-      float x = y * aspect;
+      float y = size.y * 0.5f;
+      float x = size.x * 0.5f;
 
       inFrustum &= posCamSpace.x - tolerance < -x;
       inFrustum &= posCamSpace.x + tolerance > x;

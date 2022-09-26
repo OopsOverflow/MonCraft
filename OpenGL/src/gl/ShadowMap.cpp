@@ -44,7 +44,8 @@ ShadowMap::ShadowMap(int size)
 }
 
 void ShadowMap::update(vec3 sunDir) {
-  camera.setLookAt(vec3(0), sunDir);
+  camera.setPosition(vec3(0));
+  camera.setDirection(sunDir);
 }
 
 float linearizeDepth(float depth) { // https://learnopengl.com/Advanced-OpenGL/Depth-testing
