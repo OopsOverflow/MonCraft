@@ -172,3 +172,14 @@ void Character::consume(sf::Packet& packet) {
   decltype(dab) dab;
   packet >> dab;
 }
+
+
+// std::ostream& Character::operator>>(std::ostream &stream) const {
+//   Entity::operator>>(stream);
+//   return stream;
+// }
+
+// std::istream& Character::operator<<(std::istream &stream) {
+//   Entity::operator<<(stream);
+//   return stream;
+// }

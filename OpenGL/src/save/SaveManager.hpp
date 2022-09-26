@@ -44,9 +44,6 @@ namespace serde {
     std::ostream &operator<<(std::ostream &stream, const Node &node);
     std::istream &operator>>(std::istream &stream, Node &node);
 
-    std::ostream &operator<<(std::ostream &stream, const Entity &entity);
-    std::istream &operator>>(std::istream &stream, Entity &entity);
-
     std::ostream &operator<<(std::ostream &stream, BlockType type);
     std::istream &operator>>(std::istream &stream, BlockType &type);
 

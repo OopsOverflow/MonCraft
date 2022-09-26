@@ -9,6 +9,7 @@
 
 #include "entity/Hitbox.hpp"
 #include "entity/Node.hpp"
+#include "util/Serde.hpp"
 
 using namespace glm;
 static const highp_dmat4 I(1.0);
@@ -196,7 +197,6 @@ sf::Packet& Entity::operator<<(sf::Packet& packet) {
 	packet >> god;
 	packet >> state;
 	this->state = (State)state;
-	spdlog::debug(bodyNode.loc);
 	return packet;
 }
 
@@ -217,4 +217,37 @@ void Entity::consume(sf::Packet& packet) {
 	packet >> direction;
 	packet >> god;
 	packet >> state;
+}
+
+std::istream& Entity::operator<<(std::istream &stream) {
+	Binary<glm::highp_dvec3> loc;
+	Binary<glm::highp_dvec3> bRot;
+	Binary<glm::highp_dvec3> hRot;
+	Binary<uint8_t> god;
+	Binary<uint8_t> view;
+	stream >> loc;
+	stream >> bRot;
+	stream >> hRot;
+	stream >> god;
+	stream >> view;
+	bodyNode.loc = loc.val;
+	bodyNode.rot = bRot.val;
+	headNode.rot = hRot.val;
+	this->god = god.val;
+	this->view = (PlayerView)view.val;
+	return stream;
+}
+
+std::ostream& Entity::operator>>(std::ostream &stream) const {
+	Binary loc(bodyNode.loc);
+	Binary bRot(bodyNode.rot);
+	Binary hRot(headNode.rot);
+	Binary god((uint8_t)this->god);
+	Binary view((uint8_t)this->view);
+	stream << loc;
+	stream << bRot;
+	stream << hRot;
+	stream << god;
+	stream << view;
+	return stream;
 }

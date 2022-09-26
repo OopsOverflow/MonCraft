@@ -25,6 +25,7 @@ std::ostream& serde::operator<<(std::ostream &stream, const glm::vec3 &vec) {
   stream << x << y << z;
   return stream;
 }
+
 std::istream& serde::operator>>(std::istream &stream, glm::vec3 &vec) {
   Binary<float> x, y, z;
   stream >> x >> y >> z;
@@ -81,16 +82,6 @@ std::istream& serde::operator>>(std::istream &stream, Node &node) {
   node.loc = loc;
   node.rot = rot;
   node.sca = sca;
-  return stream;
-}
-
-std::ostream& serde::operator<<(std::ostream &stream, const Entity &entity) {
-  stream << entity.bodyNode << entity.headNode << entity.state;
-  return stream;
-}
-std::istream& serde::operator>>(std::istream &stream, Entity &entity) {
-  Node head, node;
-  stream >> entity.bodyNode >> entity.headNode >> entity.state;
   return stream;
 }
 
@@ -193,13 +184,8 @@ std::unique_ptr<Entity> SaveManager::loadEntity(Identifier uid) {
     default:
       spdlog::error("Unknown entity type: {}", (size_t)type);
   }
-  
-  // COMBAK: please get rid of sfml network
-  std::vector<uint8_t> contents((std::istreambuf_iterator<char>(openedFile)), std::istreambuf_iterator<char>());
-  sf::Packet packet;
-  packet.append(contents.data(), contents.size());
 
-  packet >> *entity;
+  *entity << openedFile;
 
   openedFile.close();
   return entity;
@@ -217,10 +203,11 @@ bool SaveManager::saveEntity(Entity& entity, EntityType type, Identifier uid) {
     return false;
   }
   
-  sf::Packet packet;
-  packet << entity;
   openedFile << type;
-  openedFile.write((char*)packet.getData(), packet.getDataSize());
+  entity >> openedFile;
+
+  openedFile.close();
+
   return true;
 }
 

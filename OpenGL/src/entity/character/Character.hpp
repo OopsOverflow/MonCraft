@@ -55,6 +55,10 @@ public:
 
   sf::Packet& operator<<(sf::Packet& packet) override;
 	sf::Packet& operator>>(sf::Packet& packet) const override;
+
+  // std::istream& operator<<(std::istream &stream) override;
+	// std::ostream& operator>>(std::ostream &stream) const override;
+
 	void consume(sf::Packet& packet) override;
 
 protected:

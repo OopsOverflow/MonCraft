@@ -88,6 +88,9 @@ public:
 	virtual sf::Packet& operator<<(sf::Packet& packet);
 	virtual sf::Packet& operator>>(sf::Packet& packet) const;
 
+	virtual std::istream& operator<<(std::istream &stream);
+	virtual std::ostream& operator>>(std::ostream &stream) const;
+
 	State state;
 
 	Node bodyNode;
