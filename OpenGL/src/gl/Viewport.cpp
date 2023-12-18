@@ -1,5 +1,6 @@
 #include "Viewport.hpp"
 #include <spdlog/spdlog.h>
+#include <fmt/std.h>
 
 // send a esc keypress on pointerlock leave.
 #ifdef EMSCRIPTEN
@@ -106,14 +107,18 @@ Viewport::Viewport(glm::ivec2 size)
   context = SDL_GL_CreateContext(window);
 
   // Initialize GLEW
-  if (glewInit() != GLEW_OK)
+  auto glewRes = glewInit();
+  if (glewRes != GLEW_OK && glewRes != GLEW_ERROR_NO_GLX_DISPLAY) {
+    spdlog::error("glew init failed: {}", (char*)glewGetString(GLEW_VERSION));
+    spdlog::error("glew init failed: {}, {}", (char*)glewGetErrorString(glewRes), glewRes);
     throw std::runtime_error("GLEW init failed");
+  }
 
   spdlog::info("---------");
-  spdlog::info("OpenGL  : {}", glGetString(GL_VERSION));
-  spdlog::info("GLSL    : {}", glGetString(GL_SHADING_LANGUAGE_VERSION));
-  spdlog::info("Vendor  : {}", glGetString(GL_VENDOR));
-  spdlog::info("Renderer: {}", glGetString(GL_RENDERER));
+  spdlog::info("OpenGL  : {}", (char*)glGetString(GL_VERSION));
+  spdlog::info("GLSL    : {}", (char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
+  spdlog::info("Vendor  : {}", (char*)glGetString(GL_VENDOR));
+  spdlog::info("Renderer: {}", (char*)glGetString(GL_RENDERER));
   spdlog::info("---------");
 }
 

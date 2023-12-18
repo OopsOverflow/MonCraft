@@ -4,9 +4,12 @@
 #include <chrono>
 #include <iomanip>
 #include <iostream>
+#include <rtc/configuration.hpp>
 #include <sstream>
 #include <spdlog/spdlog.h>
 #include <spdlog/fmt/ostr.h>
+#include <fmt/ostream.h>
+#include <fmt/std.h>
 
 class DebugTimer {
 
@@ -69,3 +72,20 @@ namespace glm {
   }
 }
 
+template<typename T, glm::length_t N>
+struct fmt::formatter<glm::vec<N, T>> : fmt::ostream_formatter {};
+
+template<typename T>
+struct fmt::formatter<glm::tmat4x4<T>> : fmt::ostream_formatter {};
+
+
+#include <rtc/rtc.hpp>
+
+template<>
+struct fmt::formatter<rtc::Configuration> : fmt::ostream_formatter {};
+
+template<>
+struct fmt::formatter<rtc::Description> : fmt::ostream_formatter {};
+
+template<>
+struct fmt::formatter<rtc::Candidate> : fmt::ostream_formatter {};

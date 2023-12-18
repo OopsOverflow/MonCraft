@@ -13,6 +13,7 @@
 #include <stdexcept>
 #include <utility>
 
+#include "debug/Debug.hpp"
 #include "entity/Entities.hpp"
 #include "entity/Entity.hpp"
 #include "entity/character/Character.hpp"
