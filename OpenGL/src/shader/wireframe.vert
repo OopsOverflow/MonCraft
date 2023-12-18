@@ -1,5 +1,4 @@
-
-#version 430 core
+#version 300 es
 
 in vec3 v_position;
 
@@ -14,8 +13,8 @@ void main() {
   vec4 vertPos4 = m_view * m_model * vec4(v_position, 1.0);
   gl_Position = m_projection * vertPos4;
   
-  const float maxDist = 64;
-  float alpha = 1 - length(vertPos4.xyz) / maxDist;
-  vertexColor = vec4(1.0, 1.0, 0.0, max(alpha, 0));
+  const float maxDist = 64.0;
+  float alpha = 1.0 - length(vertPos4.xyz) / maxDist;
+  vertexColor = vec4(1.0, 1.0, 0.0, max(alpha, 0.0));
 }
 
