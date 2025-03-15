@@ -16,15 +16,17 @@
 
 
 <p align=center>
-Sandbox game developed using C++ 14 &amp; OpenGL 3.3 🕹
+Sandbox game developed using C++ 14 &amp; OpenGL 3.3 ⚙️
 </p>
 <p align=center>
 Why Buy Minecraft When You Can Code it Yourself? 💹
 </p>
+<p align=center>
+  <strong>🕹️ <a href="https://moncraft.thissma.fr" target="_blank">Try it online!</a> 🕹️</strong>
+</p>
 
 ***
 
-🕹️ ***Try it online! <https://moncraft.thissma.fr>***
 
 ## Compiling
 ***Supports Windows and Linux. (Should work on MacOS but not tested)***
