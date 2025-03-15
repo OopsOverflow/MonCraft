@@ -24,7 +24,7 @@ Why Buy Minecraft When You Can Code it Yourself? 💹
 
 ***
 
-*Try it online! <https://moncraft.thissma.fr>*
+🕹️ ***Try it online! <https://moncraft.thissma.fr>***
 
 ## Compiling
 ***Supports Windows and Linux. (Should work on MacOS but not tested)***
