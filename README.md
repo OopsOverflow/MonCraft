@@ -281,11 +281,11 @@ We only calculate specular light on water blocks, so in order to differentiate i
 # The Team Behid MonCraft
 
 
-|    Name            |GitHub|Email|
-|----------------|-------------------------------|-----------------------------|
-|Brossier Mathis|@k2d222            | mathis.brossier@universite-paris-saclay.fr     |
-|Mahmoud Houssem|@OopsOverflow            |houssemmahmoudswe@gmail.com            |
-|Surer Pierre|@PignoulMarcel|pierre.surer@universite-paris-saclay.fr			|
+| Name            | GitHub                                           | Email                       |
+|-----------------|--------------------------------------------------|-----------------------------|
+| Mathis Brossier | [@k2d222](https://github.com/k2d222)             | mathis.brossier@gmail.com   |
+| Houssem Mahmoud | [@OopsOverflow](https://github.com/OopsOverflow) | houssemmahmoudswe@gmail.com |
+| Pierre Surer    | [@PierreSurer](https://github.com/PierreSurer)   | pierre.surer44@gmail.com    |
 
 
 # Refrences
