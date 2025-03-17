@@ -16,13 +16,17 @@
 
 
 <p align=center>
-Sandbox game developed using C++ 14 &amp; OpenGL 3.3 🕹
+Sandbox game developed using C++ 14 &amp; OpenGL 3.3 ⚙️
 </p>
 <p align=center>
 Why Buy Minecraft When You Can Code it Yourself? 💹
 </p>
+<p align=center>
+  <strong>🕹️ <a href="https://moncraft.thissma.fr" target="_blank">Try it online!</a> 🕹️</strong>
+</p>
 
 ***
+
 
 ## Compiling
 ***Supports Windows and Linux. (Should work on MacOS but not tested)***
@@ -281,11 +285,11 @@ We only calculate specular light on water blocks, so in order to differentiate i
 # The Team Behid MonCraft
 
 
-|    Name            |GitHub|Email|
-|----------------|-------------------------------|-----------------------------|
-|Brossier Mathis|@k2d222            | mathis.brossier@universite-paris-saclay.fr     |
-|Mahmoud Houssem|@OopsOverflow            |houssemmahmoudswe@gmail.com            |
-|Surer Pierre|@PignoulMarcel|pierre.surer@universite-paris-saclay.fr			|
+| Name            | GitHub                                           | Email                       |
+|-----------------|--------------------------------------------------|-----------------------------|
+| Mathis Brossier | [@k2d222](https://github.com/k2d222)             | mathis.brossier@gmail.com   |
+| Houssem Mahmoud | [@OopsOverflow](https://github.com/OopsOverflow) | houssemmahmoudswe@gmail.com |
+| Pierre Surer    | [@PierreSurer](https://github.com/PierreSurer)   | pierre.surer44@gmail.com    |
 
 
 # Refrences
